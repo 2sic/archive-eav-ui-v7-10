@@ -974,6 +974,31 @@ namespace ToSic.Eav
 			return newApp;
 		}
 
+        /// <summary>
+        /// Add a new App to the current Zone
+        /// </summary>
+        /// <param name="name">The name of the new App</param>
+        /// <returns></returns>
+        public App AddApp(string name)
+        {
+            return AddApp(this.GetZone(ZoneId), name);
+        }
+
+        // ToDo: Discuss w/ 2dm / 2bg how to remove apps (new database field?)
+        //public void RemoveApp(int appId)
+        //{
+            
+        //}
+
+        /// <summary>
+        /// Get all Apps in the current Zone
+        /// </summary>
+        /// <returns></returns>
+        public List<App> GetApps()
+        {
+            return Apps.Where(a => a.ZoneID == ZoneId).ToList();
+        }
+
 		/// <summary>
 		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
 		/// </summary>
