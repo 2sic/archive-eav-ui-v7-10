@@ -1,0 +1,550 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ToSic.Eav.Configuration" Collapsed="true">
+    <Position X="25.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAIAAAAgAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSource" Collapsed="true">
+    <Position X="21.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AECAAAAAAQAAAAAEABCQAAAAACAAAAEAAAAEACBAAAA=</HashCode>
+      <FileName>DataSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.EavContext" Collapsed="true">
+    <Position X="16.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>mjMTwBWv6CAhDRetCYz3qAZ2gJBEUmWaQaFiNg1ABSE=</HashCode>
+      <FileName>EavContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.AttributeSet" Collapsed="true">
+    <Position X="16.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgLhlAAQAE4AiAAAAEQJAQgQEEASAANBEUCAEAoAwA=</HashCode>
+      <FileName>EavContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.App" Collapsed="true">
+    <Position X="14.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEgCAAACAAAAgAAIABAQIAQAAAgQQAEAAEAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.AssignmentObjectType" Collapsed="true">
+    <Position X="18.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAABAAAEgAAAAAAAAIAQAAAIgQAAEAAUAAAAAAAE=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Attachment" Collapsed="true">
+    <Position X="20" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgCJChQhAACQQEYIAAEgBBCIQAFAaAEJAKEAAEIAAhA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Attribute" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABNABAAQgAwAABAIAEABAAAQUEACAAJAQAiAEABDwA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.AttributeGroup" Collapsed="true">
+    <Position X="23.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAALhAAAAAgABAAAAIEAIAQAAAAAQAAkEAAAAAAIAQg=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.AttributeInSet" Collapsed="true">
+    <Position X="25.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABthEAAAAkCBAEAAIEAAAAAAAAIAAAsEEAAAAAJAEA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.AttributeType" Collapsed="true">
+    <Position X="20" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAABAAAAAAAAQAAAAAAAAAQAAAAAABgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ChangeLog" Collapsed="true">
+    <Position X="23.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAQBAAAAAAAAQIABcAACAAAAIASAAAAACAAhAAhgBCI=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Dimension" Collapsed="true">
+    <Position X="25.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEACAEAGQAIQgIIUABAQZAQAACgQQAEgAIACgEYAIQI=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.EavValue" Collapsed="true">
+    <Position X="18.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EABNABAGAAgSEDADgAEABQIAyANACIEJIEggAAABAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Entity" Collapsed="true">
+    <Position X="21.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAKJjhBCMChQBCEAgIFBDQBAUIMACyAdEEFgBAAIAgE=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.EntityRelationship" Collapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gABEBgAAAAACAEAUAIQAAAQAAAQAAAAMEEAMAAARAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ValueDimension" Collapsed="true">
+    <Position X="18.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAEAAAAAUEDICAgACAAAAAAAAQIAAAAgoAAQAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Zone" Collapsed="true">
+    <Position X="25.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEACAAECAAAAgAAAAAAAIAYAAAAQQAAAAAAAAAAAEAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.EntityRelationshipItem" Collapsed="true">
+    <Position X="14.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAQAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>EntityRelationshipItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Factory" Collapsed="true">
+    <Position X="20" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAAACIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Factory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.EntityModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAIAAEAACAAAAAAQAAAAAAAAAQAAAAIAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.AttributeModel&lt;ValueType&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAACAAQCAQAAABAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.EntityRelationshipModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEIIABAEAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.ContentType" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.AttributeWithMetaInfo" Collapsed="true">
+    <Position X="0.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABgAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAQAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.TypedValue&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAQAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.ValueModel&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="21.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAEAAAAACgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.ValueViewModel" Collapsed="true">
+    <Position X="23.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAoAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DimensionModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAAIAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.ZoneModel" Collapsed="true">
+    <Position X="14.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAECAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.RelationshipManager" Collapsed="true">
+    <Position X="23.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAEAAAAAQAAEAAAAAg=</HashCode>
+      <FileName>RelationshipManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.Tools" Collapsed="true">
+    <Position X="25.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.AssignedEntityAttributePropertyAccess" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAIAAAAAAAABAgAAAAAAQAAAAAAAAAAAIAAAAAAAg=</HashCode>
+      <FileName>DataSources\AssignedEntityAttributePropertyAccess.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.AttributeFilter" Collapsed="true">
+    <Position X="5.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\AttributeFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.BaseDataSource" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAACAAAACAEASAAEAAQAAIAAAAAAgAAAAAQAACA=</HashCode>
+      <FileName>DataSources\BaseDataSource.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.ConfigurationProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAABQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\ConfigurationProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.DataPipeline" Collapsed="true">
+    <Position X="18.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\DataPipeline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.DataPipelineFactory" Collapsed="true">
+    <Position X="20" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\DataPipelineFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.DataStream" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DataSources\DataStream.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.EntityIdFilter" Collapsed="true">
+    <Position X="10" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\EntityIdFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.EntityTypeFilter" Collapsed="true">
+    <Position X="1" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\EntityTypeFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Helpers" Collapsed="true">
+    <Position X="21.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\Helpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.PassThrough" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\PassThrough.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Caches.BaseCache" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABQgAAAAAQABQAAgCABAAASQgAkABAAAAEAIAAA=</HashCode>
+      <FileName>DataSources\Caches\BaseCache.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Caches.CacheItem" Collapsed="true">
+    <Position X="21.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAACAAAQAAAAAAESAAIAAAA=</HashCode>
+      <FileName>DataSources\Caches\CacheItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Caches.QuickCache" Collapsed="true">
+    <Position X="3.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQgAAAIAAAAAABgGARAAAQAAAAABAAAAEAAAAA=</HashCode>
+      <FileName>DataSources\Caches\QuickCache.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.SqlSources.EavSqlStore" Collapsed="true">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAACCAAAABQEAAAAAAAQAAAQAAAAAAAAABARAAAA=</HashCode>
+      <FileName>DataSources\SqlSources\EavSqlStore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Tokens.BaseCustomTokenReplace" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAIAAAABA=</HashCode>
+      <FileName>DataSources\Tokens\BaseCustomTokenReplace.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Tokens.BaseTokenReplace" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAgAAAAAABAIAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\Tokens\BaseTokenReplace.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Tokens.TokenReplace" Collapsed="true">
+    <Position X="0.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\Tokens\TokenReplace.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ImportModels.AttributeSet" Collapsed="true">
+    <Position X="18.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgACAAAAAAAAQQAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>ImportModels.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ImportModels.Attribute" Collapsed="true">
+    <Position X="21.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAQAEAAAAA=</HashCode>
+      <FileName>ImportModels.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ImportModels.Entity" Collapsed="true">
+    <Position X="20" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAACAACAAAAAAAAAAAAAABAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ImportModels.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.ImportModels.Value&lt;T&gt;" Collapsed="true">
+    <Position X="16.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAACAAAAAAAAIA=</HashCode>
+      <FileName>ImportModels.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ToSic.Eav.ImportModels.ValueDimension" Collapsed="true">
+    <Position X="20" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>ImportModels.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="ToSic.Eav.IAttribute" Collapsed="true">
+    <Position X="4.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Interfaces\IAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IAttribute&lt;T&gt;" Collapsed="true">
+    <Position X="3.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQCAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.ITypedValue&lt;T&gt;" Collapsed="true">
+    <Position X="21.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IAttributeManagement" Collapsed="true">
+    <Position X="5.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAQAAABAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Interfaces\IAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IContentType" Collapsed="true">
+    <Position X="18.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Interfaces\IContentType.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IDimension" Collapsed="true">
+    <Position X="6.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAAIAAAAAAA=</HashCode>
+      <FileName>Interfaces\IDimension.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.ILanguage" Collapsed="true">
+    <Position X="6.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IDimension.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IEntity" Collapsed="true">
+    <Position X="14.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAIAAEAACAAAAAAQAAAAAAAAAQAAAAIAAAA=</HashCode>
+      <FileName>Interfaces\IEntity.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IValue" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IValue.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IValue&lt;T&gt;" Collapsed="true">
+    <Position X="3.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IValue.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.IValueManagement" Collapsed="true">
+    <Position X="23.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAEAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IValue.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IConfigurationProvider" Collapsed="true">
+    <Position X="16.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\IConfigurationProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataSource" Collapsed="true">
+    <Position X="20" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAACAAAACAEACAAAAAQAAAAAAAAAgAAAAAQAAAA=</HashCode>
+      <FileName>DataSources\IDataSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataSourceInternals" Collapsed="true">
+    <Position X="21.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\IDataSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataStream" Collapsed="true">
+    <Position X="23.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DataSources\IDataStream.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataTarget" Collapsed="true">
+    <Position X="25.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>DataSources\IDataTarget.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IMetaDataSource" Collapsed="true">
+    <Position X="16.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\IMetaDataSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.Caches.ICache" Collapsed="true">
+    <Position X="14.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAABAAAAAAAAAAAQAAEAAAAAAAAIAAA=</HashCode>
+      <FileName>DataSources\Caches\ICache.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.RootSources.IRootSource" Collapsed="true">
+    <Position X="20" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>DataSources\RootSources\IRootSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.Tokens.IPropertyAccess" Collapsed="true">
+    <Position X="18.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\Tokens\IPropertyAccess.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="ToSic.Eav.AttributeMoveDirection" Collapsed="true">
+    <Position X="14.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ToSic.Eav.AttributeScope" Collapsed="true">
+    <Position X="16.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="ToSic.Eav.DataSources.GetListDelegate" Collapsed="true">
+    <Position X="14.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\DataStream.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

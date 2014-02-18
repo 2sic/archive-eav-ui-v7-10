@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B0E86C3B-C791-4544-9B81-707F28196680}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav.ManagementUI</RootNamespace>
+    <AssemblyName>ToSic.Eav.ManagementUI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Themes\Default\Site.css" />
+    <Content Include="App_Themes\Dialog\Dialog.css" />
+    <Content Include="ContentTypes.aspx" />
+    <Content Include="EavManagementApp2.aspx" />
+    <Content Include="EavManagement.aspx" />
+    <Content Include="EAV\Controls\ContentTypeEdit.ascx" />
+    <Content Include="EAV\Controls\ContentTypeFields.ascx" />
+    <Content Include="EAV\Controls\ContentTypesList.ascx" />
+    <Content Include="EAV\Controls\CultureSelector.ascx" />
+    <Content Include="EAV\Controls\DimensionMenu.ascx" />
+    <Content Include="EAV\Controls\EavManagement.ascx" />
+    <Content Include="EAV\Controls\ItemFormEntityModelCreator.js" />
+    <Content Include="EAV\Controls\ItemForm.ascx" />
+    <Content Include="EAV\Controls\ItemForm.css" />
+    <Content Include="EAV\Controls\Images\Locked.png" />
+    <Content Include="EAV\Controls\Images\Unlocked.png" />
+    <Content Include="EAV\Controls\Items.ascx" />
+    <Content Include="EAV\Controls\ItemForm.js" />
+    <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
+    <Content Include="EAV\Dialogs\ContentTypeFields.aspx" />
+    <Content Include="EAV\Dialogs\EditItem.aspx" />
+    <Content Include="EAV\Dialogs\Items.aspx" />
+    <Content Include="EAV\Dialogs\NewItem.aspx" />
+    <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
+    <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
+    <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
+    <None Include="EAV\FieldTemplates\String_Edit.ascx" />
+    <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
+    <Content Include="EAV\PipelineDesigner\demo-new.css" />
+    <Content Include="EAV\PipelineDesigner\flowchartDemo.css" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
+    <Content Include="PipelineDesigner.aspx" />
+    <Content Include="Scripts\pipelineDesigner.js" />
+    <Content Include="packages.config" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.10.2.min.js" />
+    <Content Include="Scripts\jquery.jsPlumb-1.4.1-all-min.js" />
+    <Content Include="Scripts\fancybox\blank.gif" />
+    <Content Include="Scripts\fancybox\fancybox-x.png" />
+    <Content Include="Scripts\fancybox\fancybox-y.png" />
+    <Content Include="Scripts\fancybox\fancybox.png" />
+    <Content Include="Scripts\fancybox\fancy_close.png" />
+    <Content Include="Scripts\fancybox\fancy_loading.png" />
+    <Content Include="Scripts\fancybox\fancy_nav_left.png" />
+    <Content Include="Scripts\fancybox\fancy_nav_right.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_e.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_n.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_ne.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_nw.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_s.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_se.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_sw.png" />
+    <Content Include="Scripts\fancybox\fancy_shadow_w.png" />
+    <Content Include="Scripts\fancybox\fancy_title_left.png" />
+    <Content Include="Scripts\fancybox\fancy_title_main.png" />
+    <Content Include="Scripts\fancybox\fancy_title_over.png" />
+    <Content Include="Scripts\fancybox\fancy_title_right.png" />
+    <Content Include="Scripts\fancybox\jquery.easing-1.3.pack.js" />
+    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.css" />
+    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.js" />
+    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.pack.js" />
+    <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
+    <Content Include="PipelineDesignerServices.asmx" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Code\FieldTemplateUserControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="App_Code\Forms.cs" />
+    <Content Include="App_Code\PipelineDesignerServicesBase.cs">
+      <SubType>Component</SubType>
+    </Content>
+    <Compile Include="ContentTypes.aspx.cs">
+      <DependentUpon>ContentTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContentTypes.aspx.designer.cs">
+      <DependentUpon>ContentTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EavManagement.aspx.designer.cs">
+      <DependentUpon>EavManagement.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EavManagementApp2.aspx.cs">
+      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EavManagement.aspx.cs">
+      <DependentUpon>EavManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EavManagementApp2.aspx.designer.cs">
+      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
+      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.designer.cs">
+      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypeFields.ascx.cs">
+      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypeFields.ascx.designer.cs">
+      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypesList.ascx.cs">
+      <DependentUpon>ContentTypesList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ContentTypesList.ascx.designer.cs">
+      <DependentUpon>ContentTypesList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\CultureSelector.ascx.cs">
+      <DependentUpon>CultureSelector.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\CultureSelector.ascx.designer.cs">
+      <DependentUpon>CultureSelector.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\DimensionMenu.ascx.cs">
+      <DependentUpon>DimensionMenu.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\DimensionMenu.ascx.designer.cs">
+      <DependentUpon>DimensionMenu.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\EavManagement.ascx.cs">
+      <DependentUpon>EavManagement.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\EavManagement.ascx.designer.cs">
+      <DependentUpon>EavManagement.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemForm.ascx.cs">
+      <DependentUpon>ItemForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
+      <DependentUpon>ItemForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\Items.ascx.cs">
+      <DependentUpon>Items.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\Items.ascx.designer.cs">
+      <DependentUpon>Items.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
+      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.designer.cs">
+      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.cs">
+      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.designer.cs">
+      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\EditItem.aspx.cs">
+      <DependentUpon>EditItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\EditItem.aspx.designer.cs">
+      <DependentUpon>EditItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\Items.aspx.cs">
+      <DependentUpon>Items.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\Items.aspx.designer.cs">
+      <DependentUpon>Items.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\NewItem.aspx.cs">
+      <DependentUpon>NewItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Dialogs\NewItem.aspx.designer.cs">
+      <DependentUpon>NewItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.cs">
+      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.designer.cs">
+      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.cs">
+      <DependentUpon>Entity_Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.designer.cs">
+      <DependentUpon>Entity_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.cs">
+      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.designer.cs">
+      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.cs">
+      <DependentUpon>Date_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.designer.cs">
+      <DependentUpon>Date_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.cs">
+      <DependentUpon>String_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.designer.cs">
+      <DependentUpon>String_Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.cs">
+      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.designer.cs">
+      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="PipelineDesigner.aspx.cs">
+      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PipelineDesigner.aspx.designer.cs">
+      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Site.master.cs">
+      <DependentUpon>Site.master</DependentUpon>
+    </Compile>
+    <Compile Include="Site.master.designer.cs">
+      <DependentUpon>Site.master</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Site.master" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\EAVLibrary\ToSic.Eav.csproj">
+      <Project>{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}</Project>
+      <Name>ToSic.Eav</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>50774</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:50774/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
