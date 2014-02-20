@@ -1018,6 +1018,9 @@ namespace ToSic.Eav
 				var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
 				newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
 			}
+
+            // Ensure new AttributeSets are created and cache is refreshed
+            SaveChanges();
 		}
 
 		#endregion

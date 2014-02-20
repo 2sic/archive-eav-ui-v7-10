@@ -913,6 +913,19 @@
             Add a new App
             </summary>
         </member>
+        <member name="M:ToSic.Eav.EavContext.AddApp(System.String)">
+            <summary>
+            Add a new App to the current Zone
+            </summary>
+            <param name="name">The name of the new App</param>
+            <returns></returns>
+        </member>
+        <member name="M:ToSic.Eav.EavContext.GetApps">
+            <summary>
+            Get all Apps in the current Zone
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ToSic.Eav.EavContext.EnsureSharedAttributeSets(ToSic.Eav.App)">
             <summary>
             Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
