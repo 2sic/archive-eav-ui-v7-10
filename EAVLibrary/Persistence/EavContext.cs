@@ -984,11 +984,11 @@ namespace ToSic.Eav
             return AddApp(this.GetZone(ZoneId), name);
         }
 
-        // ToDo: Discuss w/ 2dm / 2bg how to remove apps (new database field?)
-        //public void RemoveApp(int appId)
-        //{
-            
-        //}
+        // ToDo: Discuss w/ 2dm / 2bg how to remove apps
+        public void RemoveApp(int appId)
+        {
+            throw new NotImplementedException("An app can not be removed yet.");
+        }
 
         /// <summary>
         /// Get all Apps in the current Zone
