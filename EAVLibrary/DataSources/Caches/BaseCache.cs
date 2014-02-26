@@ -100,6 +100,11 @@ namespace ToSic.Eav.DataSources.Caches
 			RemoveCacheItem(cacheKey);
 		}
 
+		public void PurgeGlobalCache()
+		{
+			ZoneApps = null;
+		}
+
 		/// <summary>
 		/// Get a ContentType by StaticName if found of DisplayName if not
 		/// </summary>

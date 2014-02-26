@@ -8,9 +8,14 @@ namespace ToSic.Eav.DataSources.Caches
 	public interface ICache
 	{
 		/// <summary>
-		/// Clean cache
+		/// Clean cache for specific Zone and App
 		/// </summary>
 		void PurgeCache(int zoneId, int appId);
+
+		/// <summary>
+		/// Clean global cache (currently contains List of Zones and Apps)
+		/// </summary>
+		void PurgeGlobalCache();
 
 		/// <summary>
 		/// Gets the DateTime when this CacheItem was populated
