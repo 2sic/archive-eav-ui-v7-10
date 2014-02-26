@@ -971,6 +971,8 @@ namespace ToSic.Eav
 
 			EnsureSharedAttributeSets(newApp);
 
+			DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
+
 			return newApp;
 		}
 
