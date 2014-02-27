@@ -189,5 +189,46 @@ namespace ToSic.Eav.Testing
 
 			db.SaveChanges();
 		}
+
+		/// <summary>
+		/// Add an App with Data and remove it again completely
+		/// </summary>
+		[Test]
+		public void AddRemoveApp()
+		{
+			var db = EavContext.Instance();
+			// Add new App
+			var app = db.AddApp("Test Clean Remove");
+			db.AppId = app.AppID;
+
+			// Add new AttributeSet
+			var attributeSet = db.AddAttributeSet("Sample Attribute Set", "Sample Attribute Set Description", null, "");
+			db.AppendAttribute(attributeSet, "Attribute1", "String", true);
+			var attribute2 = db.AppendAttribute(attributeSet, "Attribute2", "String");
+			var attribute3 = db.AppendAttribute(attributeSet, "Attribute3", "String");
+			var attribute4 = db.AppendAttribute(attributeSet, "Attribute4", "Entity");
+
+			// Add new Entities
+			var values = new Dictionary<string, ValueViewModel>
+			{
+				{"Attribute1", new ValueViewModel{ Value = "Sample Value 1"}},
+				{"Attribute2", new ValueViewModel{ Value = "Sample Value 2"}},
+				{"Attribute3", new ValueViewModel{ Value = "Sample Value 3"}},
+			};
+			var entity1 = db.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
+			values.Add("Attribute4", new ValueViewModel { Value = new[] { entity1.EntityID } });
+			var entity2 = db.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
+
+			// Update existing Entity
+			values["Attribute3"].Value = "Sample Value 3 modified";
+			db.UpdateEntity(entity1.EntityID, values, dimensionIds: new[] { 2 });
+
+			// update existing AttributeSets
+			db.UpdateAttribute(attribute2.AttributeID, "Attribute2Renamed");
+			db.RemoveAttributeInSet(attribute3.AttributeID, attributeSet.AttributeSetID);
+
+			// Delete the App
+			db.DeleteApp(app.AppID);
+		}
 	}
 }

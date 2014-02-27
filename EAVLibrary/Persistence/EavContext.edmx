@@ -4,174 +4,33 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="EAVModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
-        <EntityContainer Name="EAVModelStoreContainer">
-          <EntitySet Name="ToSIC_EAV_Apps" EntityType="EAVModel.Store.ToSIC_EAV_Apps" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_AssignmentObjectTypes" EntityType="EAVModel.Store.ToSIC_EAV_AssignmentObjectTypes" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Attachments" EntityType="EAVModel.Store.ToSIC_EAV_Attachments" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_AttributeGroups" EntityType="EAVModel.Store.ToSIC_EAV_AttributeGroups" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Attributes" EntityType="EAVModel.Store.ToSIC_EAV_Attributes" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_AttributeSets" EntityType="EAVModel.Store.ToSIC_EAV_AttributeSets" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_AttributesInSets" EntityType="EAVModel.Store.ToSIC_EAV_AttributesInSets" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_AttributeTypes" EntityType="EAVModel.Store.ToSIC_EAV_AttributeTypes" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_ChangeLog" EntityType="EAVModel.Store.ToSIC_EAV_ChangeLog" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Dimensions" EntityType="EAVModel.Store.ToSIC_EAV_Dimensions" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Entities" EntityType="EAVModel.Store.ToSIC_EAV_Entities" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_EntityRelationships" EntityType="EAVModel.Store.ToSIC_EAV_EntityRelationships" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Values" EntityType="EAVModel.Store.ToSIC_EAV_Values" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_ValuesDimensions" EntityType="EAVModel.Store.ToSIC_EAV_ValuesDimensions" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ToSIC_EAV_Zones" EntityType="EAVModel.Store.ToSIC_EAV_Zones" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones" Association="EAVModel.Store.FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones">
-            <End Role="ToSIC_EAV_Zones" EntitySet="ToSIC_EAV_Zones" />
-            <End Role="ToSIC_EAV_Apps" EntitySet="ToSIC_EAV_Apps" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated" Association="EAVModel.Store.FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Attachments" EntitySet="ToSIC_EAV_Attachments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted" Association="EAVModel.Store.FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Attachments" EntitySet="ToSIC_EAV_Attachments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets" Association="EAVModel.Store.FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets">
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-            <End Role="ToSIC_EAV_AttributeGroups" EntitySet="ToSIC_EAV_AttributeGroups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated" Association="EAVModel.Store.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted" Association="EAVModel.Store.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types" Association="EAVModel.Store.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types">
-            <End Role="ToSIC_EAV_AttributeTypes" EntitySet="ToSIC_EAV_AttributeTypes" />
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps" Association="EAVModel.Store.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps">
-            <End Role="ToSIC_EAV_Apps" EntitySet="ToSIC_EAV_Apps" />
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets" Association="EAVModel.Store.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets">
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-            <End Role="ToSIC_EAV_AttributeSets1" EntitySet="ToSIC_EAV_AttributeSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated" Association="EAVModel.Store.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted" Association="EAVModel.Store.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups" Association="EAVModel.Store.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups">
-            <End Role="ToSIC_EAV_AttributeGroups" EntitySet="ToSIC_EAV_AttributeGroups" />
-            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes" Association="EAVModel.Store.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes">
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets" Association="EAVModel.Store.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets">
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1" Association="EAVModel.Store.FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1">
-            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
-            <End Role="ToSIC_EAV_Dimensions1" EntitySet="ToSIC_EAV_Dimensions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones" Association="EAVModel.Store.FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones">
-            <End Role="ToSIC_EAV_Zones" EntitySet="ToSIC_EAV_Zones" />
-            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes" Association="EAVModel.Store.FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes">
-            <End Role="ToSIC_EAV_AssignmentObjectTypes" EntitySet="ToSIC_EAV_AssignmentObjectTypes" />
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets" Association="EAVModel.Store.FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets">
-            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated" Association="EAVModel.Store.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted" Association="EAVModel.Store.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities" Association="EAVModel.Store.FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities">
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-            <End Role="ToSIC_EAV_Entities1" EntitySet="ToSIC_EAV_Entities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes" Association="EAVModel.Store.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes">
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" Association="EAVModel.Store.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities">
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" Association="EAVModel.Store.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities">
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes" Association="EAVModel.Store.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes">
-            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated" Association="EAVModel.Store.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted" Association="EAVModel.Store.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified" Association="EAVModel.Store.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified">
-            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Entities" Association="EAVModel.Store.FK_ToSIC_EAV_Values_ToSIC_EAV_Entities">
-            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions" Association="EAVModel.Store.FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions">
-            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
-            <End Role="ToSIC_EAV_ValuesDimensions" EntitySet="ToSIC_EAV_ValuesDimensions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values" Association="EAVModel.Store.FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values">
-            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
-            <End Role="ToSIC_EAV_ValuesDimensions" EntitySet="ToSIC_EAV_ValuesDimensions" />
-          </AssociationSet>
-        </EntityContainer>
+    <Schema Namespace="EAVModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityType Name="ToSIC_EAV_Apps">
           <Key>
             <PropertyRef Name="AppID" />
           </Key>
-          <Property Name="AppID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AppID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ZoneID" Type="int" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_AssignmentObjectTypes">
           <Key>
             <PropertyRef Name="AssignmentObjectTypeID" />
           </Key>
-          <Property Name="AssignmentObjectTypeID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="AssignmentObjectTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_Attachments">
           <Key>
             <PropertyRef Name="AttachmentID" />
           </Key>
-          <Property Name="AttachmentID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AttachmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FileID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="FileContents" Type="varbinary(max)" Nullable="false" />
-          <Property Name="OriginalFileName" Type="nvarchar" Nullable="false" MaxLength="200" />
-          <Property Name="OriginalFileExtension" Type="nvarchar" Nullable="false" MaxLength="10" />
-          <Property Name="MimeType" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="OriginalFileName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="OriginalFileExtension" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="MimeType" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="IsCurrent" Type="bit" Nullable="false" />
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
           <Property Name="ChangeLogDeleted" Type="int" />
@@ -180,8 +39,8 @@
           <Key>
             <PropertyRef Name="AttributeGroupID" />
           </Key>
-          <Property Name="AttributeGroupID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="AttributeGroupID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SortOrder" Type="int" Nullable="false" />
           <Property Name="AttributeSetID" Type="int" Nullable="false" />
         </EntityType>
@@ -189,9 +48,9 @@
           <Key>
             <PropertyRef Name="AttributeID" />
           </Key>
-          <Property Name="AttributeID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="StaticName" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="Type" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="AttributeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StaticName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
           <Property Name="ChangeLogDeleted" Type="int" />
         </EntityType>
@@ -199,9 +58,9 @@
           <Key>
             <PropertyRef Name="AttributeSetID" />
           </Key>
-          <Property Name="AttributeSetID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="StaticName" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="AttributeSetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StaticName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Scope" Type="nvarchar" MaxLength="50" />
           <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
@@ -225,13 +84,13 @@
           <Key>
             <PropertyRef Name="Type" />
           </Key>
-          <Property Name="Type" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_ChangeLog">
           <Key>
             <PropertyRef Name="ChangeID" />
           </Key>
-          <Property Name="ChangeID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ChangeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Timestamp" Type="datetime" Nullable="false" />
           <Property Name="User" Type="nvarchar" MaxLength="255" />
         </EntityType>
@@ -239,9 +98,9 @@
           <Key>
             <PropertyRef Name="DimensionID" />
           </Key>
-          <Property Name="DimensionID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="DimensionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Parent" Type="int" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="SystemKey" Type="nvarchar" MaxLength="100" />
           <Property Name="ExternalKey" Type="nvarchar" MaxLength="100" />
           <Property Name="ZoneID" Type="int" Nullable="false" />
@@ -251,7 +110,7 @@
           <Key>
             <PropertyRef Name="EntityID" />
           </Key>
-          <Property Name="EntityID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EntityID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EntityGUID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="AttributeSetID" Type="int" Nullable="false" />
           <Property Name="ConfigurationSet" Type="int" />
@@ -278,7 +137,7 @@
           <Key>
             <PropertyRef Name="ValueID" />
           </Key>
-          <Property Name="ValueID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ValueID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EntityID" Type="int" Nullable="false" />
           <Property Name="AttributeID" Type="int" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
@@ -299,12 +158,12 @@
           <Key>
             <PropertyRef Name="ZoneID" />
           </Key>
-          <Property Name="ZoneID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="ZoneID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <Association Name="FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones">
-          <End Role="ToSIC_EAV_Zones" Type="EAVModel.Store.ToSIC_EAV_Zones" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Apps" Type="EAVModel.Store.ToSIC_EAV_Apps" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Zones" Type="Self.ToSIC_EAV_Zones" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Apps" Type="Self.ToSIC_EAV_Apps" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Zones">
               <PropertyRef Name="ZoneID" />
@@ -315,8 +174,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Attachments" Type="EAVModel.Store.ToSIC_EAV_Attachments" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Attachments" Type="Self.ToSIC_EAV_Attachments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -327,8 +186,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Attachments" Type="EAVModel.Store.ToSIC_EAV_Attachments" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Attachments" Type="Self.ToSIC_EAV_Attachments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -339,8 +198,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets">
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="1" />
-          <End Role="ToSIC_EAV_AttributeGroups" Type="EAVModel.Store.ToSIC_EAV_AttributeGroups" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="1" />
+          <End Role="ToSIC_EAV_AttributeGroups" Type="Self.ToSIC_EAV_AttributeGroups" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeSets">
               <PropertyRef Name="AttributeSetID" />
@@ -351,8 +210,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -363,8 +222,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -375,8 +234,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types">
-          <End Role="ToSIC_EAV_AttributeTypes" Type="EAVModel.Store.ToSIC_EAV_AttributeTypes" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeTypes" Type="Self.ToSIC_EAV_AttributeTypes" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeTypes">
               <PropertyRef Name="Type" />
@@ -387,8 +246,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps">
-          <End Role="ToSIC_EAV_Apps" Type="EAVModel.Store.ToSIC_EAV_Apps" Multiplicity="1" />
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Apps" Type="Self.ToSIC_EAV_Apps" Multiplicity="1" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Apps">
               <PropertyRef Name="AppID" />
@@ -399,8 +258,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets">
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_AttributeSets1" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_AttributeSets1" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeSets">
               <PropertyRef Name="AttributeSetID" />
@@ -411,8 +270,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="1" />
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -423,8 +282,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -435,8 +294,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups">
-          <End Role="ToSIC_EAV_AttributeGroups" Type="EAVModel.Store.ToSIC_EAV_AttributeGroups" Multiplicity="1" />
-          <End Role="ToSIC_EAV_AttributesInSets" Type="EAVModel.Store.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeGroups" Type="Self.ToSIC_EAV_AttributeGroups" Multiplicity="1" />
+          <End Role="ToSIC_EAV_AttributesInSets" Type="Self.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeGroups">
               <PropertyRef Name="AttributeGroupID" />
@@ -447,10 +306,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes">
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="1">
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="ToSIC_EAV_AttributesInSets" Type="EAVModel.Store.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributesInSets" Type="Self.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Attributes">
               <PropertyRef Name="AttributeID" />
@@ -461,8 +320,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets">
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="1" />
-          <End Role="ToSIC_EAV_AttributesInSets" Type="EAVModel.Store.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="1" />
+          <End Role="ToSIC_EAV_AttributesInSets" Type="Self.ToSIC_EAV_AttributesInSets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeSets">
               <PropertyRef Name="AttributeSetID" />
@@ -473,8 +332,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1">
-          <End Role="ToSIC_EAV_Dimensions" Type="EAVModel.Store.ToSIC_EAV_Dimensions" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Dimensions1" Type="EAVModel.Store.ToSIC_EAV_Dimensions" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Dimensions" Type="Self.ToSIC_EAV_Dimensions" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Dimensions1" Type="Self.ToSIC_EAV_Dimensions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Dimensions">
               <PropertyRef Name="DimensionID" />
@@ -485,8 +344,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones">
-          <End Role="ToSIC_EAV_Zones" Type="EAVModel.Store.ToSIC_EAV_Zones" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Dimensions" Type="EAVModel.Store.ToSIC_EAV_Dimensions" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Zones" Type="Self.ToSIC_EAV_Zones" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Dimensions" Type="Self.ToSIC_EAV_Dimensions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Zones">
               <PropertyRef Name="ZoneID" />
@@ -497,8 +356,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes">
-          <End Role="ToSIC_EAV_AssignmentObjectTypes" Type="EAVModel.Store.ToSIC_EAV_AssignmentObjectTypes" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AssignmentObjectTypes" Type="Self.ToSIC_EAV_AssignmentObjectTypes" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AssignmentObjectTypes">
               <PropertyRef Name="AssignmentObjectTypeID" />
@@ -509,8 +368,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets">
-          <End Role="ToSIC_EAV_AttributeSets" Type="EAVModel.Store.ToSIC_EAV_AttributeSets" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="*" />
+          <End Role="ToSIC_EAV_AttributeSets" Type="Self.ToSIC_EAV_AttributeSets" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_AttributeSets">
               <PropertyRef Name="AttributeSetID" />
@@ -521,8 +380,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -533,8 +392,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -545,8 +404,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities">
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Entities1" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Entities1" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Entities">
               <PropertyRef Name="EntityID" />
@@ -557,8 +416,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes">
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="1" />
-          <End Role="ToSIC_EAV_EntityRelationships" Type="EAVModel.Store.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="1" />
+          <End Role="ToSIC_EAV_EntityRelationships" Type="Self.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Attributes">
               <PropertyRef Name="AttributeID" />
@@ -569,8 +428,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities">
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="1" />
-          <End Role="ToSIC_EAV_EntityRelationships" Type="EAVModel.Store.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="1" />
+          <End Role="ToSIC_EAV_EntityRelationships" Type="Self.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Entities">
               <PropertyRef Name="EntityID" />
@@ -581,8 +440,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities">
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="1" />
-          <End Role="ToSIC_EAV_EntityRelationships" Type="EAVModel.Store.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="1" />
+          <End Role="ToSIC_EAV_EntityRelationships" Type="Self.ToSIC_EAV_EntityRelationships" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Entities">
               <PropertyRef Name="EntityID" />
@@ -593,10 +452,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes">
-          <End Role="ToSIC_EAV_Attributes" Type="EAVModel.Store.ToSIC_EAV_Attributes" Multiplicity="1">
+          <End Role="ToSIC_EAV_Attributes" Type="Self.ToSIC_EAV_Attributes" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Attributes">
               <PropertyRef Name="AttributeID" />
@@ -607,8 +466,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -619,8 +478,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -631,8 +490,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified">
-          <End Role="ToSIC_EAV_ChangeLog" Type="EAVModel.Store.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="*" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
               <PropertyRef Name="ChangeID" />
@@ -643,8 +502,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Entities">
-          <End Role="ToSIC_EAV_Entities" Type="EAVModel.Store.ToSIC_EAV_Entities" Multiplicity="1" />
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="1" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Entities">
               <PropertyRef Name="EntityID" />
@@ -655,8 +514,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions">
-          <End Role="ToSIC_EAV_Dimensions" Type="EAVModel.Store.ToSIC_EAV_Dimensions" Multiplicity="1" />
-          <End Role="ToSIC_EAV_ValuesDimensions" Type="EAVModel.Store.ToSIC_EAV_ValuesDimensions" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Dimensions" Type="Self.ToSIC_EAV_Dimensions" Multiplicity="1" />
+          <End Role="ToSIC_EAV_ValuesDimensions" Type="Self.ToSIC_EAV_ValuesDimensions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Dimensions">
               <PropertyRef Name="DimensionID" />
@@ -667,8 +526,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values">
-          <End Role="ToSIC_EAV_Values" Type="EAVModel.Store.ToSIC_EAV_Values" Multiplicity="1" />
-          <End Role="ToSIC_EAV_ValuesDimensions" Type="EAVModel.Store.ToSIC_EAV_ValuesDimensions" Multiplicity="*" />
+          <End Role="ToSIC_EAV_Values" Type="Self.ToSIC_EAV_Values" Multiplicity="1" />
+          <End Role="ToSIC_EAV_ValuesDimensions" Type="Self.ToSIC_EAV_ValuesDimensions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_Values">
               <PropertyRef Name="ValueID" />
@@ -684,6 +543,150 @@
         <Function Name="ToSIC_EAV_ChangeLogSet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ChangeID" Type="int" Mode="In" />
         </Function>
+        <Function Name="ToSIC_EAV_DeleteApp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AppId" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="EAVModelStoreContainer">
+          <EntitySet Name="ToSIC_EAV_Apps" EntityType="Self.ToSIC_EAV_Apps" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_AssignmentObjectTypes" EntityType="Self.ToSIC_EAV_AssignmentObjectTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Attachments" EntityType="Self.ToSIC_EAV_Attachments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_AttributeGroups" EntityType="Self.ToSIC_EAV_AttributeGroups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Attributes" EntityType="Self.ToSIC_EAV_Attributes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_AttributeSets" EntityType="Self.ToSIC_EAV_AttributeSets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_AttributesInSets" EntityType="Self.ToSIC_EAV_AttributesInSets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_AttributeTypes" EntityType="Self.ToSIC_EAV_AttributeTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_ChangeLog" EntityType="Self.ToSIC_EAV_ChangeLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Dimensions" EntityType="Self.ToSIC_EAV_Dimensions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Entities" EntityType="Self.ToSIC_EAV_Entities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_EntityRelationships" EntityType="Self.ToSIC_EAV_EntityRelationships" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Values" EntityType="Self.ToSIC_EAV_Values" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_ValuesDimensions" EntityType="Self.ToSIC_EAV_ValuesDimensions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_Zones" EntityType="Self.ToSIC_EAV_Zones" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones" Association="Self.FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones">
+            <End Role="ToSIC_EAV_Zones" EntitySet="ToSIC_EAV_Zones" />
+            <End Role="ToSIC_EAV_Apps" EntitySet="ToSIC_EAV_Apps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Attachments" EntitySet="ToSIC_EAV_Attachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted" Association="Self.FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Attachments" EntitySet="ToSIC_EAV_Attachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets" Association="Self.FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets">
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+            <End Role="ToSIC_EAV_AttributeGroups" EntitySet="ToSIC_EAV_AttributeGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted" Association="Self.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types" Association="Self.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types">
+            <End Role="ToSIC_EAV_AttributeTypes" EntitySet="ToSIC_EAV_AttributeTypes" />
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps" Association="Self.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps">
+            <End Role="ToSIC_EAV_Apps" EntitySet="ToSIC_EAV_Apps" />
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets" Association="Self.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets">
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+            <End Role="ToSIC_EAV_AttributeSets1" EntitySet="ToSIC_EAV_AttributeSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted" Association="Self.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups" Association="Self.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups">
+            <End Role="ToSIC_EAV_AttributeGroups" EntitySet="ToSIC_EAV_AttributeGroups" />
+            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes" Association="Self.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes">
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets" Association="Self.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets">
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+            <End Role="ToSIC_EAV_AttributesInSets" EntitySet="ToSIC_EAV_AttributesInSets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1" Association="Self.FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1">
+            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
+            <End Role="ToSIC_EAV_Dimensions1" EntitySet="ToSIC_EAV_Dimensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones" Association="Self.FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones">
+            <End Role="ToSIC_EAV_Zones" EntitySet="ToSIC_EAV_Zones" />
+            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes">
+            <End Role="ToSIC_EAV_AssignmentObjectTypes" EntitySet="ToSIC_EAV_AssignmentObjectTypes" />
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets">
+            <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities">
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+            <End Role="ToSIC_EAV_Entities1" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes" Association="Self.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes">
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" Association="Self.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities">
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" Association="Self.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities">
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+            <End Role="ToSIC_EAV_EntityRelationships" EntitySet="ToSIC_EAV_EntityRelationships" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes" Association="Self.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes">
+            <End Role="ToSIC_EAV_Attributes" EntitySet="ToSIC_EAV_Attributes" />
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted" Association="Self.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified" Association="Self.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Values_ToSIC_EAV_Entities" Association="Self.FK_ToSIC_EAV_Values_ToSIC_EAV_Entities">
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions" Association="Self.FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions">
+            <End Role="ToSIC_EAV_Dimensions" EntitySet="ToSIC_EAV_Dimensions" />
+            <End Role="ToSIC_EAV_ValuesDimensions" EntitySet="ToSIC_EAV_ValuesDimensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values" Association="Self.FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values">
+            <End Role="ToSIC_EAV_Values" EntitySet="ToSIC_EAV_Values" />
+            <End Role="ToSIC_EAV_ValuesDimensions" EntitySet="ToSIC_EAV_ValuesDimensions" />
+          </AssociationSet>
+        </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -834,6 +837,9 @@
             <End Role="AttributeSet" EntitySet="AttributeSets" />
             <End Role="AttributeSet1" EntitySet="AttributeSets" />
           </AssociationSet>
+          <FunctionImport Name="DeleteApp">
+            <Parameter Name="AppId" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="AssignmentObjectType">
           <Key>
@@ -1602,6 +1608,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="DeleteApp" FunctionName="EAVModel.Store.ToSIC_EAV_DeleteApp" />
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1618,6 +1625,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->

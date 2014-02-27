@@ -525,6 +525,25 @@ namespace ToSic.Eav
     
             return base.ExecuteFunction("SetChangeLogIdInternal", changeIDParameter);
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        /// <param name="appId">No Metadata Documentation available.</param>
+        public int DeleteApp(Nullable<global::System.Int32> appId)
+        {
+            ObjectParameter appIdParameter;
+            if (appId.HasValue)
+            {
+                appIdParameter = new ObjectParameter("AppId", appId);
+            }
+            else
+            {
+                appIdParameter = new ObjectParameter("AppId", typeof(global::System.Int32));
+            }
+    
+            return base.ExecuteFunction("DeleteApp", appIdParameter);
+        }
 
         #endregion
 
