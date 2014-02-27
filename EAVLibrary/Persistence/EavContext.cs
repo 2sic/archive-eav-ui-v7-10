@@ -317,17 +317,12 @@ namespace ToSic.Eav
 			AddToAttributesInSets(setAssignment);
 
 			// Set Attribute as Title if there's no title field in this set
-			//if (!AttributesInSets.Any(a => a.Set == attributeSet && a.IsTitle))
-			//	setAssignment.IsTitle = true;
-			// ToDo: 2bg 2013-12-06 Test it
 			if (!attributeSet.AttributesInSets.Any(a => a.IsTitle))
 				setAssignment.IsTitle = true;
 
 			if (isTitle)
 			{
 				// unset old Title Fields
-				// ToDo: 2bg 2013-12-06 Test it
-				//var oldTitleFields = AttributesInSets.Where(a => a.Set == attributeSet && a.IsTitle && a.Attribute.StaticName != staticName).ToList();
 				var oldTitleFields = attributeSet.AttributesInSets.Where(a => a.IsTitle && a.Attribute.StaticName != staticName).ToList();
 				foreach (var titleField in oldTitleFields)
 					titleField.IsTitle = false;
@@ -983,13 +978,24 @@ namespace ToSic.Eav
         /// <returns></returns>
         public App AddApp(string name)
         {
-            return AddApp(this.GetZone(ZoneId), name);
+            return AddApp(GetZone(ZoneId), name);
         }
 
-        // ToDo: Discuss w/ 2dm / 2bg how to remove apps
-        public void RemoveApp(int appId)
+        /// <summary>
+        /// Delete an existing App with any Values and Attributes
+        /// </summary>
+        /// <param name="appId">AppId to delete</param>
+        public void DeleteApp(int appId)
         {
-            throw new NotImplementedException("An app can not be removed yet.");
+			// enure changelog exists and is set to SQL CONTEXT_INFO variable
+			if (_mainChangeLogId == 0)
+				GetChangeLogId(UserName);
+
+			// Delete app using StoredProcedure
+	        DeleteAppInternal(appId);
+
+			// Remove App from Global Cache
+			DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
         }
 
         /// <summary>

@@ -530,7 +530,7 @@ namespace ToSic.Eav
         /// No Metadata Documentation available.
         /// </summary>
         /// <param name="appId">No Metadata Documentation available.</param>
-        public int DeleteApp(Nullable<global::System.Int32> appId)
+        internal int DeleteAppInternal(Nullable<global::System.Int32> appId)
         {
             ObjectParameter appIdParameter;
             if (appId.HasValue)
@@ -542,7 +542,7 @@ namespace ToSic.Eav
                 appIdParameter = new ObjectParameter("AppId", typeof(global::System.Int32));
             }
     
-            return base.ExecuteFunction("DeleteApp", appIdParameter);
+            return base.ExecuteFunction("DeleteAppInternal", appIdParameter);
         }
 
         #endregion

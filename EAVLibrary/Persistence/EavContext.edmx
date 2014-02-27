@@ -837,7 +837,7 @@
             <End Role="AttributeSet" EntitySet="AttributeSets" />
             <End Role="AttributeSet1" EntitySet="AttributeSets" />
           </AssociationSet>
-          <FunctionImport Name="DeleteApp">
+          <FunctionImport Name="DeleteAppInternal" a:MethodAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
             <Parameter Name="AppId" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
@@ -1608,7 +1608,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="DeleteApp" FunctionName="EAVModel.Store.ToSIC_EAV_DeleteApp" />
+          <FunctionImportMapping FunctionImportName="DeleteAppInternal" FunctionName="EAVModel.Store.ToSIC_EAV_DeleteApp" />
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
