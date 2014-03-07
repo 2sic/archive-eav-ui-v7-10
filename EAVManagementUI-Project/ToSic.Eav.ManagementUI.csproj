@@ -139,6 +139,7 @@
     <Content Include="App_Code\PipelineDesignerServicesBase.cs">
       <SubType>Component</SubType>
     </Content>
+    <Compile Include="App_Code\Serialization.cs" />
     <Compile Include="ContentTypes.aspx.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -268,6 +269,7 @@
     </Compile>
     <Compile Include="EAV\FieldTemplates\String_Edit.ascx.cs">
       <DependentUpon>String_Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\FieldTemplates\String_Edit.ascx.designer.cs">
       <DependentUpon>String_Edit.ascx</DependentUpon>

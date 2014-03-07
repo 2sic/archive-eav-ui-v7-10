@@ -20,7 +20,6 @@ namespace ToSic.Eav
 		{
 			_entity = entity;
 			AllRelationships = allAllRelationships;
-			//Relationships = new List<EntityRelationshipItem>();
 		}
 
 		/// <summary>

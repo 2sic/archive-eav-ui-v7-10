@@ -76,9 +76,6 @@ namespace ToSic.Eav.ManagementUI
 			if (_initFormCompleted)
 				throw new Exception("Form can be initialized only once!");
 
-			//if (AssignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties)	// Field Metadata are always in default Zone & App
-			//	Db = EavContext.Instance(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
-			//else
 			Db = EavContext.Instance(ZoneId, AppId);
 			Db.UserName = System.Web.HttpContext.Current.User.Identity.Name;
 
@@ -128,7 +125,7 @@ namespace ToSic.Eav.ManagementUI
 			var dsrc = DataSource.GetInitialDataSource(zoneId, appId);
 			var entityModel = dsrc[DataSource.DefaultStreamName].List[entity.EntityID];
 			#region Set JSON Data/Models
-			litJsonEntityModel.Text = GetJsonString(entityModel);
+			litJsonEntityModel.Text = GetJsonString(new Serialization.EntityJavaScriptModel(entityModel));
 			litJsonEntityId.Text = entity.EntityID.ToString(CultureInfo.InvariantCulture);
 			pnlEditForm.Attributes["data-entityid"] = entity.EntityID.ToString(CultureInfo.InvariantCulture);
 			#endregion
