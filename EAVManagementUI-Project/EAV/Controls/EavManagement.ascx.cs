@@ -102,6 +102,13 @@ namespace ToSic.Eav.ManagementUI
 		public int? AppId { get; set; }
 		public int? ZoneId { get; set; }
 
+        private bool _addFormClientScriptAndCss = true;
+        public bool AddFormClientScriptAndCss
+        {
+            get { return _addFormClientScriptAndCss; }
+            set { _addFormClientScriptAndCss = value; }
+        }
+
 		#endregion
 
 		protected override void OnInit(EventArgs e)
@@ -138,6 +145,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.AttributeSetId = AttributeSetId.Value;
 					itemFormControl.AssignmentObjectTypeId = AssignmentObjectTypeId;
 					itemFormControl.KeyNumber = KeyNumber;
+			        itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
