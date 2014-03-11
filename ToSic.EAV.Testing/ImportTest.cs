@@ -190,7 +190,7 @@ namespace ToSic.Eav.Testing
 			return entity;
 		}
 
-		private Dictionary<string, List<IValueImportModel>> GetEntityValues(Import.Entity entity, Import.AttributeSet attributeSet, Guid? relatedEntity = null, bool isUpdate = false)
+		private Dictionary<string, List<IValueImportModel>> GetEntityValues(Import.Entity entity, Import.AttributeSet attributeSet, Guid? relatedEntity = null, bool isUpdate = false, string now = null)
 		{
 			var values = new Dictionary<string, List<IValueImportModel>>();
 
@@ -198,8 +198,8 @@ namespace ToSic.Eav.Testing
 			{
 				values.Add(attribute.StaticName, new List<IValueImportModel>
 				{
-					GetValue(entity, relatedEntity, attribute, "de-de", isUpdate),
-					GetValue(entity, relatedEntity, attribute, "en-us", isUpdate)
+					GetValue(entity, relatedEntity, attribute, "de-de", isUpdate, now),
+					GetValue(entity, relatedEntity, attribute, "en-us", isUpdate, now)
 				});
 			}
 
@@ -209,7 +209,7 @@ namespace ToSic.Eav.Testing
 			return values;
 		}
 
-		private static IValueImportModel GetValue(Import.Entity entity, Guid? relatedEntity, Import.Attribute attribute, string language, bool isUpdate)
+		private static IValueImportModel GetValue(Import.Entity entity, Guid? relatedEntity, Import.Attribute attribute, string language, bool isUpdate, string now)
 		{
 			IValueImportModel value;
 			switch (attribute.Type)
@@ -228,13 +228,13 @@ namespace ToSic.Eav.Testing
 					value = new ValueImportModel<List<Guid>>(entity) { Value = entities };
 					break;
 				case "Hyperlink":
-					value = new ValueImportModel<string>(entity) { Value = "http://www.2sic.com" + (isUpdate ? " Updated" : "") };
+					value = new ValueImportModel<string>(entity) { Value = "http://www.2sic.com" + (isUpdate ? " Updated " + now : "") };
 					break;
 				case "Number":
 					value = new ValueImportModel<decimal?>(entity) { Value = (decimal?)123.12d };
 					break;
 				case "String":
-					value = new ValueImportModel<string>(entity) { Value = "SampleString " + attribute.StaticName + " " + language + (isUpdate ? " Updated" : "") };
+					value = new ValueImportModel<string>(entity) { Value = "SampleString " + attribute.StaticName + " " + language + (isUpdate ? " Updated" + now : "") };
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(attribute.Type);
@@ -251,8 +251,8 @@ namespace ToSic.Eav.Testing
 		public void UpdateExistingData()
 		{
 			// Update Attribute Set
-			const string attributeSetStaticName = "AttributeSet_130832_1";
-			const string now = "130832";
+			const string attributeSetStaticName = "AttributeSet_181655_1";
+			const string now = "181655";
 			var attributeSet = new Import.AttributeSet
 			{
 				Attributes = GetAttributes(1, now),
@@ -264,12 +264,12 @@ namespace ToSic.Eav.Testing
 			attributeSet.Attributes.Add(new Import.Attribute { StaticName = "AttributeAddedLater", Type = "String" });
 			attributeSet.TitleAttribute = attributeSet.Attributes.Last();
 
-
-			var import = new Import.Import(2, 2, "ImportTest2");
+			const bool overwriteExistingEntityValues = true;
+			var import = new Import.Import(2, 2, "ImportTest2", overwriteExistingEntityValues);
 			var attributeSets = new List<Import.AttributeSet> { attributeSet };
 
 			// Update Entity
-			const int entityId = 479;
+			const int entityId = 5483;
 			var db = new EavContext();
 			var entityGuid = db.Entities.Where(e => e.EntityID == entityId).Select(e => e.EntityGUID).Single();
 
@@ -280,13 +280,13 @@ namespace ToSic.Eav.Testing
 				KeyNumber = 999,
 				AssignmentObjectTypeId = 1
 			};
-			entity.Values = GetEntityValues(entity, attributeSet, isUpdate: true);
+			entity.Values = GetEntityValues(entity, attributeSet, isUpdate: true, now: DateTime.Now.ToLongTimeString().Replace(":", ""));
 			var entities = new List<Import.Entity> { entity };
 
-			import.RunImport(attributeSets, entities);
+			import.RunImport(null, entities);
 
-			//Assert.IsEmpty(import.ImportLog);
-			//Assert.IsFalse(import.ImportLog.Any(l => l.EntryType == EventLogEntryType.Error));
+			Assert.IsEmpty(import.ImportLog);
+			Assert.IsFalse(import.ImportLog.Any(l => l.EntryType == EventLogEntryType.Error));
 		}
 	}
 }
