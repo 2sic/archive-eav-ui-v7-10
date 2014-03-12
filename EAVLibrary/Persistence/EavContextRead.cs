@@ -309,6 +309,7 @@ namespace ToSic.Eav
 								 where
 									!e.ChangeLogIDDeleted.HasValue &&
 									e.Set.AppID == appId &&
+									e.Set.ChangeLogIDDeleted == null &&
 									(!filterByEntityIds || entityIds.Contains(e.EntityID))
 								 select new
 								 {
