@@ -19,6 +19,7 @@ namespace ToSic.Eav
 		public IContentType Type { get; internal set; }
 		[ScriptIgnore]
 		public RelationshipManager Relationships { get; internal set; }
+		public int AssignmentObjectTypeId { get; internal set; }
 
 		public IAttribute this[string attributeName]
 		{
@@ -36,10 +37,11 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Create a new EntityModel
 		/// </summary>
-		internal EntityModel(Guid entityGuid, int entityId, IContentType type, IEnumerable<EntityRelationshipItem> allRelationships = null)
+		internal EntityModel(Guid entityGuid, int entityId, int assignmentObjectTypeId, IContentType type, IEnumerable<EntityRelationshipItem> allRelationships = null)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
+			AssignmentObjectTypeId = assignmentObjectTypeId;
 			Attributes = new Dictionary<string, IAttribute>();
 			Type = type;
 
@@ -55,6 +57,7 @@ namespace ToSic.Eav
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;
+			AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
 			Type = entity.Type;
 			Title = entity.Title;
 			Attributes = attributes;

@@ -354,7 +354,7 @@ namespace ToSic.Eav
 
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, contentTypes[e.AttributeSetID], relationships);
+				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], allRelationships: relationships);
 
 				#region Add assignmentObjectTypes with Key
 

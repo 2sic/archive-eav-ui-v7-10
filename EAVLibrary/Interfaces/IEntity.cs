@@ -17,6 +17,10 @@ namespace ToSic.Eav
 		/// </summary>
 		Guid EntityGuid { get; }
 		/// <summary>
+		/// Gets the AssignmentObjectTypeId
+		/// </summary>
+		int AssignmentObjectTypeId { get; }
+		/// <summary>
 		/// Gets a Dictionary having all Attributes having a value
 		/// </summary>
 		Dictionary<string, IAttribute> Attributes { get; }
