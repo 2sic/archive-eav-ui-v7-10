@@ -9,6 +9,10 @@ namespace ToSic.Eav.ManagementUI
 {
 	public partial class EavManagement : UserControl
 	{
+		#region
+		public event EntityDeletingEventHandler EntityDeleting;
+		#endregion
+
 		#region Properties
 		public ManagementMode? Mode
 		{
@@ -45,16 +49,16 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
-	    private int? _AssignmentObjectTypeId;
+		private int? _AssignmentObjectTypeId;
 		public int? AssignmentObjectTypeId
 		{
 			get
 			{
-			    if (!String.IsNullOrEmpty(Request.QueryString["AssignmentObjectTypeId"]))
-			        return int.Parse(Request.QueryString["AssignmentObjectTypeId"]);
-			    return _AssignmentObjectTypeId;
+				if (!String.IsNullOrEmpty(Request.QueryString["AssignmentObjectTypeId"]))
+					return int.Parse(Request.QueryString["AssignmentObjectTypeId"]);
+				return _AssignmentObjectTypeId;
 			}
-            set { _AssignmentObjectTypeId = value; }
+			set { _AssignmentObjectTypeId = value; }
 		}
 
 		private string _BaseUrl;
@@ -102,18 +106,19 @@ namespace ToSic.Eav.ManagementUI
 		public int? AppId { get; set; }
 		public int? ZoneId { get; set; }
 
-        private bool _addFormClientScriptAndCss = true;
-        public bool AddFormClientScriptAndCss
-        {
-            get { return _addFormClientScriptAndCss; }
-            set { _addFormClientScriptAndCss = value; }
-        }
+		private bool _addFormClientScriptAndCss = true;
+		public bool AddFormClientScriptAndCss
+		{
+			get { return _addFormClientScriptAndCss; }
+			set { _addFormClientScriptAndCss = value; }
+		}
 
 		#endregion
 
 		protected override void OnInit(EventArgs e)
 		{
 			var CultureDimensionReplaceValue = !string.IsNullOrEmpty(Request.QueryString["CultureDimension"]) ? Request.QueryString["CultureDimension"] : "[CultureDimension]";
+
 			#region Add Eav Controls dynamically
 			switch (Mode)
 			{
@@ -145,7 +150,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.AttributeSetId = AttributeSetId.Value;
 					itemFormControl.AssignmentObjectTypeId = AssignmentObjectTypeId;
 					itemFormControl.KeyNumber = KeyNumber;
-			        itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
+					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
@@ -164,6 +169,8 @@ namespace ToSic.Eav.ManagementUI
 					itemsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
 					itemsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", "[CultureDimension]");
 					itemsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
+					if (EntityDeleting != null)
+						itemsControl.EntityDeleting += EntityDeleting;
 					Controls.Add(itemsControl);
 					break;
 				case ManagementMode.ContentTypesList:

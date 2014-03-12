@@ -839,6 +839,32 @@ namespace ToSic.Eav
 			SaveChanges();
 		}
 
+		/// <summary>
+		/// Test whehter Entity can be deleted safe if it has no relationships
+		/// </summary>
+		/// <returns>Item1: Indicates whether Entity can be deleted. Item2: Messages why Entity can't be deleted safe.</returns>
+		public Tuple<bool, string> CanDeleteEntity(int entityId)
+		{
+			var messages = new List<string>();
+
+			var entityAsParent = EntityRelationships.Where(r => r.ParentEntityID == entityId).Select(r => r.ChildEntityID).ToList();
+			if (entityAsParent.Any())
+				messages.Add(string.Format("Entity has {0} Parent-Relationships to Entities: {1}.", entityAsParent.Count, string.Join(", ", entityAsParent)));
+
+			var entityChild = EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
+			if (entityChild.Any())
+				messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
+
+			var assignedEntitiesFieldProperties = GetEntitiesInternal(DataSource.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
+			if (assignedEntitiesFieldProperties.Any())
+				messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
+
+			var assignedEntitiesDataPipeline = GetEntitiesInternal(DataSource.AssignmentObjectTypeIdDataPipeline, entityId).Select(e => e.EntityID).ToList();
+			if (assignedEntitiesDataPipeline.Any())
+				messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
+
+			return Tuple.Create(!messages.Any(), string.Join(" ", messages));
+		}
 
 		/// <summary>
 		/// Delete an Entity
@@ -971,41 +997,41 @@ namespace ToSic.Eav
 			return newApp;
 		}
 
-        /// <summary>
-        /// Add a new App to the current Zone
-        /// </summary>
-        /// <param name="name">The name of the new App</param>
-        /// <returns></returns>
-        public App AddApp(string name)
-        {
-            return AddApp(GetZone(ZoneId), name);
-        }
+		/// <summary>
+		/// Add a new App to the current Zone
+		/// </summary>
+		/// <param name="name">The name of the new App</param>
+		/// <returns></returns>
+		public App AddApp(string name)
+		{
+			return AddApp(GetZone(ZoneId), name);
+		}
 
-        /// <summary>
-        /// Delete an existing App with any Values and Attributes
-        /// </summary>
-        /// <param name="appId">AppId to delete</param>
-        public void DeleteApp(int appId)
-        {
+		/// <summary>
+		/// Delete an existing App with any Values and Attributes
+		/// </summary>
+		/// <param name="appId">AppId to delete</param>
+		public void DeleteApp(int appId)
+		{
 			// enure changelog exists and is set to SQL CONTEXT_INFO variable
 			if (_mainChangeLogId == 0)
 				GetChangeLogId(UserName);
 
 			// Delete app using StoredProcedure
-	        DeleteAppInternal(appId);
+			DeleteAppInternal(appId);
 
 			// Remove App from Global Cache
 			DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
-        }
+		}
 
-        /// <summary>
-        /// Get all Apps in the current Zone
-        /// </summary>
-        /// <returns></returns>
-        public List<App> GetApps()
-        {
-            return Apps.Where(a => a.ZoneID == ZoneId).ToList();
-        }
+		/// <summary>
+		/// Get all Apps in the current Zone
+		/// </summary>
+		/// <returns></returns>
+		public List<App> GetApps()
+		{
+			return Apps.Where(a => a.ZoneID == ZoneId).ToList();
+		}
 
 		/// <summary>
 		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
@@ -1027,8 +1053,8 @@ namespace ToSic.Eav
 				newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
 			}
 
-            // Ensure new AttributeSets are created and cache is refreshed
-            SaveChanges();
+			// Ensure new AttributeSets are created and cache is refreshed
+			SaveChanges();
 		}
 
 		#endregion

@@ -26,7 +26,7 @@ namespace ToSic.Eav
 		{
 			return Entities.Single(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
 		}
-		
+
 		/// <summary>
 		/// Test whehter Entity exists on current App and is not deleted
 		/// </summary>
@@ -40,11 +40,19 @@ namespace ToSic.Eav
 		/// </summary>
 		public List<Entity> GetEntities(int assignmentObjectTypeId, int? keyNumber, Guid? keyGuid, string keyString)
 		{
-			return (from e in Entities
-					where e.AssignmentObjectTypeID == assignmentObjectTypeId
-					&& (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
-					&& e.ChangeLogIDDeleted == null
-					select e).ToList();
+			return GetEntitiesInternal(assignmentObjectTypeId, keyNumber, keyGuid, keyString).ToList();
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
+		/// </summary>
+		internal IQueryable<Entity> GetEntitiesInternal(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		{
+			return from e in Entities
+				   where e.AssignmentObjectTypeID == assignmentObjectTypeId
+				   && (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
+				   && e.ChangeLogIDDeleted == null
+				   select e;
 		}
 
 		/// <summary>

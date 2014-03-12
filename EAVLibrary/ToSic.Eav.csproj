@@ -87,6 +87,7 @@
     <Compile Include="DataSources\RootSources\IRootSource.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="DataSources\Tokens\TokenReplace.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">

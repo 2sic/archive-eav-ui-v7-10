@@ -10,11 +10,10 @@ namespace ToSic.Eav.ManagementUI
 	public partial class ItemForm : UserControl
 	{
 		#region Events
-		public delegate void EntityUpdatedEventHandler(Entity newEntity);
-		public EntityUpdatedEventHandler Inserted;
-		public EntityUpdatedEventHandler Updated;
-		public EntityUpdatedEventHandler Saved;
-		public EventHandler Canceled;
+		public event EntityUpdatedEventHandler Inserted;
+		public event EntityUpdatedEventHandler Updated;
+		public event EntityUpdatedEventHandler Saved;
+		public event EventHandler Canceled;
 		#endregion
 
 		#region Private and Protected Fields

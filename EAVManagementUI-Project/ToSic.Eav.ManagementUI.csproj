@@ -51,6 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System" />
@@ -132,14 +133,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Code\FieldTemplateUserControl.cs">
+    <Compile Include="Common\FieldTemplateUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="App_Code\Forms.cs" />
-    <Content Include="App_Code\PipelineDesignerServicesBase.cs">
+    <Compile Include="Common\Forms.cs" />
+    <Compile Include="Common\PipelineDesignerServicesBase.cs">
       <SubType>Component</SubType>
-    </Content>
-    <Compile Include="App_Code\Serialization.cs" />
+    </Compile>
+    <Compile Include="Common\Serialization.cs" />
+    <Compile Include="Common\EventHandlers.cs" />
     <Compile Include="ContentTypes.aspx.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -170,24 +172,28 @@
     </Compile>
     <Compile Include="EAV\Controls\ContentTypeFields.ascx.cs">
       <DependentUpon>ContentTypeFields.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\ContentTypeFields.ascx.designer.cs">
       <DependentUpon>ContentTypeFields.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Controls\ContentTypesList.ascx.cs">
       <DependentUpon>ContentTypesList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\ContentTypesList.ascx.designer.cs">
       <DependentUpon>ContentTypesList.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Controls\CultureSelector.ascx.cs">
       <DependentUpon>CultureSelector.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\CultureSelector.ascx.designer.cs">
       <DependentUpon>CultureSelector.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Controls\DimensionMenu.ascx.cs">
       <DependentUpon>DimensionMenu.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\DimensionMenu.ascx.designer.cs">
       <DependentUpon>DimensionMenu.ascx</DependentUpon>
@@ -208,42 +214,49 @@
     </Compile>
     <Compile Include="EAV\Controls\Items.ascx.cs">
       <DependentUpon>Items.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\Items.ascx.designer.cs">
       <DependentUpon>Items.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
       <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.designer.cs">
       <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.cs">
       <DependentUpon>ContentTypeFields.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.designer.cs">
       <DependentUpon>ContentTypeFields.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\EditItem.aspx.cs">
       <DependentUpon>EditItem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\EditItem.aspx.designer.cs">
       <DependentUpon>EditItem.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\Items.aspx.cs">
       <DependentUpon>Items.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\Items.aspx.designer.cs">
       <DependentUpon>Items.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\NewItem.aspx.cs">
       <DependentUpon>NewItem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\NewItem.aspx.designer.cs">
       <DependentUpon>NewItem.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.cs">
       <DependentUpon>Boolean_Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.designer.cs">
       <DependentUpon>Boolean_Edit.ascx</DependentUpon>
@@ -257,12 +270,14 @@
     </Compile>
     <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.cs">
       <DependentUpon>DateTime_Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.designer.cs">
       <DependentUpon>DateTime_Edit.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.cs">
       <DependentUpon>Date_Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.designer.cs">
       <DependentUpon>Date_Edit.ascx</DependentUpon>
@@ -276,12 +291,14 @@
     </Compile>
     <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.cs">
       <DependentUpon>PipelineDesigner.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.designer.cs">
       <DependentUpon>PipelineDesigner.ascx</DependentUpon>
     </Compile>
     <Compile Include="PipelineDesigner.aspx.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PipelineDesigner.aspx.designer.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
@@ -289,6 +306,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.master.cs">
       <DependentUpon>Site.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Site.master.designer.cs">
       <DependentUpon>Site.master</DependentUpon>
