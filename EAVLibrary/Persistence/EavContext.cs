@@ -411,70 +411,13 @@ namespace ToSic.Eav
 			var attributes = GetAttributes(currentEntity.AttributeSetID).ToList();
 			var currentValues = Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entityId).ToList();
 
-			#region Update Values
 			// Update Values from Import Model
 			var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
 			if (newValuesImport != null)
-			{
-				if (updateLog == null)
-					throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
-				foreach (var newValue in newValuesImport)
-				{
-					var attribute = attributes.SingleOrDefault(a => a.StaticName == newValue.Key);
-					if (attribute == null)	// Attribute not found
-					{
-						// Log Warning for all Values
-						updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value") { Attribute = new Import.Attribute { StaticName = newValue.Key }, Value = v, Entity = v.Entity }));
-						continue;
-					}
-
-					foreach (var newSingleValue in newValue.Value)
-					{
-						try
-						{
-							UpdateValue(currentEntity, attribute, masterRecord, currentValues, newSingleValue);
-						}
-						catch (Exception ex)
-						{
-							updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed") { Attribute = new Import.Attribute { StaticName = newValue.Key }, Value = newSingleValue, Entity = newSingleValue.Entity, Exception = ex });
-						}
-					}
-				}
-			}
+				UpdateEntityFromImportModel(updateLog, newValuesImport, attributes, currentEntity, currentValues);
 			// Update Values from ValueViewModel
 			else
-			{
-				var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId)[DataSource.DefaultStreamName].List;
-				var newValuesTyped = DictionaryToValuesViewModel(newValues);
-				foreach (var newValue in newValuesTyped)
-				{
-					var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-					UpdateValue(currentEntity, attribute, masterRecord, currentValues, allEntities, newValue.Value, dimensionIds);
-				}
-
-				#region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
-				if (dimensionIds.Count > 0)
-				{
-					var keys = newValuesTyped.Keys.ToArray();
-					// Get all Values that are not present in newValues
-					var valuesToPurge = Values.Where(v => v.EntityID == entityId && !v.ChangeLogIDDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionID)));
-					foreach (var valueToPurge in valuesToPurge)
-					{
-						// Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
-						// if yes, delete/invalidate the value
-						if (valueToPurge.ValuesDimensions.Count == 1)
-							valueToPurge.ChangeLogIDDeleted = GetChangeLogId();
-						// if now, remove dimension from Value
-						else
-						{
-							foreach (var valueDimension in valueToPurge.ValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionID)).ToList())
-								valueToPurge.ValuesDimensions.Remove(valueDimension);
-						}
-					}
-				}
-				#endregion
-			}
-			#endregion
+				UpdateEntityDefault(entityId, newValues, dimensionIds, masterRecord, attributes, currentEntity, currentValues);
 
 			if (autoSave)
 				SaveChanges();
@@ -482,11 +425,104 @@ namespace ToSic.Eav
 			return currentEntity;
 		}
 
+		/// <summary>
+		/// Update an Entity when not using the Import
+		/// </summary>
+		private void UpdateEntityDefault(int entityId, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues)
+		{
+			// Get all entities to make updates faster?
+			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId)[DataSource.DefaultStreamName].List;
+			var newValuesTyped = DictionaryToValuesViewModel(newValues);
+			foreach (var newValue in newValuesTyped)
+			{
+				var attribute = attributes.Single(a => a.StaticName == newValue.Key);
+				UpdateValue(currentEntity, attribute, masterRecord, currentValues, allEntities, newValue.Value, dimensionIds);
+			}
+
+			#region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
+			if (dimensionIds.Count > 0)
+			{
+				var keys = newValuesTyped.Keys.ToArray();
+				// Get all Values that are not present in newValues
+				var valuesToPurge = Values.Where(v => v.EntityID == entityId && !v.ChangeLogIDDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionID)));
+				foreach (var valueToPurge in valuesToPurge)
+				{
+					// Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
+					// if yes, delete/invalidate the value
+					if (valueToPurge.ValuesDimensions.Count == 1)
+						valueToPurge.ChangeLogIDDeleted = GetChangeLogId();
+					// if now, remove dimension from Value
+					else
+					{
+						foreach (var valueDimension in valueToPurge.ValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionID)).ToList())
+							valueToPurge.ValuesDimensions.Remove(valueDimension);
+					}
+				}
+			}
+			#endregion
+		}
+
+		/// <summary>
+		/// Update an Entity when using the Import
+		/// </summary>
+		private void UpdateEntityFromImportModel(List<LogItem> updateLog, Dictionary<string, List<IValueImportModel>> newValuesImport, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues)
+		{
+			if (updateLog == null)
+				throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
+
+			// track updated values to remove values that were not updated automatically
+			var updatedValueIds = new List<int>();
+			var updatedAttributeIds = new List<int>();
+			foreach (var newValue in newValuesImport)
+			{
+				var attribute = attributes.SingleOrDefault(a => a.StaticName == newValue.Key);
+				if (attribute == null) // Attribute not found
+				{
+					// Log Warning for all Values
+					updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value")
+								{
+									Attribute = new Import.Attribute { StaticName = newValue.Key },
+									Value = v,
+									Entity = v.Entity
+								}));
+					continue;
+				}
+
+				updatedAttributeIds.Add(attribute.AttributeID);
+
+				foreach (var newSingleValue in newValue.Value)
+				{
+					try
+					{
+						var updatedValue = UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
+
+						var updatedEavValue = updatedValue as EavValue;
+						if (updatedEavValue != null)
+							updatedValueIds.Add(updatedEavValue.ValueID);
+					}
+					catch (Exception ex)
+					{
+						updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed")
+						{
+							Attribute = new Import.Attribute { StaticName = newValue.Key },
+							Value = newSingleValue,
+							Entity = newSingleValue.Entity,
+							Exception = ex
+						});
+					}
+				}
+			}
+
+			// remove all existing values that were not updated but only for updated Attributes
+			var valuesToDelete = currentEntity.Values.Where(v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null && updatedAttributeIds.Contains(v.AttributeID)).ToList();
+			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
+		}
+
 		#region Update Values
 		/// <summary>
-		/// Update a Value when using IValueImportModel
+		/// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
 		/// </summary>
-		private void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IValueImportModel newValue)
+		private object UpdateValueByImport(Entity currentEntity, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
 		{
 			switch (attribute.Type)
 			{
@@ -496,7 +532,8 @@ namespace ToSic.Eav
 						UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value, currentEntity.EntityGUID);
 					else
 						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
-					break;
+
+					return null;
 				// Handle simple values in Values-Table
 				default:
 					object newValueTyped;
@@ -512,13 +549,13 @@ namespace ToSic.Eav
 					else
 						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " (Type: " + attribute.Type + ") with newValue of type" + newValue.GetType() + " not supported.");
 
-					UpdateSimpleValue(attribute, currentEntity.EntityID, null, masterRecord, newValueTyped, null, false, currentValues, null, newValue.ValueDimensions);
-					break;
+					// masterRecord can be true or false, it's not used when valueDimensions is specified
+					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, newValueTyped, null, false, currentValues, null, newValue.ValueDimensions);
 			}
 		}
 
 		/// <summary>
-		/// Update a Value
+		/// Update a Value when using ValueViewModel
 		/// </summary>
 		private void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, ValueViewModel newValue, ICollection<int> dimensionIds)
 		{
@@ -538,67 +575,20 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update a Value in the Values-Table
 		/// </summary>
-		private void UpdateSimpleValue(Attribute attribute, int entityId, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, IEnumerable<Import.ValueDimension> valueDimensions = null)
+		private EavValue UpdateSimpleValue(Attribute attribute, int entityId, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, IEnumerable<Import.ValueDimension> valueDimensions = null)
 		{
-			// Serialize new value
-			string newValueSerialized;
-			if (newValue is DateTime)
-				newValueSerialized = ((DateTime)newValue).ToString("s");
-			else if (newValue is double)
-				newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
-			else if (newValue is decimal)
-				newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
-			else if (newValue == null)
-				newValueSerialized = string.Empty;
-			else
-				newValueSerialized = newValue.ToString();
-
+			var newValueSerialized = SerializeValue(newValue);
 			var changeId = GetChangeLogId();
 
-			#region Get Value or create new one
-
-			EavValue value = null;
-			// if ValueID is specified, use this Value
-			if (valueId.HasValue)
-			{
-				value = currentValues.Single(v => v.ValueID == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
-				// If Master, ensure ValueID is from Master!
-				var entityModel = allEntities[entityId];
-				var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
-				if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
-					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
-			}
-			// Find Value (if not specified) or create new one
-			else
-			{
-				if (masterRecord) // if true, don't create new Value (except no one exists)
-					value = currentValues.Where(v => v.AttributeID == attribute.AttributeID).OrderBy(a => a.ChangeLogIDCreated).FirstOrDefault();
-
-				// if no Value found, create new one
-				if (value == null)
-				{
-					if (!masterRecord && currentValues.All(v => v.AttributeID != attribute.AttributeID))
-						// if updating Additional-Entity but Default-Entity doesn't have any atom
-						throw new Exception("Update of a \"" + attribute.StaticName + "\" is not allowed. You must first updated this Value for the Default-Entity.");
-
-					value = AddValue(entityId, attribute.AttributeID, newValueSerialized, false);
-				}
-			}
-
-			// Update old/existing Value
-			if (value.ValueID != 0)
-			{
-				if (!readOnly)
-					UpdateValue(value, newValueSerialized, changeId, false);
-			}
-
-			#endregion
+			// Get Value or create new one
+			var value = GetOrCreateValue(attribute, entityId, masterRecord, valueId, readOnly, currentValues, allEntities, newValueSerialized, changeId, valueDimensions);
 
 			#region Update DimensionIds on this and other values
 
 			// Update Dimensions as specified by Import
 			if (valueDimensions != null)
 			{
+				// loop all specified Dimensions, add or update it for this value
 				foreach (var valueDimension in valueDimensions)
 				{
 					// ToDo: 2bg Log Error but continue
@@ -652,6 +642,77 @@ namespace ToSic.Eav
 				}
 			}
 			#endregion
+
+			return value;
+		}
+
+		/// <summary>
+		/// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
+		/// </summary>
+		private EavValue GetOrCreateValue(Attribute attribute, int entityId, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
+		{
+			EavValue value = null;
+			// if Import-Dimension(s) are Specified
+			if (valueDimensions != null)
+			{
+				// Get first value having first Dimension or add new value
+				value = currentValues.FirstOrDefault(v => v.ChangeLogIDDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
+						AddValue(entityId, attribute.AttributeID, newValueSerialized, false);
+			}
+			// if ValueID is specified, use this Value
+			else if (valueId.HasValue)
+			{
+				value = currentValues.Single(v => v.ValueID == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
+				// If Master, ensure ValueID is from Master!
+				var entityModel = allEntities[entityId];
+				var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
+				if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
+					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
+			}
+			// Find Value (if not specified) or create new one
+			else
+			{
+				if (masterRecord) // if true, don't create new Value (except no one exists)
+					value = currentValues.Where(v => v.AttributeID == attribute.AttributeID).OrderBy(a => a.ChangeLogIDCreated).FirstOrDefault();
+
+				// if no Value found, create new one
+				if (value == null)
+				{
+					if (!masterRecord && currentValues.All(v => v.AttributeID != attribute.AttributeID))
+						// if updating Additional-Entity but Default-Entity doesn't have any atom
+						throw new Exception("Update of a \"" + attribute.StaticName +
+											"\" is not allowed. You must first updated this Value for the Default-Entity.");
+
+					value = AddValue(entityId, attribute.AttributeID, newValueSerialized, false);
+				}
+			}
+
+			// Update old/existing Value
+			if (value.ValueID != 0)
+			{
+				if (!readOnly)
+					UpdateValue(value, newValueSerialized, changeId, false);
+			}
+			return value;
+		}
+
+		/// <summary>
+		/// Serialize Value to a String for SQL Server
+		/// </summary>
+		private static string SerializeValue(object newValue)
+		{
+			string newValueSerialized;
+			if (newValue is DateTime)
+				newValueSerialized = ((DateTime)newValue).ToString("s");
+			else if (newValue is double)
+				newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
+			else if (newValue is decimal)
+				newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
+			else if (newValue == null)
+				newValueSerialized = string.Empty;
+			else
+				newValueSerialized = newValue.ToString();
+			return newValueSerialized;
 		}
 
 		/// <summary>

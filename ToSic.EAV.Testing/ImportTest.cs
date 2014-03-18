@@ -288,5 +288,86 @@ namespace ToSic.Eav.Testing
 			Assert.IsEmpty(import.ImportLog);
 			Assert.IsFalse(import.ImportLog.Any(l => l.EntryType == EventLogEntryType.Error));
 		}
+
+		[Test]
+		public void UpdateExistingDataMultilingual()
+		{
+			var db = EavContext.Instance(appId: 2);
+			const int entityId = 5449;
+			var entityGuid = db.Entities.Where(e => e.EntityID == entityId).Select(e => (Guid?)e.EntityGUID).SingleOrDefault();
+			var attributeSetStaticName = db.AttributeSets.Where(a => a.AppID == db.AppId && a.Name == "News").Select(a => a.StaticName).Single();
+
+			var entity = new Import.Entity
+			{
+				EntityGuid = entityGuid,
+				AttributeSetStaticName = attributeSetStaticName,
+				AssignmentObjectTypeId = 1
+			};
+			entity.Values = new Dictionary<string, List<IValueImportModel>>
+			{
+				{"Title", new List<IValueImportModel>
+				{
+					new ValueImportModel<string>(entity) {
+						Value = "Third News",
+						ValueDimensions = new List<Import.ValueDimension>
+						{
+							new Import.ValueDimension{ DimensionExternalKey = "en-us", ReadOnly = false},
+							//new Import.ValueDimension{ DimensionExternalKey = "de-ch", ReadOnly = false}
+						}
+					},
+					new ValueImportModel<string>(entity) {
+						Value = "Dritte News",
+						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "de-CH", ReadOnly = false}}
+					}
+				}},
+				{"Date", new List<IValueImportModel>
+				{
+					new ValueImportModel<DateTime?>(entity)
+					{
+						Value = new DateTime(2014,3,18),
+						ValueDimensions = new List<Import.ValueDimension>
+						{
+							new Import.ValueDimension{ DimensionExternalKey = "en-US", ReadOnly = false},
+							new Import.ValueDimension{ DimensionExternalKey = "de-CH", ReadOnly = true},
+						}
+					}
+				}},
+				{"Short", new List<IValueImportModel>
+				{
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Third news short",
+						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "en-US", ReadOnly = false}}
+					},
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Dritte News kurz",
+						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "de-CH", ReadOnly = false}}
+					}
+				}},
+				{"Long", new List<IValueImportModel>
+				{
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Third news long",
+						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "en-US", ReadOnly = false}}
+					},
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Dritte News lang",
+						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "de-CH", ReadOnly = false}}
+					}
+				}},
+			};
+
+
+			var entities = new List<Import.Entity> { entity };
+
+			var import = new Import.Import(2, 2, "UpdateExistingDataMultilingual", true);
+			import.RunImport(null, entities);
+
+			//Assert.IsEmpty(import.ImportLog);
+			Assert.IsFalse(import.ImportLog.Any(l => l.EntryType == EventLogEntryType.Error));
+		}
 	}
 }
