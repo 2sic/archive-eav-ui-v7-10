@@ -588,6 +588,7 @@ namespace ToSic.Eav
 			// Update Dimensions as specified by Import
 			if (valueDimensions != null)
 			{
+				var valueDimensionsToDelete = value.ValuesDimensions.ToList();
 				// loop all specified Dimensions, add or update it for this value
 				foreach (var valueDimension in valueDimensions)
 				{
@@ -600,8 +601,14 @@ namespace ToSic.Eav
 					if (existingValueDimension == null)
 						value.ValuesDimensions.Add(new ValueDimension { DimensionID = dimensionId, ReadOnly = valueDimension.ReadOnly });
 					else
+					{
+						valueDimensionsToDelete.Remove(valueDimensionsToDelete.Single(vd => vd.DimensionID == dimensionId));
 						existingValueDimension.ReadOnly = valueDimension.ReadOnly;
+					}
 				}
+
+				// remove old dimensions
+				valueDimensionsToDelete.ForEach(DeleteObject);
 			}
 			// Update Dimensions as specified on the whole Entity
 			else if (dimensionIds != null)

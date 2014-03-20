@@ -303,23 +303,44 @@ namespace ToSic.Eav.Testing
 				AttributeSetStaticName = attributeSetStaticName,
 				AssignmentObjectTypeId = 1
 			};
-			entity.Values = new Dictionary<string, List<IValueImportModel>>
+			// Title first Import
+			var titleValue = new List<IValueImportModel>
 			{
-				{"Title", new List<IValueImportModel>
+				new ValueImportModel<string>(entity)
 				{
-					new ValueImportModel<string>(entity) {
-						Value = "Third News",
+					Value = "Third News en & de",
+					ValueDimensions = new List<Import.ValueDimension>
+					{
+						new Import.ValueDimension {DimensionExternalKey = "en-us", ReadOnly = false},
+						new Import.ValueDimension {DimensionExternalKey = "de-ch", ReadOnly = false},
+					}
+				}
+			};
+			// title second Import
+			if (entityGuid.HasValue)
+				titleValue = new List<IValueImportModel>
+				{
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Third News en",
 						ValueDimensions = new List<Import.ValueDimension>
 						{
-							new Import.ValueDimension{ DimensionExternalKey = "en-us", ReadOnly = false},
-							//new Import.ValueDimension{ DimensionExternalKey = "de-ch", ReadOnly = false}
+							new Import.ValueDimension {DimensionExternalKey = "en-us", ReadOnly = false},
 						}
 					},
-					new ValueImportModel<string>(entity) {
-						Value = "Dritte News",
-						ValueDimensions = new List<Import.ValueDimension>{ new Import.ValueDimension{ DimensionExternalKey = "de-CH", ReadOnly = false}}
+					new ValueImportModel<string>(entity)
+					{
+						Value = "Third News de",
+						ValueDimensions = new List<Import.ValueDimension>
+						{
+							new Import.ValueDimension {DimensionExternalKey = "de-ch", ReadOnly = false},
+						}
 					}
-				}},
+				};
+
+			entity.Values = new Dictionary<string, List<IValueImportModel>>
+			{
+				{"Title", titleValue},
 				{"Date", new List<IValueImportModel>
 				{
 					new ValueImportModel<DateTime?>(entity)
