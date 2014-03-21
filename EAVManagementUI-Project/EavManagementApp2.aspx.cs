@@ -22,8 +22,8 @@ namespace ToSic.Eav.ManagementUI.Pages
 
 		protected void EAVManagement2_EntityDeleting(EntityDeletingEventArgs e)
 		{
-			e.Cancel = true;
-			e.CancelMessage += " Prevented deleting by EavManagementApp2";
+			//e.Cancel = true;
+			//e.CancelMessage += " Prevented deleting by EavManagementApp2";
 		}
 	}
 }

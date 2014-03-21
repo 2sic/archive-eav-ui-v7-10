@@ -895,14 +895,20 @@ namespace ToSic.Eav
 		/// </summary>
 		public void RemoveAttributeInSet(int attributeId, int attributeSetId)
 		{
+			// Delete the AttributeInSet
 			DeleteObject(AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
 
+			// Delete all Values an their ValueDimensions
 			var valuesToDelete = Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
 			foreach (var valueToDelete in valuesToDelete)
 			{
 				valueToDelete.ValuesDimensions.ToList().ForEach(DeleteObject);
 				DeleteObject(valueToDelete);
 			}
+
+			// Delete all Entity-Relationships
+			var relationshipsToDelete = EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
+			relationshipsToDelete.ForEach(DeleteObject);
 
 			SaveChanges();
 		}

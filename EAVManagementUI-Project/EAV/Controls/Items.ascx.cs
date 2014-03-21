@@ -122,7 +122,7 @@ namespace ToSic.Eav.ManagementUI
 
 			// Handle cancel
 			if (deleteArgs.Cancel)
-				ShowNotification("Entity: " + entityId + " not deleted. " + deleteArgs.CancelMessage);
+				ShowNotification("Entity " + entityId + " not deleted. " + deleteArgs.CancelMessage);
 		}
 
 		protected void dsrcItems_Deleted(object sender, ObjectDataSourceStatusEventArgs e)
