@@ -75,10 +75,10 @@ namespace ToSic.Eav.DataSources
 
 			if (lang == "any")
 				throw new NotImplementedException("language 'any' not implemented yet");
-			else
-				results = (from e in results
-					where e.Value[attr][lang].ToString() == filter
-					select e);
+
+			results = (from e in results
+				where e.Value[attr][lang].ToString() == filter
+				select e);
 
 			return results.ToDictionary(x => x.Key, y => y.Value); 
 		}

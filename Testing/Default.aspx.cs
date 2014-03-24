@@ -13,22 +13,26 @@ namespace ToSic.Eav
 		{
 			Configuration.SetConnectionString("SiteSqlServer");
 
-			// AddEntity();
+			//AddEntity();
 
 			switch ((Request["Test"] ?? "").ToLower())
 			{
 				case "typefilter":
 					//EntityTypeFilter("Type 11:26");
-					EntityTypeFilter("Person ML");
+					ShowDataSource(EntityTypeFilter("Person ML"), "EntityTypeFilter", true);
 					break;
 				case "valuefilter":
-					TestValueFilter("Person ML", "FirstName", "Daniel");
+					ShowDataSource(TestValueFilter("Person ML", "FirstName", "Daniel"), "ValueFilter", true);
 					break;
 				case "attributefilter":
 					var typeFiltered = EntityTypeFilter("Person ML");
-					AttributeFilter(typeFiltered);
+					ShowDataSource(AttributeFilter(typeFiltered), "AttributeFilter (remover)", true);
 					break;
-					Default:
+				case "valuesort":
+					typeFiltered = EntityTypeFilter("Person ML");
+					ShowDataSource(ValueSort(typeFiltered, "FirstName,LastName", "asc"), "Sorted Value", true);
+					break;
+				Default:
 					break;
 			}
 
@@ -53,12 +57,12 @@ namespace ToSic.Eav
 		public void AddEntity()
 		{
 			var context = EavContext.Instance(1, 1);
-			var userName = "Testing 2bg 17:53";
+			var userName = "Testing 2dm";
 			context.UserName = userName;
 			var newValues = new Dictionary<string, ValueViewModel>
 				{
-					{"FirstName", new ValueViewModel {Value = "Daniel"}},
-					{"LastName", new ValueViewModel {Value = "Mettler"}},
+					{"FirstName", new ValueViewModel {Value = "Andreas"}},
+					{"LastName", new ValueViewModel {Value = "Müller"}},
 					{"Address", new ValueViewModel {Value = "Räfiserhalde 34"}},
 					{"ZIP", new ValueViewModel {Value = "9470"}},
 					{"City", new ValueViewModel {Value = "Räfis"}}
@@ -218,12 +222,12 @@ namespace ToSic.Eav
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
 			//old: filterPipeline.Configuration["TypeName"] = typeName;
 			filterPipeline.TypeName = typeName;
-			ShowDataSource(filterPipeline, "EntityTypeFilter", true);
+			// ShowDataSource(filterPipeline, "EntityTypeFilter", true);
 
 			return filterPipeline;
 		}
 
-		private EntityTypeFilter TestValueFilter(string typeName, string attrName, string valueFilter)
+		private ValueFilter TestValueFilter(string typeName, string attrName, string valueFilter)
 		{
 			var source = DataSource.GetInitialDataSource();
 
@@ -239,16 +243,23 @@ namespace ToSic.Eav
 			// where e.Value.Attributes[attrName].Values.FirstOrDefault().ToString() == valueFilter
 			// select e).ToDictionary(x => x.Key, y => y.Value);
 
-			ShowDataSource(valuePipeline, "ValueFilter", true);
-
-			return filterPipeline;
+			return valuePipeline;
 		}
 
-		private void AttributeFilter(DataSources.IDataSource source)
+		private AttributeFilter AttributeFilter(DataSources.IDataSource source)
 		{
 			var filterPipeline = DataSource.GetDataSource<AttributeFilter>(1, 1, source);
 			filterPipeline.AttributeNames = "LastName,FirstName";
-			ShowDataSource(filterPipeline, "AttributeFilter", true);
+			return filterPipeline;
+			//ShowDataSource(filterPipeline, "AttributeFilter", true);
+		}
+
+		private ValueSort ValueSort(DataSources.IDataSource source, string attributes, string directions)
+		{
+			var filterPipeline = DataSource.GetDataSource<ValueSort>(1, 1, source);
+			filterPipeline.Attributes = attributes;// "LastName,FirstName";
+			filterPipeline.Directions = directions;
+			return filterPipeline;
 		}
 
 		//private void Chain5()
