@@ -706,7 +706,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Serialize Value to a String for SQL Server
 		/// </summary>
-		private static string SerializeValue(object newValue)
+		public static string SerializeValue(object newValue)
 		{
 			string newValueSerialized;
 			if (newValue is DateTime)
