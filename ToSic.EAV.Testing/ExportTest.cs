@@ -14,11 +14,16 @@ namespace ToSic.Eav.Testing
 		[Test]
 		public void EntityExportTest()
 		{
-			var entity = _ctx.Entities.Single(e => e.EntityID == 303);
+			var entity = _ctx.Entities.Single(e => e.EntityID == 317);
+			var dsrc = DataSource.GetInitialDataSource(_ctx.AppId);
+			var entityModel = dsrc[DataSource.DefaultStreamName].List[317];
+			
 
 			var export = new XmlExport(_ctx);
 			var entityXElement = export.GetEntityXElement(entity, ExtendValueDelegate);
+			var entityXElement2 = export.GetEntityXElement(entityModel);
 			Debug.Write(entityXElement);
+			Debug.Write(entityXElement2);
 		}
 
 		private void ExtendValueDelegate(string attributeStaticname, string attributeSetStaticName, string value, XElement valueXElement)

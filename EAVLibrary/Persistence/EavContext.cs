@@ -704,7 +704,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Serialize Value to a String for SQL Server
+		/// Serialize Value to a String for SQL Server or XML Export
 		/// </summary>
 		public static string SerializeValue(object newValue)
 		{
@@ -720,6 +720,25 @@ namespace ToSic.Eav
 			else
 				newValueSerialized = newValue.ToString();
 			return newValueSerialized;
+		}
+
+		/// <summary>
+		/// Serialize Value to a String for SQL Server or XML Export
+		/// </summary>
+		public static string SerializeValue(IValue newValue)
+		{
+			//string newValueSerialized;
+			//if (newValue is IValue<DateTime?>)
+			//	newValueSerialized = ((IValue<DateTime?>)newValue).TypedContents.ToString("s");
+			//else if (newValue is double)
+			//	newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
+			//else if (newValue is decimal)
+			//	newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
+			//else if (newValue == null)
+			//	newValueSerialized = string.Empty;
+			//else
+			//	newValueSerialized = newValue.ToString();
+			return null;
 		}
 
 		/// <summary>
