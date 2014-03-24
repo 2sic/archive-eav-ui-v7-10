@@ -73,7 +73,7 @@
     <Compile Include="DataSources\DataPipelineFactory.cs" />
     <Compile Include="DataSources\DataStream.cs" />
     <Compile Include="DataSources\EntityIdFilter.cs" />
-    <Compile Include="DataSources\EntityValuesFilter.cs" />
+    <Compile Include="DataSources\ValueFilter.cs" />
     <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="DataSources\Helpers.cs" />
     <Compile Include="DataSources\IConfigurationProvider.cs" />

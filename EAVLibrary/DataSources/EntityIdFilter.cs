@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -11,13 +12,28 @@ namespace ToSic.Eav.DataSources
 	{
 		public override string Name { get { return "EntityIdFilter"; } }
 
+		#region Configuration-properties
+		private const string EntityIdKey = "EntityIds";
+
+		/// <summary>
+		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+		/// </summary>
+		public string EntityIds
+		{
+			get { return Configuration[EntityIdKey]; }
+			set { Configuration[EntityIdKey] = value; }
+			
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Constructs a new EntityIdFilter
 		/// </summary>
 		public EntityIdFilter()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-			Configuration.Add("EntityIds", "[Settings:EntityIds]");
+			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
