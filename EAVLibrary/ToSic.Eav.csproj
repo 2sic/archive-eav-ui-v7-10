@@ -90,6 +90,7 @@
     <Compile Include="DataSources\Tokens\TokenReplace.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="ImportExport\XmlExport.cs" />
+    <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">
