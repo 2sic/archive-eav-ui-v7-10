@@ -94,6 +94,20 @@
           <Property Name="Timestamp" Type="datetime" Nullable="false" />
           <Property Name="User" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="ToSIC_EAV_DataTimeline">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SourceTable" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="SourceID" Type="int" />
+          <Property Name="SourceGuid" Type="uniqueidentifier" />
+          <Property Name="SourceTextKey" Type="nvarchar" MaxLength="250" />
+          <Property Name="Operation" Type="nchar" MaxLength="1" Nullable="false" />
+          <Property Name="SysCreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="SysLogID" Type="int" />
+          <Property Name="NewData" Type="xml" Nullable="false" />
+        </EntityType>
         <EntityType Name="ToSIC_EAV_Dimensions">
           <Key>
             <PropertyRef Name="DimensionID" />
@@ -556,6 +570,7 @@
           <EntitySet Name="ToSIC_EAV_AttributesInSets" EntityType="Self.ToSIC_EAV_AttributesInSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ToSIC_EAV_AttributeTypes" EntityType="Self.ToSIC_EAV_AttributeTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ToSIC_EAV_ChangeLog" EntityType="Self.ToSIC_EAV_ChangeLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ToSIC_EAV_DataTimeline" EntityType="Self.ToSIC_EAV_DataTimeline" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ToSIC_EAV_Dimensions" EntityType="Self.ToSIC_EAV_Dimensions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ToSIC_EAV_Entities" EntityType="Self.ToSIC_EAV_Entities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ToSIC_EAV_EntityRelationships" EntityType="Self.ToSIC_EAV_EntityRelationships" Schema="dbo" store:Type="Tables" />
@@ -838,8 +853,9 @@
             <End Role="AttributeSet1" EntitySet="AttributeSets" />
           </AssociationSet>
           <FunctionImport Name="DeleteAppInternal" a:MethodAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
-            <Parameter Name="AppId" Mode="In" Type="Int32" />
+          <Parameter Name="AppId" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="DataTimeline" EntityType="ToSic.Eav.DataTimelineItem" />
         </EntityContainer>
         <EntityType Name="AssignmentObjectType">
           <Key>
@@ -1432,6 +1448,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DataTimelineItem">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceTable" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="SourceID" Type="Int32" />
+          <Property Name="SourceGuid" Type="Guid" />
+          <Property Name="SourceTextKey" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Operation" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="SysCreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SysLogID" Type="Int32" />
+          <Property Name="NewData" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1609,6 +1639,21 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="DeleteAppInternal" FunctionName="EAVModel.Store.ToSIC_EAV_DeleteApp" />
+          <EntitySetMapping Name="DataTimeline">
+            <EntityTypeMapping TypeName="ToSic.Eav.DataTimelineItem">
+              <MappingFragment StoreEntitySet="ToSIC_EAV_DataTimeline">
+                <ScalarProperty Name="NewData" ColumnName="NewData" />
+                <ScalarProperty Name="SysLogID" ColumnName="SysLogID" />
+                <ScalarProperty Name="SysCreatedDate" ColumnName="SysCreatedDate" />
+                <ScalarProperty Name="Operation" ColumnName="Operation" />
+                <ScalarProperty Name="SourceTextKey" ColumnName="SourceTextKey" />
+                <ScalarProperty Name="SourceGuid" ColumnName="SourceGuid" />
+                <ScalarProperty Name="SourceID" ColumnName="SourceID" />
+                <ScalarProperty Name="SourceTable" ColumnName="SourceTable" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1745,6 +1790,7 @@
         <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" />
         <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" />
         <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets" />
+        <EntityTypeShape EntityType="ToSic.Eav.DataTimelineItem" Width="1.75" PointX="15.625" PointY="9.125" />
       </Diagram>
     </Diagrams>
   </Designer>

@@ -22,6 +22,15 @@ namespace ToSic.Eav.ImportExport
 		/// <summary>
 		/// Returns an Entity XElement
 		/// </summary>
+		public XElement GetEntityXElement(int entityId)
+		{
+			var iEntity = _ctx.GetEntityModel(entityId);
+			return GetEntityXElement(iEntity);
+		}
+
+		/// <summary>
+		/// Returns an Entity XElement
+		/// </summary>
 		public XElement GetEntityXElement(IEntity entity)
 		{
 			var eavEntity = _ctx.GetEntity(entity.EntityId);

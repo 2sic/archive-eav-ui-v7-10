@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Data;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav
 {
@@ -419,10 +420,33 @@ namespace ToSic.Eav
 			else
 				UpdateEntityDefault(entityId, newValues, dimensionIds, masterRecord, attributes, currentEntity, currentValues);
 
-			if (autoSave)
-				SaveChanges();
+			SaveChanges();	// must save now to generate EntityModel afterward
+
+			SaveEntityToDataTimeline(currentEntity);
 
 			return currentEntity;
+		}
+
+		/// <summary>
+		/// Persist modified Entity to DataTimeline
+		/// </summary>
+		private void SaveEntityToDataTimeline(Entity currentEntity)
+		{
+			var export = new XmlExport(this);
+			var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
+			var timelineItem = new DataTimelineItem
+			{
+				SourceTable = "ToSIC_EAV_Entities",
+				Operation = "s",
+				NewData = entityModelSerialized.ToString(),
+				SourceGuid = currentEntity.EntityGUID,
+				SourceID = currentEntity.EntityID,
+				SysLogID = GetChangeLogId(),
+				SysCreatedDate = DateTime.Now
+			};
+			AddToDataTimeline(timelineItem);
+
+			SaveChanges();
 		}
 
 		/// <summary>
