@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Data;
+using System.Xml.Linq;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
@@ -29,7 +30,10 @@ namespace ToSic.Eav
 		/// </summary>
 		public const string DefaultAppName = "Default";
 		private const string CultureSystemKey = "Culture";
-
+		/// <summary>
+		/// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
+		/// </summary>
+		private const string DataTimelineEntityStateOperation = "s";
 		#endregion
 
 		#region Private Fields
@@ -186,45 +190,6 @@ namespace ToSic.Eav
 			SaveChanges();
 
 			return newEntity;
-		}
-
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		/// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
-		public int GetChangeLogId(string userName)
-		{
-			if (_mainChangeLogId == 0)
-			{
-				if (Connection.State != ConnectionState.Open)
-					Connection.Open();	// make sure same connection is used later
-				_mainChangeLogId = AddChangeLog(userName).Single().ChangeID;
-			}
-
-			return _mainChangeLogId;
-		}
-
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		private int GetChangeLogId()
-		{
-			return GetChangeLogId(UserName);
-		}
-
-		/// <summary>
-		/// Set ChangeLog ID on current Context and connection
-		/// </summary>
-		/// <param name="changeLogId"></param>
-		public void SetChangeLogId(int changeLogId)
-		{
-			if (_mainChangeLogId != 0)
-				throw new Exception("ChangeLogID was already set");
-
-
-			Connection.Open();	// make sure same connection is used later
-			SetChangeLogIdInternal(changeLogId);
-			_mainChangeLogId = changeLogId;
 		}
 
 		/// <summary>
@@ -425,28 +390,6 @@ namespace ToSic.Eav
 			SaveEntityToDataTimeline(currentEntity);
 
 			return currentEntity;
-		}
-
-		/// <summary>
-		/// Persist modified Entity to DataTimeline
-		/// </summary>
-		private void SaveEntityToDataTimeline(Entity currentEntity)
-		{
-			var export = new XmlExport(this);
-			var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
-			var timelineItem = new DataTimelineItem
-			{
-				SourceTable = "ToSIC_EAV_Entities",
-				Operation = "s",
-				NewData = entityModelSerialized.ToString(),
-				SourceGuid = currentEntity.EntityGUID,
-				SourceID = currentEntity.EntityID,
-				SysLogID = GetChangeLogId(),
-				SysCreatedDate = DateTime.Now
-			};
-			AddToDataTimeline(timelineItem);
-
-			SaveChanges();
 		}
 
 		/// <summary>
@@ -1207,6 +1150,134 @@ namespace ToSic.Eav
 			public Guid ParentEntityGuid { get; set; }
 			public List<Guid> ChildEntityGuids { get; set; }
 		}
+		#endregion
+
+		#region Versioning
+
+		/// <summary>
+		/// Creates a ChangeLog immediately
+		/// </summary>
+		/// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
+		public int GetChangeLogId(string userName)
+		{
+			if (_mainChangeLogId == 0)
+			{
+				if (Connection.State != ConnectionState.Open)
+					Connection.Open();	// make sure same connection is used later
+				_mainChangeLogId = AddChangeLog(userName).Single().ChangeID;
+			}
+
+			return _mainChangeLogId;
+		}
+
+		/// <summary>
+		/// Creates a ChangeLog immediately
+		/// </summary>
+		private int GetChangeLogId()
+		{
+			return GetChangeLogId(UserName);
+		}
+
+		/// <summary>
+		/// Set ChangeLog ID on current Context and connection
+		/// </summary>
+		/// <param name="changeLogId"></param>
+		public void SetChangeLogId(int changeLogId)
+		{
+			if (_mainChangeLogId != 0)
+				throw new Exception("ChangeLogID was already set");
+
+
+			Connection.Open();	// make sure same connection is used later
+			SetChangeLogIdInternal(changeLogId);
+			_mainChangeLogId = changeLogId;
+		}
+
+		/// <summary>
+		/// Persist modified Entity to DataTimeline
+		/// </summary>
+		private void SaveEntityToDataTimeline(Entity currentEntity)
+		{
+			var export = new XmlExport(this);
+			var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
+			var timelineItem = new DataTimelineItem
+			{
+				SourceTable = "ToSIC_EAV_Entities",
+				Operation = DataTimelineEntityStateOperation,
+				NewData = entityModelSerialized.ToString(),
+				SourceGuid = currentEntity.EntityGUID,
+				SourceID = currentEntity.EntityID,
+				SysLogID = GetChangeLogId(),
+				SysCreatedDate = DateTime.Now
+			};
+			AddToDataTimeline(timelineItem);
+
+			SaveChanges();
+		}
+
+		/// <summary>
+		/// Get all Versions of specified EntityId
+		/// </summary>
+		public List<EntityVersionInfo> GetEntityVersions(int entityId)
+		{
+			// get Versions from DataTimeline
+			var entityVersions = (from d in DataTimeline
+								  join c in ChangeLogs on d.SysLogID equals c.ChangeID
+								  where d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId
+								  select new EntityVersionInfo { Timestamp = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID }).ToList();
+
+			// get first Version
+			var firstVersion = (from e in Entities
+								where e.EntityID == entityId
+								select new EntityVersionInfo { Timestamp = e.ChangeLogCreated.Timestamp, User = e.ChangeLogCreated.User, ChangeId = e.ChangeLogCreated.ChangeID }).Single();
+
+			// if first Version doesn't exist in EntityVersions, add it to the entityVersions-List
+			if (entityVersions.All(e => e.ChangeId != firstVersion.ChangeId))
+				entityVersions.Add(firstVersion);
+
+			return entityVersions;
+		}
+
+		/// <summary>
+		/// Get an Entity in the specified Version from DataTimeline using XmlImport
+		/// </summary>
+		/// <param name="entityId">EntityId</param>
+		/// <param name="changeId">ChangeId to retrieve</param>
+		public Import.Entity GetEntityVersion(int entityId, int changeId)
+		{
+			// Get Timeline Item
+			var timelineItem = DataTimeline.SingleOrDefault(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId);
+			if (timelineItem == null)
+				throw new InvalidOperationException(string.Format("EntityId {0} with ChangeId {1} not found in DataTimeline.", entityId, changeId));
+
+			// Load Entity from Xml unsing XmlImport
+			var xentity = XElement.Parse(timelineItem.NewData);
+			var assignmentObjectTypeName = xentity.Attribute("AssignmentObjectType").Value;
+			var import = new XmlImport(this);
+			return import.GetImportEntityUnsafe(xentity, GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID);
+		}
+
+		/// <summary>
+		/// Restore an Entity to the specified Version by creating a new Version using Import
+		/// </summary>
+		public void RestoreEntityVersion(int entityId, int changeId)
+		{
+			var newVersion = GetEntityVersion(entityId, changeId);
+
+			var import = new Import.Import(_zoneId, _appId, UserName, true);
+			import.RunImport(null, new List<Import.Entity> { newVersion });
+		}
+
+		/// <summary>
+		/// Privides VersionInfo about an Entity
+		/// </summary>
+		public class EntityVersionInfo
+		{
+			public DateTime Timestamp { get; internal set; }
+			public string User { get; internal set; }
+			public int ChangeId { get; internal set; }
+		}
+
 		#endregion
 	}
 
