@@ -725,20 +725,33 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Serialize Value to a String for SQL Server or XML Export
 		/// </summary>
-		public static string SerializeValue(IValue newValue)
+		internal string SerializeValue(IValue value)
 		{
-			//string newValueSerialized;
-			//if (newValue is IValue<DateTime?>)
-			//	newValueSerialized = ((IValue<DateTime?>)newValue).TypedContents.ToString("s");
-			//else if (newValue is double)
-			//	newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
-			//else if (newValue is decimal)
-			//	newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
-			//else if (newValue == null)
-			//	newValueSerialized = string.Empty;
-			//else
-			//	newValueSerialized = newValue.ToString();
-			return null;
+			var stringValue = value as ValueModel<string>;
+			if (stringValue != null)
+				return stringValue.TypedContents;
+
+			var relationshipValue = value as ValueModel<EntityRelationshipModel>;
+			if (relationshipValue != null)
+			{
+				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => GetEntity(entityId).EntityGUID);
+
+				return string.Join(",", entityGuids);
+			}
+
+			var boolValue = value as ValueModel<bool?>;
+			if (boolValue != null)
+				return boolValue.TypedContents.ToString();
+
+			var dateTimeValue = value as ValueModel<DateTime?>;
+			if (dateTimeValue != null)
+				return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
+
+			var decimalValue = value as ValueModel<decimal?>;
+			if (decimalValue != null)
+				return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
+
+			throw new NotSupportedException("Can't serialize Value");
 		}
 
 		/// <summary>

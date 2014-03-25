@@ -81,7 +81,7 @@ namespace ToSic.Eav.ImportExport
 
 			// create Entity-Element
 			return new XElement("Entity",
-				new XAttribute("AssignmentObjectType", eavEntity.AssignmentObjectType),
+				new XAttribute("AssignmentObjectType", eavEntity.AssignmentObjectType.Name),
 				new XAttribute("AttributeSetStaticName", attributeSet.StaticName),
 				new XAttribute("AttributeSetName", attributeSet.Name),
 				new XAttribute("EntityGUID", entity.EntityGuid),
@@ -93,7 +93,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		private XElement GetValueXElement(string attributeStaticname, IValue value, string attributeType, string attributeSetStaticName, ExtendValueDelegate extendValueDelegate)
 		{
-			var valueSerialized = EavContext.SerializeValue(value);
+			var valueSerialized = _ctx.SerializeValue(value);
 			// create Value-Child-Element with Dimensions as Children
 			var valueXElement = new XElement("Value",
 				new XAttribute("Key", attributeStaticname),

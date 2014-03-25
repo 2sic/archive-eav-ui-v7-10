@@ -17,11 +17,11 @@ namespace ToSic.Eav.Testing
 			var entity = _ctx.Entities.Single(e => e.EntityID == 317);
 			var dsrc = DataSource.GetInitialDataSource(_ctx.AppId);
 			var entityModel = dsrc[DataSource.DefaultStreamName].List[317];
-			
+
 
 			var export = new XmlExport(_ctx);
 			var entityXElement = export.GetEntityXElement(entity, ExtendValueDelegate);
-			var entityXElement2 = export.GetEntityXElement(entityModel);
+			var entityXElement2 = export.GetEntityXElement(entityModel, ExtendValueDelegate);
 			Debug.Write(entityXElement);
 			Debug.Write(entityXElement2);
 		}
@@ -44,6 +44,9 @@ namespace ToSic.Eav.Testing
 						break;
 				}
 			}
+
+			//var valueAttr = valueXElement.Attribute("Value");
+			//valueAttr.SetValue(valueAttr.Value + "-Test");
 		}
 	}
 }
