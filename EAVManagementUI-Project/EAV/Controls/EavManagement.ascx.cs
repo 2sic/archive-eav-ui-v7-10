@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Web;
 using System.Web.UI;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class EavManagement : UserControl
 	{
-		#region
+		#region Events
 		public event EntityDeletingEventHandler EntityDeleting;
 		#endregion
 
 		#region Properties
+
 		public ManagementMode? Mode
 		{
 			get
@@ -22,6 +21,7 @@ namespace ToSic.Eav.ManagementUI
 				catch { return null; }
 			}
 		}
+
 		public int? AttributeSetId
 		{
 			get
@@ -58,26 +58,23 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
-		private int? _AssignmentObjectTypeId;
+		private int? _assignmentObjectTypeId;
 		public int? AssignmentObjectTypeId
 		{
 			get
 			{
 				if (!String.IsNullOrEmpty(Request.QueryString["AssignmentObjectTypeId"]))
 					return int.Parse(Request.QueryString["AssignmentObjectTypeId"]);
-				return _AssignmentObjectTypeId;
+				return _assignmentObjectTypeId;
 			}
-			set { _AssignmentObjectTypeId = value; }
+			set { _assignmentObjectTypeId = value; }
 		}
 
-		private string _BaseUrl;
+		private string _baseUrl;
 		public string BaseUrl
 		{
-			get
-			{
-				return string.IsNullOrEmpty(_BaseUrl) ? Request.Url.AbsolutePath : _BaseUrl;
-			}
-			set { _BaseUrl = value; }
+			get { return string.IsNullOrEmpty(_baseUrl) ? Request.Url.AbsolutePath : _baseUrl; }
+			set { _baseUrl = value; }
 		}
 
 		public string ReturnUrl
@@ -89,28 +86,19 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
-		private string _Scope;
+		private string _scope;
 		public string Scope
 		{
-			get
-			{
-				// return Scope from URL (if specified)
-				if (!string.IsNullOrWhiteSpace(Request.QueryString["Scope"]))
-					return Request.QueryString["Scope"];
-
-				return _Scope;
-			}
-			set
-			{
-				_Scope = value;
-			}
+			// return Scope from URL (if specified)
+			get { return !string.IsNullOrWhiteSpace(Request.QueryString["Scope"]) ? Request.QueryString["Scope"] : _scope; }
+			set { _scope = value; }
 		}
 
 		public int? DefaultCultureDimension { get; set; }
-		private ICollection<int> DimensionIds
-		{
-			get { return Forms.GetDimensionIds(DefaultCultureDimension); }
-		}
+		//private ICollection<int> DimensionIds
+		//{
+		//	get { return Forms.GetDimensionIds(DefaultCultureDimension); }
+		//}
 
 		public int? AppId { get; set; }
 		public int? ZoneId { get; set; }
@@ -126,18 +114,18 @@ namespace ToSic.Eav.ManagementUI
 
 		protected override void OnInit(EventArgs e)
 		{
-			var CultureDimensionReplaceValue = !string.IsNullOrEmpty(Request.QueryString["CultureDimension"]) ? Request.QueryString["CultureDimension"] : "[CultureDimension]";
+			var cultureDimensionReplaceValue = !string.IsNullOrEmpty(Request.QueryString["CultureDimension"]) ? Request.QueryString["CultureDimension"] : "[CultureDimension]";
 
 			#region Add Eav Controls dynamically
 			switch (Mode)
 			{
 				case ManagementMode.ContentTypeEdit:
-					var ContentTypeEditControl = (ContentTypeEdit)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeEdit.ascx");
-					ContentTypeEditControl.AppId = AppId;
-					ContentTypeEditControl.AttributeSetId = AttributeSetId.Value;
-					ContentTypeEditControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					ContentTypeEditControl.Scope = Scope;
-					Controls.Add(ContentTypeEditControl);
+					var contentTypeEditControl = (ContentTypeEdit)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeEdit.ascx");
+					contentTypeEditControl.AppId = AppId;
+					contentTypeEditControl.AttributeSetId = AttributeSetId.Value;
+					contentTypeEditControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
+					contentTypeEditControl.Scope = Scope;
+					Controls.Add(contentTypeEditControl);
 					break;
 				case ManagementMode.ContentTypeFields:
 					var contentTypeFieldsControl = (ContentTypeFields)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeFields.ascx");
@@ -145,9 +133,9 @@ namespace ToSic.Eav.ManagementUI
 					contentTypeFieldsControl.DefaultCultureDimension = DefaultCultureDimension;
 					contentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
 					contentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
-					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
-					contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
+					contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
+					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
+					contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(contentTypeFieldsControl);
 					break;
 				case ManagementMode.NewItem:
@@ -160,8 +148,8 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.AssignmentObjectTypeId = AssignmentObjectTypeId;
 					itemFormControl.KeyNumber = KeyNumber;
 					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
-					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
-					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", CultureDimensionReplaceValue);
+					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
+					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
 					{
@@ -178,7 +166,7 @@ namespace ToSic.Eav.ManagementUI
 					itemsControl.AttributeSetId = AttributeSetId.Value;
 					itemsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
 					itemsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", "[CultureDimension]");
-					itemsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
+					itemsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					if (EntityDeleting != null)
 						itemsControl.EntityDeleting += EntityDeleting;
 					Controls.Add(itemsControl);
@@ -186,21 +174,19 @@ namespace ToSic.Eav.ManagementUI
 				case ManagementMode.ItemHistory:
 					var itemHistoryControl = (ItemHistory)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemHistory.ascx");
 					itemHistoryControl.AppId = AppId;
-					//itemHistoryControl.ZoneId = ZoneId;
 					itemHistoryControl.EntityId = EntityId.Value;
-					itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", CultureDimensionReplaceValue);
+					itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(itemHistoryControl);
 					break;
 				case ManagementMode.ItemVersionDetails:
 					var itemVersionDetails = (ItemVersionDetails)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemVersionDetails.ascx");
 					itemVersionDetails.AppId = AppId;
 					itemVersionDetails.DefaultCultureDimension = DefaultCultureDimension;
-					//itemVersionDetails.ZoneId = ZoneId;
 					itemVersionDetails.EntityId = EntityId.Value;
 					itemVersionDetails.ChangeId = ChangeId.Value;
+					itemVersionDetails.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(itemVersionDetails);
 					break;
-				case ManagementMode.ContentTypesList:
 				default:
 					var contentTypesListControl = (ContentTypesList)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypesList.ascx");
 					contentTypesListControl.AppId = AppId;
@@ -224,14 +210,14 @@ namespace ToSic.Eav.ManagementUI
 
 		}
 
-		public string GetCurrentUrlWithParameters(bool PreserveSquareBrackets, params string[] Params)
+		public string GetCurrentUrlWithParameters(bool preserveSquareBrackets, params string[] @params)
 		{
-			NameValueCollection NewQueryString = HttpUtility.ParseQueryString(string.Empty);
+			var newQueryString = HttpUtility.ParseQueryString(string.Empty);
 
-			for (int i = 0; i < Params.Length; i += 2)// Add Parameters
-				NewQueryString[Params[i]] = Params[i + 1];
+			for (var i = 0; i < @params.Length; i += 2)// Add Parameters
+				newQueryString[@params[i]] = @params[i + 1];
 
-			return BaseUrl + (BaseUrl.Contains('?') ? "&" : "?") + (PreserveSquareBrackets ? NewQueryString.ToString().Replace("%5b", "[").Replace("%5d", "]") : NewQueryString.ToString());
+			return BaseUrl + (BaseUrl.Contains('?') ? "&" : "?") + (preserveSquareBrackets ? newQueryString.ToString().Replace("%5b", "[").Replace("%5d", "]") : newQueryString.ToString());
 		}
 	}
 

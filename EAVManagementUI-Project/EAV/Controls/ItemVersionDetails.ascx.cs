@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -9,7 +8,6 @@ namespace ToSic.Eav.ManagementUI
 	{
 		private EavContext _ctx;
 		private IEntity _currentEntity;
-		private Import.Entity _entityVersion;
 		private int[] DimensionIds
 		{
 			get { return Forms.GetDimensionIds(DefaultCultureDimension); }
@@ -21,41 +19,45 @@ namespace ToSic.Eav.ManagementUI
 		public bool IsDialog { get; set; }
 		public int? AppId { get; set; }
 		public int? DefaultCultureDimension { get; set; }
+		public string ReturnUrl { get; set; }
 		#endregion
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_ctx = EavContext.Instance(AppId);
 			_currentEntity = _ctx.GetEntityModel(EntityId);
-			_entityVersion = _ctx.GetEntityVersion(EntityId, ChangeId);
 
 			// Set Control Heading Text
 			litControlHeading.Text = string.Format(litControlHeading.Text, ChangeId, _currentEntity.Title[DimensionIds], _currentEntity.EntityId);
 
-			grdVersionDetails.DataSource = GetValuesTable(_entityVersion);
-			grdVersionDetails.DataBind();
+			hlkBack.NavigateUrl = ReturnUrl.Replace("[EntityId]", EntityId.ToString());
 		}
 
-		private DataTable GetValuesTable(Import.Entity entityVersion)
+		protected void btnRestore_Click(object sender, EventArgs e)
 		{
-			var result = new DataTable();
-			result.Columns.Add("Field");
-			result.Columns.Add("Language");
-			result.Columns.Add("Value");
+			_ctx.RestoreEntityVersion(EntityId, ChangeId);
+		}
 
-			foreach (var attribute in entityVersion.Values)
-			{
-				foreach (var valueModel in attribute.Value)
-				{
-					foreach (var valueDimension in valueModel.ValueDimensions)
-					{
-						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, EavContext.GetTypedValue(valueModel));
-					}
-					
-				}
-			}
+		protected void dsrcVersionDetails_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
+		{
+			e.InputParameters["entityId"] = EntityId;
+			e.InputParameters["changeId"] = ChangeId;
+		}
 
-			return result;
+		protected void dsrcVersionDetails_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
+		{
+			e.ObjectInstance = _ctx;
+		}
+
+		protected void dsrcVersionChanges_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
+		{
+			e.InputParameters["entityId"] = EntityId;
+			e.InputParameters["changeId"] = ChangeId;
+		}
+
+		protected void dsrcVersionChanges_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
+		{
+			e.ObjectInstance = _ctx;
 		}
 	}
 }

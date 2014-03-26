@@ -512,7 +512,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get typed value from ValueImportModel
 		/// </summary>
-		public static object GetTypedValue(IValueImportModel newValue, string attributeType = null, string attributeStaticName = null)
+		private static object GetTypedValue(IValueImportModel newValue, string attributeType = null, string attributeStaticName = null)
 		{
 			object newValueTyped;
 			if (newValue is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
@@ -1267,6 +1267,38 @@ namespace ToSic.Eav
 			var assignmentObjectTypeName = xentity.Attribute("AssignmentObjectType").Value;
 			var import = new XmlImport(this);
 			return import.GetImportEntityUnsafe(xentity, GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID);
+		}
+
+		/// <summary>
+		/// Get the Values of an Entity in the specified Version
+		/// </summary>
+		public DataTable GetEntityVersionValues(int entityId, int changeId)
+		{
+			var entityVersion = GetEntityVersion(entityId, changeId);
+
+			var result = new DataTable();
+			result.Columns.Add("Field");
+			result.Columns.Add("Language");
+			result.Columns.Add("Value");
+
+			foreach (var attribute in entityVersion.Values)
+			{
+				foreach (var valueModel in attribute.Value)
+				{
+					foreach (var valueDimension in valueModel.ValueDimensions)
+					{
+						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel));
+					}
+				}
+			}
+
+			return result;
+		}
+
+		public DataTable GetEntityChangedValues(int entityId, int changeId)
+		{
+			//ToDo: Implement
+			return new DataTable();
 		}
 
 		/// <summary>
