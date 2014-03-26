@@ -37,6 +37,7 @@ namespace ToSic.Eav.ManagementUI
 		}
 		private bool _initFormCompleted;
 		private FormViewMode _viewMode;
+		private bool _addClientScriptAndCss = true;
 		#endregion
 
 		#region Properties
@@ -51,12 +52,12 @@ namespace ToSic.Eav.ManagementUI
 		public int? DefaultCultureDimension { get; set; }
 		public int? AppId { get; set; }
 		public int? ZoneId { get; set; }
-		private bool _addClientScriptAndCss = true;
 		public bool AddClientScriptAndCss
 		{
 			get { return _addClientScriptAndCss; }
 			set { _addClientScriptAndCss = value; }
 		}
+		public string ItemHistoryUrl { get; set; }
 		#endregion
 
 		#region Init the Form
@@ -99,6 +100,7 @@ namespace ToSic.Eav.ManagementUI
 						pnlEditDefaultFirstEN.Visible = true;
 					}
 
+
 					break;
 				case FormViewMode.Edit:
 					var item = Db.GetEntity(EntityId);
@@ -110,6 +112,7 @@ namespace ToSic.Eav.ManagementUI
 					throw new NotImplementedException();
 			}
 
+			btnShowHistory.Visible = mode == FormViewMode.Edit;
 			_initFormCompleted = true;
 		}
 
@@ -246,12 +249,23 @@ namespace ToSic.Eav.ManagementUI
 			Cancel();
 		}
 
+		protected void btnShowHistory_Click(object sender, EventArgs e)
+		{
+			ShowHistory();
+		}
+
 		#endregion
 
 		private void RedirectToListItems()
 		{
 			if (!PreventRedirect)
 				Response.Redirect((IsDialog ? "Items.aspx?AttributeSetId=[AttributeSetId]" : ReturnUrl).Replace("[AttributeSetId]", AttributeSetId.ToString()), false);
+		}
+
+		private void RedirectToHistory()
+		{
+			if (!PreventRedirect)
+				Response.Redirect((IsDialog ? "ItemHistory.aspx?EntityId=[EntityId]" : ItemHistoryUrl).Replace("[EntityId]", EntityId.ToString()), false);
 		}
 
 		public void Cancel()
@@ -340,6 +354,11 @@ namespace ToSic.Eav.ManagementUI
 
 			if (Saved != null)
 				Saved(result);
+		}
+
+		public void ShowHistory()
+		{
+			RedirectToHistory();
 		}
 	}
 }

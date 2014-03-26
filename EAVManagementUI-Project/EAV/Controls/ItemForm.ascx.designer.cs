@@ -13,7 +13,7 @@ namespace ToSic.Eav.ManagementUI {
     public partial class ItemForm {
         
         /// <summary>
-        /// litJsonEntityID control.
+        /// litJsonEntityId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
@@ -119,5 +119,14 @@ namespace ToSic.Eav.ManagementUI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton btnCancel;
+        
+        /// <summary>
+        /// btnShowHistory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnShowHistory;
     }
 }

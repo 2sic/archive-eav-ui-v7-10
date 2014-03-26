@@ -59,6 +59,7 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
@@ -77,6 +78,7 @@
     <Content Include="EAV\Controls\ItemForm.css" />
     <Content Include="EAV\Controls\Images\Locked.png" />
     <Content Include="EAV\Controls\Images\Unlocked.png" />
+    <Content Include="EAV\Controls\ItemHistory.ascx" />
     <Content Include="EAV\Controls\Items.ascx" />
     <Content Include="EAV\Controls\ItemForm.js" />
     <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
@@ -211,6 +213,13 @@
     </Compile>
     <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
       <DependentUpon>ItemForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemHistory.ascx.cs">
+      <DependentUpon>ItemHistory.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemHistory.ascx.designer.cs">
+      <DependentUpon>ItemHistory.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Controls\Items.ascx.cs">
       <DependentUpon>Items.ascx</DependentUpon>

@@ -131,15 +131,15 @@ namespace ToSic.Eav.ManagementUI
 					Controls.Add(ContentTypeEditControl);
 					break;
 				case ManagementMode.ContentTypeFields:
-					var ContentTypeFieldsControl = (ContentTypeFields)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeFields.ascx");
-					ContentTypeFieldsControl.AppId = AppId;
-					ContentTypeFieldsControl.DefaultCultureDimension = DefaultCultureDimension;
-					ContentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
-					ContentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					ContentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
-					ContentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
-					ContentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
-					Controls.Add(ContentTypeFieldsControl);
+					var contentTypeFieldsControl = (ContentTypeFields)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeFields.ascx");
+					contentTypeFieldsControl.AppId = AppId;
+					contentTypeFieldsControl.DefaultCultureDimension = DefaultCultureDimension;
+					contentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
+					contentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
+					contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
+					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
+					contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
+					Controls.Add(contentTypeFieldsControl);
 					break;
 				case ManagementMode.NewItem:
 				case ManagementMode.EditItem:
@@ -152,6 +152,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.KeyNumber = KeyNumber;
 					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
+					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
 					{
@@ -172,6 +173,13 @@ namespace ToSic.Eav.ManagementUI
 					if (EntityDeleting != null)
 						itemsControl.EntityDeleting += EntityDeleting;
 					Controls.Add(itemsControl);
+					break;
+				case ManagementMode.ItemHistory:
+					var itemHistoryControl = (ItemHistory)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemHistory.ascx");
+					itemHistoryControl.AppId = AppId;
+					itemHistoryControl.ZoneId = ZoneId;
+					itemHistoryControl.EntityId = EntityId.Value;
+					Controls.Add(itemHistoryControl);
 					break;
 				case ManagementMode.ContentTypesList:
 				default:
@@ -215,6 +223,7 @@ namespace ToSic.Eav.ManagementUI
 		ContentTypesList,
 		NewItem,
 		EditItem,
-		Items
+		Items,
+		ItemHistory
 	}
 }

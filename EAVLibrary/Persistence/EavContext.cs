@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Data;
 using System.Xml.Linq;
+using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
@@ -1235,6 +1236,10 @@ namespace ToSic.Eav
 			if (entityVersions.All(e => e.ChangeId != firstVersion.ChangeId))
 				entityVersions.Add(firstVersion);
 
+			// Generate Version-Numbers
+			var versionNumber = 1;
+			entityVersions.OrderBy(v => v.Timestamp).ForEach(v => v.VersionNumber = versionNumber++);
+
 			return entityVersions;
 		}
 
@@ -1273,6 +1278,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public class EntityVersionInfo
 		{
+			public int VersionNumber { get; internal set; }
 			public DateTime Timestamp { get; internal set; }
 			public string User { get; internal set; }
 			public int ChangeId { get; internal set; }
