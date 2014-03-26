@@ -81,6 +81,7 @@
     <Content Include="EAV\Controls\ItemHistory.ascx" />
     <Content Include="EAV\Controls\Items.ascx" />
     <Content Include="EAV\Controls\ItemForm.js" />
+    <Content Include="EAV\Controls\ItemVersionDetails.ascx" />
     <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
     <Content Include="EAV\Dialogs\ContentTypeFields.aspx" />
     <Content Include="EAV\Dialogs\EditItem.aspx" />
@@ -227,6 +228,13 @@
     </Compile>
     <Compile Include="EAV\Controls\Items.ascx.designer.cs">
       <DependentUpon>Items.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.cs">
+      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.designer.cs">
+      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
       <DependentUpon>ContentTypeEdit.aspx</DependentUpon>

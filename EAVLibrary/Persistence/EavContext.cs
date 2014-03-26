@@ -504,22 +504,29 @@ namespace ToSic.Eav
 					return null;
 				// Handle simple values in Values-Table
 				default:
-					object newValueTyped;
-
-					if (newValue is ValueImportModel<bool?> && attribute.Type == "Boolean")
-						newValueTyped = ((ValueImportModel<bool?>)newValue).Value;
-					else if (newValue is ValueImportModel<DateTime?> && attribute.Type == "DateTime")
-						newValueTyped = ((ValueImportModel<DateTime?>)newValue).Value;
-					else if (newValue is ValueImportModel<decimal?> && attribute.Type == "Number")
-						newValueTyped = ((ValueImportModel<decimal?>)newValue).Value;
-					else if (newValue is ValueImportModel<string> && (attribute.Type == "String" || attribute.Type == "Hyperlink"))
-						newValueTyped = ((ValueImportModel<string>)newValue).Value;
-					else
-						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " (Type: " + attribute.Type + ") with newValue of type" + newValue.GetType() + " not supported.");
-
 					// masterRecord can be true or false, it's not used when valueDimensions is specified
-					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, newValueTyped, null, false, currentValues, null, newValue.ValueDimensions);
+					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
 			}
+		}
+
+		/// <summary>
+		/// Get typed value from ValueImportModel
+		/// </summary>
+		public static object GetTypedValue(IValueImportModel newValue, string attributeType = null, string attributeStaticName = null)
+		{
+			object newValueTyped;
+			if (newValue is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
+				newValueTyped = ((ValueImportModel<bool?>)newValue).Value;
+			else if (newValue is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime"))
+				newValueTyped = ((ValueImportModel<DateTime?>)newValue).Value;
+			else if (newValue is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number"))
+				newValueTyped = ((ValueImportModel<decimal?>)newValue).Value;
+			else if (newValue is ValueImportModel<string> &&
+					 (attributeType == null || attributeType == "String" || attributeType == "Hyperlink"))
+				newValueTyped = ((ValueImportModel<string>)newValue).Value;
+			else
+				throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, newValue.GetType()));
+			return newValueTyped;
 		}
 
 		/// <summary>

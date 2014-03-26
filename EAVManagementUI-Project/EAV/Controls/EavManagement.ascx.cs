@@ -40,6 +40,15 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
+		public int? ChangeId
+		{
+			get
+			{
+				try { return int.Parse(Request.QueryString["ChangeId"]); }
+				catch { return null; }
+			}
+		}
+
 		public int? KeyNumber
 		{
 			get
@@ -152,7 +161,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.KeyNumber = KeyNumber;
 					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", CultureDimensionReplaceValue);
-					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", CultureDimensionReplaceValue);
+					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", CultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
 					{
@@ -177,9 +186,19 @@ namespace ToSic.Eav.ManagementUI
 				case ManagementMode.ItemHistory:
 					var itemHistoryControl = (ItemHistory)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemHistory.ascx");
 					itemHistoryControl.AppId = AppId;
-					itemHistoryControl.ZoneId = ZoneId;
+					//itemHistoryControl.ZoneId = ZoneId;
 					itemHistoryControl.EntityId = EntityId.Value;
+					itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", CultureDimensionReplaceValue);
 					Controls.Add(itemHistoryControl);
+					break;
+				case ManagementMode.ItemVersionDetails:
+					var itemVersionDetails = (ItemVersionDetails)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemVersionDetails.ascx");
+					itemVersionDetails.AppId = AppId;
+					itemVersionDetails.DefaultCultureDimension = DefaultCultureDimension;
+					//itemVersionDetails.ZoneId = ZoneId;
+					itemVersionDetails.EntityId = EntityId.Value;
+					itemVersionDetails.ChangeId = ChangeId.Value;
+					Controls.Add(itemVersionDetails);
 					break;
 				case ManagementMode.ContentTypesList:
 				default:
@@ -224,6 +243,7 @@ namespace ToSic.Eav.ManagementUI
 		NewItem,
 		EditItem,
 		Items,
-		ItemHistory
+		ItemHistory,
+		ItemVersionDetails
 	}
 }

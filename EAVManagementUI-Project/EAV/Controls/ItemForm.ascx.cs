@@ -112,7 +112,7 @@ namespace ToSic.Eav.ManagementUI
 					throw new NotImplementedException();
 			}
 
-			btnShowHistory.Visible = mode == FormViewMode.Edit;
+			hlkShowHistory.Visible = mode == FormViewMode.Edit;
 			_initFormCompleted = true;
 		}
 
@@ -249,11 +249,6 @@ namespace ToSic.Eav.ManagementUI
 			Cancel();
 		}
 
-		protected void btnShowHistory_Click(object sender, EventArgs e)
-		{
-			ShowHistory();
-		}
-
 		#endregion
 
 		private void RedirectToListItems()
@@ -262,10 +257,9 @@ namespace ToSic.Eav.ManagementUI
 				Response.Redirect((IsDialog ? "Items.aspx?AttributeSetId=[AttributeSetId]" : ReturnUrl).Replace("[AttributeSetId]", AttributeSetId.ToString()), false);
 		}
 
-		private void RedirectToHistory()
+		protected string GetHistoryUrl()
 		{
-			if (!PreventRedirect)
-				Response.Redirect((IsDialog ? "ItemHistory.aspx?EntityId=[EntityId]" : ItemHistoryUrl).Replace("[EntityId]", EntityId.ToString()), false);
+			return (IsDialog ? "ItemHistory.aspx?EntityId=[EntityId]" : ItemHistoryUrl).Replace("[EntityId]", EntityId.ToString());
 		}
 
 		public void Cancel()
@@ -354,11 +348,6 @@ namespace ToSic.Eav.ManagementUI
 
 			if (Saved != null)
 				Saved(result);
-		}
-
-		public void ShowHistory()
-		{
-			RedirectToHistory();
 		}
 	}
 }
