@@ -66,28 +66,18 @@ namespace ToSic.Eav
 		/// <returns>A single DataSource</returns>
 		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IConfigurationProvider configurationProvider = null)
 		{
-			// 2014-03-23 2dm new
+			// 2014-03-23 2dm new - didn't work, fails when using the iCache from the specific DLL
 			//var ds = typeof(DataSource)
 			//	.GetMethod("GetDataSource", new[] { typeof(int?), typeof(int?), typeof(IDataSource), typeof(IConfigurationProvider) })
 			//	.MakeGenericMethod(Type.GetType(sourceName))
 			//	.Invoke(null, new object[] { zoneId, appId, upstream, configurationProvider });
-
 			//return (IDataSource) ds;
 
 			var newDs = (BaseDataSource)Factory.Container.Resolve(Type.GetType(sourceName));
-			var zoneAppId = GetZoneAppId(zoneId, appId);
-			newDs.ZoneId = zoneAppId.Item1;
-			newDs.AppId = zoneAppId.Item2;
-			if (upstream != null)
-				((IDataTarget)newDs).Attach(upstream);
-			if (configurationProvider != null)
-				newDs.ConfigurationProvider = configurationProvider;
-
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configurationProvider);
 			return newDs;
 		}
 
-		// 2014-03-23 2dm, added
-		// todo: review w/2bg, probably replace the GetDataSource above...
 		/// <summary>
 		/// Get DataSource for specified sourceName/Type using Unity.
 		/// </summary>
@@ -100,16 +90,30 @@ namespace ToSic.Eav
 		public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
 			IConfigurationProvider configurationProvider = null)
 		{
-			var newDs = (BaseDataSource) Factory.Container.Resolve(typeof (T));
+			var newDs = (BaseDataSource) Factory.Container.Resolve(typeof(T));
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configurationProvider);
+			return (T)Convert.ChangeType(newDs, typeof(T));
+		}
+
+		/// <summary>
+		/// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
+		/// </summary>
+		/// <param name="newDs">The new data source</param>
+		/// <param name="zoneId">optional Zone #</param>
+		/// <param name="appId">optional app #</param>
+		/// <param name="upstream">upstream data source - for auto-attaching</param>
+		/// <param name="configurationProvider">optional configuration provider - for auto-attaching</param>
+		private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
+			IDataSource upstream = null,
+			IConfigurationProvider configurationProvider = null)
+		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
 			newDs.AppId = zoneAppId.Item2;
 			if (upstream != null)
-				((IDataTarget) newDs).Attach(upstream);
+				((IDataTarget)newDs).Attach(upstream);
 			if (configurationProvider != null)
 				newDs.ConfigurationProvider = configurationProvider;
-
-			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav" };

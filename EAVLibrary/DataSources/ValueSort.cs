@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace ToSic.Eav.DataSources
 {
@@ -58,61 +59,69 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			// todo: enable title & id
-			// todo: ensure that attribute exists...
-			// todo: sort
-
 			// todo: maybe do something about languages?
+			// todo: test datetime & decimal types
 
 			EnsureConfigurationIsLoaded();
-			var attr = Attributes.Split(',');
-			var directions = Directions.Split(',');
+			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
+			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
+			var descendingCodes = "desc,d,0,>".Split(',');
+
+			#region Languages check - not fully implemented yet, only supports "default"
 			var lang = Languages.ToLower();
-			if(lang != "default")
+			if (lang != "default")
 				throw  new Exception("Can't filter for languages other than 'default'");
 
 			if (lang == "default") lang = ""; // no language is automatically the default language
 
 			if (lang == "any")
 				throw new NotImplementedException("language 'any' not implemented yet");
+			#endregion
 
-			var list = In[DataSource.DefaultStreamName].List;
-			var attribstest = list.FirstOrDefault().Value.Attributes.Keys;
-			var x1 = attribstest.All(attr.Contains);
-			var x2 = attribstest.Where(attr.Contains);
-			var results = (from e in list 
-				where e.Value.Attributes.Keys.Where(attr.Contains).Count() == attr.Length
+			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
+			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray(); 
+			var results = (from e in In[DataSource.DefaultStreamName].List
+				where e.Value.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
 				select e);
-			IOrderedEnumerable<KeyValuePair<int, IEntity>> ordered = null;// = (IOrderedEnumerable<KeyValuePair<int, IEntity>>)results;
+
+			// if list is blank, stop here and return blank list
+			if (!results.Any())
+				return results.ToDictionary(x => x.Key, y => y.Value);
+
+			IOrderedEnumerable<KeyValuePair<int, IEntity>> ordered = null;
 
 			for(var i = 0; i < attr.Count(); i++)
 			{
+				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
-				bool ascending = false;
-				if (directions.Count() - 1 >= i)	// if it has a specification, use that...
-					ascending = directions[i].ToLower().Trim() == "asc" || directions[i].Trim() == "1";
-				else
-					ascending = true;
+				var specAttr = a.ToLower() == "entityid" ? 'i' : a.ToLower() == "entitytitle" ? 't' : 'x';
+				bool isAscending = true;			// default
+				if (directions.Count() - 1 >= i)	// if this value has a direction specified, use that...
+					isAscending = !descendingCodes.Any(directions[i].ToLower().Trim().Contains);
 
 				if (ordered == null)
 				{
-					ordered = @ascending 
-						? results.OrderBy(e => e.Value[a][lang].ToString()) 
-						: results.OrderByDescending(e => e.Value[a][lang].ToString());
+					// First sort...
+					ordered = isAscending
+						? results.OrderBy(e => getObjToSort(e.Value, a, specAttr))
+						: results.OrderByDescending(e => getObjToSort(e.Value, a, specAttr));
 				}
 				else
 				{
-					if (ascending)
-						ordered = ordered.ThenBy(e => e.Value[a][lang].ToString());
-					else
-						ordered = ordered.ThenByDescending(e => e.Value[a][lang].ToString());
+					// following sorts...
+					ordered = isAscending
+						? ordered.ThenBy(e => getObjToSort(e.Value, a, specAttr))
+						: ordered.ThenByDescending(e => getObjToSort(e.Value, a, specAttr));
 				}
 			}
 
 			return ordered.ToDictionary(x => x.Key, y => y.Value); 
 		}
 
-
-		
+		private object getObjToSort(IEntity e, string a, char special)
+		{
+			// get either the special id or title, if title or normal field, then use language [0] = default
+			return special == 'i' ? e.EntityId : (special == 't' ? e.Title : e[a])[0];
+		}
 	}
 }

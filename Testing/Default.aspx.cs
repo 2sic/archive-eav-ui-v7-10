@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using ToSic.Eav.DataSources;
+using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 
 namespace ToSic.Eav
@@ -17,12 +18,15 @@ namespace ToSic.Eav
 
 			switch ((Request["Test"] ?? "").ToLower())
 			{
+				case "all":
+					ShowDataSource(InitialDataSource(), "Initial DataSource", false);
+					break;
 				case "typefilter":
 					//EntityTypeFilter("Type 11:26");
 					ShowDataSource(EntityTypeFilter("Person ML"), "EntityTypeFilter", true);
 					break;
 				case "valuefilter":
-					ShowDataSource(TestValueFilter("Person ML", "FirstName", "Daniel"), "ValueFilter", true);
+					ShowDataSource(TestValueFilter("Person ML", "FirstName", "Daniel EN"), "ValueFilter", true);
 					break;
 				case "attributefilter":
 					var typeFiltered = EntityTypeFilter("Person ML");
@@ -30,7 +34,10 @@ namespace ToSic.Eav
 					break;
 				case "valuesort":
 					typeFiltered = EntityTypeFilter("Person ML");
-					ShowDataSource(ValueSort(typeFiltered, "FirstName,LastName", "asc"), "Sorted Value", true);
+					// ShowDataSource(ValueSort(typeFiltered, "FirstName,entitytitle", "a,a"), "Sorted Value", true);
+					ShowDataSource(ValueSort(typeFiltered, "entityid,entitytitle", "d,a"), "Sorted Value", true);
+					// ShowDataSource(ValueSort(typeFiltered, "entitytitle,entityid", "a,a"), "Sorted Value", true);
+					//ShowDataSource(ValueSort(typeFiltered, "id,entitytitle", "a,a"), "Sorted Value", true);
 					break;
 				Default:
 					break;
@@ -209,10 +216,10 @@ namespace ToSic.Eav
 		//	// Response.Write(((IMetaDataSource)source).IndexForExternalInt[17, 20].ToString());
 		//}
 
-		private void InitialDataSource()
+		private IDataSource InitialDataSource()
 		{
 			var source = DataSource.GetInitialDataSource();
-			ShowDataSource(source, "Initial DataSource");
+			return source;
 		}
 
 		private EntityTypeFilter EntityTypeFilter(string typeName)
@@ -275,51 +282,54 @@ namespace ToSic.Eav
 		//	ShowDataSource(source, "EavSqlStore");
 		//}
 
-
+		#region ShowStuff
 		public void ShowDataSource(DataSources.IDataSource source, string title, bool fullEntities = false)
 		{
-			Response.Write("<h2>" + title + " (Name: " + source.Name + ")</h2>");
+			var output = "<h2>" + title + " (Name: " + source.Name + ")</h2>";
 			Trace.Write("Filtering" + title, "Start");
 			//Response.Write("Ready: " + source.Ready);//; Chain: " + source.NameChain + "; Length: " + source.DistanceFromSource);
 			//Response.Write("<br>count:" + source.Out["Default"].List.Count);
 
 			foreach (var dataStream in source.Out)
 			{
-				Response.Write("<h3>" + dataStream.Key + " Count:" + dataStream.Value.List.Count + "</h3>");
+				output += "<h3>" + dataStream.Key + " Count:" + dataStream.Value.List.Count + "</h3>";
 
 				if (fullEntities)
 				{
-					Response.Write("<h4>Entities Details</h4><hr/>");
+					output += "<h4>Entities Details</h4><hr/>";
 					foreach (var entity in dataStream.Value.List.Select(e => e.Value))
-						ShowEntity(entity);
+						output += ShowEntity(entity);
 				}
 
 			}
 
 			Trace.Write("Filtering" + title, "Done");
+			litResults.Text = output;
 		}
 
-		public void ShowEntity(IEntity entity)
+		public string ShowEntity(IEntity entity)
 		{
-			Response.Write(entity.EntityId + "<br/>");
+			var output = entity.EntityId + "<br/>";
 			foreach (var attribute in entity.Attributes)
 			{
-				Response.Write(attribute.Key + ": " + attribute.Value[0] + "<br/>");
+				output += attribute.Key + ": " + attribute.Value[0] + "<br/>";
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
 				if (relationship != null)
 				{
-					Response.Write("Entities count: " + relationship.TypedContents.Count() + "<br/>");
-					// 2014-03-22 2dm: deactivated, wasn't able to run ATM
-					//Response.Write("Entity Titles: " + string.Join(", ", relationship.TypedContents.Select(e => e.Title[0])) + "<br/>");
+					output += "Entities count: " + relationship.TypedContents.Count() + "<br/>";
+					if (relationship.TypedContents.Any())
+						output += "Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title[0])) + "<br/>";
 				}
 			}
 
-			Response.Write("Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>");
-			Response.Write("AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>");
-			Response.Write("AllParents: " + entity.Relationships.AllParents.Count() + "<br/>");
+			output += "Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>";
+			output += "AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>";
+			output += "AllParents: " + entity.Relationships.AllParents.Count() + "<br/>";
 
-			Response.Write("<hr/>");
+			output += "<hr/>";
+			return output;
 		}
+		#endregion
 	}
 }
