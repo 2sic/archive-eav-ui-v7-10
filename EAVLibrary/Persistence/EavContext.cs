@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Data;
+using System.Xml.Linq;
+using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav
 {
@@ -28,7 +31,10 @@ namespace ToSic.Eav
 		/// </summary>
 		public const string DefaultAppName = "Default";
 		private const string CultureSystemKey = "Culture";
-
+		/// <summary>
+		/// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
+		/// </summary>
+		private const string DataTimelineEntityStateOperation = "s";
 		#endregion
 
 		#region Private Fields
@@ -185,45 +191,6 @@ namespace ToSic.Eav
 			SaveChanges();
 
 			return newEntity;
-		}
-
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		/// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
-		public int GetChangeLogId(string userName)
-		{
-			if (_mainChangeLogId == 0)
-			{
-				if (Connection.State != ConnectionState.Open)
-					Connection.Open();	// make sure same connection is used later
-				_mainChangeLogId = AddChangeLog(userName).Single().ChangeID;
-			}
-
-			return _mainChangeLogId;
-		}
-
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		private int GetChangeLogId()
-		{
-			return GetChangeLogId(UserName);
-		}
-
-		/// <summary>
-		/// Set ChangeLog ID on current Context and connection
-		/// </summary>
-		/// <param name="changeLogId"></param>
-		public void SetChangeLogId(int changeLogId)
-		{
-			if (_mainChangeLogId != 0)
-				throw new Exception("ChangeLogID was already set");
-
-
-			Connection.Open();	// make sure same connection is used later
-			SetChangeLogIdInternal(changeLogId);
-			_mainChangeLogId = changeLogId;
 		}
 
 		/// <summary>
@@ -419,8 +386,9 @@ namespace ToSic.Eav
 			else
 				UpdateEntityDefault(entityId, newValues, dimensionIds, masterRecord, attributes, currentEntity, currentValues);
 
-			if (autoSave)
-				SaveChanges();
+			SaveChanges();	// must save now to generate EntityModel afterward
+
+			SaveEntityToDataTimeline(currentEntity);
 
 			return currentEntity;
 		}
@@ -536,22 +504,29 @@ namespace ToSic.Eav
 					return null;
 				// Handle simple values in Values-Table
 				default:
-					object newValueTyped;
-
-					if (newValue is ValueImportModel<bool?> && attribute.Type == "Boolean")
-						newValueTyped = ((ValueImportModel<bool?>)newValue).Value;
-					else if (newValue is ValueImportModel<DateTime?> && attribute.Type == "DateTime")
-						newValueTyped = ((ValueImportModel<DateTime?>)newValue).Value;
-					else if (newValue is ValueImportModel<decimal?> && attribute.Type == "Number")
-						newValueTyped = ((ValueImportModel<decimal?>)newValue).Value;
-					else if (newValue is ValueImportModel<string> && (attribute.Type == "String" || attribute.Type == "Hyperlink"))
-						newValueTyped = ((ValueImportModel<string>)newValue).Value;
-					else
-						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " (Type: " + attribute.Type + ") with newValue of type" + newValue.GetType() + " not supported.");
-
 					// masterRecord can be true or false, it's not used when valueDimensions is specified
-					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, newValueTyped, null, false, currentValues, null, newValue.ValueDimensions);
+					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
 			}
+		}
+
+		/// <summary>
+		/// Get typed value from ValueImportModel
+		/// </summary>
+		private static object GetTypedValue(IValueImportModel newValue, string attributeType = null, string attributeStaticName = null)
+		{
+			object newValueTyped;
+			if (newValue is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
+				newValueTyped = ((ValueImportModel<bool?>)newValue).Value;
+			else if (newValue is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime"))
+				newValueTyped = ((ValueImportModel<DateTime?>)newValue).Value;
+			else if (newValue is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number"))
+				newValueTyped = ((ValueImportModel<decimal?>)newValue).Value;
+			else if (newValue is ValueImportModel<string> &&
+					 (attributeType == null || attributeType == "String" || attributeType == "Hyperlink"))
+				newValueTyped = ((ValueImportModel<string>)newValue).Value;
+			else
+				throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, newValue.GetType()));
+			return newValueTyped;
 		}
 
 		/// <summary>
@@ -704,9 +679,9 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Serialize Value to a String for SQL Server
+		/// Serialize Value to a String for SQL Server or XML Export
 		/// </summary>
-		private static string SerializeValue(object newValue)
+		public static string SerializeValue(object newValue)
 		{
 			string newValueSerialized;
 			if (newValue is DateTime)
@@ -720,6 +695,38 @@ namespace ToSic.Eav
 			else
 				newValueSerialized = newValue.ToString();
 			return newValueSerialized;
+		}
+
+		/// <summary>
+		/// Serialize Value to a String for SQL Server or XML Export
+		/// </summary>
+		internal string SerializeValue(IValue value)
+		{
+			var stringValue = value as ValueModel<string>;
+			if (stringValue != null)
+				return stringValue.TypedContents;
+
+			var relationshipValue = value as ValueModel<EntityRelationshipModel>;
+			if (relationshipValue != null)
+			{
+				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => GetEntity(entityId).EntityGUID);
+
+				return string.Join(",", entityGuids);
+			}
+
+			var boolValue = value as ValueModel<bool?>;
+			if (boolValue != null)
+				return boolValue.TypedContents.ToString();
+
+			var dateTimeValue = value as ValueModel<DateTime?>;
+			if (dateTimeValue != null)
+				return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
+
+			var decimalValue = value as ValueModel<decimal?>;
+			if (decimalValue != null)
+				return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
+
+			throw new NotSupportedException("Can't serialize Value");
 		}
 
 		/// <summary>
@@ -1151,6 +1158,171 @@ namespace ToSic.Eav
 			public Guid ParentEntityGuid { get; set; }
 			public List<Guid> ChildEntityGuids { get; set; }
 		}
+		#endregion
+
+		#region Versioning
+
+		/// <summary>
+		/// Creates a ChangeLog immediately
+		/// </summary>
+		/// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
+		public int GetChangeLogId(string userName)
+		{
+			if (_mainChangeLogId == 0)
+			{
+				if (Connection.State != ConnectionState.Open)
+					Connection.Open();	// make sure same connection is used later
+				_mainChangeLogId = AddChangeLog(userName).Single().ChangeID;
+			}
+
+			return _mainChangeLogId;
+		}
+
+		/// <summary>
+		/// Creates a ChangeLog immediately
+		/// </summary>
+		private int GetChangeLogId()
+		{
+			return GetChangeLogId(UserName);
+		}
+
+		/// <summary>
+		/// Set ChangeLog ID on current Context and connection
+		/// </summary>
+		/// <param name="changeLogId"></param>
+		public void SetChangeLogId(int changeLogId)
+		{
+			if (_mainChangeLogId != 0)
+				throw new Exception("ChangeLogID was already set");
+
+
+			Connection.Open();	// make sure same connection is used later
+			SetChangeLogIdInternal(changeLogId);
+			_mainChangeLogId = changeLogId;
+		}
+
+		/// <summary>
+		/// Persist modified Entity to DataTimeline
+		/// </summary>
+		private void SaveEntityToDataTimeline(Entity currentEntity)
+		{
+			var export = new XmlExport(this);
+			var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
+			var timelineItem = new DataTimelineItem
+			{
+				SourceTable = "ToSIC_EAV_Entities",
+				Operation = DataTimelineEntityStateOperation,
+				NewData = entityModelSerialized.ToString(),
+				SourceGuid = currentEntity.EntityGUID,
+				SourceID = currentEntity.EntityID,
+				SysLogID = GetChangeLogId(),
+				SysCreatedDate = DateTime.Now
+			};
+			AddToDataTimeline(timelineItem);
+
+			SaveChanges();
+		}
+
+		/// <summary>
+		/// Get all Versions of specified EntityId
+		/// </summary>
+		public List<EntityVersionInfo> GetEntityVersions(int entityId)
+		{
+			// get Versions from DataTimeline
+			var entityVersions = (from d in DataTimeline
+								  join c in ChangeLogs on d.SysLogID equals c.ChangeID
+								  where d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId
+								  select new EntityVersionInfo { Timestamp = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID }).ToList();
+
+			// get first Version
+			var firstVersion = (from e in Entities
+								where e.EntityID == entityId
+								select new EntityVersionInfo { Timestamp = e.ChangeLogCreated.Timestamp, User = e.ChangeLogCreated.User, ChangeId = e.ChangeLogCreated.ChangeID }).Single();
+
+			// if first Version doesn't exist in EntityVersions, add it to the entityVersions-List
+			if (entityVersions.All(e => e.ChangeId != firstVersion.ChangeId))
+				entityVersions.Add(firstVersion);
+
+			// Generate Version-Numbers
+			var versionNumber = 1;
+			entityVersions.OrderBy(v => v.Timestamp).ForEach(v => v.VersionNumber = versionNumber++);
+
+			return entityVersions;
+		}
+
+		/// <summary>
+		/// Get an Entity in the specified Version from DataTimeline using XmlImport
+		/// </summary>
+		/// <param name="entityId">EntityId</param>
+		/// <param name="changeId">ChangeId to retrieve</param>
+		public Import.Entity GetEntityVersion(int entityId, int changeId)
+		{
+			// Get Timeline Item
+			var timelineItem = DataTimeline.SingleOrDefault(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId);
+			if (timelineItem == null)
+				throw new InvalidOperationException(string.Format("EntityId {0} with ChangeId {1} not found in DataTimeline.", entityId, changeId));
+
+			// Load Entity from Xml unsing XmlImport
+			var xentity = XElement.Parse(timelineItem.NewData);
+			var assignmentObjectTypeName = xentity.Attribute("AssignmentObjectType").Value;
+			var import = new XmlImport(this);
+			return import.GetImportEntityUnsafe(xentity, GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID);
+		}
+
+		/// <summary>
+		/// Get the Values of an Entity in the specified Version
+		/// </summary>
+		public DataTable GetEntityVersionValues(int entityId, int changeId)
+		{
+			var entityVersion = GetEntityVersion(entityId, changeId);
+
+			var result = new DataTable();
+			result.Columns.Add("Field");
+			result.Columns.Add("Language");
+			result.Columns.Add("Value");
+
+			foreach (var attribute in entityVersion.Values)
+			{
+				foreach (var valueModel in attribute.Value)
+				{
+					foreach (var valueDimension in valueModel.ValueDimensions)
+					{
+						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel));
+					}
+				}
+			}
+
+			return result;
+		}
+
+		public DataTable GetEntityChangedValues(int entityId, int changeId)
+		{
+			//ToDo: Implement
+			return new DataTable();
+		}
+
+		/// <summary>
+		/// Restore an Entity to the specified Version by creating a new Version using Import
+		/// </summary>
+		public void RestoreEntityVersion(int entityId, int changeId)
+		{
+			var newVersion = GetEntityVersion(entityId, changeId);
+
+			var import = new Import.Import(_zoneId, _appId, UserName, true);
+			import.RunImport(null, new List<Import.Entity> { newVersion });
+		}
+
+		/// <summary>
+		/// Privides VersionInfo about an Entity
+		/// </summary>
+		public class EntityVersionInfo
+		{
+			public int VersionNumber { get; internal set; }
+			public DateTime Timestamp { get; internal set; }
+			public string User { get; internal set; }
+			public int ChangeId { get; internal set; }
+		}
+
 		#endregion
 	}
 

@@ -58,6 +58,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataSources\DataSource.cs" />
@@ -90,6 +91,8 @@
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="DataSources\Tokens\TokenReplace.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="ImportExport\XmlExport.cs" />
+    <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">
@@ -100,8 +103,8 @@
     <Compile Include="Persistence\EavContextCaching.cs" />
     <Compile Include="EntityRelationshipItem.cs" />
     <Compile Include="Factory.cs" />
-    <Compile Include="Import\Import.cs" />
-    <Compile Include="Import\ImportModels.cs" />
+    <Compile Include="ImportExport\Import.cs" />
+    <Compile Include="ImportExport\ImportModels.cs" />
     <Compile Include="Interfaces\IAttribute.cs" />
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDimension.cs" />

@@ -59,6 +59,7 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
@@ -77,8 +78,10 @@
     <Content Include="EAV\Controls\ItemForm.css" />
     <Content Include="EAV\Controls\Images\Locked.png" />
     <Content Include="EAV\Controls\Images\Unlocked.png" />
+    <Content Include="EAV\Controls\ItemHistory.ascx" />
     <Content Include="EAV\Controls\Items.ascx" />
     <Content Include="EAV\Controls\ItemForm.js" />
+    <Content Include="EAV\Controls\ItemVersionDetails.ascx" />
     <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
     <Content Include="EAV\Dialogs\ContentTypeFields.aspx" />
     <Content Include="EAV\Dialogs\EditItem.aspx" />
@@ -212,12 +215,26 @@
     <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
       <DependentUpon>ItemForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="EAV\Controls\ItemHistory.ascx.cs">
+      <DependentUpon>ItemHistory.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemHistory.ascx.designer.cs">
+      <DependentUpon>ItemHistory.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EAV\Controls\Items.ascx.cs">
       <DependentUpon>Items.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Controls\Items.ascx.designer.cs">
       <DependentUpon>Items.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.cs">
+      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.designer.cs">
+      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
       <DependentUpon>ContentTypeEdit.aspx</DependentUpon>

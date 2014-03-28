@@ -340,6 +340,22 @@ namespace ToSic.Eav
             }
         }
         private ObjectSet<EntityRelationship> _EntityRelationships;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<DataTimelineItem> DataTimeline
+        {
+            get
+            {
+                if ((_DataTimeline == null))
+                {
+                    _DataTimeline = base.CreateObjectSet<DataTimelineItem>("DataTimeline");
+                }
+                return _DataTimeline;
+            }
+        }
+        private ObjectSet<DataTimelineItem> _DataTimeline;
 
         #endregion
 
@@ -463,6 +479,14 @@ namespace ToSic.Eav
         public void AddToEntityRelationships(EntityRelationship entityRelationship)
         {
             base.AddObject("EntityRelationships", entityRelationship);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the DataTimeline EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToDataTimeline(DataTimelineItem dataTimelineItem)
+        {
+            base.AddObject("DataTimeline", dataTimelineItem);
         }
 
         #endregion
@@ -2991,6 +3015,263 @@ namespace ToSic.Eav
 
         #endregion
 
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ToSic.Eav", Name="DataTimelineItem")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class DataTimelineItem : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new DataTimelineItem object.
+        /// </summary>
+        /// <param name="id">Initial value of the ID property.</param>
+        /// <param name="sourceTable">Initial value of the SourceTable property.</param>
+        /// <param name="operation">Initial value of the Operation property.</param>
+        /// <param name="sysCreatedDate">Initial value of the SysCreatedDate property.</param>
+        /// <param name="newData">Initial value of the NewData property.</param>
+        public static DataTimelineItem CreateDataTimelineItem(global::System.Int32 id, global::System.String sourceTable, global::System.String operation, global::System.DateTime sysCreatedDate, global::System.String newData)
+        {
+            DataTimelineItem dataTimelineItem = new DataTimelineItem();
+            dataTimelineItem.ID = id;
+            dataTimelineItem.SourceTable = sourceTable;
+            dataTimelineItem.Operation = operation;
+            dataTimelineItem.SysCreatedDate = sysCreatedDate;
+            dataTimelineItem.NewData = newData;
+            return dataTimelineItem;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ID
+        {
+            get
+            {
+                return _ID;
+            }
+            set
+            {
+                if (_ID != value)
+                {
+                    OnIDChanging(value);
+                    ReportPropertyChanging("ID");
+                    _ID = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("ID");
+                    OnIDChanged();
+                }
+            }
+        }
+        private global::System.Int32 _ID;
+        partial void OnIDChanging(global::System.Int32 value);
+        partial void OnIDChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String SourceTable
+        {
+            get
+            {
+                return _SourceTable;
+            }
+            set
+            {
+                OnSourceTableChanging(value);
+                ReportPropertyChanging("SourceTable");
+                _SourceTable = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("SourceTable");
+                OnSourceTableChanged();
+            }
+        }
+        private global::System.String _SourceTable;
+        partial void OnSourceTableChanging(global::System.String value);
+        partial void OnSourceTableChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> SourceID
+        {
+            get
+            {
+                return _SourceID;
+            }
+            set
+            {
+                OnSourceIDChanging(value);
+                ReportPropertyChanging("SourceID");
+                _SourceID = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceID");
+                OnSourceIDChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _SourceID;
+        partial void OnSourceIDChanging(Nullable<global::System.Int32> value);
+        partial void OnSourceIDChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Guid> SourceGuid
+        {
+            get
+            {
+                return _SourceGuid;
+            }
+            set
+            {
+                OnSourceGuidChanging(value);
+                ReportPropertyChanging("SourceGuid");
+                _SourceGuid = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceGuid");
+                OnSourceGuidChanged();
+            }
+        }
+        private Nullable<global::System.Guid> _SourceGuid;
+        partial void OnSourceGuidChanging(Nullable<global::System.Guid> value);
+        partial void OnSourceGuidChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String SourceTextKey
+        {
+            get
+            {
+                return _SourceTextKey;
+            }
+            set
+            {
+                OnSourceTextKeyChanging(value);
+                ReportPropertyChanging("SourceTextKey");
+                _SourceTextKey = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("SourceTextKey");
+                OnSourceTextKeyChanged();
+            }
+        }
+        private global::System.String _SourceTextKey;
+        partial void OnSourceTextKeyChanging(global::System.String value);
+        partial void OnSourceTextKeyChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Operation
+        {
+            get
+            {
+                return _Operation;
+            }
+            set
+            {
+                OnOperationChanging(value);
+                ReportPropertyChanging("Operation");
+                _Operation = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("Operation");
+                OnOperationChanged();
+            }
+        }
+        private global::System.String _Operation;
+        partial void OnOperationChanging(global::System.String value);
+        partial void OnOperationChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime SysCreatedDate
+        {
+            get
+            {
+                return _SysCreatedDate;
+            }
+            set
+            {
+                OnSysCreatedDateChanging(value);
+                ReportPropertyChanging("SysCreatedDate");
+                _SysCreatedDate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SysCreatedDate");
+                OnSysCreatedDateChanged();
+            }
+        }
+        private global::System.DateTime _SysCreatedDate;
+        partial void OnSysCreatedDateChanging(global::System.DateTime value);
+        partial void OnSysCreatedDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> SysLogID
+        {
+            get
+            {
+                return _SysLogID;
+            }
+            set
+            {
+                OnSysLogIDChanging(value);
+                ReportPropertyChanging("SysLogID");
+                _SysLogID = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SysLogID");
+                OnSysLogIDChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _SysLogID;
+        partial void OnSysLogIDChanging(Nullable<global::System.Int32> value);
+        partial void OnSysLogIDChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String NewData
+        {
+            get
+            {
+                return _NewData;
+            }
+            set
+            {
+                OnNewDataChanging(value);
+                ReportPropertyChanging("NewData");
+                _NewData = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("NewData");
+                OnNewDataChanged();
+            }
+        }
+        private global::System.String _NewData;
+        partial void OnNewDataChanging(global::System.String value);
+        partial void OnNewDataChanged();
+
+        #endregion
+
+    
     }
     
     /// <summary>
