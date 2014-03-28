@@ -18,10 +18,19 @@ namespace ToSic.Eav.DataSources
 			Configuration = new Dictionary<string, string>();
 		}
 
+		/// <summary>
+		/// Name of this data source - mainly to aid debugging
+		/// </summary>
 		public abstract string Name { get; }
 
+		/// <summary>
+		/// The app this data-source is attached to
+		/// </summary>
 		public virtual int AppId { get; set; }
 
+		/// <summary>
+		/// The Zone this data-source is attached to
+		/// </summary>
 		public virtual int ZoneId { get; set; }
 
 		public IDictionary<string, IDataStream> In { get; internal set; }

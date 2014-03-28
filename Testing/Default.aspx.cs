@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using ToSic.Eav.DataSources;
+using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 
 namespace ToSic.Eav
@@ -12,6 +13,35 @@ namespace ToSic.Eav
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			Configuration.SetConnectionString("SiteSqlServer");
+
+			//AddEntity();
+
+			switch ((Request["Test"] ?? "").ToLower())
+			{
+				case "all":
+					ShowDataSource(InitialDataSource(), "Initial DataSource", false);
+					break;
+				case "typefilter":
+					//EntityTypeFilter("Type 11:26");
+					ShowDataSource(EntityTypeFilter("Person ML"), "EntityTypeFilter", true);
+					break;
+				case "valuefilter":
+					ShowDataSource(TestValueFilter("Person ML", "FirstName", "Daniel EN"), "ValueFilter", true);
+					break;
+				case "attributefilter":
+					var typeFiltered = EntityTypeFilter("Person ML");
+					ShowDataSource(AttributeFilter(typeFiltered), "AttributeFilter (remover)", true);
+					break;
+				case "valuesort":
+					typeFiltered = EntityTypeFilter("Person ML");
+					// ShowDataSource(ValueSort(typeFiltered, "FirstName,entitytitle", "a,a"), "Sorted Value", true);
+					ShowDataSource(ValueSort(typeFiltered, "entityid,entitytitle", "d,a"), "Sorted Value", true);
+					// ShowDataSource(ValueSort(typeFiltered, "entitytitle,entityid", "a,a"), "Sorted Value", true);
+					//ShowDataSource(ValueSort(typeFiltered, "id,entitytitle", "a,a"), "Sorted Value", true);
+					break;
+				Default:
+					break;
+			}
 
 			//Tests2dm();
 
@@ -23,27 +53,26 @@ namespace ToSic.Eav
 			//EntityIdFilter();
 			//DataPipelineFactory();
 
-			//EntityTypeFilter("Type 11:26");
-			AddEntity();
-			EntityTypeFilter("Person ML");
+
 
 			//var source = DataSource.GetInitialDataSource(1, 1);
 			//var entities = source.Out["Default"].List;
 			//ShowEntity(entities[3378]);
 		}
 
+		// create a entity for test purposes in the DB
 		public void AddEntity()
 		{
 			var context = EavContext.Instance(1, 1);
-			var userName = "Testing 2bg 17:53";
+			var userName = "Testing 2dm";
 			context.UserName = userName;
 			var newValues = new Dictionary<string, ValueViewModel>
 				{
-					{"FirstName", new ValueViewModel {Value = "Benjamin 17:51"}},
-					{"LastName", new ValueViewModel {Value = "Gemperle 17:51"}},
-					{"Address", new ValueViewModel {Value = "Churerstrasse 35 17:51"}},
-					{"ZIP", new ValueViewModel {Value = "9470 17:51"}},
-					{"City", new ValueViewModel {Value = "Buchs 17:51"}}
+					{"FirstName", new ValueViewModel {Value = "Andreas"}},
+					{"LastName", new ValueViewModel {Value = "Müller"}},
+					{"Address", new ValueViewModel {Value = "Räfiserhalde 34"}},
+					{"ZIP", new ValueViewModel {Value = "9470"}},
+					{"City", new ValueViewModel {Value = "Räfis"}}
 				};
 
 			context.AddEntity(37, newValues, null, null);
@@ -187,29 +216,57 @@ namespace ToSic.Eav
 		//	// Response.Write(((IMetaDataSource)source).IndexForExternalInt[17, 20].ToString());
 		//}
 
-		private void InitialDataSource()
+		private IDataSource InitialDataSource()
 		{
 			var source = DataSource.GetInitialDataSource();
-
-			ShowDataSource(source, "Initial DataSource");
+			return source;
 		}
 
 		private EntityTypeFilter EntityTypeFilter(string typeName)
 		{
 			var source = DataSource.GetInitialDataSource();
 
-			var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
-			filterPipeline.Configuration["TypeName"] = typeName;
-			ShowDataSource(filterPipeline, "EntityTypeFilter", true);
+			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
+			//old: filterPipeline.Configuration["TypeName"] = typeName;
+			filterPipeline.TypeName = typeName;
+			// ShowDataSource(filterPipeline, "EntityTypeFilter", true);
 
 			return filterPipeline;
 		}
 
-		private void AttributeFilter(DataSources.IDataSource source)
+		private ValueFilter TestValueFilter(string typeName, string attrName, string valueFilter)
 		{
-			var filterPipeline = (AttributeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.AttributeFilter", 1, 1, source);
-			filterPipeline.Configuration["AttributeNames"] = "LastName,FirstName";
-			ShowDataSource(filterPipeline, "AttributeFilter", true);
+			var source = DataSource.GetInitialDataSource();
+
+	      // var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
+			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
+			filterPipeline.TypeName = typeName;
+			var valuePipeline = DataSource.GetDataSource<ValueFilter>(1, 1, filterPipeline);
+			valuePipeline.Attribute = attrName;
+			valuePipeline.Value = valueFilter;
+
+			//var list = valuePipeline.Out["Default"].List;
+			//var filtered = (from e in list
+			// where e.Value.Attributes[attrName].Values.FirstOrDefault().ToString() == valueFilter
+			// select e).ToDictionary(x => x.Key, y => y.Value);
+
+			return valuePipeline;
+		}
+
+		private AttributeFilter AttributeFilter(DataSources.IDataSource source)
+		{
+			var filterPipeline = DataSource.GetDataSource<AttributeFilter>(1, 1, source);
+			filterPipeline.AttributeNames = "LastName,FirstName";
+			return filterPipeline;
+			//ShowDataSource(filterPipeline, "AttributeFilter", true);
+		}
+
+		private ValueSort ValueSort(DataSources.IDataSource source, string attributes, string directions)
+		{
+			var filterPipeline = DataSource.GetDataSource<ValueSort>(1, 1, source);
+			filterPipeline.Attributes = attributes;// "LastName,FirstName";
+			filterPipeline.Directions = directions;
+			return filterPipeline;
 		}
 
 		//private void Chain5()
@@ -225,50 +282,54 @@ namespace ToSic.Eav
 		//	ShowDataSource(source, "EavSqlStore");
 		//}
 
-
+		#region ShowStuff
 		public void ShowDataSource(DataSources.IDataSource source, string title, bool fullEntities = false)
 		{
-			Response.Write("<h2>" + title + " (Name: " + source.Name + ")</h2>");
+			var output = "<h2>" + title + " (Name: " + source.Name + ")</h2>";
 			Trace.Write("Filtering" + title, "Start");
 			//Response.Write("Ready: " + source.Ready);//; Chain: " + source.NameChain + "; Length: " + source.DistanceFromSource);
 			//Response.Write("<br>count:" + source.Out["Default"].List.Count);
 
 			foreach (var dataStream in source.Out)
 			{
-				Response.Write("<h3>" + dataStream.Key + " Count:" + dataStream.Value.List.Count + "</h3>");
+				output += "<h3>" + dataStream.Key + " Count:" + dataStream.Value.List.Count + "</h3>";
 
 				if (fullEntities)
 				{
-					Response.Write("<h4>Entities Details</h4><hr/>");
+					output += "<h4>Entities Details</h4><hr/>";
 					foreach (var entity in dataStream.Value.List.Select(e => e.Value))
-						ShowEntity(entity);
+						output += ShowEntity(entity);
 				}
 
 			}
 
 			Trace.Write("Filtering" + title, "Done");
+			litResults.Text = output;
 		}
 
-		public void ShowEntity(IEntity entity)
+		public string ShowEntity(IEntity entity)
 		{
-			Response.Write(entity.EntityId + "<br/>");
+			var output = entity.EntityId + "<br/>";
 			foreach (var attribute in entity.Attributes)
 			{
-				Response.Write(attribute.Key + ": " + attribute.Value[0] + "<br/>");
+				output += attribute.Key + ": " + attribute.Value[0] + "<br/>";
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
 				if (relationship != null)
 				{
-					Response.Write("Entities count: " + relationship.TypedContents.Count() + "<br/>");
-					Response.Write("Entity Titles: " + string.Join(", ", relationship.TypedContents.Select(e => e.Title[0])) + "<br/>");
+					output += "Entities count: " + relationship.TypedContents.Count() + "<br/>";
+					if (relationship.TypedContents.Any())
+						output += "Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title[0])) + "<br/>";
 				}
 			}
 
-			Response.Write("Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>");
-			Response.Write("AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>");
-			Response.Write("AllParents: " + entity.Relationships.AllParents.Count() + "<br/>");
+			output += "Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>";
+			output += "AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>";
+			output += "AllParents: " + entity.Relationships.AllParents.Count() + "<br/>";
 
-			Response.Write("<hr/>");
+			output += "<hr/>";
+			return output;
 		}
+		#endregion
 	}
 }

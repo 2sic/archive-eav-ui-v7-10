@@ -14,13 +14,28 @@ namespace ToSic.Eav.DataSources
 			get { return "AttributeFilter"; }
 		}
 
+		#region Configuration-properties
+		private const string AttributeNamesKey = "AttributeNames";
+
+		/// <summary>
+		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+		/// </summary>
+		public string AttributeNames
+		{
+			get { return Configuration[AttributeNamesKey]; }
+			set { Configuration[AttributeNamesKey] = value; }
+
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Constructs a new AttributeFilter DataSource
 		/// </summary>
 		public AttributeFilter()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-			Configuration.Add("AttributeNames", "[Settings:AttributeNames]");
+			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
@@ -29,7 +44,7 @@ namespace ToSic.Eav.DataSources
 
 			var result = new Dictionary<int, IEntity>();
 
-			var attributeNames = Configuration["AttributeNames"].Split(',');
+			var attributeNames = AttributeNames.Split(',');
 
 			foreach (var entity in In[DataSource.DefaultStreamName].List)
 			{
