@@ -12,11 +12,12 @@ namespace ToSic.Eav.ManagementUI
 		public bool IsDialog { get; set; }
 		public int? AppId { get; set; }
 		public string DetailsUrl { get; set; }
+		public string ReturnUrl { get; set; }
 		#endregion
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-
+			hlkBack.NavigateUrl = ReturnUrl.Replace("[EntityId]", EntityId.ToString());
 		}
 
 		protected void dsrcEntityVersions_ObjectCreating(object sender, ObjectDataSourceEventArgs e)

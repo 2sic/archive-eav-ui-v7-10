@@ -20,6 +20,7 @@ namespace ToSic.Eav.ManagementUI
 		public int? AppId { get; set; }
 		public int? DefaultCultureDimension { get; set; }
 		public string ReturnUrl { get; set; }
+		public string EditItemUrl { get; set; }
 		#endregion
 
 		protected void Page_Load(object sender, EventArgs e)
@@ -36,6 +37,8 @@ namespace ToSic.Eav.ManagementUI
 		protected void btnRestore_Click(object sender, EventArgs e)
 		{
 			_ctx.RestoreEntityVersion(EntityId, ChangeId, DefaultCultureDimension);
+
+			Response.Redirect(EditItemUrl.Replace("[EntityId]", EntityId.ToString()));
 		}
 
 		protected void dsrcVersionDetails_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)

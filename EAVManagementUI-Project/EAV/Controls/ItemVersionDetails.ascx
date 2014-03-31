@@ -12,6 +12,6 @@
 	</SelectParameters>
 </asp:ObjectDataSource>
 <asp:Panel runat="server" ID="pnlActions">
-	<asp:Hyperlink CssClass="eav-cancel" ID="hlkBack" runat="server" Text="Cancel" />
-	<asp:LinkButton CssClass="eav-restore" ID="btnRestore" runat="server" Text="Restore" OnClick="btnRestore_Click" />
+	<asp:Hyperlink CssClass="eav-cancel" ID="hlkBack" runat="server" Text="Back" />
+	<asp:LinkButton CssClass="eav-restore" ID="btnRestore" runat="server" Text="Restore" OnClick="btnRestore_Click" OnClientClick="return confirm('Are you sure you want to restore this Version?')" />
 </asp:Panel>

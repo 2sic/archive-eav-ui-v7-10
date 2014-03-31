@@ -176,6 +176,7 @@ namespace ToSic.Eav.ManagementUI
 					itemHistoryControl.AppId = AppId;
 					itemHistoryControl.EntityId = EntityId.Value;
 					itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", cultureDimensionReplaceValue);
+					itemHistoryControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(itemHistoryControl);
 					break;
 				case ManagementMode.ItemVersionDetails:
@@ -185,6 +186,7 @@ namespace ToSic.Eav.ManagementUI
 					itemVersionDetails.EntityId = EntityId.Value;
 					itemVersionDetails.ChangeId = ChangeId.Value;
 					itemVersionDetails.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
+					itemVersionDetails.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(itemVersionDetails);
 					break;
 				default:

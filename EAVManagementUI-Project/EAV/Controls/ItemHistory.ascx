@@ -18,3 +18,6 @@
 		<asp:Parameter Name="entityId" Type="Int32" />
 	</SelectParameters>
 </asp:ObjectDataSource>
+<asp:Panel runat="server" ID="pnlActions">
+	<asp:Hyperlink CssClass="eav-cancel" ID="hlkBack" runat="server" Text="Back" />
+</asp:Panel>
