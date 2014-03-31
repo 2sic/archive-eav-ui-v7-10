@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ToSic.Eav
 {
@@ -21,6 +20,14 @@ namespace ToSic.Eav
 		public Dimension GetDimension(int dimensionId)
 		{
 			return Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
+		}
+
+		/// <summary>
+		/// Get Dimensions by Ids
+		/// </summary>
+		internal IEnumerable<Dimension> GetDimensions(IEnumerable<int> dimensionIds)
+		{
+			return Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == ZoneId);
 		}
 
 		/// <summary>

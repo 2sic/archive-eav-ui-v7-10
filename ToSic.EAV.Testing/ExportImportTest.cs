@@ -31,14 +31,14 @@ namespace ToSic.Eav.Testing
 			var entityXElement = export.GetEntityXElement(entityModel);
 
 			// Import the Entity from XML
-			var xmlImport = new XmlImport(_ctx);
-			var importEntity = xmlImport.GetImportEntityUnsafe(entityXElement, entityModel.AssignmentObjectTypeId);
+			var xmlImport = new XmlImport();
+			//var importEntity = xmlImport.GetImportEntity(entityXElement, entityModel.AssignmentObjectTypeId);
 
 
-			// Actually Import the Entity as a new one, so create a new Guid
-			importEntity.EntityGuid = Guid.NewGuid();
-			var import = new Import.Import(_ctx.ZoneId, _ctx.AppId, "EntityImportTest");
-			import.RunImport(null, new List<Import.Entity> {importEntity});
+			//// Actually Import the Entity as a new one, so create a new Guid
+			//importEntity.EntityGuid = Guid.NewGuid();
+			//var import = new Import.Import(_ctx.ZoneId, _ctx.AppId, "EntityImportTest");
+			//import.RunImport(null, new List<Import.Entity> {importEntity});
 		}
 	}
 }

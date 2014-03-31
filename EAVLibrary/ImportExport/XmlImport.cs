@@ -12,120 +12,7 @@ namespace ToSic.Eav.ImportExport
 	/// </summary>
 	public class XmlImport
 	{
-		private readonly EavContext _ctx;
-
-		/// <summary>
-		/// Initializes a new instance of the XmlImport class.
-		/// </summary>
-		public XmlImport(EavContext ctx)
-		{
-			_ctx = ctx;
-		}
-
-		/// <summary>
-		/// Returns an EAV import entity
-		/// </summary>
-		/// <returns></returns>
-		public Import.Entity GetImportEntityUnsafe(XElement xEntity, int assignmentObjectTypeId, int? keyNumber = null)
-		{
-			var entity = new Import.Entity
-			{
-				AssignmentObjectTypeId = assignmentObjectTypeId,
-				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,
-				EntityGuid = Guid.Parse(xEntity.Attribute("EntityGUID").Value),
-				KeyNumber = keyNumber,
-				Values = new Dictionary<string, List<IValueImportModel>>()
-			};
-
-			// Get all Values from flat xEntity as anonymous Model
-			var flatValues = from v in xEntity.Elements("Value")
-							 select new
-							 {
-								 Key = v.Attribute("Key").Value,
-								 Type = v.Attribute("Type").Value,
-								 v.Attribute("Value").Value,
-								 Dimensions = from d in v.Elements("Dimension")
-											  select new
-											  {
-												  DimensionId = int.Parse(d.Attribute("DimensionID").Value),
-												  ReadOnly = bool.Parse(d.Attribute("ReadOnly").Value)
-											  }
-							 };
-
-			// Group values by Attribute
-			var attributeValues = from v in flatValues
-								  group v by v.Key into valuesGrouped
-								  select new
-								  {
-									  AttributeStaticName = valuesGrouped.Key,
-									  AttributeType = valuesGrouped.First().Type,
-									  Values = from v2 in valuesGrouped
-											   select new { StringValue = v2.Value, v2.Dimensions }
-								  };
-
-			// Append Attributes Import-Entity
-			foreach (var attr in attributeValues)
-			{
-				var valuesList = new List<IValueImportModel>();
-
-				// Add all Values
-				foreach (var value in attr.Values)
-				{
-					// Create typed ValueModel
-					IValueImportModel valueModel;
-					switch (attr.AttributeType)
-					{
-						case "String":
-						case "Hyperlink":
-							valueModel = new ValueImportModel<string>(entity) { Value = value.StringValue };
-							break;
-						case "Boolean":
-							bool? boolValue = null;
-							if (!string.IsNullOrEmpty(value.StringValue))
-								boolValue = bool.Parse(value.StringValue);
-							valueModel = new ValueImportModel<bool?>(entity) { Value = boolValue };
-							break;
-						case "DateTime":
-							DateTime? dateTimeValue = null;
-							if (!string.IsNullOrEmpty(value.StringValue))
-								dateTimeValue = DateTime.Parse(value.StringValue);
-							valueModel = new ValueImportModel<DateTime?>(entity) { Value = dateTimeValue };
-							break;
-						case "Number":
-							decimal? decimalValue = null;
-							if (!string.IsNullOrEmpty(value.StringValue))
-								decimalValue = decimal.Parse(value.StringValue);
-							valueModel = new ValueImportModel<decimal?>(entity) { Value = decimalValue };
-							break;
-						case "Entity":
-							var entityGuids = !string.IsNullOrEmpty(value.StringValue) ? value.StringValue.Split(',').Select(Guid.Parse).ToList() : new List<Guid>(0);
-							valueModel = new ValueImportModel<List<Guid>>(entity) { Value = entityGuids };
-							break;
-						default:
-							throw new NotSupportedException("Import");
-					}
-
-					// add all Dimensions
-					var dimensionList = new List<Import.ValueDimension>();
-					foreach (var dimension in value.Dimensions)
-					{
-						var dimensionExternalKey = _ctx.GetDimension(dimension.DimensionId).ExternalKey;
-						var valueDimension = new Import.ValueDimension { ReadOnly = dimension.ReadOnly, DimensionExternalKey = dimensionExternalKey };
-						dimensionList.Add(valueDimension);
-					}
-					valueModel.ValueDimensions = dimensionList;
-
-					valuesList.Add(valueModel);
-				}
-
-				entity.Values.Add(attr.AttributeStaticName, valuesList);
-			}
-
-
-			return entity;
-		}
-
-		class ImportValue
+		private class ImportValue
 		{
 			public XElement XmlValue;
 			public List<Import.ValueDimension> Dimensions;
@@ -134,10 +21,16 @@ namespace ToSic.Eav.ImportExport
 		/// <summary>
 		/// Returns an EAV import entity
 		/// </summary>
-		/// <returns></returns>
+		/// <param name="xEntity">xEntity to parse</param>
+		/// <param name="assignmentObjectTypeId">assignmentObjectTypeId of the Entity</param>
+		/// <param name="targetDimensions">all Dimensions that exist in the Target-App/Zone</param>
+		/// <param name="sourceDimensions">all Dimensions that exist in the Source-App/Zone</param>
+		/// <param name="sourceDefaultDimensionId">Default Dimension ID of the Surce-App/Zone</param>
+		/// <param name="defaultLanguage">Default Language of the Target-App/Zone</param>
+		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		public Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
 		{
-			var attributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value;
+			//var attributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value;
 
 			// ToDo: Review!
 			//// Special case: App AttributeSets must be assigned to the current app

@@ -18,6 +18,7 @@ namespace ToSic.Eav.Import
 		private readonly int _zoneId;
 		private readonly int _appId;
 		private readonly bool _overwriteExistingEntityValues;
+		private readonly bool _preserveUndefinedValues;
 		private readonly List<LogItem> _importLog = new List<LogItem>();
 		#endregion
 
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Import
 		/// <summary>
 		/// Initializes a new instance of the Import class.
 		/// </summary>
-		public Import(int? zoneId, int? appId, string userName, bool overwriteExistingEntityValues = false)
+		public Import(int? zoneId, int? appId, string userName, bool overwriteExistingEntityValues = false, bool preserveUndefinedValues = true)
 		{
 			_db = EavContext.Instance(zoneId, appId);
 
@@ -42,6 +43,7 @@ namespace ToSic.Eav.Import
 			_zoneId = _db.ZoneId;
 			_appId = _db.AppId;
 			_overwriteExistingEntityValues = overwriteExistingEntityValues;
+			_preserveUndefinedValues = preserveUndefinedValues;
 		}
 
 		/// <summary>
@@ -180,7 +182,7 @@ namespace ToSic.Eav.Import
 				if (!_overwriteExistingEntityValues)	// Skip values that are already present in existing Entity
 					newValues = entity.Values.Where(v => oldEntityModel[v.Key] == null).ToDictionary(v => v.Key, v => v.Value);
 
-				_db.UpdateEntity(entity.EntityGuid.Value, newValues, updateLog: _importLog);
+				_db.UpdateEntity(entity.EntityGuid.Value, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues);
 			}
 			// Add new Entity
 			else

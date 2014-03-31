@@ -15,9 +15,11 @@ namespace ToSic.Eav.Testing
 
 			var partlyVersioned = ctx.GetEntityVersions(329);
 
-			var version = ctx.GetEntityVersion(5449, 8063);
+			const int defaultCultureDimension = 5;
 
-			ctx.RestoreEntityVersion(5449, 8065);
+			var version = ctx.GetEntityVersion(5449, 8063, defaultCultureDimension);
+
+			ctx.RestoreEntityVersion(5449, 8065, defaultCultureDimension);
 
 			Debug.Write(version);
 		}

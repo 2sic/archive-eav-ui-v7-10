@@ -40,24 +40,6 @@ namespace ToSic.Eav.ManagementUI {
         protected global::System.Web.UI.WebControls.ObjectDataSource dsrcVersionDetails;
         
         /// <summary>
-        /// grdVersionChanges control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView grdVersionChanges;
-        
-        /// <summary>
-        /// dsrcVersionChanges control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ObjectDataSource dsrcVersionChanges;
-        
-        /// <summary>
         /// pnlActions control.
         /// </summary>
         /// <remarks>

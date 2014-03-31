@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Data;
 using System.Xml.Linq;
-using Microsoft.Practices.ObjectBuilder2;
+using System.Xml.XPath;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
@@ -351,12 +351,14 @@ namespace ToSic.Eav
 		/// <param name="dimensionIds">DimensionIds for all Values</param>
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
+		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
 		/// <returns>the updated Entity</returns>
-		public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null)
+		public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
 		{
 			var entity = GetEntity(entityGuid);
-			return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog);
+			return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
 		}
+
 		/// <summary>
 		/// Update an Entity
 		/// </summary>
@@ -366,8 +368,9 @@ namespace ToSic.Eav
 		/// <param name="dimensionIds">DimensionIds for all Values</param>
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
+		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
 		/// <returns>the updated Entity</returns>
-		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null)
+		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
 		{
 			var currentEntity = Entities.Single(e => e.EntityID == entityId);
 
@@ -381,7 +384,7 @@ namespace ToSic.Eav
 			// Update Values from Import Model
 			var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
 			if (newValuesImport != null)
-				UpdateEntityFromImportModel(updateLog, newValuesImport, attributes, currentEntity, currentValues);
+				UpdateEntityFromImportModel(updateLog, newValuesImport, attributes, currentEntity, currentValues, preserveUndefinedValues);
 			// Update Values from ValueViewModel
 			else
 				UpdateEntityDefault(entityId, newValues, dimensionIds, masterRecord, attributes, currentEntity, currentValues);
@@ -433,7 +436,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update an Entity when using the Import
 		/// </summary>
-		private void UpdateEntityFromImportModel(List<LogItem> updateLog, Dictionary<string, List<IValueImportModel>> newValuesImport, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues)
+		private void UpdateEntityFromImportModel(List<LogItem> updateLog, Dictionary<string, List<IValueImportModel>> newValuesImport, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues, bool preserveUndefinedValues)
 		{
 			if (updateLog == null)
 				throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -481,8 +484,8 @@ namespace ToSic.Eav
 				}
 			}
 
-			// remove all existing values that were not updated but only for updated Attributes
-			var valuesToDelete = currentEntity.Values.Where(v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null && updatedAttributeIds.Contains(v.AttributeID)).ToList();
+			// remove all existing values that were not updated
+			var valuesToDelete = currentEntity.Values.Where(v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
 			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
 		}
 
@@ -1226,28 +1229,26 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get all Versions of specified EntityId
 		/// </summary>
-		public List<EntityVersionInfo> GetEntityVersions(int entityId)
+		public DataTable GetEntityVersions(int entityId)
 		{
 			// get Versions from DataTimeline
 			var entityVersions = (from d in DataTimeline
 								  join c in ChangeLogs on d.SysLogID equals c.ChangeID
 								  where d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId
-								  select new EntityVersionInfo { Timestamp = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID }).ToList();
+								  orderby c.Timestamp descending
+								  select new { d.SysCreatedDate, c.User, c.ChangeID }).ToList();
 
-			// get first Version
-			var firstVersion = (from e in Entities
-								where e.EntityID == entityId
-								select new EntityVersionInfo { Timestamp = e.ChangeLogCreated.Timestamp, User = e.ChangeLogCreated.User, ChangeId = e.ChangeLogCreated.ChangeID }).Single();
+			// Generate DataTable with Version-Numbers
+			var versionNumber = entityVersions.Count;	// add version number decrement to prevent additional sorting
+			var result = new DataTable();
+			result.Columns.Add("Timestamp", typeof(DateTime));
+			result.Columns.Add("User", typeof(string));
+			result.Columns.Add("ChangeId", typeof(int));
+			result.Columns.Add("VersionNumber", typeof(int));
+			foreach (var version in entityVersions)
+				result.Rows.Add(version.SysCreatedDate, version.User, version.ChangeID, versionNumber--);	// decrement versionnumber
 
-			// if first Version doesn't exist in EntityVersions, add it to the entityVersions-List
-			if (entityVersions.All(e => e.ChangeId != firstVersion.ChangeId))
-				entityVersions.Add(firstVersion);
-
-			// Generate Version-Numbers
-			var versionNumber = 1;
-			entityVersions.OrderBy(v => v.Timestamp).ForEach(v => v.VersionNumber = versionNumber++);
-
-			return entityVersions;
+			return result;
 		}
 
 		/// <summary>
@@ -1255,39 +1256,69 @@ namespace ToSic.Eav
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="changeId">ChangeId to retrieve</param>
-		public Import.Entity GetEntityVersion(int entityId, int changeId)
+		/// <param name="defaultCultureDimension">Default Language</param>
+		public Import.Entity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
 			// Get Timeline Item
 			var timelineItem = DataTimeline.SingleOrDefault(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId);
 			if (timelineItem == null)
 				throw new InvalidOperationException(string.Format("EntityId {0} with ChangeId {1} not found in DataTimeline.", entityId, changeId));
 
+			// Parse XML
+			var xEntity = XElement.Parse(timelineItem.NewData);
+			var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
+			var assignmentObjectTypeId = GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
+
+			// Prepare source and target-Languages
+			if (!defaultCultureDimension.HasValue)
+				throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
+			var defaultLanguage = GetDimension(defaultCultureDimension.Value).ExternalKey;
+			var targetDimensions = GetLanguages();
+			var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionID")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
+			var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
+			var sourceDimensions = GetDimensions(allSourceDimensionIdsDistinct).ToList();
+			int sourceDefaultDimensionId;
+			if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension.Value))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
+				sourceDefaultDimensionId = defaultCultureDimension.Value;
+			else
+			{
+				var sourceDimensionsIdsGrouped = (from n in allSourceDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
+				sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension.Value;
+			}
+
 			// Load Entity from Xml unsing XmlImport
-			var xentity = XElement.Parse(timelineItem.NewData);
-			var assignmentObjectTypeName = xentity.Attribute("AssignmentObjectType").Value;
-			var import = new XmlImport(this);
-			return import.GetImportEntityUnsafe(xentity, GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID);
+			var import = new XmlImport();
+			return import.GetImportEntity(xEntity, assignmentObjectTypeId, targetDimensions, sourceDimensions, sourceDefaultDimensionId, defaultLanguage);
 		}
 
 		/// <summary>
 		/// Get the Values of an Entity in the specified Version
 		/// </summary>
-		public DataTable GetEntityVersionValues(int entityId, int changeId)
+		public DataTable GetEntityVersionValues(int entityId, int changeId, int? defaultCultureDimension)
 		{
-			var entityVersion = GetEntityVersion(entityId, changeId);
+			var entityVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
+
+			//var defaultLanguage = GetLanguageExternalKey(defaultCultureDimension.Value);
 
 			var result = new DataTable();
 			result.Columns.Add("Field");
 			result.Columns.Add("Language");
 			result.Columns.Add("Value");
+			result.Columns.Add("SharedWith");
 
 			foreach (var attribute in entityVersion.Values)
 			{
 				foreach (var valueModel in attribute.Value)
 				{
-					foreach (var valueDimension in valueModel.ValueDimensions)
+					//var languages = string.Join(", ", valueModel.ValueDimensions.Select(vd => vd.DimensionExternalKey + (vd.ReadOnly ? " (ReadOnly)" : "")));
+					//result.Rows.Add(attribute.Key, languages, GetTypedValue(valueModel));
+
+					var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
+					result.Rows.Add(attribute.Key, firstLanguage, GetTypedValue(valueModel));	// Add Main-Language
+
+					foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
 					{
-						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel));
+						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
 					}
 				}
 			}
@@ -1295,32 +1326,15 @@ namespace ToSic.Eav
 			return result;
 		}
 
-		public DataTable GetEntityChangedValues(int entityId, int changeId)
-		{
-			//ToDo: Implement
-			return new DataTable();
-		}
-
 		/// <summary>
 		/// Restore an Entity to the specified Version by creating a new Version using Import
 		/// </summary>
-		public void RestoreEntityVersion(int entityId, int changeId)
+		public void RestoreEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
-			var newVersion = GetEntityVersion(entityId, changeId);
+			var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
-			var import = new Import.Import(_zoneId, _appId, UserName, true);
+			var import = new Import.Import(_zoneId, _appId, UserName, true, false);
 			import.RunImport(null, new List<Import.Entity> { newVersion });
-		}
-
-		/// <summary>
-		/// Privides VersionInfo about an Entity
-		/// </summary>
-		public class EntityVersionInfo
-		{
-			public int VersionNumber { get; internal set; }
-			public DateTime Timestamp { get; internal set; }
-			public string User { get; internal set; }
-			public int ChangeId { get; internal set; }
 		}
 
 		#endregion

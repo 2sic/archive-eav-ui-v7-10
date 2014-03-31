@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -33,11 +34,11 @@ namespace ToSic.Eav.ManagementUI
 			// Init Row and RowData
 			if (e.Row.RowType != DataControlRowType.DataRow)
 				return;
-			var rowData = (EavContext.EntityVersionInfo)e.Row.DataItem;
+			var rowData = (DataRowView)e.Row.DataItem;
 
 			// Set Changes-Link
 			var hlkChanges = (HyperLink)e.Row.FindControl("hlkChanges");
-			hlkChanges.NavigateUrl = DetailsUrl.Replace("[ChangeId]", rowData.ChangeId.ToString()).Replace("[EntityId]", EntityId.ToString());
+			hlkChanges.NavigateUrl = DetailsUrl.Replace("[ChangeId]", rowData["ChangeId"].ToString()).Replace("[EntityId]", EntityId.ToString());
 		}
 	}
 }

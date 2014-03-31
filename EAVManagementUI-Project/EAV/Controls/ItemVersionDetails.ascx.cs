@@ -35,13 +35,14 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void btnRestore_Click(object sender, EventArgs e)
 		{
-			_ctx.RestoreEntityVersion(EntityId, ChangeId);
+			_ctx.RestoreEntityVersion(EntityId, ChangeId, DefaultCultureDimension);
 		}
 
 		protected void dsrcVersionDetails_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
 		{
 			e.InputParameters["entityId"] = EntityId;
 			e.InputParameters["changeId"] = ChangeId;
+			e.InputParameters["defaultCultureDimension"] = DefaultCultureDimension;
 		}
 
 		protected void dsrcVersionDetails_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
@@ -49,15 +50,6 @@ namespace ToSic.Eav.ManagementUI
 			e.ObjectInstance = _ctx;
 		}
 
-		protected void dsrcVersionChanges_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
-		{
-			e.InputParameters["entityId"] = EntityId;
-			e.InputParameters["changeId"] = ChangeId;
-		}
 
-		protected void dsrcVersionChanges_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
-		{
-			e.ObjectInstance = _ctx;
-		}
 	}
 }
