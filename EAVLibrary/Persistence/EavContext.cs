@@ -1287,8 +1287,7 @@ namespace ToSic.Eav
 			}
 
 			// Load Entity from Xml unsing XmlImport
-			var import = new XmlImport();
-			return import.GetImportEntity(xEntity, assignmentObjectTypeId, targetDimensions, sourceDimensions, sourceDefaultDimensionId, defaultLanguage);
+			return XmlImport.GetImportEntity(xEntity, assignmentObjectTypeId, targetDimensions, sourceDimensions, sourceDefaultDimensionId, defaultLanguage);
 		}
 
 		/// <summary>
@@ -1297,8 +1296,6 @@ namespace ToSic.Eav
 		public DataTable GetEntityVersionValues(int entityId, int changeId, int? defaultCultureDimension)
 		{
 			var entityVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
-
-			//var defaultLanguage = GetLanguageExternalKey(defaultCultureDimension.Value);
 
 			var result = new DataTable();
 			result.Columns.Add("Field");
@@ -1310,9 +1307,6 @@ namespace ToSic.Eav
 			{
 				foreach (var valueModel in attribute.Value)
 				{
-					//var languages = string.Join(", ", valueModel.ValueDimensions.Select(vd => vd.DimensionExternalKey + (vd.ReadOnly ? " (ReadOnly)" : "")));
-					//result.Rows.Add(attribute.Key, languages, GetTypedValue(valueModel));
-
 					var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
 					result.Rows.Add(attribute.Key, firstLanguage, GetTypedValue(valueModel));	// Add Main-Language
 

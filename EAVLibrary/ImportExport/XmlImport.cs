@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Import;
@@ -28,18 +27,8 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="sourceDefaultDimensionId">Default Dimension ID of the Surce-App/Zone</param>
 		/// <param name="defaultLanguage">Default Language of the Target-App/Zone</param>
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
-		public Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
+		public static Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
 		{
-			//var attributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value;
-
-			// ToDo: Review!
-			//// Special case: App AttributeSets must be assigned to the current app
-			//if (xEntity.Attribute("AssignmentObjectType").Value == "App")
-			//{
-			//	keyNumber = _appId;
-			//	assignmentObjectTypeId = SexyContent.AssignmentObjectTypeIDSexyContentApp;
-			//}
-
 			var targetEntity = new Import.Entity
 			{
 				AssignmentObjectTypeId = assignmentObjectTypeId,
@@ -112,47 +101,6 @@ namespace ToSic.Eav.ImportExport
 					// Process found value
 					if (sourceValue != null)
 					{
-						// Special cases for template-describing values
-						//if (attributeSetStaticName == SexyContent.AttributeSetStaticNameTemplateContentTypes)
-						//{
-						//	var sourceValueString = sourceValue.Attribute("Value").Value;
-						//	if (!String.IsNullOrEmpty(sourceValueString))
-						//	{
-						//		switch (sourceAttribute.StaticName)
-						//		{
-						//			case "ContentTypeID":
-						//				var attributeSet = _sexy.ContentContext.AttributeSetExists(sourceValueString, _sexy.ContentContext.AppId) ? _sexy.ContentContext.GetAttributeSet(sourceValueString) : null;
-						//				sourceValue.Attribute("Value").SetValue(attributeSet != null ? attributeSet.AttributeSetID.ToString() : "0");
-						//				break;
-						//			case "DemoEntityID":
-						//				var entityGuid = new Guid(sourceValue.Attribute("Value").Value);
-						//				var demoEntity = _sexy.ContentContext.EntityExists(entityGuid) ? _sexy.ContentContext.GetEntity(entityGuid) : null;
-						//				sourceValue.Attribute("Value").SetValue(demoEntity != null ? demoEntity.EntityID.ToString() : "0");
-						//				break;
-						//		}
-						//	}
-						//}
-
-
-						//// Correct FileId in Hyperlink fields (takes XML data that lists files)
-						//if (sourceValue.Attribute("Type").Value == "Hyperlink")
-						//{
-						//	var sourceValueString = sourceValue.Attribute("Value").Value;
-						//	var fileRegex = new Regex("^File:(?<FileId>[0-9]+)", RegexOptions.IgnoreCase);
-						//	var a = fileRegex.Match(sourceValueString);
-						//	if (a.Success && a.Groups["FileId"].Length > 0)
-						//	{
-						//		var originalId = int.Parse(a.Groups["FileId"].Value);
-
-						//		if (_fileIdCorrectionList.ContainsKey(originalId))
-						//		{
-						//			var newValue = fileRegex.Replace(sourceValueString, "File:" + _fileIdCorrectionList[originalId].ToString());
-						//			sourceValue.Attribute("Value").SetValue(newValue);
-						//		}
-
-						//	}
-						//}
-
 						var dimensionsToAdd = new List<Import.ValueDimension>();
 						if (targetDimensions.Single(p => p.ExternalKey == targetDimension.ExternalKey).DimensionID >= 1)
 							dimensionsToAdd.Add(new Import.ValueDimension { DimensionExternalKey = targetDimension.ExternalKey, ReadOnly = readOnly });
@@ -174,64 +122,13 @@ namespace ToSic.Eav.ImportExport
 
 				}
 
-				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue => GetImportValue(tempImportValue.XmlValue, tempImportValue.Dimensions, targetEntity)).ToList();
+				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue => ValueImportModel.GetModel(tempImportValue.XmlValue.Attribute("Value").Value, tempImportValue.XmlValue.Attribute("Type").Value, tempImportValue.Dimensions, targetEntity)).ToList();
 				targetValues.Add(sourceAttribute.StaticName, currentAttributesImportValues);
 			}
 
 			targetEntity.Values = targetValues;
 
 			return targetEntity;
-		}
-
-		private static IValueImportModel GetImportValue(XElement xValue, IEnumerable<Import.ValueDimension> valueDimensions, Import.Entity referencingEntity)
-		{
-			var stringValue = xValue.Attribute("Value").Value;
-			var type = xValue.Attribute("Type").Value;
-
-			IValueImportModel valueModel;
-
-			switch (type)
-			{
-				case "String":
-				case "Hyperlink":
-					valueModel = new ValueImportModel<string>(referencingEntity) { Value = stringValue };
-					break;
-				case "Number":
-					decimal typedDecimal;
-					var isDecimal = Decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
-					decimal? typedDecimalNullable = null;
-					if (isDecimal)
-						typedDecimalNullable = typedDecimal;
-					valueModel = new ValueImportModel<decimal?>(referencingEntity)
-					{
-						Value = typedDecimalNullable
-					};
-					break;
-				case "Entity":
-					var entityGuids = !string.IsNullOrEmpty(stringValue) ? stringValue.Split(',').Select(Guid.Parse).ToList() : new List<Guid>(0);
-					valueModel = new ValueImportModel<List<Guid>>(referencingEntity) { Value = entityGuids };
-					break;
-				case "DateTime":
-					DateTime typedDateTime;
-					valueModel = new ValueImportModel<DateTime?>(referencingEntity)
-					{
-						Value = DateTime.TryParse(stringValue, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out typedDateTime) ? typedDateTime : new DateTime?()
-					};
-					break;
-				case "Boolean":
-					bool typedBoolean;
-					valueModel = new ValueImportModel<bool?>(referencingEntity)
-					{
-						Value = Boolean.TryParse(stringValue, out typedBoolean) ? typedBoolean : new bool?()
-					};
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(type, stringValue, "Unknown type argument found in import XML.");
-			}
-
-			valueModel.ValueDimensions = valueDimensions;
-
-			return valueModel;
 		}
 	}
 }

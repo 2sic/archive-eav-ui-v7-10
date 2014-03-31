@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 
 namespace ToSic.Eav.Import
 {
@@ -39,6 +41,57 @@ namespace ToSic.Eav.Import
 		public ValueImportModel(Entity entity)
 		{
 			Entity = entity;
+		}
+	}
+
+	internal static class ValueImportModel
+	{
+		internal static IValueImportModel GetModel(string value, string type, IEnumerable<ValueDimension> dimensions, Entity entity)
+		{
+			IValueImportModel valueModel;
+
+			switch (type)
+			{
+				case "String":
+				case "Hyperlink":
+					valueModel = new ValueImportModel<string>(entity) { Value = value };
+					break;
+				case "Number":
+					decimal typedDecimal;
+					var isDecimal = Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
+					decimal? typedDecimalNullable = null;
+					if (isDecimal)
+						typedDecimalNullable = typedDecimal;
+					valueModel = new ValueImportModel<decimal?>(entity)
+					{
+						Value = typedDecimalNullable
+					};
+					break;
+				case "Entity":
+					var entityGuids = !String.IsNullOrEmpty(value) ? value.Split(',').Select(Guid.Parse).ToList() : new List<Guid>(0);
+					valueModel = new ValueImportModel<List<Guid>>(entity) { Value = entityGuids };
+					break;
+				case "DateTime":
+					DateTime typedDateTime;
+					valueModel = new ValueImportModel<DateTime?>(entity)
+					{
+						Value = DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime) ? typedDateTime : new DateTime?()
+					};
+					break;
+				case "Boolean":
+					bool typedBoolean;
+					valueModel = new ValueImportModel<bool?>(entity)
+					{
+						Value = Boolean.TryParse(value, out typedBoolean) ? typedBoolean : new bool?()
+					};
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(type, value, "Unknown type argument found in import XML.");
+			}
+
+			valueModel.ValueDimensions = dimensions;
+
+			return valueModel;
 		}
 	}
 
