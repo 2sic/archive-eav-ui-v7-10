@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Data;
 using System.Xml.Linq;
@@ -133,35 +134,35 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Import a new Entity
 		/// </summary>
-		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog)
+		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, null, null, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, importLog);
+			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, null, null, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, Import.Entity importEntity = null)
+		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
 		{
 			var changeId = GetChangeLogId();
 
@@ -174,7 +175,8 @@ namespace ToSic.Eav
 				KeyString = keyString,
 				SortOrder = sortOrder,
 				ChangeLogIDCreated = changeId,
-				EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid()
+				EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
+				IsPublished = isPublished
 			};
 
 			if (attributeSet != null)
@@ -369,10 +371,29 @@ namespace ToSic.Eav
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
 		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+		/// <param name="isPublished">Is this Entity Published or a draft</param>
 		/// <returns>the updated Entity</returns>
-		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
+		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
 		{
 			var currentEntity = Entities.Single(e => e.EntityID == entityId);
+
+			#region Unpublished Save (Draft-Saves)
+			// Current Entity is published but Update as a draft
+			if (currentEntity.IsPublished && !isPublished)
+			{
+				// create a new Draft-Entity
+				currentEntity = AddEntity(null, currentEntity.AttributeSetID, newValues, currentEntity.ConfigurationSet,
+					currentEntity.KeyNumber, currentEntity.KeyGuid, currentEntity.KeyString, currentEntity.AssignmentObjectTypeID,
+					currentEntity.SortOrder, currentEntity.EntityGUID, dimensionIds, updateLog, false);
+				currentEntity.PublishedEntityId = entityId;
+			}
+			// Update as Published but Current Entity is a Draft-Entity
+			else if (!currentEntity.IsPublished && isPublished)
+			{
+				currentEntity = PublishEntity(entityId, false);
+			}
+
+			#endregion
 
 			if (dimensionIds == null)
 				dimensionIds = new List<int>(0);
@@ -487,6 +508,52 @@ namespace ToSic.Eav
 			// remove all existing values that were not updated
 			var valuesToDelete = currentEntity.Values.Where(v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
 			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
+		}
+
+		/// <summary>
+		/// Publish a Draft Entity
+		/// </summary>
+		/// <param name="entityId">ID of the Draft-Entity</param>
+		public void PublishEntity(int entityId)
+		{
+			PublishEntity(entityId, true);
+		}
+
+		/// <summary>
+		/// Publish a Draft-Entity
+		/// </summary>
+		/// <param name="entityId">ID of the Draft-Entity</param>
+		/// <param name="copyEntityValues">Should all values of the Draft-Entity be copied to the published Entity</param>
+		/// <returns>The published Entity</returns>
+		private Entity PublishEntity(int entityId, bool copyEntityValues)
+		{
+			var unpublishedEntity = GetEntity(entityId);
+			if (unpublishedEntity.IsPublished)
+				throw new InvalidDataException(string.Format("EntityId {0} is already published"));
+
+			Entity publishedEntity;
+
+			// Publish Draft-Entity
+			if (!unpublishedEntity.PublishedEntityId.HasValue)
+			{
+				unpublishedEntity.IsPublished = true;
+				publishedEntity = unpublishedEntity;
+			}
+			// Replace currently published Entity with Unpublished Entity
+			else
+			{
+				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityId.Value);
+				if (copyEntityValues)
+					throw new NotImplementedException();
+				//UpdateEntity(publishedEntity.EntityID,)
+
+				// delete the Draft Entity
+				DeleteEntity(entityId);
+			}
+
+			SaveChanges();
+
+			return publishedEntity;
 		}
 
 		#region Update Values

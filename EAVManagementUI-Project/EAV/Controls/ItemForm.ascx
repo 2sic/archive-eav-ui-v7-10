@@ -18,8 +18,10 @@
     Bitte zuerst in der Standardsprache erfassen.
 </asp:Panel>--%>
 <asp:Panel runat="server" ID="pnlActions" Visible='<%# !HideNavigationButtons %>'>
-    <asp:LinkButton CssClass="eav-save" ID="btnInsert" runat="server" CommandName="Insert" Text="Insert" OnClick="btnInsert_Click" />
-	<asp:LinkButton CssClass="eav-save" ID="btnUpdate" runat="server" CommandName="Update" Text="Update" OnClick="btnUpdate_Click" />
-	<asp:LinkButton CssClass="eav-cancel" ID="btnCancel" runat="server" CommandName="Cancel" Text="Cancel" CausesValidation="false" OnClick="btnCancel_Click" />
+    <asp:LinkButton CssClass="eav-save" ID="btnInsert" runat="server" Text="Insert" OnClick="btnInsert_Click" />
+	<asp:LinkButton CssClass="eav-save" ID="btnInsertDraft" runat="server" Text="Insert as Draft" OnClick="btnInsertDraft_Click" />
+	<asp:LinkButton CssClass="eav-save" ID="btnUpdate" runat="server" Text="Update" OnClick="btnUpdate_Click" />
+	<asp:LinkButton CssClass="eav-save" ID="btnUpdateDraft" runat="server" Text="Update as Draft" OnClick="btnUpdateDraft_Click" />
+	<asp:LinkButton CssClass="eav-cancel" ID="btnCancel" runat="server" Text="Cancel" CausesValidation="false" OnClick="btnCancel_Click" />
 	<asp:Hyperlink CssClass="eav-history" ID="hlkShowHistory" runat="server" Text="Show History" NavigateUrl='<%# GetHistoryUrl() %>' />
 </asp:Panel>

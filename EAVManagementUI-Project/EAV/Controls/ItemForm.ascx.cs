@@ -241,6 +241,11 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void btnInsert_Click(object sender, EventArgs e)
 		{
+			Insert(null);
+		}
+
+		protected void btnInsertDraft_Click(object sender, EventArgs e)
+		{
 			Insert();
 		}
 
@@ -285,7 +290,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
-		public void Insert()
+		public void Insert(bool? isPublished)
 		{
 			// Cancel insert if current language is not default language
 			if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
