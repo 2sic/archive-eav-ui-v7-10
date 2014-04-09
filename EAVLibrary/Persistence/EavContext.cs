@@ -191,7 +191,7 @@ namespace ToSic.Eav
 
 			SaveChanges();
 
-			UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog);
+			UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
 			SaveChanges();
 
@@ -207,22 +207,46 @@ namespace ToSic.Eav
 
 			AddToEntities(clone);
 
+			CloneEntityValues(sourceEntity, clone);
+
+			return clone;
+		}
+
+		/// <summary>
+		/// Copy all Values (including Related Entities) from teh Source Entity to the target entity
+		/// </summary>
+		private void CloneEntityValues(Entity source, Entity target)
+		{
+			// Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
+			if (target.Values.Any())
+			{
+				foreach (var eavValue in target.Values)
+					eavValue.ChangeLogIDDeleted = GetChangeLogId();
+			}
+
 			// Add all Values with Dimensions
-			foreach (var eavValue in sourceEntity.Values.ToList())
+			foreach (var eavValue in source.Values.ToList())
 			{
 				var value = eavValue.CopyEntity(this);
 				// copy Dimensions
 				foreach (var valuesDimension in eavValue.ValuesDimensions)
-					value.ValuesDimensions.Add(new ValueDimension { DimensionID = valuesDimension.DimensionID, ReadOnly = valuesDimension.ReadOnly });
+					value.ValuesDimensions.Add(new ValueDimension
+					{
+						DimensionID = valuesDimension.DimensionID,
+						ReadOnly = valuesDimension.ReadOnly
+					});
 
-				clone.Values.Add(value);
+				target.Values.Add(value);
 			}
 
+			target.EntityParentRelationships.Clear();
 			// Add all Related Entities
-			foreach (var entityParentRelationship in sourceEntity.EntityParentRelationships)
-				clone.EntityParentRelationships.Add(new EntityRelationship { AttributeID = entityParentRelationship.AttributeID, ChildEntityID = entityParentRelationship.ChildEntityID });
-
-			return clone;
+			foreach (var entityParentRelationship in source.EntityParentRelationships)
+				target.EntityParentRelationships.Add(new EntityRelationship
+				{
+					AttributeID = entityParentRelationship.AttributeID,
+					ChildEntityID = entityParentRelationship.ChildEntityID
+				});
 		}
 
 		/// <summary>
@@ -406,25 +430,25 @@ namespace ToSic.Eav
 		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
 		{
 			var entity = Entities.Single(e => e.EntityID == entityId);
+			var draftEntityId = Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).FirstOrDefault();
 
 			#region Unpublished Save (Draft-Saves)
 			// Current Entity is published but Update as a draft
 			if (entity.IsPublished && !isPublished)
 			{
 				// Prevent duplicate Draft
-				var existingDraft = Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => e.EntityID).FirstOrDefault();
-				if (existingDraft != 0)
-					throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", entityId, existingDraft));
+				if (draftEntityId.HasValue)
+					throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", entityId, draftEntityId));
 
 				// create a new Draft-Entity
 				entity = CloneEntity(entity);
 				entity.IsPublished = false;
 				entity.PublishedEntityId = entityId;
 			}
-			// Update as Published but Current Entity is a Draft-Entity
-			else if (!entity.IsPublished && isPublished)
+			// Prevent editing of Published if there's a draft
+			else if (entity.IsPublished && draftEntityId.HasValue)
 			{
-				entity = PublishEntity(entityId, false);
+				throw new Exception(string.Format("Update Entity not allowed because a draft exists with EntityId {0}", draftEntityId));
 			}
 			#endregion
 
@@ -443,7 +467,14 @@ namespace ToSic.Eav
 			else
 				UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
 
-			SaveChanges();	// must save now to generate EntityModel afterward
+			// Update as Published but Current Entity is a Draft-Entity
+			if (!entity.IsPublished && isPublished)
+			{
+				SaveEntityToDataTimeline(entity);
+				entity = PublishEntity(entityId, false);
+			}
+
+			SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
 			SaveEntityToDataTimeline(entity);
 
@@ -556,13 +587,13 @@ namespace ToSic.Eav
 		/// Publish a Draft-Entity
 		/// </summary>
 		/// <param name="entityId">ID of the Draft-Entity</param>
-		/// <param name="copyEntityValues">Should all values of the Draft-Entity be copied to the published Entity</param>
+		/// <param name="autoSave">Call SaveChanges() automatically?</param>
 		/// <returns>The published Entity</returns>
-		private Entity PublishEntity(int entityId, bool copyEntityValues)
+		private Entity PublishEntity(int entityId, bool autoSave = true)
 		{
 			var unpublishedEntity = GetEntity(entityId);
 			if (unpublishedEntity.IsPublished)
-				throw new InvalidDataException(string.Format("EntityId {0} is already published"));
+				throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
 
 			Entity publishedEntity;
 
@@ -572,19 +603,18 @@ namespace ToSic.Eav
 				unpublishedEntity.IsPublished = true;
 				publishedEntity = unpublishedEntity;
 			}
-			// Replace currently published Entity with Unpublished Entity
+			// Replace currently published Entity with draft Entity and delete the draft
 			else
 			{
 				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityId.Value);
-				if (copyEntityValues)
-					throw new NotImplementedException();
-				//UpdateEntity(publishedEntity.EntityID,)
+				CloneEntityValues(unpublishedEntity, publishedEntity);
 
 				// delete the Draft Entity
-				DeleteEntity(entityId);
+				DeleteEntity(unpublishedEntity, false);
 			}
 
-			SaveChanges();
+			if (autoSave)
+				SaveChanges();
 
 			return publishedEntity;
 		}
@@ -1069,14 +1099,15 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Delete an Entity
 		/// </summary>
-		private bool DeleteEntity(Entity entity)
+		private bool DeleteEntity(Entity entity, bool autoSave = true)
 		{
 			if (entity == null)
 				return false;
 
 			entity.ChangeLogIDDeleted = GetChangeLogId();
 
-			SaveChanges();
+			if (autoSave)
+				SaveChanges();
 
 			return true;
 		}
