@@ -41,5 +41,9 @@ namespace ToSic.Eav
 		/// Get Related entities
 		/// </summary>
 		RelationshipManager Relationships { get; }
+		/// <summary>
+		/// Indicates whether this Entity is Published (true) or a Draft (false)
+		/// </summary>
+		bool IsPublished { get; }
 	}
 }

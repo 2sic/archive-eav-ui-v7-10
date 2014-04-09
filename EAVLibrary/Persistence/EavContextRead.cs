@@ -320,6 +320,7 @@ namespace ToSic.Eav
 									 e.KeyNumber,
 									 e.KeyString,
 									 e.AssignmentObjectTypeID,
+									 e.IsPublished,
 									 RelatedEntities = from r in e.EntityParentRelationships
 													   group r by r.AttributeID into rg
 													   select new
@@ -363,7 +364,7 @@ namespace ToSic.Eav
 
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], allRelationships: relationships);
+				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, allRelationships: relationships);
 
 				#region Add assignmentObjectTypes with Key
 

@@ -58,6 +58,12 @@ namespace ToSic.Eav.ManagementUI
 			set { _addClientScriptAndCss = value; }
 		}
 		public string ItemHistoryUrl { get; set; }
+		public bool IsPublished
+		{
+			get { return rblPublished.SelectedValue == "Published"; }
+			private set { rblPublished.SelectedIndex = value ? 0 : 1; }
+		}
+
 		#endregion
 
 		#region Init the Form
@@ -86,7 +92,6 @@ namespace ToSic.Eav.ManagementUI
 			{
 				case FormViewMode.Insert:
 					AddFormControls(AttributeSetId);
-					btnUpdate.Visible = false;
 
 					// If edited culture is not the default culture, show message that content must be edited in default culture first
 					if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
@@ -100,13 +105,11 @@ namespace ToSic.Eav.ManagementUI
 						pnlEditDefaultFirstEN.Visible = true;
 					}
 
-
 					break;
 				case FormViewMode.Edit:
 					var item = Db.GetEntity(EntityId);
 					AttributeSetId = item.AttributeSetID;
 					AddFormControls(item, Db.ZoneId, Db.AppId);
-					btnInsert.Visible = false;
 					break;
 				case FormViewMode.ReadOnly:
 					throw new NotImplementedException();
@@ -181,6 +184,8 @@ namespace ToSic.Eav.ManagementUI
 				if (!(fieldTemplate.MetaData.ContainsKey("VisibleInEditUI") && ((IAttribute<bool?>)fieldTemplate.MetaData["VisibleInEditUI"]).Typed[DimensionIds] == false) || entity.AssignmentObjectTypeID == DataSource.AssignmentObjectTypeIdFieldProperties)
 					phFields.Controls.Add(fieldTemplate);
 			}
+
+			IsPublished = entityModel.IsPublished;
 		}
 
 		private void SetJsonGeneralData()
@@ -229,24 +234,16 @@ namespace ToSic.Eav.ManagementUI
 				if (!(fieldTemplate.MetaData.ContainsKey("VisibleInEditUI") && ((IAttribute<bool?>)fieldTemplate.MetaData["VisibleInEditUI"]).Typed[DimensionIds] == false))
 					phFields.Controls.Add(fieldTemplate);
 			}
+
+			IsPublished = true;
 		}
 		#endregion
 
 		#region Event Handlers for Button-Clicks
 
-		protected void btnUpdate_Click(object sender, EventArgs e)
+		protected void btnSave_Click(object sender, EventArgs e)
 		{
-			Update();
-		}
-
-		protected void btnInsert_Click(object sender, EventArgs e)
-		{
-			Insert(null);
-		}
-
-		protected void btnInsertDraft_Click(object sender, EventArgs e)
-		{
-			Insert();
+			Save();
 		}
 
 		protected void btnCancel_Click(object sender, EventArgs e)
@@ -290,7 +287,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
-		public void Insert(bool? isPublished)
+		private void Insert()
 		{
 			// Cancel insert if current language is not default language
 			if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
@@ -298,16 +295,9 @@ namespace ToSic.Eav.ManagementUI
 
 			var values = new Dictionary<string, ValueViewModel>();
 
-			#region Extract Values
-			foreach (var ChildControl in phFields.Controls)
-			{
-				if (ChildControl is FieldTemplateUserControl)
-				{
-					var FieldTemplate = ChildControl as FieldTemplateUserControl;
-					FieldTemplate.ExtractValues(values);
-				}
-			}
-			#endregion
+			// Extract Values
+			foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>())
+				fieldTemplate.ExtractValues(values);
 
 			// Prepare DimensionIds
 			var dimensionIds = new List<int>();
@@ -316,9 +306,9 @@ namespace ToSic.Eav.ManagementUI
 
 			Entity result;
 			if (AssignmentObjectTypeId.HasValue)
-				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, AssignmentObjectTypeId.Value, dimensionIds: dimensionIds);
+				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, AssignmentObjectTypeId.Value, dimensionIds: dimensionIds, isPublished: IsPublished);
 			else
-				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, dimensionIds: dimensionIds);
+				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, dimensionIds: dimensionIds, isPublished: IsPublished);
 
 			RedirectToListItems();
 
@@ -329,22 +319,22 @@ namespace ToSic.Eav.ManagementUI
 				Saved(result);
 		}
 
-		public void Update()
+		private void Update()
 		{
 			var values = new Dictionary<string, ValueViewModel>();
 
 			#region Extract Values (only of enabled fields)
-			foreach (var FieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))
+			foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))
 			{
 				// if not master and not translated, don't pass/extract this value
-				if (!MasterRecord && FieldTemplate.ValueId == null && FieldTemplate.ReadOnly)
+				if (!MasterRecord && fieldTemplate.ValueId == null && fieldTemplate.ReadOnly)
 					continue;
 
-				FieldTemplate.ExtractValues(values);
+				fieldTemplate.ExtractValues(values);
 			}
 			#endregion
 
-			var result = Db.UpdateEntity(EntityId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord);
+			var result = Db.UpdateEntity(EntityId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
 
 			RedirectToListItems();
 

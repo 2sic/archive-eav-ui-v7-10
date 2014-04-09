@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Objects;
+using System.Data.Objects.DataClasses;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Data;
+using System.Reflection;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Import;
@@ -195,6 +198,31 @@ namespace ToSic.Eav
 			return newEntity;
 		}
 
+		public Entity CloneEntity(int entityId)
+		{
+			var sourceEntity = GetEntity(entityId);
+			var clone = new Entity();
+
+			// Copy all Property-Values except Entity-Keys
+			var pis = typeof(Entity).GetProperties();
+			foreach (var pi in from pi in pis let attrs = (EdmScalarPropertyAttribute[])pi.GetCustomAttributes(typeof(EdmScalarPropertyAttribute), false) from attr in attrs where !attr.EntityKeyProperty select pi)
+				pi.SetValue(clone, pi.GetValue(sourceEntity, null), null);
+
+			AddToEntities(clone);
+
+			// Add all Values with Dimensions
+			foreach (var eavValue in sourceEntity.Values.ToList())
+				clone.Values.Add(eavValue);
+
+			// Add all Related Entities
+			foreach (var entityChildRelationship in sourceEntity.EntityChildRelationships.ToList())
+				clone.EntityChildRelationships.Add(entityChildRelationship);
+
+			//SaveChanges();
+
+			return clone;
+		}
+
 		/// <summary>
 		/// Add a new Value
 		/// </summary>
@@ -301,7 +329,6 @@ namespace ToSic.Eav
 				SaveChanges();
 			return newAttribute;
 		}
-
 
 		/// <summary>
 		/// Add a new AttributeSet
