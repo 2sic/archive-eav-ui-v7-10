@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Data.Objects.DataClasses;
 using System.Linq;
 
 namespace ToSic.Eav
@@ -10,36 +11,6 @@ namespace ToSic.Eav
 	/// </summary>
 	public static class Tools
 	{
-		/// <summary>
-		/// Convert dynamic data to a DataTable. Useful for databinding to a GridView.
-		/// </summary>
-		/// <param name="items"></param>
-		/// <returns>A DataTable with the copied dynamic data.</returns>
-		public static DataTable ToDataTable(this IEnumerable<dynamic> items)
-		{
-			var data = items.ToArray();
-			if (!data.Any())
-				return null;
-
-			var dt = new DataTable();
-			foreach (var d in data)
-			{
-				var row = dt.NewRow();
-				var record = d;
-
-				foreach (var key in record.Keys)
-				{
-					if (!dt.Columns.Contains(key))
-						dt.Columns.Add(key);
-
-					row[key] = record[key];
-				}
-
-				dt.Rows.Add(row);
-			}
-			return dt;
-		}
-
 		/// <summary>
 		/// Convert Entities to a DataTable. All Entities must have same AttributeSet.
 		/// </summary>
@@ -51,8 +22,9 @@ namespace ToSic.Eav
 		{
 			var dt = new DataTable();
 
-			dt.Columns.Add("EntityId");
+			dt.Columns.Add("EntityId", typeof(int));
 			dt.Columns.Add("EntityTitle");
+			dt.Columns.Add("IsPublished", typeof(bool));
 
 			// Add all columns
 			foreach (var columnName in columnNames)
@@ -62,6 +34,7 @@ namespace ToSic.Eav
 			{
 				var row = dt.NewRow();
 				row["EntityId"] = item.EntityId;
+				row["IsPublished"] = item.IsPublished;
 				try
 				{
 					row["EntityTitle"] = item.Title[dimensionIds];
@@ -85,5 +58,21 @@ namespace ToSic.Eav
 
 			return dt.Rows.Count != 0 ? dt : null;
 		}
+
+		/// <summary>
+		/// Clone an Entity in Entity Framework 4
+		/// </summary>
+		/// <remarks>Source: http://www.codeproject.com/Tips/474296/Clone-an-Entity-in-Entity-Framework </remarks>
+		public static T CopyEntity<T>(this T entity, EavContext ctx, bool copyKeys = false) where T : EntityObject
+		{
+			var clone = ctx.CreateObject<T>();
+			var pis = entity.GetType().GetProperties();
+
+			foreach (var pi in from pi in pis let attrs = (EdmScalarPropertyAttribute[])pi.GetCustomAttributes(typeof(EdmScalarPropertyAttribute), false) from attr in attrs where copyKeys || !attr.EntityKeyProperty select pi)
+				pi.SetValue(clone, pi.GetValue(entity, null), null);
+
+			return clone;
+		}
+
 	}
 }

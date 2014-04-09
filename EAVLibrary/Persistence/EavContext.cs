@@ -198,27 +198,29 @@ namespace ToSic.Eav
 			return newEntity;
 		}
 
-		public Entity CloneEntity(int entityId)
+		/// <summary>
+		/// Clone an Entity with all Values
+		/// </summary>
+		private Entity CloneEntity(Entity sourceEntity)
 		{
-			var sourceEntity = GetEntity(entityId);
-			var clone = new Entity();
-
-			// Copy all Property-Values except Entity-Keys
-			var pis = typeof(Entity).GetProperties();
-			foreach (var pi in from pi in pis let attrs = (EdmScalarPropertyAttribute[])pi.GetCustomAttributes(typeof(EdmScalarPropertyAttribute), false) from attr in attrs where !attr.EntityKeyProperty select pi)
-				pi.SetValue(clone, pi.GetValue(sourceEntity, null), null);
+			var clone = sourceEntity.CopyEntity(this);
 
 			AddToEntities(clone);
 
 			// Add all Values with Dimensions
 			foreach (var eavValue in sourceEntity.Values.ToList())
-				clone.Values.Add(eavValue);
+			{
+				var value = eavValue.CopyEntity(this);
+				// copy Dimensions
+				foreach (var valuesDimension in eavValue.ValuesDimensions)
+					value.ValuesDimensions.Add(new ValueDimension { DimensionID = valuesDimension.DimensionID, ReadOnly = valuesDimension.ReadOnly });
+
+				clone.Values.Add(value);
+			}
 
 			// Add all Related Entities
-			foreach (var entityChildRelationship in sourceEntity.EntityChildRelationships.ToList())
-				clone.EntityChildRelationships.Add(entityChildRelationship);
-
-			//SaveChanges();
+			foreach (var entityParentRelationship in sourceEntity.EntityParentRelationships)
+				clone.EntityParentRelationships.Add(new EntityRelationship { AttributeID = entityParentRelationship.AttributeID, ChildEntityID = entityParentRelationship.ChildEntityID });
 
 			return clone;
 		}
@@ -409,9 +411,7 @@ namespace ToSic.Eav
 			if (currentEntity.IsPublished && !isPublished)
 			{
 				// create a new Draft-Entity
-				currentEntity = AddEntity(null, currentEntity.AttributeSetID, newValues, currentEntity.ConfigurationSet,
-					currentEntity.KeyNumber, currentEntity.KeyGuid, currentEntity.KeyString, currentEntity.AssignmentObjectTypeID,
-					currentEntity.SortOrder, currentEntity.EntityGUID, dimensionIds, updateLog, false);
+				currentEntity = CloneEntity(currentEntity);
 				currentEntity.PublishedEntityId = entityId;
 			}
 			// Update as Published but Current Entity is a Draft-Entity

@@ -231,14 +231,16 @@ namespace ToSic.Eav.Testing
 			db.DeleteApp(app.AppID);
 		}
 
-		[Test]
-		public void CloneEntity()
-		{
-			var db = EavContext.Instance(appId: 2);
-			var clone = db.CloneEntity(330);
-			db.AddToEntities(clone);
+		//[Test]
+		//public void CloneEntity()
+		//{
+		//	var db = EavContext.Instance(appId: 2);
+		//	var sourceEntity = db.GetEntity(330);
+		//	var clone = db.CloneEntity(sourceEntity);
+		//	clone.IsPublished = false;
+		//	db.AddToEntities(clone);
 
-			db.SaveChanges();
-		}
+		//	db.SaveChanges();
+		//}
 	}
 }
