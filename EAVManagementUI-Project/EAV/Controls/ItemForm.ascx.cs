@@ -138,6 +138,7 @@ namespace ToSic.Eav.ManagementUI
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
 			var metaDataAppId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : appId;
 			var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : zoneId;
+			var entityReadOnly = entityModel.GetDraft() != null;
 
 			foreach (var attribute in Db.GetAttributes(entity.AttributeSetID))
 			{
@@ -177,7 +178,8 @@ namespace ToSic.Eav.ManagementUI
 				fieldTemplate.AppId = AppId;
 				fieldTemplate.ZoneId = ZoneId;
 				fieldTemplate.DimensionIds = DimensionIds;
-
+				if (entityReadOnly)
+					fieldTemplate.Enabled = false;
 				#endregion
 
 				// Only add if VisibleInEditUI != false or AssignmentObjectType == Field Properties

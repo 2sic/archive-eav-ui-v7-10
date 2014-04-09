@@ -7,7 +7,7 @@
 		<asp:BoundField DataField="User" HeaderText="Who" SortExpression="User" />
 		<asp:TemplateField>
 			<ItemTemplate>
-				<asp:HyperLink runat="server" Text="Changes" ID="hlkChanges" />
+				<asp:HyperLink runat="server" Text="View" ID="hlkChanges" />
 			</ItemTemplate>
 		</asp:TemplateField>
 	</Columns>

@@ -19,7 +19,6 @@ namespace ToSic.Eav
 		public IContentType Type { get; internal set; }
 		[ScriptIgnore]
 		public RelationshipManager Relationships { get; internal set; }
-
 		public bool IsPublished { get; internal set; }
 		public int AssignmentObjectTypeId { get; internal set; }
 
@@ -66,6 +65,16 @@ namespace ToSic.Eav
 			IsPublished = entity.IsPublished;
 			Attributes = attributes;
 			Relationships = new RelationshipManager(this, allRelationships);
+		}
+
+		public IEntity GetDraft()
+		{
+			return null;
+		}
+
+		public IEntity GetPublished()
+		{
+			return null;
 		}
 	}
 
