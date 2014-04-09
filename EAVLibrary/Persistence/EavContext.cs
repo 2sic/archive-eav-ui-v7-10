@@ -430,7 +430,7 @@ namespace ToSic.Eav
 		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
 		{
 			var entity = Entities.Single(e => e.EntityID == entityId);
-			var draftEntityId = Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).FirstOrDefault();
+			var draftEntityId = GetDraftEntityId(entityId);
 
 			#region Unpublished Save (Draft-Saves)
 			// Current Entity is published but Update as a draft
@@ -479,6 +479,11 @@ namespace ToSic.Eav
 			SaveEntityToDataTimeline(entity);
 
 			return entity;
+		}
+
+		internal int? GetDraftEntityId(int entityId)
+		{
+			return Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -1085,7 +1090,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool DeleteEntity(int entityId)
 		{
-			return DeleteEntity(Entities.SingleOrDefault(e => e.EntityID == entityId));
+			return DeleteEntity(GetEntity(entityId));
 		}
 
 		/// <summary>
@@ -1093,7 +1098,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool DeleteEntity(Guid entityGuid)
 		{
-			return DeleteEntity(Entities.SingleOrDefault(e => e.EntityGUID == entityGuid));
+			return DeleteEntity(GetEntity(entityGuid));
 		}
 
 		/// <summary>

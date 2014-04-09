@@ -173,6 +173,23 @@ namespace ToSic.Eav.Import
 					return;
 				}
 
+				#region Handle Draft-Entity
+				if (!existingEntity.IsPublished)
+				{
+					_importLog.Add(new LogItem(EventLogEntryType.Information, "Entity published automatically") { Entity = entity, });
+					_db.PublishEntity(existingEntity.EntityID);
+				}
+				// Delete Draft-Entity
+				var draftEntityId = _db.GetDraftEntityId(existingEntity.EntityID);
+				if (draftEntityId.HasValue)
+				{
+					_importLog.Add(new LogItem(EventLogEntryType.Information, "Draft-Entity deleted") { Entity = entity, });
+					_db.DeleteEntity(draftEntityId.Value);
+				}
+				#endregion
+
+
+
 				_importLog.Add(new LogItem(EventLogEntryType.Information, "Entity already exists") { Entity = entity });
 
 				// Get vales from old EntityModel
