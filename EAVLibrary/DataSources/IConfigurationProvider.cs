@@ -17,6 +17,6 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Replaces all Tokens in the ConfigList with actual values provided by the Sources-Provider
 		/// </summary>
-		void LoadConfiguration();
+		void LoadConfiguration(IDictionary<string, string> configList);
 	}
 }

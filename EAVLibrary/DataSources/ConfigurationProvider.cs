@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// List of all Configurations for this DataSource
 		/// </summary>
-		public IDictionary<string, string> ConfigList { get; internal set; }
+		//public IDictionary<string, string> configList { get; internal set; }
 		private readonly TokenReplace _tokenReplace;
 
 		/// <summary>
@@ -26,9 +26,9 @@ namespace ToSic.Eav.DataSources
 			_tokenReplace = new TokenReplace(Sources);
 		}
 
-		public void LoadConfiguration()
+		public void LoadConfiguration(IDictionary<string, string> configList )
 		{
-			foreach (var o in ConfigList.ToList())
+			foreach (var o in configList.ToList())
 			{
 				if (!_tokenReplace.ContainsTokens(o.Value))
 					continue;
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
 						break;
 				}
 
-				ConfigList[o.Key] = newValue;
+				configList[o.Key] = newValue;
 			}
 		}
 	}

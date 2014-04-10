@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
 				return;
 
 			if (ConfigurationProvider != null)
-				ConfigurationProvider.LoadConfiguration();
+				ConfigurationProvider.LoadConfiguration(Configuration);
 			_configurationIsLoaded = true;
 		}
 

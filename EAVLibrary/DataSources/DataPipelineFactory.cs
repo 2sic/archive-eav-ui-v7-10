@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 				#endregion
 
 				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), zoneId, appId, configurationProvider: configurationProvider);
-				configurationProvider.ConfigList = dataSource.Configuration;
+				//configurationProvider.configList = dataSource.Configuration;
 
 				pipeline.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
 			}
