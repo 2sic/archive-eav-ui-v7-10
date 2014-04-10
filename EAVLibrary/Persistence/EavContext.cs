@@ -40,6 +40,7 @@ namespace ToSic.Eav
 		#region Private Fields
 		private int _appId;
 		private int _zoneId;
+		/// <summary>caches all AttributeSets for each App</summary>
 		private readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 		/// <summary>SaveChanges() assigns all Changes to this ChangeLog</summary>
 		private int _mainChangeLogId;
@@ -331,6 +332,9 @@ namespace ToSic.Eav
 			};
 
 			AddToAttributeSets(newSet);
+
+			if (_contentTypes.ContainsKey(_appId))
+				_contentTypes.Remove(_appId);
 
 			if (autoSave)
 				SaveChanges();
