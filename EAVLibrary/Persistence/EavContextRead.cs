@@ -171,28 +171,23 @@ namespace ToSic.Eav
 		/// </summary>
 		public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
 		{
-			var result = new List<AttributeWithMetaInfo>();
-
 			var attributesInSet = AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
 
 			var systemScope = AttributeScope.System.ToString();
-			foreach (var a in attributesInSet)
-			{
-				var metaData = GetAttributeMetaData(a.AttributeID);
-				result.Add(new AttributeWithMetaInfo
-				{
-					AttributeID = a.AttributeID,
-					IsTitle = a.IsTitle,
-					StaticName = a.Attribute.StaticName,
-					Name = metaData.ContainsKey("Name") ? metaData["Name"][dimensionIds].ToString() : null,
-					Notes = metaData.ContainsKey("Notes") ? metaData["Notes"][dimensionIds].ToString() : null,
-					Type = a.Attribute.Type,
-					HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
-					MetaData = metaData
-				});
-			}
 
-			return result;
+			return (from a in attributesInSet
+					let metaData = GetAttributeMetaData(a.AttributeID)
+					select new AttributeWithMetaInfo
+					{
+						AttributeID = a.AttributeID,
+						IsTitle = a.IsTitle,
+						StaticName = a.Attribute.StaticName,
+						Name = metaData.ContainsKey("Name") ? metaData["Name"][dimensionIds].ToString() : null,
+						Notes = metaData.ContainsKey("Notes") ? metaData["Notes"][dimensionIds].ToString() : null,
+						Type = a.Attribute.Type,
+						HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
+						MetaData = metaData
+					}).ToList();
 		}
 
 		/// <summary>
@@ -305,17 +300,72 @@ namespace ToSic.Eav
 		/// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
 		internal CacheItem GetDataForCache(int[] entityIds, int appId, IDataSource source)
 		{
+			var contentTypes = GetContentTypes(appId);
+
+			var assignmentObjectTypesGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+			var assignmentObjectTypesNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+			var assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+			var relationships = new List<EntityRelationshipItem>();
+
 			if (entityIds == null)
 				entityIds = new int[0];
 
-			#region Get Entities from Database
 			var filterByEntityIds = entityIds.Any();
+
+			// Add requested Entities
+			var entities = new Dictionary<int, IEntity>();
+			AppendEntitiesToViewModel(entities, filterByEntityIds, entityIds, appId, source, contentTypes, relationships, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString);
+
+			// Ensure drafts & published Versions are also added (if filtered by Id, otherwise they're loaded as no filter was applied)
+			if (filterByEntityIds)
+			{
+				var publishingEntityIds = new List<int>();
+				var publishingEntities = from e in Entities
+										 where (entityIds.Contains(e.EntityID) || entityIds.Contains(e.PublishedEntityID.Value)) && e.ChangeLogDeleted == null && e.PublishedEntityID.HasValue && e.IsPublished == false
+										 select new { e.EntityID, e.PublishedEntityID };
+				foreach (var publishingEntity in publishingEntities)
+				{
+					if (!entityIds.Contains(publishingEntity.EntityID) && !publishingEntityIds.Contains(publishingEntity.EntityID))
+						publishingEntityIds.Add(publishingEntity.EntityID);
+					if (publishingEntity.PublishedEntityID.HasValue && !entityIds.Contains(publishingEntity.PublishedEntityID.Value) && !publishingEntityIds.Contains(publishingEntity.PublishedEntityID.Value))
+						publishingEntityIds.Add(publishingEntity.PublishedEntityID.Value);
+				}
+
+				AppendEntitiesToViewModel(entities, filterByEntityIds, publishingEntityIds, appId, source, contentTypes, relationships, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString);
+			}
+
+			#region Populate Entity-Relationships (must be done after all EntityModels are created)
+			var relationshipsRaw = from r in EntityRelationships
+								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
+								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
+								   select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
+			foreach (var relationship in relationshipsRaw)
+			{
+				try
+				{
+					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
+				}
+				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
+			}
+			#endregion
+
+			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
+		}
+
+		/// <summary>
+		/// Append Entities with Specified EntityIds to the Entities List
+		/// </summary>
+		private void AppendEntitiesToViewModel(IDictionary<int, IEntity> entities, bool filterByEntityIds, IEnumerable<int> entityIds, int appId, IDataSource source, IDictionary<int, IContentType> contentTypes, List<EntityRelationshipItem> relationships, IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber, Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString)
+		{
+			// Get Entities from Database
 			var entitiesValues = from e in Entities
 								 where
-									!e.ChangeLogIDDeleted.HasValue &&
-									e.Set.AppID == appId &&
-									e.Set.ChangeLogIDDeleted == null &&
-									(!filterByEntityIds || entityIds.Contains(e.EntityID))
+									 !e.ChangeLogIDDeleted.HasValue &&
+									 e.Set.AppID == appId &&
+									 e.Set.ChangeLogIDDeleted == null &&
+									 (!filterByEntityIds || entityIds.Contains(e.EntityID))
+								 orderby
+									 e.EntityID // guarantees Published appear before draft
 								 select new
 								 {
 									 e.EntityID,
@@ -326,50 +376,61 @@ namespace ToSic.Eav
 									 e.KeyString,
 									 e.AssignmentObjectTypeID,
 									 e.IsPublished,
+									 e.PublishedEntityID,
 									 RelatedEntities = from r in e.EntityParentRelationships
-													   group r by r.AttributeID into rg
-													   select new
-													   {
-														   AttributeID = rg.Key,
-														   AttributeName = rg.Select(a => a.Attribute.StaticName).FirstOrDefault(),
-														   IsTitle = rg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
-														   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityID)
-													   },
+													   group r by r.AttributeID
+														   into rg
+														   select new
+														   {
+															   AttributeID = rg.Key,
+															   AttributeName = rg.Select(a => a.Attribute.StaticName).FirstOrDefault(),
+															   IsTitle = rg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
+															   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityID)
+														   },
 									 Attributes = from v in e.Values
 												  where !v.ChangeLogIDDeleted.HasValue
-												  group v by v.AttributeID into vg
-												  select new
-												  {
-													  AttributeID = vg.Key,
-													  AttributeName = vg.Select(v1 => v1.Attribute.StaticName).FirstOrDefault(),
-													  AttributeType = vg.Select(v1 => v1.Attribute.Type).FirstOrDefault(),
-													  IsTitle = vg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
-													  Values = from v2 in vg
-															   orderby v2.ChangeLogIDCreated
-															   select new
-															   {
-																   v2.ValueID,
-																   v2.Value,
-																   Languages = from l in v2.ValuesDimensions select new DimensionModel { DimensionId = l.DimensionID, ReadOnly = l.ReadOnly, Key = l.Dimension.ExternalKey.ToLower() },
-																   v2.ChangeLogIDCreated
-															   }
-												  }
+												  group v by v.AttributeID
+													  into vg
+													  select new
+													  {
+														  AttributeID = vg.Key,
+														  AttributeName = vg.Select(v1 => v1.Attribute.StaticName).FirstOrDefault(),
+														  AttributeType = vg.Select(v1 => v1.Attribute.Type).FirstOrDefault(),
+														  IsTitle = vg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
+														  Values = from v2 in vg
+																   orderby v2.ChangeLogIDCreated
+																   select new
+																   {
+																	   v2.ValueID,
+																	   v2.Value,
+																	   Languages = from l in v2.ValuesDimensions
+																				   select
+																					   new DimensionModel
+																					   {
+																						   DimensionId = l.DimensionID,
+																						   ReadOnly = l.ReadOnly,
+																						   Key = l.Dimension.ExternalKey.ToLower()
+																					   },
+																	   v2.ChangeLogIDCreated
+																   }
+													  }
 								 };
-			#endregion
 
-			var contentTypes = GetContentTypes(appId);
-
-			var assignmentObjectTypesGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
-			var assignmentObjectTypesNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
-			var assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
-			var relationships = new List<EntityRelationshipItem>();
-
-			#region Build Entities Model (steps that can't be done on DB directly)
-			var entities = new Dictionary<int, IEntity>();
-
+			// Build Model (steps that can't be done on DB directly)
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, allRelationships: relationships);
+				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
+
+				// If entity is a draft, add references to Published Entity
+				if (!e.IsPublished && e.PublishedEntityID.HasValue)
+				{
+					// Published Entity is already in the Entities-List
+					if (entities.ContainsKey(e.PublishedEntityID.Value))
+					{
+						model.PublishedEntity = entities[e.PublishedEntityID.Value];
+						((EntityModel)model.PublishedEntity).DraftEntity = model;
+					}
+				}
 
 				#region Add assignmentObjectTypes with Key
 
@@ -405,7 +466,6 @@ namespace ToSic.Eav
 
 						((List<IEntity>)assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString]).Add(model);
 					}
-
 				}
 
 				#endregion
@@ -413,6 +473,7 @@ namespace ToSic.Eav
 				var oldestChangeLogId = int.MaxValue;
 
 				#region add Related-Entities Attributes
+
 				foreach (var a in e.RelatedEntities)
 				{
 					var attributeModel = GetAttributeManagementModel("Entity");
@@ -437,9 +498,11 @@ namespace ToSic.Eav
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
 				}
+
 				#endregion
 
 				#region Add "normal" Attributes (that are not Entity-Relations)
+
 				foreach (var a in e.Attributes)
 				{
 					var attributeModel = GetAttributeManagementModel(a.AttributeType);
@@ -455,6 +518,7 @@ namespace ToSic.Eav
 					var valuesModelList = new List<IValue>();
 
 					#region Add all Values
+
 					foreach (var v in a.Values)
 					{
 						var valueModel = GetValueModel(a.AttributeType, v.Value);
@@ -466,34 +530,17 @@ namespace ToSic.Eav
 
 						valuesModelList.Add((IValue)valueModel);
 					}
+
 					#endregion
 
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
 				}
+
 				#endregion
 
 				entities.Add(e.EntityID, model);
 			}
-			#endregion
-
-			#region Populate Entity-Relationships (must be done after all Entities are created)
-			var relationshipsRaw = from r in EntityRelationships
-								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
-								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
-								   select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
-			foreach (var relationship in relationshipsRaw)
-			{
-				try
-				{
-					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
-				}
-				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
-
-			}
-			#endregion
-
-			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
 		}
 
 		/// <summary>
@@ -552,8 +599,7 @@ namespace ToSic.Eav
 
 						return new ValueModel<decimal?> { TypedContents = decimal.Parse(value, CultureInfo.InvariantCulture) };
 					case "Entity":
-						// ToDo: Throw Exception!
-						return null;
+						throw new NotSupportedException("GetValueModel for Entity-Type not supported");
 					default:
 						return new ValueModel<string> { TypedContents = value };
 				}

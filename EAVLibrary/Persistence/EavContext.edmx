@@ -136,7 +136,7 @@
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
           <Property Name="ChangeLogDeleted" Type="int" />
           <Property Name="IsPublished" Type="bit" Nullable="false" />
-          <Property Name="PublishedEntityId" Type="int" />
+          <Property Name="PublishedEntityID" Type="int" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_EntityRelationships">
           <Key>
@@ -972,7 +972,7 @@
           <NavigationProperty Name="EntityChildRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <NavigationProperty Name="EntityParentRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <Property Name="IsPublished" Type="Boolean" Nullable="false" />
-          <Property Name="PublishedEntityId" Type="Int32" />
+          <Property Name="PublishedEntityID" Type="Int32" />
         </EntityType>
         <EntityType Name="EavValue">
           <Key>
@@ -1547,7 +1547,7 @@
           <EntitySetMapping Name="Entities">
             <EntityTypeMapping TypeName="ToSic.Eav.Entity">
               <MappingFragment StoreEntitySet="ToSIC_EAV_Entities">
-                <ScalarProperty Name="PublishedEntityId" ColumnName="PublishedEntityId" />
+                <ScalarProperty Name="PublishedEntityID" ColumnName="PublishedEntityID" />
                 <ScalarProperty Name="IsPublished" ColumnName="IsPublished" />
                 <ScalarProperty Name="ChangeLogIDDeleted" ColumnName="ChangeLogDeleted" />
                 <ScalarProperty Name="ChangeLogIDCreated" ColumnName="ChangeLogCreated" />

@@ -21,18 +21,12 @@ namespace ToSic.Eav
 		public RelationshipManager Relationships { get; internal set; }
 		public bool IsPublished { get; internal set; }
 		public int AssignmentObjectTypeId { get; internal set; }
+		internal IEntity DraftEntity { get; set; }
+		internal IEntity PublishedEntity { get; set; }
 
 		public IAttribute this[string attributeName]
 		{
 			get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
-		}
-
-		/// <summary>
-		/// Create a new blank EntityModel
-		/// </summary>
-		internal EntityModel(IEnumerable<EntityRelationshipItem> allRelationships)
-		{
-			Relationships = new RelationshipManager(this, allRelationships);
 		}
 
 		/// <summary>
@@ -69,12 +63,12 @@ namespace ToSic.Eav
 
 		public IEntity GetDraft()
 		{
-			return null;
+			return DraftEntity;
 		}
 
 		public IEntity GetPublished()
 		{
-			return null;
+			return PublishedEntity;
 		}
 	}
 

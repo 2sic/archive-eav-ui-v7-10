@@ -443,7 +443,7 @@ namespace ToSic.Eav
 				// create a new Draft-Entity
 				entity = CloneEntity(entity);
 				entity.IsPublished = false;
-				entity.PublishedEntityId = entityId;
+				entity.PublishedEntityID = entityId;
 			}
 			// Prevent editing of Published if there's a draft
 			else if (entity.IsPublished && draftEntityId.HasValue)
@@ -483,7 +483,7 @@ namespace ToSic.Eav
 
 		internal int? GetDraftEntityId(int entityId)
 		{
-			return Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
+			return Entities.Where(e => e.PublishedEntityID == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
 		}
 
 		/// <summary>
@@ -603,7 +603,7 @@ namespace ToSic.Eav
 			Entity publishedEntity;
 
 			// Publish Draft-Entity
-			if (!unpublishedEntity.PublishedEntityId.HasValue)
+			if (!unpublishedEntity.PublishedEntityID.HasValue)
 			{
 				unpublishedEntity.IsPublished = true;
 				publishedEntity = unpublishedEntity;
@@ -611,7 +611,7 @@ namespace ToSic.Eav
 			// Replace currently published Entity with draft Entity and delete the draft
 			else
 			{
-				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityId.Value);
+				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityID.Value);
 				CloneEntityValues(unpublishedEntity, publishedEntity);
 
 				// delete the Draft Entity

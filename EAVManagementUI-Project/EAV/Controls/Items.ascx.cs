@@ -57,8 +57,9 @@ namespace ToSic.Eav.ManagementUI
 				editLink.NavigateUrl += "&" + CultureUrlParameterName + "=[CultureDimension]";
 			var editLinkUrlSchema = IsDialog ? editLinkUrlSchemaForDialogs : EditItemUrl;
 
-			editLink.NavigateUrl = editLinkUrlSchema.Replace("[EntityId]", entityId).Replace("[CultureDimension]", DefaultCultureDimension.ToString());
+			//var editEntityId = (bool)rowData["IsPublished"] ? entityId : 
 
+			editLink.NavigateUrl = editLinkUrlSchema.Replace("[EntityId]", entityId).Replace("[CultureDimension]", DefaultCultureDimension.ToString());
 			#endregion
 
 			#region Extend Delete-Link with ClientSide-Confirm

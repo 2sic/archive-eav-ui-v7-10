@@ -22,9 +22,12 @@ namespace ToSic.Eav
 		{
 			var dt = new DataTable();
 
+			var systemColumns = new[] { "EntityId", "EntityTitle", "IsPublished", "PublishedEntityId", "DraftEntityId" };
 			dt.Columns.Add("EntityId", typeof(int));
 			dt.Columns.Add("EntityTitle");
 			dt.Columns.Add("IsPublished", typeof(bool));
+			dt.Columns.Add("PublishedEntityId");
+			dt.Columns.Add("DraftEntityId");
 
 			// Add all columns
 			foreach (var columnName in columnNames)
@@ -33,19 +36,23 @@ namespace ToSic.Eav
 			foreach (var item in items)
 			{
 				var row = dt.NewRow();
+
+				#region Set System-Columns (EntityId, IsPublished, PublishedEntityID, DraftEntityId, Title
 				row["EntityId"] = item.EntityId;
 				row["IsPublished"] = item.IsPublished;
+				var publishedEntity = item.GetPublished();
+				row["PublishedEntityId"] = publishedEntity != null ? (int?)publishedEntity.EntityId : null;
+				var draftEntity = item.GetDraft();
+				row["DraftEntityId"] = draftEntity != null ? (int?)draftEntity.EntityId : null;
 				try
 				{
 					row["EntityTitle"] = item.Title[dimensionIds];
 				}
 				catch (NullReferenceException) { }
+				#endregion
 
-				foreach (DataColumn col in dt.Columns)
+				foreach (DataColumn col in dt.Columns.Cast<DataColumn>().Where(col => !systemColumns.Contains(col.ColumnName)))
 				{
-					if (col.ColumnName == "EntityId" || col.ColumnName == "EntityTitle")
-						continue;
-
 					try
 					{
 						row[col.ColumnName] = item[col.ColumnName][dimensionIds];

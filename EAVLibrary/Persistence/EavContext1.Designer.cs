@@ -4361,24 +4361,24 @@ namespace ToSic.Eav
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> PublishedEntityId
+        public Nullable<global::System.Int32> PublishedEntityID
         {
             get
             {
-                return _PublishedEntityId;
+                return _PublishedEntityID;
             }
             set
             {
-                OnPublishedEntityIdChanging(value);
-                ReportPropertyChanging("PublishedEntityId");
-                _PublishedEntityId = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("PublishedEntityId");
-                OnPublishedEntityIdChanged();
+                OnPublishedEntityIDChanging(value);
+                ReportPropertyChanging("PublishedEntityID");
+                _PublishedEntityID = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("PublishedEntityID");
+                OnPublishedEntityIDChanged();
             }
         }
-        private Nullable<global::System.Int32> _PublishedEntityId;
-        partial void OnPublishedEntityIdChanging(Nullable<global::System.Int32> value);
-        partial void OnPublishedEntityIdChanged();
+        private Nullable<global::System.Int32> _PublishedEntityID;
+        partial void OnPublishedEntityIDChanging(Nullable<global::System.Int32> value);
+        partial void OnPublishedEntityIDChanged();
 
         #endregion
 
