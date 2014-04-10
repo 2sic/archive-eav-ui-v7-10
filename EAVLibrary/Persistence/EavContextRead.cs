@@ -24,7 +24,12 @@ namespace ToSic.Eav
 		/// <returns>Entity or throws InvalidOperationException</returns>
 		public Entity GetEntity(Guid entityGuid)
 		{
-			return Entities.Single(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
+			return GetEntitiesByGuid(entityGuid).Single();
+		}
+
+		internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
+		{
+			return Entities.Where(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
 		}
 
 		/// <summary>
@@ -32,7 +37,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool EntityExists(Guid entityGuid)
 		{
-			return Entities.Any(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
+			return GetEntitiesByGuid(entityGuid).Any();
 		}
 
 		/// <summary>

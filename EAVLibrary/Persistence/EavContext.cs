@@ -483,7 +483,7 @@ namespace ToSic.Eav
 
 		internal int? GetDraftEntityId(int entityId)
 		{
-			return Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).FirstOrDefault();
+			return Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
 		}
 
 		/// <summary>
@@ -583,9 +583,9 @@ namespace ToSic.Eav
 		/// Publish a Draft Entity
 		/// </summary>
 		/// <param name="entityId">ID of the Draft-Entity</param>
-		public void PublishEntity(int entityId)
+		public Entity PublishEntity(int entityId)
 		{
-			PublishEntity(entityId, true);
+			return PublishEntity(entityId, true);
 		}
 
 		/// <summary>
@@ -594,7 +594,7 @@ namespace ToSic.Eav
 		/// <param name="entityId">ID of the Draft-Entity</param>
 		/// <param name="autoSave">Call SaveChanges() automatically?</param>
 		/// <returns>The published Entity</returns>
-		private Entity PublishEntity(int entityId, bool autoSave = true)
+		internal Entity PublishEntity(int entityId, bool autoSave = true)
 		{
 			var unpublishedEntity = GetEntity(entityId);
 			if (unpublishedEntity.IsPublished)

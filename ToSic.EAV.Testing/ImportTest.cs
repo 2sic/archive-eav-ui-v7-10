@@ -392,9 +392,9 @@ namespace ToSic.Eav.Testing
 
 
 		[Test]
-		public void UpdateDraftEntity()
+		public void UpdateEntityHavingDraft()
 		{
-			int appId = 2, entityId = 5457;
+			int appId = 2, entityId = 5454;
 
 			var db = EavContext.Instance(appId: appId);
 			var entityGuid = db.Entities.Where(e => e.EntityID == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (Guid?)e.EntityGUID).SingleOrDefault();
