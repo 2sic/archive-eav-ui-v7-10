@@ -1113,7 +1113,22 @@ namespace ToSic.Eav
 			if (entity == null)
 				return false;
 
-			entity.ChangeLogIDDeleted = GetChangeLogId();
+			// If entity was Published, set Deleted-Flag
+			if (entity.IsPublished)
+				entity.ChangeLogIDDeleted = GetChangeLogId();
+			// if entity was a draft, really delete it
+			else
+			{
+				// Delete all Value-Dimensions
+				var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
+				valueDimensions.ForEach(DeleteObject);
+				// Delete all Values
+				entity.Values.ToList().ForEach(DeleteObject);
+				// Delete all Parent-Relationships
+				entity.EntityParentRelationships.ToList().ForEach(DeleteObject);
+				// Delete the Entity
+				DeleteObject(entity);
+			}
 
 			if (autoSave)
 				SaveChanges();

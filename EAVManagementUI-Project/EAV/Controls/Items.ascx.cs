@@ -13,6 +13,11 @@ namespace ToSic.Eav.ManagementUI
 		{
 			get { return Forms.GetDimensionIds(DefaultCultureDimension); }
 		}
+		private const int ColIndexEdit = 0;
+		private const int ColIndexDelete = 1;
+		private const int ColIndexIsPublished = 4;
+		private const int ColIndexPublishedEntityId = 5;
+		private const int ColIndexDraftEntityId = 6;
 		#endregion
 
 		#region Properties
@@ -44,28 +49,36 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
+			// Hide some Auto-Generated Columns
+			e.Row.Cells[ColIndexPublishedEntityId].Visible = false;
+			e.Row.Cells[ColIndexDraftEntityId].Visible = false;
+
 			if (e.Row.RowType != DataControlRowType.DataRow)
 				return;
 
 			var rowData = (System.Data.DataRowView)e.Row.DataItem;
 			var entityId = rowData["EntityId"].ToString();
 
+			// Show Draft Info next to IsPublished
+			var isPublishedCell = e.Row.Cells[ColIndexIsPublished];
+			if (rowData["PublishedEntityId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new LiteralControl(" is Draft of " + rowData["PublishedEntityId"]));
+			else if (rowData["DraftEntityId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new LiteralControl(" has Draft " + rowData["DraftEntityId"]));
+
 			#region Set Edit-Link
-			var editLink = (HyperLink)e.Row.Cells[0].Controls[0];
+			var editLink = (HyperLink)e.Row.Cells[ColIndexEdit].Controls[0];
 			const string editLinkUrlSchemaForDialogs = "~/Eav/Dialogs/EditItem.aspx?EntityId=[EntityId]";
 			if (DefaultCultureDimension.HasValue)
 				editLink.NavigateUrl += "&" + CultureUrlParameterName + "=[CultureDimension]";
 			var editLinkUrlSchema = IsDialog ? editLinkUrlSchemaForDialogs : EditItemUrl;
-
-			//var editEntityId = (bool)rowData["IsPublished"] ? entityId : 
-
 			editLink.NavigateUrl = editLinkUrlSchema.Replace("[EntityId]", entityId).Replace("[CultureDimension]", DefaultCultureDimension.ToString());
 			#endregion
 
 			#region Extend Delete-Link with ClientSide-Confirm
 			if (EntityDeleting != null)
 			{
-				var deleteLink = (LinkButton)e.Row.Cells[1].Controls[0];
+				var deleteLink = (LinkButton)e.Row.Cells[ColIndexDelete].Controls[0];
 				deleteLink.OnClientClick = string.Format("return confirm('Delete Entity {0}?');", entityId);
 			}
 			#endregion
@@ -74,7 +87,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void grdItems_DataBound(object sender, EventArgs e)
 		{
 			// show/hide Delete-Column depending on EntityDeleting is set
-			grdItems.Columns[1].Visible = EntityDeleting != null;
+			grdItems.Columns[ColIndexDelete].Visible = EntityDeleting != null;
 		}
 
 		#endregion
