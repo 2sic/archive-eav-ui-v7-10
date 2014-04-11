@@ -22,12 +22,13 @@ namespace ToSic.Eav
 		{
 			var dt = new DataTable();
 
-			var systemColumns = new[] { "EntityId", "EntityTitle", "IsPublished", "PublishedEntityId", "DraftEntityId" };
+			var systemColumns = new[] { "EntityId", "EntityTitle", "IsPublished", "PublishedRepositoryId", "DraftRepositoryId" };
 			dt.Columns.Add("EntityId", typeof(int));
+			dt.Columns.Add("RepositoryId", typeof(int));
 			dt.Columns.Add("EntityTitle");
 			dt.Columns.Add("IsPublished", typeof(bool));
-			dt.Columns.Add("PublishedEntityId");
-			dt.Columns.Add("DraftEntityId");
+			dt.Columns.Add("PublishedRepositoryId");
+			dt.Columns.Add("DraftRepositoryId");
 
 			// Add all columns
 			foreach (var columnName in columnNames)
@@ -37,13 +38,14 @@ namespace ToSic.Eav
 			{
 				var row = dt.NewRow();
 
-				#region Set System-Columns (EntityId, IsPublished, PublishedEntityID, DraftEntityId, Title
+				#region Set System-Columns (EntityId, IsPublished, PublishedRepositoryId, DraftRepositoryId, Title
 				row["EntityId"] = item.EntityId;
+				row["RepositoryId"] = item.RepositoryId;
 				row["IsPublished"] = item.IsPublished;
 				var publishedEntity = item.GetPublished();
-				row["PublishedEntityId"] = publishedEntity != null ? (int?)publishedEntity.EntityId : null;
+				row["PublishedRepositoryId"] = publishedEntity != null ? (int?)publishedEntity.RepositoryId : null;
 				var draftEntity = item.GetDraft();
-				row["DraftEntityId"] = draftEntity != null ? (int?)draftEntity.EntityId : null;
+				row["DraftRepositoryId"] = draftEntity != null ? (int?)draftEntity.RepositoryId : null;
 				try
 				{
 					row["EntityTitle"] = item.Title[dimensionIds];

@@ -17,6 +17,7 @@ namespace ToSic.Eav.ManagementUI
 		#endregion
 
 		#region Private and Protected Fields
+		private int _repositoryId;
 		private int[] DimensionIds
 		{
 			get { return Forms.GetDimensionIds(DefaultCultureDimension); }
@@ -129,6 +130,13 @@ namespace ToSic.Eav.ManagementUI
 		{
 			var dsrc = DataSource.GetInitialDataSource(zoneId, appId);
 			var entityModel = dsrc[DataSource.DefaultStreamName].List[entity.EntityID];
+			// Load draft instead (if any)
+			if (entityModel.GetDraft() != null)
+			{
+				entityModel = entityModel.GetDraft();
+				entity = Db.GetEntity(entityModel.RepositoryId);
+			}
+			_repositoryId = entityModel.RepositoryId;
 			#region Set JSON Data/Models
 			litJsonEntityModel.Text = GetJsonString(new Serialization.EntityJavaScriptModel(entityModel));
 			litJsonEntityId.Text = entity.EntityID.ToString(CultureInfo.InvariantCulture);
@@ -336,7 +344,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 			#endregion
 
-			var result = Db.UpdateEntity(EntityId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
+			var result = Db.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
 
 			RedirectToListItems();
 

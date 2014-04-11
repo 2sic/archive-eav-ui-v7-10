@@ -84,7 +84,7 @@ namespace ToSic.Eav
 
 			var columnNames = GetAttributes(attributeSetId).Select(a => a.StaticName);
 
-			return entitiesModel.Entities.Select(v => v.Value).ToDataTable(columnNames, dimensionIds);
+			return entitiesModel.Entities.Select(v => v.Value).OrderBy(e => e.EntityId).ToDataTable(columnNames, dimensionIds);
 		}
 
 		/// <summary>
@@ -390,14 +390,15 @@ namespace ToSic.Eav
 			var entities = new Dictionary<int, IEntity>();
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
+				var model = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
 
 				// If entity is a draft, add references to Published Entity
 				if (!e.IsPublished && e.PublishedEntityID.HasValue)
 				{
-					// Published Entity is already in the Entities-List as EntityIds is validated/extended before calling AppendEntitiesToViewModel and Draft-EntityID is always higher as Published EntityId
+					// Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
 					model.PublishedEntity = entities[e.PublishedEntityID.Value];
 					((EntityModel)model.PublishedEntity).DraftEntity = model;
+					model.EntityId = e.PublishedEntityID.Value;
 				}
 
 				#region Add assignmentObjectTypes with Key

@@ -12,9 +12,10 @@ namespace ToSic.Eav
 		/// Gets the EntityId
 		/// </summary>
 		int EntityId { get; }
-
-		//int StoreEntityId { get; }
-
+		/// <summary>
+		/// Gets the RepositoryId
+		/// </summary>
+		int RepositoryId { get; }
 		/// <summary>
 		/// Gets the EntityGuid
 		/// </summary>

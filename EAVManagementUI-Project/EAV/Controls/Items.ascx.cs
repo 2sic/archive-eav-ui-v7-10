@@ -15,9 +15,9 @@ namespace ToSic.Eav.ManagementUI
 		}
 		private const int ColIndexEdit = 0;
 		private const int ColIndexDelete = 1;
-		private const int ColIndexIsPublished = 4;
-		private const int ColIndexPublishedEntityId = 5;
-		private const int ColIndexDraftEntityId = 6;
+		private const int ColIndexIsPublished = 5;
+		private const int ColIndexPublishedRepositoryId = 6;
+		private const int ColIndexDraftRepositoryId = 7;
 		#endregion
 
 		#region Properties
@@ -50,8 +50,8 @@ namespace ToSic.Eav.ManagementUI
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
 			// Hide some Auto-Generated Columns
-			e.Row.Cells[ColIndexPublishedEntityId].Visible = false;
-			e.Row.Cells[ColIndexDraftEntityId].Visible = false;
+			e.Row.Cells[ColIndexPublishedRepositoryId].Visible = false;
+			e.Row.Cells[ColIndexDraftRepositoryId].Visible = false;
 
 			if (e.Row.RowType != DataControlRowType.DataRow)
 				return;
@@ -61,10 +61,10 @@ namespace ToSic.Eav.ManagementUI
 
 			// Show Draft Info next to IsPublished
 			var isPublishedCell = e.Row.Cells[ColIndexIsPublished];
-			if (rowData["PublishedEntityId"] != DBNull.Value)
-				isPublishedCell.Controls.Add(new LiteralControl(" is Draft of " + rowData["PublishedEntityId"]));
-			else if (rowData["DraftEntityId"] != DBNull.Value)
-				isPublishedCell.Controls.Add(new LiteralControl(" has Draft " + rowData["DraftEntityId"]));
+			if (rowData["PublishedRepositoryId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new Label { Text = " " + rowData["PublishedRepositoryId"], ToolTip = "Draft of RepositoryId " + rowData["PublishedRepositoryId"] });
+			else if (rowData["DraftRepositoryId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new Label { Text = " has Draft", ToolTip = "Draft RepositoryId " + rowData["DraftRepositoryId"] });
 
 			#region Set Edit-Link
 			var editLink = (HyperLink)e.Row.Cells[ColIndexEdit].Controls[0];
