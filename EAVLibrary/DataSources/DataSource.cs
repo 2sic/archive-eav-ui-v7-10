@@ -116,6 +116,7 @@ namespace ToSic.Eav
 				newDs.ConfigurationProvider = configurationProvider;
 		}
 
+		// ToDo: Add new Filter Pipeline by Draft/Published ... to the left
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav" };
 		/// <summary>
 		/// Retunrs an ICache with IRootSource as In-Source.

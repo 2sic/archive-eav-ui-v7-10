@@ -307,65 +307,34 @@ namespace ToSic.Eav
 			var assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 			var relationships = new List<EntityRelationshipItem>();
 
+			#region Prepare & Extend EntityIds
 			if (entityIds == null)
 				entityIds = new int[0];
 
 			var filterByEntityIds = entityIds.Any();
 
-			// Add requested Entities
-			var entities = new Dictionary<int, IEntity>();
-			AppendEntitiesToViewModel(entities, filterByEntityIds, entityIds, appId, source, contentTypes, relationships, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString);
-
-			// Ensure drafts & published Versions are also added (if filtered by Id, otherwise they're loaded as no filter was applied)
+			// Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
 			if (filterByEntityIds)
-			{
-				var publishingEntityIds = new List<int>();
-				var publishingEntities = from e in Entities
-										 where (entityIds.Contains(e.EntityID) || entityIds.Contains(e.PublishedEntityID.Value)) && e.ChangeLogDeleted == null && e.PublishedEntityID.HasValue && e.IsPublished == false
-										 select new { e.EntityID, e.PublishedEntityID };
-				foreach (var publishingEntity in publishingEntities)
-				{
-					if (!entityIds.Contains(publishingEntity.EntityID) && !publishingEntityIds.Contains(publishingEntity.EntityID))
-						publishingEntityIds.Add(publishingEntity.EntityID);
-					if (publishingEntity.PublishedEntityID.HasValue && !entityIds.Contains(publishingEntity.PublishedEntityID.Value) && !publishingEntityIds.Contains(publishingEntity.PublishedEntityID.Value))
-						publishingEntityIds.Add(publishingEntity.PublishedEntityID.Value);
-				}
-
-				AppendEntitiesToViewModel(entities, filterByEntityIds, publishingEntityIds, appId, source, contentTypes, relationships, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString);
-			}
-
-			#region Populate Entity-Relationships (must be done after all EntityModels are created)
-			var relationshipsRaw = from r in EntityRelationships
-								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
-								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
-								   select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
-			foreach (var relationship in relationshipsRaw)
-			{
-				try
-				{
-					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
-				}
-				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
-			}
+				entityIds = entityIds.Union(from e in Entities
+											where e.PublishedEntityID.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityID.Value) && e.ChangeLogDeleted == null
+											select e.PublishedEntityID.Value).ToArray();
 			#endregion
 
-			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
-		}
+			#region Get Entities from Database
 
-		/// <summary>
-		/// Append Entities with Specified EntityIds to the Entities List
-		/// </summary>
-		private void AppendEntitiesToViewModel(IDictionary<int, IEntity> entities, bool filterByEntityIds, IEnumerable<int> entityIds, int appId, IDataSource source, IDictionary<int, IContentType> contentTypes, List<EntityRelationshipItem> relationships, IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber, Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString)
-		{
-			// Get Entities from Database
 			var entitiesValues = from e in Entities
 								 where
 									 !e.ChangeLogIDDeleted.HasValue &&
 									 e.Set.AppID == appId &&
 									 e.Set.ChangeLogIDDeleted == null &&
-									 (!filterByEntityIds || entityIds.Contains(e.EntityID))
+									 (	// filter by EntityIds (if set)
+										 !filterByEntityIds ||
+										 entityIds.Contains(e.EntityID) ||
+										 (e.PublishedEntityID.HasValue && entityIds.Contains(e.PublishedEntityID.Value))	// also load Drafts
+									 )
 								 orderby
-									 e.EntityID // guarantees Published appear before draft
+									 e.EntityID
+								 // guarantees Published appear before draft
 								 select new
 								 {
 									 e.EntityID,
@@ -415,8 +384,10 @@ namespace ToSic.Eav
 																   }
 													  }
 								 };
+			#endregion
 
-			// Build Model (steps that can't be done on DB directly)
+			#region Build Model (steps that can't be done on the DB directly)
+			var entities = new Dictionary<int, IEntity>();
 			foreach (var e in entitiesValues)
 			{
 				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
@@ -424,12 +395,9 @@ namespace ToSic.Eav
 				// If entity is a draft, add references to Published Entity
 				if (!e.IsPublished && e.PublishedEntityID.HasValue)
 				{
-					// Published Entity is already in the Entities-List
-					if (entities.ContainsKey(e.PublishedEntityID.Value))
-					{
-						model.PublishedEntity = entities[e.PublishedEntityID.Value];
-						((EntityModel)model.PublishedEntity).DraftEntity = model;
-					}
+					// Published Entity is already in the Entities-List as EntityIds is validated/extended before calling AppendEntitiesToViewModel and Draft-EntityID is always higher as Published EntityId
+					model.PublishedEntity = entities[e.PublishedEntityID.Value];
+					((EntityModel)model.PublishedEntity).DraftEntity = model;
 				}
 
 				#region Add assignmentObjectTypes with Key
@@ -541,6 +509,24 @@ namespace ToSic.Eav
 
 				entities.Add(e.EntityID, model);
 			}
+			#endregion
+
+			#region Populate Entity-Relationships (must be done after all EntityModels are created)
+			var relationshipsRaw = from r in EntityRelationships
+								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
+								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
+								   select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
+			foreach (var relationship in relationshipsRaw)
+			{
+				try
+				{
+					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
+				}
+				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
+			}
+			#endregion
+
+			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
 		}
 
 		/// <summary>
@@ -549,7 +535,7 @@ namespace ToSic.Eav
 		/// <returns>A single IEntity or throws InvalidOperationException</returns>
 		public IEntity GetEntityModel(int entityId, IDataSource source = null)
 		{
-			return GetDataForCache(new[] { entityId }, _appId, source).Entities.Single().Value;
+			return GetDataForCache(new[] { entityId }, _appId, source).Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 		}
 
 		/// <summary>
