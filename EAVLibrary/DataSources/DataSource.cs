@@ -124,7 +124,7 @@ namespace ToSic.Eav
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
 		/// <returns>A single DataSource</returns>
-		public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null)
+		public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 
