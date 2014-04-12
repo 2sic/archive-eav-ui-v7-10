@@ -39,6 +39,10 @@ namespace ToSic.Eav
 					// ShowDataSource(ValueSort(typeFiltered, "entitytitle,entityid", "a,a"), "Sorted Value", true);
 					//ShowDataSource(ValueSort(typeFiltered, "id,entitytitle", "a,a"), "Sorted Value", true);
 					break;
+				case "listproperty":
+					typeFiltered = EntityTypeFilter("Person ML");
+					litResults.Text = "Found " + typeFiltered.List.Count + " items in the main list";
+					break;
 				Default:
 					break;
 			}
