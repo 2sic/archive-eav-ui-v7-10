@@ -231,15 +231,12 @@ namespace ToSic.Eav
 
 		private static IDataSource PublishingFilter(string typeName, bool showDrafts)
 		{
-			var source = DataSource.GetInitialDataSource(appId: 2);
+			var source = DataSource.GetInitialDataSource(appId: 2, showDrafts: showDrafts);
 
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(2, 2, source);
 			filterPipeline.TypeName = typeName;
 
-			var publishingPipeline = DataSource.GetDataSource<PublishingFilter>(2, 2, filterPipeline);
-			publishingPipeline.ShowDrafts = showDrafts;
-
-			return publishingPipeline;
+			return filterPipeline;
 		}
 
 
