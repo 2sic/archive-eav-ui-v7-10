@@ -9,12 +9,13 @@
 <body>
     <form id="form1" runat="server">
 	    <div><strong>Microtests</strong><ul>
-		                                    <li><a href="?Test=All">All</a></li>
-		                                    <li><a href="?Test=TypeFilter">Type-Filter</a></li>
+		    <li><a href="?Test=All">All</a></li>
+		    <li><a href="?Test=TypeFilter">Type-Filter</a></li>
 			<li><a href="?Test=ValueFilter">ValueFilter</a></li>
 			<li><a href="?Test=AttributeFilter">Attribute Stripper/Filter</a></li>
 			<li><a href="?Test=ValueSort">ValueSort</a></li>
-	                                    </ul></div>
+			<li><a href="?Test=listproperty">Quick Property to access the Out["Default"].List</a></li>
+	    </ul></div>
 		
 		<asp:Literal runat="server" ID="litResults" />
     </form>
