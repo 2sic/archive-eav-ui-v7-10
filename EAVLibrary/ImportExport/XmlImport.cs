@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="sourceDefaultDimensionId">Default Dimension ID of the Surce-App/Zone</param>
 		/// <param name="defaultLanguage">Default Language of the Target-App/Zone</param>
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
-		public static Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
+		public static Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
 		{
 			var targetEntity = new Import.Entity
 			{
@@ -68,7 +68,7 @@ namespace ToSic.Eav.ImportExport
 					sourceLanguages.AddRange(unExactMatchSourceDimensions);
 
 					// Add primary language, if current target is primary
-					if (targetDimension.ExternalKey == defaultLanguage)
+                    if (targetDimension.ExternalKey == defaultLanguage && sourceDefaultDimensionId.HasValue)
 					{
 						var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionID == sourceDefaultDimensionId);
 						if (sourcePrimaryLanguage != null && !sourceLanguages.Contains(sourcePrimaryLanguage))
