@@ -36,6 +36,12 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
+			//var cache = In[DataSource.DefaultStreamName].Source as Caches.BaseCache;
+			//if (cache != null)
+			//{
+				
+			//}
+
 			return (from e in In[DataSource.DefaultStreamName].List
 					where (!ShowDrafts && e.Value.IsPublished) || (ShowDrafts && e.Value.GetDraft() == null)
 					select e).ToDictionary(x => x.Key, y => y.Value);

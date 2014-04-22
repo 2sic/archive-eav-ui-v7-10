@@ -108,9 +108,10 @@ namespace ToSic.Eav.ManagementUI
 
 					break;
 				case FormViewMode.Edit:
-					var item = Db.GetEntity(EntityId);
-					AttributeSetId = item.AttributeSetID;
-					AddFormControls(item, Db.ZoneId, Db.AppId);
+					var entity = Db.GetEntity(EntityId);
+					var entityModel = Db.GetEntityModel(EntityId);
+					AttributeSetId = entity.AttributeSetID;
+					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
 					break;
 				case FormViewMode.ReadOnly:
 					throw new NotImplementedException();
@@ -124,12 +125,11 @@ namespace ToSic.Eav.ManagementUI
 		/// Ad Form Controls for Edit-Mode
 		/// </summary>
 		/// <param name="entity">Entity containing the Attributes/Fields</param>
+		/// <param name="entityModel">Entity Model</param>
 		/// <param name="zoneId">ZoneId of the Entity</param>
 		/// <param name="appId">AppId of the Entity</param>
-		private void AddFormControls(Entity entity, int zoneId, int appId)
+		private void AddFormControls(Entity entity, IEntity entityModel, int zoneId, int appId)
 		{
-			var dsrc = DataSource.GetInitialDataSource(zoneId, appId);
-			var entityModel = dsrc[DataSource.DefaultStreamName].List[entity.EntityID];
 			// Load draft instead (if any)
 			if (entityModel.GetDraft() != null)
 			{

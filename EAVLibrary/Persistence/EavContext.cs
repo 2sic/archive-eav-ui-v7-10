@@ -485,6 +485,10 @@ namespace ToSic.Eav
 			return entity;
 		}
 
+		/// <summary>
+		/// Get Draft EntityId of a Published EntityId. Returns null if there's none.
+		/// </summary>
+		/// <param name="entityId">EntityId of the Published Entity</param>
 		internal int? GetDraftEntityId(int entityId)
 		{
 			return Entities.Where(e => e.PublishedEntityID == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
@@ -496,7 +500,7 @@ namespace ToSic.Eav
 		private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
 		{
 			// Get all entities to make updates faster?
-			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId)[DataSource.DefaultStreamName].List;
+			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId, true)[DataSource.DefaultStreamName].List;
 			var newValuesTyped = DictionaryToValuesViewModel(newValues);
 			foreach (var newValue in newValuesTyped)
 			{
@@ -1070,10 +1074,6 @@ namespace ToSic.Eav
 		{
 			var messages = new List<string>();
 
-			var entityAsParent = EntityRelationships.Where(r => r.ParentEntityID == entityId).Select(r => r.ChildEntityID).ToList();
-			if (entityAsParent.Any())
-				messages.Add(string.Format("Entity has {0} Parent-Relationships to Entities: {1}.", entityAsParent.Count, string.Join(", ", entityAsParent)));
-
 			var entityChild = EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
 			if (entityChild.Any())
 				messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
@@ -1092,9 +1092,9 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Delete an Entity
 		/// </summary>
-		public bool DeleteEntity(int entityId)
+		public bool DeleteEntity(int repositoryId)
 		{
-			return DeleteEntity(GetEntity(entityId));
+			return DeleteEntity(GetEntity(repositoryId));
 		}
 
 		/// <summary>
@@ -1113,22 +1113,28 @@ namespace ToSic.Eav
 			if (entity == null)
 				return false;
 
+			#region Delete Related Records (Values, Value-Dimensions, Relationships)
+			// Delete all Value-Dimensions
+			var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
+			valueDimensions.ForEach(DeleteObject);
+			// Delete all Values
+			entity.Values.ToList().ForEach(DeleteObject);
+			// Delete all Parent-Relationships
+			entity.EntityParentRelationships.ToList().ForEach(DeleteObject);
+			#endregion
+
 			// If entity was Published, set Deleted-Flag
 			if (entity.IsPublished)
-				entity.ChangeLogIDDeleted = GetChangeLogId();
-			// if entity was a draft, really delete it
-			else
 			{
-				// Delete all Value-Dimensions
-				var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
-				valueDimensions.ForEach(DeleteObject);
-				// Delete all Values
-				entity.Values.ToList().ForEach(DeleteObject);
-				// Delete all Parent-Relationships
-				entity.EntityParentRelationships.ToList().ForEach(DeleteObject);
-				// Delete the Entity
-				DeleteObject(entity);
+				entity.ChangeLogIDDeleted = GetChangeLogId();
+				// Also delete the Draft (if any)
+				var draftEntityId = GetDraftEntityId(entity.EntityID);
+				if (draftEntityId.HasValue)
+					DeleteEntity(draftEntityId.Value);
 			}
+			// If entity was a Draft, really delete that Entity
+			else
+				DeleteObject(entity);
 
 			if (autoSave)
 				SaveChanges();
@@ -1476,14 +1482,21 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Restore an Entity to the specified Version by creating a new Version using Import
+		/// Restore an Entity to the specified Version by creating a new Version using the Import
 		/// </summary>
 		public void RestoreEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
+			// Get Entity in specified Version/ChangeId
 			var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
+			// Restore Entity
 			var import = new Import.Import(_zoneId, _appId, UserName, true, false);
 			import.RunImport(null, new List<Import.Entity> { newVersion });
+
+			// Delete Draft (if any)
+			var entityDraft = GetEntityModel(entityId).GetDraft();
+			if (entityDraft != null)
+				DeleteEntity(entityDraft.RepositoryId);
 		}
 
 		#endregion

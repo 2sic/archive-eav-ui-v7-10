@@ -1,4 +1,6 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ItemHistory.ascx.cs" Inherits="ToSic.Eav.ManagementUI.ItemHistory" %>
+<h1>History of Entity <asp:Literal runat="server" Text='<%# EntityId %>' ID="litEntityId" /></h1>
+<asp:Label runat="server" ID="lblHasDraft" Visible='<%# DraftRepositoryId.HasValue %>'>Note: This Entity has a draft with ReposotiryId <%# DraftRepositoryId %></asp:Label>
 <asp:GridView runat="server" ID="grdItemHistory" AutoGenerateColumns="False" DataSourceID="dsrcEntityVersions" OnRowDataBound="grdItemHistory_RowDataBound" AllowSorting="True">
 	<Columns>
 		<asp:BoundField DataField="VersionNumber" HeaderText="Version" SortExpression="VersionNumber" />

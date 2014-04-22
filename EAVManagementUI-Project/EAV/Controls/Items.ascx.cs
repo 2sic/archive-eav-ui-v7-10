@@ -79,7 +79,7 @@ namespace ToSic.Eav.ManagementUI
 			if (EntityDeleting != null)
 			{
 				var deleteLink = (LinkButton)e.Row.Cells[ColIndexDelete].Controls[0];
-				deleteLink.OnClientClick = string.Format("return confirm('Delete Entity {0}?');", entityId);
+				deleteLink.OnClientClick = string.Format("return confirm('Delete Entity {0}?');", rowData["RepositoryId"]);
 			}
 			#endregion
 		}
