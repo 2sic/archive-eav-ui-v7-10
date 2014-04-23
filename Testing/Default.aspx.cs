@@ -46,6 +46,10 @@ namespace ToSic.Eav
 				case "publishingpublishedonly":
 					ShowDataSource(PublishingFilter("News", false), "News - published only", true);
 					break;
+				case "listproperty":
+					typeFiltered = EntityTypeFilter("Person ML");
+					litResults.Text = "Found " + typeFiltered.List.Count + " items in the main list";
+					break;
 				Default:
 					break;
 			}
@@ -257,7 +261,7 @@ namespace ToSic.Eav
 		{
 			var source = DataSource.GetInitialDataSource();
 
-			// var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
+	      // var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
 			filterPipeline.TypeName = typeName;
 			var valuePipeline = DataSource.GetDataSource<ValueFilter>(1, 1, filterPipeline);
