@@ -41,6 +41,10 @@ namespace ToSic.Eav.DataSources
 			get { return Out[outName]; }
 		}
 
+		public IDictionary<int, IEntity> List
+		{
+			get { return Out["Default"].List; }
+		}
 		public IConfigurationProvider ConfigurationProvider { get; internal set; }
 		public IDictionary<string, string> Configuration { get; internal set; }
 		private bool _configurationIsLoaded;

@@ -27,6 +27,12 @@ namespace ToSic.Eav.DataSources
 		/// Gets the Out-Stream with specified Name
 		/// </summary>
 		IDataStream this[string outName] { get; }
+		
+		/// <summary>
+		/// Get's the default list of Out["Default"]
+		/// This is just a shorthand, because the Default-List is the most commonly used
+		/// </summary>
+		IDictionary<int, IEntity> List { get; }
 
 		/// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
