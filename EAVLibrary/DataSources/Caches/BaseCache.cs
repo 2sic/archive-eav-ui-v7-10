@@ -13,17 +13,35 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache
 	{
+		/// <summary>PublishedEntities Stream Name</summary>
+		public const string PublishedStreamName = "Published";
+		/// <summary>Draft-Entities Stream Name</summary>
+		public const string DraftsStreamName = "Drafts";
+
 		protected IDataSource Cache { get; set; }
 
 		protected BaseCache()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(PublishedStreamName, new DataStream(this, PublishedStreamName, GetPublishedEntities));
+			Out.Add(DraftsStreamName, new DataStream(this, DraftsStreamName, GetDraftEntities));
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
 			return EnsureCache().Entities;
 		}
+
+		private IDictionary<int, IEntity> GetPublishedEntities()
+		{
+			return EnsureCache().PublishedEntities;
+		}
+
+		private IDictionary<int, IEntity> GetDraftEntities()
+		{
+			return EnsureCache().DraftEntities;
+		}
+
 
 		/// <summary>
 		/// The root DataSource

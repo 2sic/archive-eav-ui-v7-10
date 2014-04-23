@@ -241,11 +241,11 @@ namespace ToSic.Eav
 
 
 
-		private EntityTypeFilter EntityTypeFilter(string typeName)
+		private static EntityTypeFilter EntityTypeFilter(string typeName, int appId = 1)
 		{
-			var source = DataSource.GetInitialDataSource();
+			var source = DataSource.GetInitialDataSource(appId: appId);
 
-			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
+			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
 			//old: filterPipeline.Configuration["TypeName"] = typeName;
 			filterPipeline.TypeName = typeName;
 			// ShowDataSource(filterPipeline, "EntityTypeFilter", true);

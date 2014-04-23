@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources
 {
@@ -36,16 +36,8 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
-			//var cache = In[DataSource.DefaultStreamName].Source as Caches.BaseCache;
-			//if (cache != null)
-			//{
-				
-			//}
-
-			return (from e in In[DataSource.DefaultStreamName].List
-					where (!ShowDrafts && e.Value.IsPublished) || (ShowDrafts && e.Value.GetDraft() == null)
-					select e).ToDictionary(x => x.Key, y => y.Value);
+			var outStreamName = ShowDrafts ? BaseCache.DraftsStreamName : BaseCache.PublishedStreamName;
+			return In[outStreamName].List;
 		}
-
 	}
 }

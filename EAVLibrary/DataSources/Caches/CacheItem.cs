@@ -10,34 +10,30 @@ namespace ToSic.Eav.DataSources.Caches
 	public class CacheItem
 	{
 		#region Private Fields
-		//private IDictionary<int, IEntity> _publishedEntities;
-		//private IDictionary<int, IEntity> _draftEntities;
-		private IDictionary<int, IEntity> _entities;
+		private IDictionary<int, IEntity> _publishedEntities;
+		private IDictionary<int, IEntity> _draftEntities;
 		#endregion
 
 		#region Properties
 		/// <summary>
 		/// Gets all Entities in this App
 		/// </summary>
-		public IDictionary<int, IEntity> Entities
+		public IDictionary<int, IEntity> Entities { get; private set; }
+
+		/// <summary>
+		/// Get all Published Entities in this App (excluding Drafts)
+		/// </summary>
+		public IDictionary<int, IEntity> PublishedEntities
 		{
-			get { return _entities; }
-			private set { _entities = value; }
+			get { return _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Key, v => v.Value)); }
 		}
-		///// <summary>
-		///// Get all Published Entities in this App (excluding Drafts)
-		///// </summary>
-		//public IDictionary<int, IEntity> PublishedEntities
-		//{
-		//	get { return _publishedEntities ?? (_publishedEntities = (IDictionary<int, IEntity>)Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Value, v => v.Value)); }
-		//}
-		///// <summary>
-		///// Get all Entities not having a Draft
-		///// </summary>
-		//public IDictionary<int, IEntity> DraftEntities
-		//{
-		//	get { return _draftEntities ?? (_draftEntities = (IDictionary<int, IEntity>)Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value, v => v.Value)); }
-		//}
+		/// <summary>
+		/// Get all Entities not having a Draft
+		/// </summary>
+		public IDictionary<int, IEntity> DraftEntities
+		{
+			get { return _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Key, v => v.Value)); }
+		}
 		/// <summary>
 		/// Gets all ContentTypes in this App
 		/// </summary>
