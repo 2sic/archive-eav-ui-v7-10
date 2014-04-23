@@ -13,6 +13,10 @@ namespace ToSic.Eav
 		/// </summary>
 		int EntityId { get; }
 		/// <summary>
+		/// Gets the RepositoryId
+		/// </summary>
+		int RepositoryId { get; }
+		/// <summary>
 		/// Gets the EntityGuid
 		/// </summary>
 		Guid EntityGuid { get; }
@@ -41,5 +45,17 @@ namespace ToSic.Eav
 		/// Get Related entities
 		/// </summary>
 		RelationshipManager Relationships { get; }
+		/// <summary>
+		/// Indicates whether this Entity is Published (true) or a Draft (false)
+		/// </summary>
+		bool IsPublished { get; }
+		/// <summary>
+		/// Get Draft Entity of this Entity
+		/// </summary>
+		IEntity GetDraft();
+		/// <summary>
+		/// Get Published Entity of this Entity
+		/// </summary>
+		IEntity GetPublished();
 	}
 }

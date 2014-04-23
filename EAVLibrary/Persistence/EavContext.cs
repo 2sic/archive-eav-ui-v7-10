@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Objects;
+using System.Data.Objects.DataClasses;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Data;
+using System.Reflection;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Import;
@@ -134,35 +138,35 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Import a new Entity
 		/// </summary>
-		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog)
+		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, null, null, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, importLog);
+			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, null, null, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null)
+		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = 1, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds);
+			return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
-		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, Import.Entity importEntity = null)
+		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
 		{
 			var changeId = GetChangeLogId();
 
@@ -175,7 +179,8 @@ namespace ToSic.Eav
 				KeyString = keyString,
 				SortOrder = sortOrder,
 				ChangeLogIDCreated = changeId,
-				EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid()
+				EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
+				IsPublished = isPublished
 			};
 
 			if (attributeSet != null)
@@ -187,7 +192,7 @@ namespace ToSic.Eav
 
 			SaveChanges();
 
-			UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog);
+			UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
 			SaveChanges();
 
@@ -195,19 +200,71 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
+		/// Clone an Entity with all Values
+		/// </summary>
+		private Entity CloneEntity(Entity sourceEntity)
+		{
+			var clone = sourceEntity.CopyEntity(this);
+
+			AddToEntities(clone);
+
+			CloneEntityValues(sourceEntity, clone);
+
+			return clone;
+		}
+
+		/// <summary>
+		/// Copy all Values (including Related Entities) from teh Source Entity to the target entity
+		/// </summary>
+		private void CloneEntityValues(Entity source, Entity target)
+		{
+			// Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
+			if (target.Values.Any())
+			{
+				foreach (var eavValue in target.Values)
+					eavValue.ChangeLogIDDeleted = GetChangeLogId();
+			}
+
+			// Add all Values with Dimensions
+			foreach (var eavValue in source.Values.ToList())
+			{
+				var value = eavValue.CopyEntity(this);
+				// copy Dimensions
+				foreach (var valuesDimension in eavValue.ValuesDimensions)
+					value.ValuesDimensions.Add(new ValueDimension
+					{
+						DimensionID = valuesDimension.DimensionID,
+						ReadOnly = valuesDimension.ReadOnly
+					});
+
+				target.Values.Add(value);
+			}
+
+			target.EntityParentRelationships.Clear();
+			// Add all Related Entities
+			foreach (var entityParentRelationship in source.EntityParentRelationships)
+				target.EntityParentRelationships.Add(new EntityRelationship
+				{
+					AttributeID = entityParentRelationship.AttributeID,
+					ChildEntityID = entityParentRelationship.ChildEntityID
+				});
+		}
+
+		/// <summary>
 		/// Add a new Value
 		/// </summary>
-		private EavValue AddValue(int entityId, int attributeId, string value, bool autoSave = true)
+		private EavValue AddValue(Entity entity, int attributeId, string value, bool autoSave = true)
 		{
 			var changeId = GetChangeLogId();
 
 			var newValue = new EavValue
 			{
 				AttributeID = attributeId,
-				EntityID = entityId,
+				Entity = entity,
 				Value = value,
 				ChangeLogIDCreated = changeId
 			};
+
 			AddToValues(newValue);
 			if (autoSave)
 				SaveChanges();
@@ -301,7 +358,6 @@ namespace ToSic.Eav
 			return newAttribute;
 		}
 
-
 		/// <summary>
 		/// Add a new AttributeSet
 		/// </summary>
@@ -373,45 +429,83 @@ namespace ToSic.Eav
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
 		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+		/// <param name="isPublished">Is this Entity Published or a draft</param>
 		/// <returns>the updated Entity</returns>
-		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
+		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
 		{
-			var currentEntity = Entities.Single(e => e.EntityID == entityId);
+			var entity = Entities.Single(e => e.EntityID == entityId);
+			var draftEntityId = GetDraftEntityId(entityId);
+
+			#region Unpublished Save (Draft-Saves)
+			// Current Entity is published but Update as a draft
+			if (entity.IsPublished && !isPublished)
+			{
+				// Prevent duplicate Draft
+				if (draftEntityId.HasValue)
+					throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", entityId, draftEntityId));
+
+				// create a new Draft-Entity
+				entity = CloneEntity(entity);
+				entity.IsPublished = false;
+				entity.PublishedEntityID = entityId;
+			}
+			// Prevent editing of Published if there's a draft
+			else if (entity.IsPublished && draftEntityId.HasValue)
+			{
+				throw new Exception(string.Format("Update Entity not allowed because a draft exists with EntityId {0}", draftEntityId));
+			}
+			#endregion
 
 			if (dimensionIds == null)
 				dimensionIds = new List<int>(0);
 
 			// Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
-			var attributes = GetAttributes(currentEntity.AttributeSetID).ToList();
-			var currentValues = Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entityId).ToList();
+			var attributes = GetAttributes(entity.AttributeSetID).ToList();
+			var currentValues = entity.EntityID != 0 ? Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
 			// Update Values from Import Model
 			var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
 			if (newValuesImport != null)
-				UpdateEntityFromImportModel(updateLog, newValuesImport, attributes, currentEntity, currentValues, preserveUndefinedValues);
+				UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, currentValues, preserveUndefinedValues);
 			// Update Values from ValueViewModel
 			else
-				UpdateEntityDefault(entityId, newValues, dimensionIds, masterRecord, attributes, currentEntity, currentValues);
+				UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
 
-			SaveChanges();	// must save now to generate EntityModel afterward
+			// Update as Published but Current Entity is a Draft-Entity
+			if (!entity.IsPublished && isPublished)
+			{
+				SaveEntityToDataTimeline(entity);
+				entity = PublishEntity(entityId, false);
+			}
 
-			SaveEntityToDataTimeline(currentEntity);
+			SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
-			return currentEntity;
+			SaveEntityToDataTimeline(entity);
+
+			return entity;
+		}
+
+		/// <summary>
+		/// Get Draft EntityId of a Published EntityId. Returns null if there's none.
+		/// </summary>
+		/// <param name="entityId">EntityId of the Published Entity</param>
+		internal int? GetDraftEntityId(int entityId)
+		{
+			return Entities.Where(e => e.PublishedEntityID == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
 		}
 
 		/// <summary>
 		/// Update an Entity when not using the Import
 		/// </summary>
-		private void UpdateEntityDefault(int entityId, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues)
+		private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
 		{
 			// Get all entities to make updates faster?
-			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId)[DataSource.DefaultStreamName].List;
+			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId, true)[DataSource.DefaultStreamName].List;
 			var newValuesTyped = DictionaryToValuesViewModel(newValues);
 			foreach (var newValue in newValuesTyped)
 			{
 				var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-				UpdateValue(currentEntity, attribute, masterRecord, currentValues, allEntities, newValue.Value, dimensionIds);
+				UpdateValue(entity, attribute, masterRecord, currentValues, allEntities, newValue.Value, dimensionIds);
 			}
 
 			#region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
@@ -419,7 +513,7 @@ namespace ToSic.Eav
 			{
 				var keys = newValuesTyped.Keys.ToArray();
 				// Get all Values that are not present in newValues
-				var valuesToPurge = Values.Where(v => v.EntityID == entityId && !v.ChangeLogIDDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionID)));
+				var valuesToPurge = entity.Values.Where(v => !v.ChangeLogIDDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionID)));
 				foreach (var valueToPurge in valuesToPurge)
 				{
 					// Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
@@ -440,7 +534,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update an Entity when using the Import
 		/// </summary>
-		private void UpdateEntityFromImportModel(List<LogItem> updateLog, Dictionary<string, List<IValueImportModel>> newValuesImport, List<Attribute> attributes, Entity currentEntity, List<EavValue> currentValues, bool preserveUndefinedValues)
+		private void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<LogItem> updateLog, List<Attribute> attributes, List<EavValue> currentValues, bool preserveUndefinedValues)
 		{
 			if (updateLog == null)
 				throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -493,6 +587,51 @@ namespace ToSic.Eav
 			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
 		}
 
+		/// <summary>
+		/// Publish a Draft Entity
+		/// </summary>
+		/// <param name="entityId">ID of the Draft-Entity</param>
+		public Entity PublishEntity(int entityId)
+		{
+			return PublishEntity(entityId, true);
+		}
+
+		/// <summary>
+		/// Publish a Draft-Entity
+		/// </summary>
+		/// <param name="entityId">ID of the Draft-Entity</param>
+		/// <param name="autoSave">Call SaveChanges() automatically?</param>
+		/// <returns>The published Entity</returns>
+		internal Entity PublishEntity(int entityId, bool autoSave = true)
+		{
+			var unpublishedEntity = GetEntity(entityId);
+			if (unpublishedEntity.IsPublished)
+				throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
+
+			Entity publishedEntity;
+
+			// Publish Draft-Entity
+			if (!unpublishedEntity.PublishedEntityID.HasValue)
+			{
+				unpublishedEntity.IsPublished = true;
+				publishedEntity = unpublishedEntity;
+			}
+			// Replace currently published Entity with draft Entity and delete the draft
+			else
+			{
+				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityID.Value);
+				CloneEntityValues(unpublishedEntity, publishedEntity);
+
+				// delete the Draft Entity
+				DeleteEntity(unpublishedEntity, false);
+			}
+
+			if (autoSave)
+				SaveChanges();
+
+			return publishedEntity;
+		}
+
 		#region Update Values
 		/// <summary>
 		/// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
@@ -512,7 +651,7 @@ namespace ToSic.Eav
 				// Handle simple values in Values-Table
 				default:
 					// masterRecord can be true or false, it's not used when valueDimensions is specified
-					return UpdateSimpleValue(attribute, currentEntity.EntityID, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
+					return UpdateSimpleValue(attribute, currentEntity, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
 			}
 		}
 
@@ -549,7 +688,7 @@ namespace ToSic.Eav
 					break;
 				// Handle simple values in Values-Table
 				default:
-					UpdateSimpleValue(attribute, currentEntity.EntityID, dimensionIds, masterRecord, newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues, allEntities);
+					UpdateSimpleValue(attribute, currentEntity, dimensionIds, masterRecord, newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues, allEntities);
 					break;
 			}
 		}
@@ -557,13 +696,13 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update a Value in the Values-Table
 		/// </summary>
-		private EavValue UpdateSimpleValue(Attribute attribute, int entityId, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, IEnumerable<Import.ValueDimension> valueDimensions = null)
+		private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, IEnumerable<Import.ValueDimension> valueDimensions = null)
 		{
 			var newValueSerialized = SerializeValue(newValue);
 			var changeId = GetChangeLogId();
 
 			// Get Value or create new one
-			var value = GetOrCreateValue(attribute, entityId, masterRecord, valueId, readOnly, currentValues, allEntities, newValueSerialized, changeId, valueDimensions);
+			var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, allEntities, newValueSerialized, changeId, valueDimensions);
 
 			#region Update DimensionIds on this and other values
 
@@ -577,7 +716,7 @@ namespace ToSic.Eav
 					// ToDo: 2bg Log Error but continue
 					var dimensionId = GetDimensionId(null, valueDimension.DimensionExternalKey);
 					if (dimensionId == 0)
-						throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entityId + " Attribute-StaticName: " + attribute.StaticName);
+						throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
 
 					var existingValueDimension = value.ValuesDimensions.SingleOrDefault(v => v.DimensionID == dimensionId);
 					if (existingValueDimension == null)
@@ -638,7 +777,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
 		/// </summary>
-		private EavValue GetOrCreateValue(Attribute attribute, int entityId, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
+		private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
 		{
 			EavValue value = null;
 			// if Import-Dimension(s) are Specified
@@ -646,14 +785,14 @@ namespace ToSic.Eav
 			{
 				// Get first value having first Dimension or add new value
 				value = currentValues.FirstOrDefault(v => v.ChangeLogIDDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
-						AddValue(entityId, attribute.AttributeID, newValueSerialized, false);
+						AddValue(entity, attribute.AttributeID, newValueSerialized, autoSave: false);
 			}
-			// if ValueID is specified, use this Value
-			else if (valueId.HasValue)
+			// if ValueID & EntityId is specified, use this Value
+			else if (valueId.HasValue && entity.EntityID != 0)
 			{
 				value = currentValues.Single(v => v.ValueID == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
 				// If Master, ensure ValueID is from Master!
-				var entityModel = allEntities[entityId];
+				var entityModel = allEntities[entity.EntityID];
 				var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
 				if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
 					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
@@ -672,12 +811,12 @@ namespace ToSic.Eav
 						throw new Exception("Update of a \"" + attribute.StaticName +
 											"\" is not allowed. You must first updated this Value for the Default-Entity.");
 
-					value = AddValue(entityId, attribute.AttributeID, newValueSerialized, false);
+					value = AddValue(entity, attribute.AttributeID, newValueSerialized, autoSave: false);
 				}
 			}
 
 			// Update old/existing Value
-			if (value.ValueID != 0)
+			if (value.ValueID != 0 || entity.EntityID == 0)
 			{
 				if (!readOnly)
 					UpdateValue(value, newValueSerialized, changeId, false);
@@ -934,10 +1073,10 @@ namespace ToSic.Eav
 		public Tuple<bool, string> CanDeleteEntity(int entityId)
 		{
 			var messages = new List<string>();
+			var entityModel = GetEntityModel(entityId);
 
-			var entityAsParent = EntityRelationships.Where(r => r.ParentEntityID == entityId).Select(r => r.ChildEntityID).ToList();
-			if (entityAsParent.Any())
-				messages.Add(string.Format("Entity has {0} Parent-Relationships to Entities: {1}.", entityAsParent.Count, string.Join(", ", entityAsParent)));
+			if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
+				return new Tuple<bool, string>(true, null);
 
 			var entityChild = EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
 			if (entityChild.Any())
@@ -957,9 +1096,9 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Delete an Entity
 		/// </summary>
-		public bool DeleteEntity(int entityId)
+		public bool DeleteEntity(int repositoryId)
 		{
-			return DeleteEntity(Entities.SingleOrDefault(e => e.EntityID == entityId));
+			return DeleteEntity(GetEntity(repositoryId));
 		}
 
 		/// <summary>
@@ -967,20 +1106,46 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool DeleteEntity(Guid entityGuid)
 		{
-			return DeleteEntity(Entities.SingleOrDefault(e => e.EntityGUID == entityGuid));
+			return DeleteEntity(GetEntity(entityGuid));
 		}
 
 		/// <summary>
 		/// Delete an Entity
 		/// </summary>
-		private bool DeleteEntity(Entity entity)
+		private bool DeleteEntity(Entity entity, bool autoSave = true)
 		{
 			if (entity == null)
 				return false;
 
-			entity.ChangeLogIDDeleted = GetChangeLogId();
+			#region Delete Related Records (Values, Value-Dimensions, Relationships)
+			// Delete all Value-Dimensions
+			var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
+			valueDimensions.ForEach(DeleteObject);
+			// Delete all Values
+			entity.Values.ToList().ForEach(DeleteObject);
+			// Delete all Parent-Relationships
+			entity.EntityParentRelationships.ToList().ForEach(DeleteObject);
+			#endregion
 
-			SaveChanges();
+			// If entity was Published, set Deleted-Flag
+			if (entity.IsPublished)
+			{
+				entity.ChangeLogIDDeleted = GetChangeLogId();
+				// Also delete the Draft (if any)
+				var draftEntityId = GetDraftEntityId(entity.EntityID);
+				if (draftEntityId.HasValue)
+					DeleteEntity(draftEntityId.Value);
+			}
+			// If entity was a Draft, really delete that Entity
+			else
+			{
+				// Delete all Child-Relationships
+				entity.EntityChildRelationships.ToList().ForEach(DeleteObject);
+				DeleteObject(entity);
+			}
+
+			if (autoSave)
+				SaveChanges();
 
 			return true;
 		}
@@ -1325,14 +1490,21 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Restore an Entity to the specified Version by creating a new Version using Import
+		/// Restore an Entity to the specified Version by creating a new Version using the Import
 		/// </summary>
 		public void RestoreEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
+			// Get Entity in specified Version/ChangeId
 			var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
+			// Restore Entity
 			var import = new Import.Import(_zoneId, _appId, UserName, true, false);
 			import.RunImport(null, new List<Import.Entity> { newVersion });
+
+			// Delete Draft (if any)
+			var entityDraft = GetEntityModel(entityId).GetDraft();
+			if (entityDraft != null)
+				DeleteEntity(entityDraft.RepositoryId);
 		}
 
 		#endregion

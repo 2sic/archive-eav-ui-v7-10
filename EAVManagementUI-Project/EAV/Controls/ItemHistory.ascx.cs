@@ -7,6 +7,9 @@ namespace ToSic.Eav.ManagementUI
 {
 	public partial class ItemHistory : UserControl
 	{
+		private EavContext _eavContext;
+		protected int? DraftRepositoryId;
+
 		#region Properties
 		public int EntityId { get; set; }
 		public bool IsDialog { get; set; }
@@ -17,18 +20,28 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
+			_eavContext = EavContext.Instance(appId: AppId);
+			var entityDraft = _eavContext.GetEntityModel(EntityId).GetDraft();
+			if (entityDraft != null)
+				DraftRepositoryId = entityDraft.RepositoryId;
+
+			// Set Back-Link and Header-Info
 			hlkBack.NavigateUrl = ReturnUrl.Replace("[EntityId]", EntityId.ToString());
+			litEntityId.DataBind();
+			lblHasDraft.DataBind();
 		}
 
+		#region DataSources Events
 		protected void dsrcEntityVersions_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-			e.ObjectInstance = EavContext.Instance(appId: AppId);
+			e.ObjectInstance = _eavContext;
 		}
 
 		protected void dsrcEntityVersions_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
 		{
 			e.InputParameters["entityId"] = EntityId;
 		}
+		#endregion
 
 		protected void grdItemHistory_RowDataBound(object sender, GridViewRowEventArgs e)
 		{

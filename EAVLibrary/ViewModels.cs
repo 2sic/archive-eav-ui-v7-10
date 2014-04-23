@@ -13,13 +13,17 @@ namespace ToSic.Eav
 	public class EntityModel : IEntity
 	{
 		public int EntityId { get; internal set; }
+		public int RepositoryId { get; internal set; }
 		public Guid EntityGuid { get; internal set; }
 		public IAttribute Title { get; internal set; }
 		public Dictionary<string, IAttribute> Attributes { get; internal set; }
 		public IContentType Type { get; internal set; }
 		[ScriptIgnore]
 		public RelationshipManager Relationships { get; internal set; }
+		public bool IsPublished { get; internal set; }
 		public int AssignmentObjectTypeId { get; internal set; }
+		internal IEntity DraftEntity { get; set; }
+		internal IEntity PublishedEntity { get; set; }
 
 		public IAttribute this[string attributeName]
 		{
@@ -27,23 +31,17 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Create a new blank EntityModel
-		/// </summary>
-		internal EntityModel(IEnumerable<EntityRelationshipItem> allRelationships)
-		{
-			Relationships = new RelationshipManager(this, allRelationships);
-		}
-
-		/// <summary>
 		/// Create a new EntityModel
 		/// </summary>
-		internal EntityModel(Guid entityGuid, int entityId, int assignmentObjectTypeId, IContentType type, IEnumerable<EntityRelationshipItem> allRelationships = null)
+		internal EntityModel(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships = null)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
 			AssignmentObjectTypeId = assignmentObjectTypeId;
 			Attributes = new Dictionary<string, IAttribute>();
 			Type = type;
+			IsPublished = isPublished;
+			RepositoryId = repositoryId;
 
 			if (allRelationships == null)
 				allRelationships = new List<EntityRelationshipItem>();
@@ -60,8 +58,20 @@ namespace ToSic.Eav
 			AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
 			Type = entity.Type;
 			Title = entity.Title;
+			IsPublished = entity.IsPublished;
 			Attributes = attributes;
+			RepositoryId = entity.RepositoryId;
 			Relationships = new RelationshipManager(this, allRelationships);
+		}
+
+		public IEntity GetDraft()
+		{
+			return DraftEntity;
+		}
+
+		public IEntity GetPublished()
+		{
+			return PublishedEntity;
 		}
 	}
 

@@ -165,7 +165,26 @@ namespace ToSic.Eav.Import
 			// Update existing Entity
 			if (entity.EntityGuid.HasValue && _db.EntityExists(entity.EntityGuid.Value))
 			{
-				var existingEntity = _db.GetEntity(entity.EntityGuid.Value);
+				// Get existing, published Entity
+				var existingEntities = _db.GetEntitiesByGuid(entity.EntityGuid.Value);
+				Eav.Entity existingEntity;
+				try
+				{
+					existingEntity = existingEntities.Count() == 1 ? existingEntities.First() : existingEntities.Single(e => e.IsPublished);
+				}
+				catch (Exception ex)
+				{
+					_importLog.Add(new LogItem(EventLogEntryType.Error, "Unable find existing published Entity. " + ex.Message) { Entity = entity, });
+					return;
+				}
+
+				// Prevent updating Draft-Entity
+				if (!existingEntity.IsPublished)
+				{
+					_importLog.Add(new LogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed") { Entity = entity, });
+					return;
+				}
+
 				// Ensure entity has same AttributeSet
 				if (existingEntity.Set.StaticName != entity.AttributeSetStaticName)
 				{
@@ -175,6 +194,14 @@ namespace ToSic.Eav.Import
 
 				_importLog.Add(new LogItem(EventLogEntryType.Information, "Entity already exists") { Entity = entity });
 
+				// Delete Draft-Entity (if any)
+				var draftEntityId = _db.GetDraftEntityId(existingEntity.EntityID);
+				if (draftEntityId.HasValue)
+				{
+					_importLog.Add(new LogItem(EventLogEntryType.Information, "Draft-Entity deleted") { Entity = entity, });
+					_db.DeleteEntity(draftEntityId.Value);
+				}
+
 				// Get vales from old EntityModel
 				var oldEntityModel = _db.GetDataForCache(new[] { existingEntity.EntityID }, _appId, null).Entities.First().Value;
 
@@ -182,7 +209,7 @@ namespace ToSic.Eav.Import
 				if (!_overwriteExistingEntityValues)	// Skip values that are already present in existing Entity
 					newValues = entity.Values.Where(v => oldEntityModel[v.Key] == null).ToDictionary(v => v.Key, v => v.Value);
 
-				_db.UpdateEntity(entity.EntityGuid.Value, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues);
+				_db.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues);
 			}
 			// Add new Entity
 			else

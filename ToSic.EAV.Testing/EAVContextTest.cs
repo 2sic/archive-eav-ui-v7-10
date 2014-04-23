@@ -230,5 +230,29 @@ namespace ToSic.Eav.Testing
 			// Delete the App
 			db.DeleteApp(app.AppID);
 		}
+
+		//[Test]
+		//public void CloneEntity()
+		//{
+		//	var db = EavContext.Instance(appId: 2);
+		//	var sourceEntity = db.GetEntity(330);
+		//	var clone = db.CloneEntity(sourceEntity);
+		//	clone.IsPublished = false;
+		//	db.AddToEntities(clone);
+
+		//	db.SaveChanges();
+		//}
+
+		[Test]
+		public void DraftEntitiesTest()
+		{
+			var db1 = EavContext.Instance(appId: 2);
+			var publishedWitDraft = db1.GetEntityModel(5454);
+			Assert.NotNull(publishedWitDraft.GetDraft());
+
+			var db2 = EavContext.Instance(appId: 2);
+			var draftEntity = db2.GetEntityModel(5458);
+			Assert.NotNull(draftEntity.GetPublished());
+		}
 	}
 }

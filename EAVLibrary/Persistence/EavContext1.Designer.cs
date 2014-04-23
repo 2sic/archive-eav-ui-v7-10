@@ -4047,7 +4047,8 @@ namespace ToSic.Eav
         /// <param name="sortOrder">Initial value of the SortOrder property.</param>
         /// <param name="entityGUID">Initial value of the EntityGUID property.</param>
         /// <param name="changeLogIDCreated">Initial value of the ChangeLogIDCreated property.</param>
-        public static Entity CreateEntity(global::System.Int32 entityID, global::System.Int32 attributeSetID, global::System.Int32 assignmentObjectTypeID, global::System.Int32 sortOrder, global::System.Guid entityGUID, global::System.Int32 changeLogIDCreated)
+        /// <param name="isPublished">Initial value of the IsPublished property.</param>
+        public static Entity CreateEntity(global::System.Int32 entityID, global::System.Int32 attributeSetID, global::System.Int32 assignmentObjectTypeID, global::System.Int32 sortOrder, global::System.Guid entityGUID, global::System.Int32 changeLogIDCreated, global::System.Boolean isPublished)
         {
             Entity entity = new Entity();
             entity.EntityID = entityID;
@@ -4056,6 +4057,7 @@ namespace ToSic.Eav
             entity.SortOrder = sortOrder;
             entity.EntityGUID = entityGUID;
             entity.ChangeLogIDCreated = changeLogIDCreated;
+            entity.IsPublished = isPublished;
             return entity;
         }
 
@@ -4329,6 +4331,54 @@ namespace ToSic.Eav
         private Nullable<global::System.Int32> _ChangeLogIDDeleted;
         partial void OnChangeLogIDDeletedChanging(Nullable<global::System.Int32> value);
         partial void OnChangeLogIDDeletedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean IsPublished
+        {
+            get
+            {
+                return _IsPublished;
+            }
+            set
+            {
+                OnIsPublishedChanging(value);
+                ReportPropertyChanging("IsPublished");
+                _IsPublished = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsPublished");
+                OnIsPublishedChanged();
+            }
+        }
+        private global::System.Boolean _IsPublished;
+        partial void OnIsPublishedChanging(global::System.Boolean value);
+        partial void OnIsPublishedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> PublishedEntityID
+        {
+            get
+            {
+                return _PublishedEntityID;
+            }
+            set
+            {
+                OnPublishedEntityIDChanging(value);
+                ReportPropertyChanging("PublishedEntityID");
+                _PublishedEntityID = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("PublishedEntityID");
+                OnPublishedEntityIDChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _PublishedEntityID;
+        partial void OnPublishedEntityIDChanging(Nullable<global::System.Int32> value);
+        partial void OnPublishedEntityIDChanged();
 
         #endregion
 

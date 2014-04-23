@@ -76,6 +76,24 @@ namespace ToSic.Eav.ManagementUI {
         protected global::System.Web.UI.WebControls.PlaceHolder phFields;
         
         /// <summary>
+        /// FieldLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label FieldLabel;
+        
+        /// <summary>
+        /// rblPublished control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList rblPublished;
+        
+        /// <summary>
         /// pnlEditDefaultFirstEN control.
         /// </summary>
         /// <remarks>
@@ -94,22 +112,13 @@ namespace ToSic.Eav.ManagementUI {
         protected global::System.Web.UI.WebControls.Panel pnlActions;
         
         /// <summary>
-        /// btnInsert control.
+        /// btnSave control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnInsert;
-        
-        /// <summary>
-        /// btnUpdate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnUpdate;
+        protected global::System.Web.UI.WebControls.LinkButton btnSave;
         
         /// <summary>
         /// btnCancel control.

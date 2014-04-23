@@ -74,6 +74,7 @@
     <Compile Include="DataSources\DataPipelineFactory.cs" />
     <Compile Include="DataSources\DataStream.cs" />
     <Compile Include="DataSources\EntityIdFilter.cs" />
+    <Compile Include="DataSources\PublishingFilter.cs" />
     <Compile Include="DataSources\ValueSort.cs" />
     <Compile Include="DataSources\ValueFilter.cs" />
     <Compile Include="DataSources\EntityTypeFilter.cs" />
@@ -113,7 +114,7 @@
     <Compile Include="Persistence\EavContextDimensions.cs" />
     <Compile Include="Persistence\EavContextRead.cs" />
     <Compile Include="RelationshipManager.cs" />
-    <Compile Include="Models.cs" />
+    <Compile Include="ViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
@@ -125,10 +126,12 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>EavContext1.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)..\2SexyContent\Web\bin</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

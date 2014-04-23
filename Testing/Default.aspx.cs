@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web.UI;
 using ToSic.Eav.DataSources;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
@@ -38,6 +39,12 @@ namespace ToSic.Eav
 					ShowDataSource(ValueSort(typeFiltered, "entityid,entitytitle", "d,a"), "Sorted Value", true);
 					// ShowDataSource(ValueSort(typeFiltered, "entitytitle,entityid", "a,a"), "Sorted Value", true);
 					//ShowDataSource(ValueSort(typeFiltered, "id,entitytitle", "a,a"), "Sorted Value", true);
+					break;
+				case "publishingwithdrafts":
+					ShowDataSource(PublishingFilter("News", true), "News with Drafts", true);
+					break;
+				case "publishingpublishedonly":
+					ShowDataSource(PublishingFilter("News", false), "News - published only", true);
 					break;
 				Default:
 					break;
@@ -216,17 +223,29 @@ namespace ToSic.Eav
 		//	// Response.Write(((IMetaDataSource)source).IndexForExternalInt[17, 20].ToString());
 		//}
 
-		private IDataSource InitialDataSource()
+		private IDataSource InitialDataSource(bool showDrafts = false)
 		{
-			var source = DataSource.GetInitialDataSource();
+			var source = DataSource.GetInitialDataSource(showDrafts: showDrafts);
 			return source;
 		}
 
-		private EntityTypeFilter EntityTypeFilter(string typeName)
+		private static IDataSource PublishingFilter(string typeName, bool showDrafts)
 		{
-			var source = DataSource.GetInitialDataSource();
+			var source = DataSource.GetInitialDataSource(appId: 2, showDrafts: showDrafts);
 
-			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
+			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(2, 2, source);
+			filterPipeline.TypeName = typeName;
+
+			return filterPipeline;
+		}
+
+
+
+		private static EntityTypeFilter EntityTypeFilter(string typeName, int appId = 1)
+		{
+			var source = DataSource.GetInitialDataSource(appId: appId);
+
+			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
 			//old: filterPipeline.Configuration["TypeName"] = typeName;
 			filterPipeline.TypeName = typeName;
 			// ShowDataSource(filterPipeline, "EntityTypeFilter", true);
@@ -238,7 +257,7 @@ namespace ToSic.Eav
 		{
 			var source = DataSource.GetInitialDataSource();
 
-	      // var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
+			// var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
 			filterPipeline.TypeName = typeName;
 			var valuePipeline = DataSource.GetDataSource<ValueFilter>(1, 1, filterPipeline);
@@ -309,26 +328,28 @@ namespace ToSic.Eav
 
 		public string ShowEntity(IEntity entity)
 		{
-			var output = entity.EntityId + "<br/>";
+			var output = new StringBuilder("EntityId: " + entity.EntityId);
+			output.Append("<br/>RepositoryId: " + entity.RepositoryId);
+			output.Append("<br/>IsPublished: " + entity.IsPublished + "<br/>");
 			foreach (var attribute in entity.Attributes)
 			{
-				output += attribute.Key + ": " + attribute.Value[0] + "<br/>";
+				output.Append(attribute.Key + ": " + attribute.Value[0] + "<br/>");
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
 				if (relationship != null)
 				{
-					output += "Entities count: " + relationship.TypedContents.Count() + "<br/>";
+					output.Append("Entities count: " + relationship.TypedContents.Count() + "<br/>");
 					if (relationship.TypedContents.Any())
-						output += "Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title[0])) + "<br/>";
+						output.Append("Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title[0])) + "<br/>");
 				}
 			}
 
-			output += "Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>";
-			output += "AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>";
-			output += "AllParents: " + entity.Relationships.AllParents.Count() + "<br/>";
+			output.Append("Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>");
+			output.Append("AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>");
+			output.Append("AllParents: " + entity.Relationships.AllParents.Count() + "<br/>");
 
-			output += "<hr/>";
-			return output;
+			output.Append("<hr/>");
+			return output.ToString();
 		}
 		#endregion
 	}

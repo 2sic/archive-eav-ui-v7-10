@@ -13,6 +13,24 @@ namespace ToSic.Eav.ManagementUI {
     public partial class ItemHistory {
         
         /// <summary>
+        /// litEntityId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litEntityId;
+        
+        /// <summary>
+        /// lblHasDraft control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblHasDraft;
+        
+        /// <summary>
         /// grdItemHistory control.
         /// </summary>
         /// <remarks>

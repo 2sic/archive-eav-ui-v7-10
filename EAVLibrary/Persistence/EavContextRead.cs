@@ -24,7 +24,12 @@ namespace ToSic.Eav
 		/// <returns>Entity or throws InvalidOperationException</returns>
 		public Entity GetEntity(Guid entityGuid)
 		{
-			return Entities.Single(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
+			return GetEntitiesByGuid(entityGuid).Single();
+		}
+
+		internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
+		{
+			return Entities.Where(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
 		}
 
 		/// <summary>
@@ -32,7 +37,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool EntityExists(Guid entityGuid)
 		{
-			return Entities.Any(e => e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue && !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == _appId);
+			return GetEntitiesByGuid(entityGuid).Any();
 		}
 
 		/// <summary>
@@ -79,7 +84,7 @@ namespace ToSic.Eav
 
 			var columnNames = GetAttributes(attributeSetId).Select(a => a.StaticName);
 
-			return entitiesModel.Entities.Select(v => v.Value).ToDataTable(columnNames, dimensionIds);
+			return entitiesModel.Entities.Select(v => v.Value).OrderBy(e => e.EntityId).ToDataTable(columnNames, dimensionIds);
 		}
 
 		/// <summary>
@@ -166,28 +171,23 @@ namespace ToSic.Eav
 		/// </summary>
 		public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
 		{
-			var result = new List<AttributeWithMetaInfo>();
-
 			var attributesInSet = AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
 
 			var systemScope = AttributeScope.System.ToString();
-			foreach (var a in attributesInSet)
-			{
-				var metaData = GetAttributeMetaData(a.AttributeID);
-				result.Add(new AttributeWithMetaInfo
-				{
-					AttributeID = a.AttributeID,
-					IsTitle = a.IsTitle,
-					StaticName = a.Attribute.StaticName,
-					Name = metaData.ContainsKey("Name") ? metaData["Name"][dimensionIds].ToString() : null,
-					Notes = metaData.ContainsKey("Notes") ? metaData["Notes"][dimensionIds].ToString() : null,
-					Type = a.Attribute.Type,
-					HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
-					MetaData = metaData
-				});
-			}
 
-			return result;
+			return (from a in attributesInSet
+					let metaData = GetAttributeMetaData(a.AttributeID)
+					select new AttributeWithMetaInfo
+					{
+						AttributeID = a.AttributeID,
+						IsTitle = a.IsTitle,
+						StaticName = a.Attribute.StaticName,
+						Name = metaData.ContainsKey("Name") ? metaData["Name"][dimensionIds].ToString() : null,
+						Notes = metaData.ContainsKey("Notes") ? metaData["Notes"][dimensionIds].ToString() : null,
+						Type = a.Attribute.Type,
+						HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
+						MetaData = metaData
+					}).ToList();
 		}
 
 		/// <summary>
@@ -300,17 +300,41 @@ namespace ToSic.Eav
 		/// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
 		internal CacheItem GetDataForCache(int[] entityIds, int appId, IDataSource source)
 		{
+			var contentTypes = GetContentTypes(appId);
+
+			var assignmentObjectTypesGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+			var assignmentObjectTypesNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+			var assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+			var relationships = new List<EntityRelationshipItem>();
+
+			#region Prepare & Extend EntityIds
 			if (entityIds == null)
 				entityIds = new int[0];
 
-			#region Get Entities from Database
 			var filterByEntityIds = entityIds.Any();
+
+			// Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
+			if (filterByEntityIds)
+				entityIds = entityIds.Union(from e in Entities
+											where e.PublishedEntityID.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityID.Value) && e.ChangeLogDeleted == null
+											select e.PublishedEntityID.Value).ToArray();
+			#endregion
+
+			#region Get Entities from Database
+
 			var entitiesValues = from e in Entities
 								 where
-									!e.ChangeLogIDDeleted.HasValue &&
-									e.Set.AppID == appId &&
-									e.Set.ChangeLogIDDeleted == null &&
-									(!filterByEntityIds || entityIds.Contains(e.EntityID))
+									 !e.ChangeLogIDDeleted.HasValue &&
+									 e.Set.AppID == appId &&
+									 e.Set.ChangeLogIDDeleted == null &&
+									 (	// filter by EntityIds (if set)
+										 !filterByEntityIds ||
+										 entityIds.Contains(e.EntityID) ||
+										 (e.PublishedEntityID.HasValue && entityIds.Contains(e.PublishedEntityID.Value))	// also load Drafts
+									 )
+								 orderby
+									 e.EntityID
+								 // guarantees Published appear before draft
 								 select new
 								 {
 									 e.EntityID,
@@ -320,50 +344,62 @@ namespace ToSic.Eav
 									 e.KeyNumber,
 									 e.KeyString,
 									 e.AssignmentObjectTypeID,
+									 e.IsPublished,
+									 e.PublishedEntityID,
 									 RelatedEntities = from r in e.EntityParentRelationships
-													   group r by r.AttributeID into rg
-													   select new
-													   {
-														   AttributeID = rg.Key,
-														   AttributeName = rg.Select(a => a.Attribute.StaticName).FirstOrDefault(),
-														   IsTitle = rg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
-														   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityID)
-													   },
+													   group r by r.AttributeID
+														   into rg
+														   select new
+														   {
+															   AttributeID = rg.Key,
+															   AttributeName = rg.Select(a => a.Attribute.StaticName).FirstOrDefault(),
+															   IsTitle = rg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
+															   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityID)
+														   },
 									 Attributes = from v in e.Values
 												  where !v.ChangeLogIDDeleted.HasValue
-												  group v by v.AttributeID into vg
-												  select new
-												  {
-													  AttributeID = vg.Key,
-													  AttributeName = vg.Select(v1 => v1.Attribute.StaticName).FirstOrDefault(),
-													  AttributeType = vg.Select(v1 => v1.Attribute.Type).FirstOrDefault(),
-													  IsTitle = vg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
-													  Values = from v2 in vg
-															   orderby v2.ChangeLogIDCreated
-															   select new
-															   {
-																   v2.ValueID,
-																   v2.Value,
-																   Languages = from l in v2.ValuesDimensions select new DimensionModel { DimensionId = l.DimensionID, ReadOnly = l.ReadOnly, Key = l.Dimension.ExternalKey.ToLower() },
-																   v2.ChangeLogIDCreated
-															   }
-												  }
+												  group v by v.AttributeID
+													  into vg
+													  select new
+													  {
+														  AttributeID = vg.Key,
+														  AttributeName = vg.Select(v1 => v1.Attribute.StaticName).FirstOrDefault(),
+														  AttributeType = vg.Select(v1 => v1.Attribute.Type).FirstOrDefault(),
+														  IsTitle = vg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
+														  Values = from v2 in vg
+																   orderby v2.ChangeLogIDCreated
+																   select new
+																   {
+																	   v2.ValueID,
+																	   v2.Value,
+																	   Languages = from l in v2.ValuesDimensions
+																				   select
+																					   new DimensionModel
+																					   {
+																						   DimensionId = l.DimensionID,
+																						   ReadOnly = l.ReadOnly,
+																						   Key = l.Dimension.ExternalKey.ToLower()
+																					   },
+																	   v2.ChangeLogIDCreated
+																   }
+													  }
 								 };
 			#endregion
 
-			var contentTypes = GetContentTypes(appId);
-
-			var assignmentObjectTypesGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
-			var assignmentObjectTypesNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
-			var assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
-			var relationships = new List<EntityRelationshipItem>();
-
-			#region Build Entities Model (steps that can't be done on DB directly)
+			#region Build Model (steps that can't be done on the DB directly)
 			var entities = new Dictionary<int, IEntity>();
-
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], allRelationships: relationships);
+				var model = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
+
+				// If entity is a draft, add references to Published Entity
+				if (!e.IsPublished && e.PublishedEntityID.HasValue)
+				{
+					// Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+					model.PublishedEntity = entities[e.PublishedEntityID.Value];
+					((EntityModel)model.PublishedEntity).DraftEntity = model;
+					model.EntityId = e.PublishedEntityID.Value;
+				}
 
 				#region Add assignmentObjectTypes with Key
 
@@ -399,7 +435,6 @@ namespace ToSic.Eav
 
 						((List<IEntity>)assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString]).Add(model);
 					}
-
 				}
 
 				#endregion
@@ -407,6 +442,7 @@ namespace ToSic.Eav
 				var oldestChangeLogId = int.MaxValue;
 
 				#region add Related-Entities Attributes
+
 				foreach (var a in e.RelatedEntities)
 				{
 					var attributeModel = GetAttributeManagementModel("Entity");
@@ -431,9 +467,11 @@ namespace ToSic.Eav
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
 				}
+
 				#endregion
 
 				#region Add "normal" Attributes (that are not Entity-Relations)
+
 				foreach (var a in e.Attributes)
 				{
 					var attributeModel = GetAttributeManagementModel(a.AttributeType);
@@ -449,6 +487,7 @@ namespace ToSic.Eav
 					var valuesModelList = new List<IValue>();
 
 					#region Add all Values
+
 					foreach (var v in a.Values)
 					{
 						var valueModel = GetValueModel(a.AttributeType, v.Value);
@@ -460,18 +499,20 @@ namespace ToSic.Eav
 
 						valuesModelList.Add((IValue)valueModel);
 					}
+
 					#endregion
 
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
 				}
+
 				#endregion
 
 				entities.Add(e.EntityID, model);
 			}
 			#endregion
 
-			#region Populate Entity-Relationships (must be done after all Entities are created)
+			#region Populate Entity-Relationships (must be done after all EntityModels are created)
 			var relationshipsRaw = from r in EntityRelationships
 								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
 								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
@@ -483,7 +524,6 @@ namespace ToSic.Eav
 					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
 				}
 				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
-
 			}
 			#endregion
 
@@ -496,7 +536,7 @@ namespace ToSic.Eav
 		/// <returns>A single IEntity or throws InvalidOperationException</returns>
 		public IEntity GetEntityModel(int entityId, IDataSource source = null)
 		{
-			return GetDataForCache(new[] { entityId }, _appId, source).Entities.Single().Value;
+			return GetDataForCache(new[] { entityId }, _appId, source).Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 		}
 
 		/// <summary>
@@ -546,8 +586,7 @@ namespace ToSic.Eav
 
 						return new ValueModel<decimal?> { TypedContents = decimal.Parse(value, CultureInfo.InvariantCulture) };
 					case "Entity":
-						// ToDo: Throw Exception!
-						return null;
+						throw new NotSupportedException("GetValueModel for Entity-Type not supported");
 					default:
 						return new ValueModel<string> { TypedContents = value };
 				}

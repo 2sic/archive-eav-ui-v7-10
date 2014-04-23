@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -8,10 +9,31 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	public class CacheItem
 	{
+		#region Private Fields
+		private IDictionary<int, IEntity> _publishedEntities;
+		private IDictionary<int, IEntity> _draftEntities;
+		#endregion
+
+		#region Properties
 		/// <summary>
 		/// Gets all Entities in this App
 		/// </summary>
 		public IDictionary<int, IEntity> Entities { get; private set; }
+
+		/// <summary>
+		/// Get all Published Entities in this App (excluding Drafts)
+		/// </summary>
+		public IDictionary<int, IEntity> PublishedEntities
+		{
+			get { return _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Key, v => v.Value)); }
+		}
+		/// <summary>
+		/// Get all Entities not having a Draft
+		/// </summary>
+		public IDictionary<int, IEntity> DraftEntities
+		{
+			get { return _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Key, v => v.Value)); }
+		}
 		/// <summary>
 		/// Gets all ContentTypes in this App
 		/// </summary>
@@ -36,6 +58,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Gets the DateTime when this CacheItem was populated
 		/// </summary>
 		public DateTime LastRefresh { get; private set; }
+		#endregion
 
 		/// <summary>
 		/// Construct a new CacheItem with all required Items

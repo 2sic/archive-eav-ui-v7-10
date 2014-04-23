@@ -13,6 +13,11 @@ namespace ToSic.Eav.ManagementUI
 		{
 			get { return Forms.GetDimensionIds(DefaultCultureDimension); }
 		}
+		private const int ColIndexEdit = 0;
+		private const int ColIndexDelete = 1;
+		private const int ColIndexIsPublished = 5;
+		private const int ColIndexPublishedRepositoryId = 6;
+		private const int ColIndexDraftRepositoryId = 7;
 		#endregion
 
 		#region Properties
@@ -44,28 +49,37 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
+			// Hide some Auto-Generated Columns
+			e.Row.Cells[ColIndexPublishedRepositoryId].Visible = false;
+			e.Row.Cells[ColIndexDraftRepositoryId].Visible = false;
+
 			if (e.Row.RowType != DataControlRowType.DataRow)
 				return;
 
 			var rowData = (System.Data.DataRowView)e.Row.DataItem;
 			var entityId = rowData["EntityId"].ToString();
 
+			// Show Draft Info next to IsPublished
+			var isPublishedCell = e.Row.Cells[ColIndexIsPublished];
+			if (rowData["PublishedRepositoryId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new Label { Text = " " + rowData["PublishedRepositoryId"], ToolTip = "Draft of RepositoryId " + rowData["PublishedRepositoryId"] });
+			else if (rowData["DraftRepositoryId"] != DBNull.Value)
+				isPublishedCell.Controls.Add(new Label { Text = " has Draft", ToolTip = "Draft RepositoryId " + rowData["DraftRepositoryId"] });
+
 			#region Set Edit-Link
-			var editLink = (HyperLink)e.Row.Cells[0].Controls[0];
+			var editLink = (HyperLink)e.Row.Cells[ColIndexEdit].Controls[0];
 			const string editLinkUrlSchemaForDialogs = "~/Eav/Dialogs/EditItem.aspx?EntityId=[EntityId]";
 			if (DefaultCultureDimension.HasValue)
 				editLink.NavigateUrl += "&" + CultureUrlParameterName + "=[CultureDimension]";
 			var editLinkUrlSchema = IsDialog ? editLinkUrlSchemaForDialogs : EditItemUrl;
-
 			editLink.NavigateUrl = editLinkUrlSchema.Replace("[EntityId]", entityId).Replace("[CultureDimension]", DefaultCultureDimension.ToString());
-
 			#endregion
 
 			#region Extend Delete-Link with ClientSide-Confirm
 			if (EntityDeleting != null)
 			{
-				var deleteLink = (LinkButton)e.Row.Cells[1].Controls[0];
-				deleteLink.OnClientClick = string.Format("return confirm('Delete Entity {0}?');", entityId);
+				var deleteLink = (LinkButton)e.Row.Cells[ColIndexDelete].Controls[0];
+				deleteLink.OnClientClick = string.Format("return confirm('Delete Entity {0}?');", rowData["RepositoryId"]);
 			}
 			#endregion
 		}
@@ -73,7 +87,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void grdItems_DataBound(object sender, EventArgs e)
 		{
 			// show/hide Delete-Column depending on EntityDeleting is set
-			grdItems.Columns[1].Visible = EntityDeleting != null;
+			grdItems.Columns[ColIndexDelete].Visible = EntityDeleting != null;
 		}
 
 		#endregion
@@ -99,12 +113,12 @@ namespace ToSic.Eav.ManagementUI
 		protected void dsrcItems_Deleting(object sender, ObjectDataSourceMethodEventArgs e)
 		{
 			// init
-			var entityId = Convert.ToInt32(e.InputParameters["EntityId"]);
+			var repositoryId = Convert.ToInt32(e.InputParameters["RepositoryId"]);
 			var ctx = EavContext.Instance(appId: AppId);
-			var deleteArgs = new EntityDeletingEventArgs { EntityId = entityId };
+			var deleteArgs = new EntityDeletingEventArgs { EntityId = repositoryId };
 
 			// test if entity can be deleted
-			var canDeleteEntity = ctx.CanDeleteEntity(entityId);
+			var canDeleteEntity = ctx.CanDeleteEntity(repositoryId);
 			// cancel if entity can't be deleted
 			if (!canDeleteEntity.Item1)
 			{
@@ -122,12 +136,12 @@ namespace ToSic.Eav.ManagementUI
 
 			// Handle cancel
 			if (deleteArgs.Cancel)
-				ShowNotification("Entity " + entityId + " not deleted. " + deleteArgs.CancelMessage);
+				ShowNotification("Entity " + repositoryId + " not deleted. " + deleteArgs.CancelMessage);
 		}
 
 		protected void dsrcItems_Deleted(object sender, ObjectDataSourceStatusEventArgs e)
 		{
-			if (!(bool)e.ReturnValue)
+			if (e.ReturnValue == null || !(bool)e.ReturnValue)
 				ShowNotification("Entity wasn't deleted");
 		}
 

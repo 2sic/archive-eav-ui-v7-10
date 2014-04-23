@@ -90,7 +90,7 @@ namespace ToSic.Eav
 		public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
 			IConfigurationProvider configurationProvider = null)
 		{
-			var newDs = (BaseDataSource) Factory.Container.Resolve(typeof(T));
+			var newDs = (BaseDataSource)Factory.Container.Resolve(typeof(T));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configurationProvider);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
@@ -118,18 +118,22 @@ namespace ToSic.Eav
 
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav" };
 		/// <summary>
-		/// Retunrs an ICache with IRootSource as In-Source.
+		/// Gets a DataSource with Pipeline having PublishingFilter, ICache and IRootSource.
 		/// </summary>
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
+		/// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
 		/// <returns>A single DataSource</returns>
-		public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null)
+		public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 
 			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2);
 
-			return dataSource;
+			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource);
+			publishingFilter.ShowDrafts = showDrafts;
+
+			return publishingFilter;
 		}
 
 		/// <summary>
