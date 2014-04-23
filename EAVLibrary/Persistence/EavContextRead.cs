@@ -283,12 +283,41 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
 		/// </summary>
-		internal Dictionary<int, IContentType> GetContentTypes(int appId)
+		internal IDictionary<int, IContentType> GetContentTypes(int appId)
 		{
 			if (!_contentTypes.ContainsKey(appId))
-				_contentTypes[appId] = (from a in AttributeSets
-										where a.AppID == appId
-										select new { Key = a.AttributeSetID, Value = new ContentType { Name = a.Name, StaticName = a.StaticName } }).ToDictionary(k => k.Key, v => (IContentType)v.Value);
+			{
+				// Load from DB
+				var contentTypes = from set in AttributeSets
+								   where set.AppID == appId
+								   select new
+								   {
+									   set.AttributeSetID,
+									   set.Name,
+									   set.StaticName,
+									   Attributes = (from a in set.AttributesInSets
+													 select new
+													 {
+														 a.AttributeID,
+														 a.Attribute.StaticName,
+														 a.Attribute.Type,
+														 a.IsTitle
+													 })
+								   };
+				// Convert to ContentType-Model
+				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType
+				{
+					Name = set.Name,
+					StaticName = set.StaticName,
+					AttributeDefinitions = set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition
+					{
+						AttributeId = a.AttributeID,
+						Name = a.StaticName,
+						Type = a.Type,
+						IsTitle = a.IsTitle
+					})
+				});
+			}
 
 			return _contentTypes[appId];
 		}
@@ -352,53 +381,53 @@ namespace ToSic.Eav
 														   select new
 														   {
 															   AttributeID = rg.Key,
-															   AttributeName = rg.Select(a => a.Attribute.StaticName).FirstOrDefault(),
-															   IsTitle = rg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
 															   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityID)
 														   },
-									 Attributes = from v in e.Values
-												  where !v.ChangeLogIDDeleted.HasValue
-												  group v by v.AttributeID
-													  into vg
-													  select new
-													  {
-														  AttributeID = vg.Key,
-														  AttributeName = vg.Select(v1 => v1.Attribute.StaticName).FirstOrDefault(),
-														  AttributeType = vg.Select(v1 => v1.Attribute.Type).FirstOrDefault(),
-														  IsTitle = vg.Any(v1 => v1.Attribute.AttributesInSets.Any(s => s.IsTitle)),
-														  Values = from v2 in vg
-																   orderby v2.ChangeLogIDCreated
-																   select new
-																   {
-																	   v2.ValueID,
-																	   v2.Value,
-																	   Languages = from l in v2.ValuesDimensions
-																				   select
-																					   new DimensionModel
-																					   {
-																						   DimensionId = l.DimensionID,
-																						   ReadOnly = l.ReadOnly,
-																						   Key = l.Dimension.ExternalKey.ToLower()
-																					   },
-																	   v2.ChangeLogIDCreated
-																   }
-													  }
+									 Values = from v in e.Values
+											  where !v.ChangeLogIDDeleted.HasValue
+											  orderby v.ChangeLogIDCreated
+											  select new
+											  {
+												  v.AttributeID,
+												  v.ValueID,
+												  v.Value,
+												  Languages = from l in v.ValuesDimensions
+															  select new DimensionModel
+																  {
+																	  DimensionId = l.DimensionID,
+																	  ReadOnly = l.ReadOnly,
+																	  Key = l.Dimension.ExternalKey.ToLower()
+																  },
+												  v.ChangeLogIDCreated
+											  }
 								 };
 			#endregion
 
-			#region Build Model (steps that can't be done on the DB directly)
+			#region Build EntityModels
 			var entities = new Dictionary<int, IEntity>();
 			foreach (var e in entitiesValues)
 			{
-				var model = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentTypes[e.AttributeSetID], e.IsPublished, relationships);
+				var contentType = (ContentType)contentTypes[e.AttributeSetID];
+				var entityModel = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships);
+				
+				var entityValuesTemp = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later
+
+				// Add all Attributes from that Content-Type
+				foreach (var definition in contentType.AttributeDefinitions.Values)
+				{
+					var attributeModel = GetAttributeManagementModel(definition.Type);
+					entityModel.Attributes.Add(definition.Name, attributeModel);
+					entityValuesTemp.Add(definition.AttributeId, attributeModel);
+				}
+
 
 				// If entity is a draft, add references to Published Entity
 				if (!e.IsPublished && e.PublishedEntityID.HasValue)
 				{
 					// Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-					model.PublishedEntity = entities[e.PublishedEntityID.Value];
-					((EntityModel)model.PublishedEntity).DraftEntity = model;
-					model.EntityId = e.PublishedEntityID.Value;
+					entityModel.PublishedEntity = entities[e.PublishedEntityID.Value];
+					((EntityModel)entityModel.PublishedEntity).DraftEntity = entityModel;
+					entityModel.EntityId = e.PublishedEntityID.Value;
 				}
 
 				#region Add assignmentObjectTypes with Key
@@ -413,7 +442,7 @@ namespace ToSic.Eav
 						if (!assignmentObjectTypesGuid[e.AssignmentObjectTypeID].ContainsKey(e.KeyGuid.Value)) // ensure Guid
 							assignmentObjectTypesGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value]).Add(model);
+						((List<IEntity>)assignmentObjectTypesGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value]).Add(entityModel);
 					}
 					if (e.KeyNumber.HasValue)
 					{
@@ -423,7 +452,7 @@ namespace ToSic.Eav
 						if (!assignmentObjectTypesNumber[e.AssignmentObjectTypeID].ContainsKey(e.KeyNumber.Value)) // ensure Guid
 							assignmentObjectTypesNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value]).Add(model);
+						((List<IEntity>)assignmentObjectTypesNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value]).Add(entityModel);
 					}
 					if (!string.IsNullOrEmpty(e.KeyString))
 					{
@@ -433,7 +462,7 @@ namespace ToSic.Eav
 						if (!assignmentObjectTypesString[e.AssignmentObjectTypeID].ContainsKey(e.KeyString)) // ensure Guid
 							assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString]).Add(model);
+						((List<IEntity>)assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString]).Add(entityModel);
 					}
 				}
 
@@ -443,47 +472,30 @@ namespace ToSic.Eav
 
 				#region add Related-Entities Attributes
 
-				foreach (var a in e.RelatedEntities)
-				{
-					var attributeModel = GetAttributeManagementModel("Entity");
-					if (a.IsTitle)
-					{
-						attributeModel.IsTitle = true;
-						model.Title = attributeModel;
-					}
-					attributeModel.Name = a.AttributeName;
+				//foreach (var a in e.RelatedEntities)
+				//{
+				//	var attributeModel = entityValuesTemp[a.AttributeID];
+				//	//var attributeModel = entityModel.Attributes[]
+				//	var valueModel = new ValueModel<EntityRelationshipModel>
+				//	{
+				//		TypedContents = new EntityRelationshipModel(source) { EntityIds = a.Childs },
+				//		Languages = new List<DimensionModel>(),
+				//		ValueId = -1,
+				//		ChangeLogIdCreated = -1
+				//	};
 
-					model.Attributes.Add(a.AttributeName, attributeModel);
-
-					var valueModel = new ValueModel<EntityRelationshipModel>
-					{
-						TypedContents = new EntityRelationshipModel(source) { EntityIds = a.Childs },
-						Languages = new List<DimensionModel>(),
-						ValueId = -1,
-						ChangeLogIdCreated = -1
-					};
-
-					var valuesModelList = new List<IValue> { valueModel };
-					attributeModel.Values = valuesModelList;
-					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
-				}
+				//	var valuesModelList = new List<IValue> { valueModel };
+				//	attributeModel.Values = valuesModelList;
+				//	attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
+				//}
 
 				#endregion
 
 				#region Add "normal" Attributes (that are not Entity-Relations)
 
-				foreach (var a in e.Attributes)
+				foreach (var a in e.Values)
 				{
-					var attributeModel = GetAttributeManagementModel(a.AttributeType);
-					if (a.IsTitle)
-					{
-						attributeModel.IsTitle = true;
-						model.Title = attributeModel;
-					}
-					attributeModel.Name = a.AttributeName;
-
-					model.Attributes.Add(a.AttributeName, attributeModel);
-
+					var attributeModel = entityValuesTemp[a.AttributeID];
 					var valuesModelList = new List<IValue>();
 
 					#region Add all Values
@@ -508,7 +520,7 @@ namespace ToSic.Eav
 
 				#endregion
 
-				entities.Add(e.EntityID, model);
+				entities.Add(e.EntityID, entityModel);
 			}
 			#endregion
 
@@ -559,6 +571,11 @@ namespace ToSic.Eav
 				default:
 					return new AttributeModel<string> { Type = type };
 			}
+		}
+
+		private static IValueManagement GetValueModel(AttributeDefinition attributeDefinition, string value)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>

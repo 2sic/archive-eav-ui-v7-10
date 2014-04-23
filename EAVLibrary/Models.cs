@@ -76,13 +76,30 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an Attribute of a Generic Type
+	/// Represents an Attribute with Values of a Generic Type
 	/// </summary>
 	/// <typeparam name="ValueType">Type of the Value</typeparam>
-	public class AttributeModel<ValueType> : IAttribute<ValueType>, IAttributeManagement
+	public class AttributeBaseModel : IAttributeBase
 	{
 		public string Name { get; set; }
 		public string Type { get; set; }
+	}
+
+	/// <summary>
+	/// Extended Attribute Model for internal Cache
+	/// </summary>
+	internal class AttributeDefinition : AttributeBaseModel
+	{
+		public int AttributeId { get; set; }
+		public bool IsTitle { get; set; }
+	}
+
+	/// <summary>
+	/// Represents an Attribute with Values of a Generic Type
+	/// </summary>
+	/// <typeparam name="ValueType">Type of the Value</typeparam>
+	public class AttributeModel<ValueType> : AttributeBaseModel, IAttribute<ValueType>, IAttributeManagement
+	{
 		public bool IsTitle { get; set; }
 		public IEnumerable<IValue> Values { get; set; }
 		public IValueManagement DefaultValue { get; set; }
@@ -259,6 +276,10 @@ namespace ToSic.Eav
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
+		/// <summary>
+		/// Dictionary with all Attribute Definitions
+		/// </summary>
+		internal IDictionary<int, AttributeDefinition> AttributeDefinitions { get; set; }
 	}
 
 	/// <summary>

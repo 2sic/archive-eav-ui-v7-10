@@ -37,19 +37,19 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets all ContentTypes in this App
 		/// </summary>
-		public Dictionary<int, IContentType> ContentTypes { get; private set; }
+		public IDictionary<int, IContentType> ContentTypes { get; private set; }
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
 		/// </summary>
-		public Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> AssignmentObjectTypesGuid { get; private set; }
+		public IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> AssignmentObjectTypesGuid { get; private set; }
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
 		/// </summary>
-		public Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> AssignmentObjectTypesNumber { get; private set; }
+		public IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> AssignmentObjectTypesNumber { get; private set; }
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
 		/// </summary>
-		public Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> AssignmentObjectTypesString { get; private set; }
+		public IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> AssignmentObjectTypesString { get; private set; }
 		/// <summary>
 		/// Get all Relationships between Entities
 		/// </summary>
@@ -63,9 +63,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
-		public CacheItem(IDictionary<int, IEntity> entities, Dictionary<int, IContentType> contentTypes,
-			Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
-			Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, IEnumerable<EntityRelationshipItem> relationships)
+		public CacheItem(IDictionary<int, IEntity> entities, IDictionary<int, IContentType> contentTypes,
+			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
+			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, IEnumerable<EntityRelationshipItem> relationships)
 		{
 			Entities = entities;
 			ContentTypes = contentTypes;
