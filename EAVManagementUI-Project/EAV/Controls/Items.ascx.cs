@@ -113,12 +113,12 @@ namespace ToSic.Eav.ManagementUI
 		protected void dsrcItems_Deleting(object sender, ObjectDataSourceMethodEventArgs e)
 		{
 			// init
-			var entityId = Convert.ToInt32(e.InputParameters["EntityId"]);
+			var repositoryId = Convert.ToInt32(e.InputParameters["RepositoryId"]);
 			var ctx = EavContext.Instance(appId: AppId);
-			var deleteArgs = new EntityDeletingEventArgs { EntityId = entityId };
+			var deleteArgs = new EntityDeletingEventArgs { EntityId = repositoryId };
 
 			// test if entity can be deleted
-			var canDeleteEntity = ctx.CanDeleteEntity(entityId);
+			var canDeleteEntity = ctx.CanDeleteEntity(repositoryId);
 			// cancel if entity can't be deleted
 			if (!canDeleteEntity.Item1)
 			{
@@ -136,12 +136,12 @@ namespace ToSic.Eav.ManagementUI
 
 			// Handle cancel
 			if (deleteArgs.Cancel)
-				ShowNotification("Entity " + entityId + " not deleted. " + deleteArgs.CancelMessage);
+				ShowNotification("Entity " + repositoryId + " not deleted. " + deleteArgs.CancelMessage);
 		}
 
 		protected void dsrcItems_Deleted(object sender, ObjectDataSourceStatusEventArgs e)
 		{
-			if (!(bool)e.ReturnValue)
+			if (e.ReturnValue == null || !(bool)e.ReturnValue)
 				ShowNotification("Entity wasn't deleted");
 		}
 

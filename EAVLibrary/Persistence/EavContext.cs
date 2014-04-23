@@ -1073,6 +1073,10 @@ namespace ToSic.Eav
 		public Tuple<bool, string> CanDeleteEntity(int entityId)
 		{
 			var messages = new List<string>();
+			var entityModel = GetEntityModel(entityId);
+
+			if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
+				return new Tuple<bool, string>(true, null);
 
 			var entityChild = EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
 			if (entityChild.Any())
@@ -1134,7 +1138,11 @@ namespace ToSic.Eav
 			}
 			// If entity was a Draft, really delete that Entity
 			else
+			{
+				// Delete all Child-Relationships
+				entity.EntityChildRelationships.ToList().ForEach(DeleteObject);
 				DeleteObject(entity);
+			}
 
 			if (autoSave)
 				SaveChanges();
