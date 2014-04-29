@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -46,11 +48,21 @@ namespace ToSic.Eav.ManagementUI
 			e.InputParameters["entityId"] = EntityId;
 			e.InputParameters["changeId"] = ChangeId;
 			e.InputParameters["defaultCultureDimension"] = DefaultCultureDimension;
+			e.InputParameters["multiValuesSeparator"] = "\n";
 		}
 
 		protected void dsrcVersionDetails_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
 			e.ObjectInstance = _ctx;
+		}
+
+		protected void grdVersionDetails_RowDataBound(object sender, GridViewRowEventArgs e)
+		{
+			if (e.Row.RowType != DataControlRowType.DataRow)
+				return;
+
+			var dataItem = (DataRowView)e.Row.DataItem;
+			e.Row.Cells[2].Text = HttpUtility.HtmlEncode(dataItem["Value"].ToString()).Replace("\n", "<br/>");
 		}
 
 
