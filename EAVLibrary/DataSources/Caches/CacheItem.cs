@@ -28,11 +28,11 @@ namespace ToSic.Eav.DataSources.Caches
 			get { return _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Key, v => v.Value)); }
 		}
 		/// <summary>
-		/// Get all Entities not having a Draft
+		/// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
 		/// </summary>
 		public IDictionary<int, IEntity> DraftEntities
 		{
-			get { return _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Key, v => v.Value)); }
+			get { return _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value.EntityId, v => v.Value)); }
 		}
 		/// <summary>
 		/// Gets all ContentTypes in this App
