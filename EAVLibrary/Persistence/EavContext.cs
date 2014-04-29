@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Objects;
-using System.Data.Objects.DataClasses;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Data;
-using System.Reflection;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
@@ -499,13 +496,12 @@ namespace ToSic.Eav
 		/// </summary>
 		private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
 		{
-			// Get all entities to make updates faster?
-			var allEntities = DataSource.GetInitialDataSource(ZoneId, AppId, true)[DataSource.DefaultStreamName].List;
+			var entityModel = entity.EntityID != 0 ? GetEntityModel(entity.EntityID) : null;
 			var newValuesTyped = DictionaryToValuesViewModel(newValues);
 			foreach (var newValue in newValuesTyped)
 			{
 				var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-				UpdateValue(entity, attribute, masterRecord, currentValues, allEntities, newValue.Value, dimensionIds);
+				UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
 			}
 
 			#region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
@@ -698,7 +694,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update a Value when using ValueViewModel
 		/// </summary>
-		private void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, ValueViewModel newValue, ICollection<int> dimensionIds)
+		private void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ValueViewModel newValue, ICollection<int> dimensionIds)
 		{
 			switch (attribute.Type)
 			{
@@ -708,7 +704,7 @@ namespace ToSic.Eav
 					break;
 				// Handle simple values in Values-Table
 				default:
-					UpdateSimpleValue(attribute, currentEntity, dimensionIds, masterRecord, newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues, allEntities);
+					UpdateSimpleValue(attribute, currentEntity, dimensionIds, masterRecord, newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues, entityModel);
 					break;
 			}
 		}
@@ -716,13 +712,13 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update a Value in the Values-Table
 		/// </summary>
-		private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, IEnumerable<Import.ValueDimension> valueDimensions = null)
+		private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<Import.ValueDimension> valueDimensions = null)
 		{
 			var newValueSerialized = SerializeValue(newValue);
 			var changeId = GetChangeLogId();
 
 			// Get Value or create new one
-			var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, allEntities, newValueSerialized, changeId, valueDimensions);
+			var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, entityModel, newValueSerialized, changeId, valueDimensions);
 
 			#region Update DimensionIds on this and other values
 
@@ -797,7 +793,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
 		/// </summary>
-		private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IDictionary<int, IEntity> allEntities, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
+		private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
 		{
 			EavValue value = null;
 			// if Import-Dimension(s) are Specified
@@ -812,7 +808,6 @@ namespace ToSic.Eav
 			{
 				value = currentValues.Single(v => v.ValueID == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
 				// If Master, ensure ValueID is from Master!
-				var entityModel = allEntities[entity.EntityID];
 				var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
 				if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
 					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
@@ -1449,12 +1444,20 @@ namespace ToSic.Eav
 		public Import.Entity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
 			// Get Timeline Item
-			var timelineItem = DataTimeline.SingleOrDefault(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId);
+			string timelineItem;
+			try
+			{
+				timelineItem = DataTimeline.Where(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new InvalidOperationException(string.Format("Error getting EntityId {0} with ChangeId {1} from DataTimeline. {2}", entityId, changeId, ex.Message));
+			}
 			if (timelineItem == null)
 				throw new InvalidOperationException(string.Format("EntityId {0} with ChangeId {1} not found in DataTimeline.", entityId, changeId));
 
 			// Parse XML
-			var xEntity = XElement.Parse(timelineItem.NewData);
+			var xEntity = XElement.Parse(timelineItem);
 			var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
 			var assignmentObjectTypeId = GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
 
