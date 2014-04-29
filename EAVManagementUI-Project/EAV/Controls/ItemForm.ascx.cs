@@ -62,7 +62,7 @@ namespace ToSic.Eav.ManagementUI
 		public bool IsPublished
 		{
 			get { return rblPublished.SelectedValue == "Published"; }
-			private set { rblPublished.SelectedIndex = value ? 0 : 1; }
+			set { rblPublished.SelectedIndex = value ? 0 : 1; }
 		}
 
 		#endregion
