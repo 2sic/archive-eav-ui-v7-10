@@ -471,7 +471,8 @@ namespace ToSic.Eav
 			// Update as Published but Current Entity is a Draft-Entity
 			if (!entity.IsPublished && isPublished)
 			{
-				SaveEntityToDataTimeline(entity);
+				if (entity.PublishedEntityID.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
+					SaveEntityToDataTimeline(entity);
 				entity = PublishEntity(entityId, false);
 			}
 
