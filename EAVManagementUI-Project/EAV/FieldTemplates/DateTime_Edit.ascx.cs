@@ -7,8 +7,8 @@ namespace ToSic.Eav.ManagementUI
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			Calendar1.ToolTip = MetaData.ContainsKey("Notes") ? MetaData["Notes"][DimensionIds].ToString() : null;
-			FieldLabel.Text = MetaData.ContainsKey("Name") ? MetaData["Name"][DimensionIds].ToString() : Attribute.StaticName;
+			Calendar1.ToolTip = GetMetaDataValue<string>("Notes");
+			FieldLabel.Text = GetMetaDataValue<string>("Name");
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;
@@ -18,10 +18,10 @@ namespace ToSic.Eav.ManagementUI
 		{
 			if (!IsPostBack)
 			{
-				DateTime SelectedDate;
-				DateTime.TryParse(FieldValueEditString, out SelectedDate);
+				DateTime selectedDate;
+				DateTime.TryParse(FieldValueEditString, out selectedDate);
 
-				Calendar1.SelectedDate = SelectedDate;
+				Calendar1.SelectedDate = selectedDate;
 				Calendar1.DataBind();
 			}
 			base.OnPreRender(e);

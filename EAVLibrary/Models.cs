@@ -113,7 +113,7 @@ namespace ToSic.Eav
 					var value = (IValue<ValueType>)Values.FirstOrDefault();
 					return value != null ? value.TypedContents : default(ValueType);
 				}
-				catch (InvalidCastException)
+				catch
 				{
 					return default(ValueType);
 				}
@@ -135,7 +135,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageIds != null && languageIds.Length > 0)
+				if (languageIds != null && languageIds.Length > 0 && Values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
@@ -336,7 +336,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageIds != null && languageIds.Length > 0)
+				if (languageIds != null && languageIds.Length > 0 && _values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = _values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));

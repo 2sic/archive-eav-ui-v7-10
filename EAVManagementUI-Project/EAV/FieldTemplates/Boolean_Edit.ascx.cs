@@ -7,8 +7,8 @@ namespace ToSic.Eav.ManagementUI
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			CheckBox1.ToolTip = MetaData.ContainsKey("Notes") ? MetaData["Notes"][DimensionIds].ToString() : null;
-			FieldLabel.Text = MetaData.ContainsKey("Name") ? MetaData["Name"][DimensionIds].ToString() : Attribute.StaticName;
+			CheckBox1.ToolTip = GetMetaDataValue<string>("Notes");
+			FieldLabel.Text = GetMetaDataValue<string>("Name");
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;

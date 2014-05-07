@@ -58,12 +58,12 @@ namespace ToSic.Eav.ManagementUI
 			base.OnLoad(e);
 
 			// Set EAVField wrapper div and hidden field for Enabled / Disabled state
+			var allowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue");
+			var addressMask = GetMetaDataValue<string>("AddressMask");
 			var wrapperStartText = "<div class='eav-field dnnFormItem' data-staticname='" + Attribute.StaticName + "' data-enabled='" + Enabled.ToString().ToLower() +
-							   "' data-ismasterrecord='" + MasterRecord.ToString().ToLower() + "' data-fieldtype='" + Attribute.Type + "' data-fieldsubtype='" +
-							   (MetaData.ContainsKey("InputType") ? MetaData["InputType"][DimensionIds] : "") + "'" +
-							   (MetaData.ContainsKey("AllowMultiValue") ? " data-allowmultivalue='" + MetaData["AllowMultiValue"][DimensionIds].ToString().ToLower() + "' " : "") +
-							   (MetaData.ContainsKey("AddressMask") ? " data-addressmask='" + MetaData["AddressMask"][DimensionIds] + "' " : "") +
-							   ">";
+							   "' data-ismasterrecord='" + MasterRecord.ToString().ToLower() + "' data-fieldtype='" + Attribute.Type + "' data-fieldsubtype='" + GetMetaDataValue<string>("InputType") + "'" +
+							   (allowMultiValue != null ? " data-allowmultivalue='" + allowMultiValue.Value.ToString().ToLower() + "' " : "") +
+							   (addressMask != null ? " data-addressmask='" + addressMask + "' " : "") + ">";
 			_wrapperStart.Text = wrapperStartText;
 
 			_hfReadOnly.Value = ReadOnly.ToString().ToLower();
@@ -83,7 +83,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected T GetMetaDataValue<T>(string keyName, T defaultValue)
 		{
-			if (MetaData.ContainsKey(keyName))
+			if (MetaData.ContainsKey(keyName) && MetaData[keyName].Values != null)
 			{
 				var value = MetaData[keyName][DimensionIds];
 
@@ -91,7 +91,7 @@ namespace ToSic.Eav.ManagementUI
 				{
 					if (typeof(T).IsEnum) // handle/parse Enum
 					{
-						/// Source: http://stackoverflow.com/questions/1082532/how-to-tryparse-for-enum-value
+						// Source: http://stackoverflow.com/questions/1082532/how-to-tryparse-for-enum-value
 						if (!Enum.IsDefined(typeof(T), value.ToString()))
 							return defaultValue;
 
