@@ -49,6 +49,9 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
+			if (e.Row.RowType == DataControlRowType.EmptyDataRow)
+				return;
+
 			// Hide some Auto-Generated Columns
 			e.Row.Cells[ColIndexPublishedRepositoryId].Visible = false;
 			e.Row.Cells[ColIndexDraftRepositoryId].Visible = false;

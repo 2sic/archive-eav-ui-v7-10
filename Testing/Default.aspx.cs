@@ -261,7 +261,7 @@ namespace ToSic.Eav
 		{
 			var source = DataSource.GetInitialDataSource();
 
-	      // var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
+			// var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
 			filterPipeline.TypeName = typeName;
 			var valuePipeline = DataSource.GetDataSource<ValueFilter>(1, 1, filterPipeline);
@@ -340,7 +340,7 @@ namespace ToSic.Eav
 				output.Append(attribute.Key + ": " + attribute.Value[0] + "<br/>");
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
-				if (relationship != null)
+				if (relationship != null && relationship.TypedContents != null)
 				{
 					output.Append("Entities count: " + relationship.TypedContents.Count() + "<br/>");
 					if (relationship.TypedContents.Any())

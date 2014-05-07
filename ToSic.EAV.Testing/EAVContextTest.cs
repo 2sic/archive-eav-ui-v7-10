@@ -254,5 +254,16 @@ namespace ToSic.Eav.Testing
 			var draftEntity = db2.GetEntityModel(5458);
 			Assert.NotNull(draftEntity.GetPublished());
 		}
+
+		[Test]
+		public void GetEntityModel()
+		{
+			var ctx = EavContext.Instance(appId: 1);
+			var entityIds = new[] { 45 };
+			foreach (var entityId in entityIds)
+			{
+				ctx.GetEntityModel(entityId);
+			}
+		}
 	}
 }

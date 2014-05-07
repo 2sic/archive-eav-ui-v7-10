@@ -182,8 +182,8 @@ namespace ToSic.Eav
 						AttributeID = a.AttributeID,
 						IsTitle = a.IsTitle,
 						StaticName = a.Attribute.StaticName,
-						Name = metaData.ContainsKey("Name") ? metaData["Name"][dimensionIds].ToString() : null,
-						Notes = metaData.ContainsKey("Notes") ? metaData["Notes"][dimensionIds].ToString() : null,
+						Name = metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
+						Notes = metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
 						Type = a.Attribute.Type,
 						HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
 						MetaData = metaData
@@ -374,7 +374,7 @@ namespace ToSic.Eav
 											select e.PublishedEntityID.Value).ToArray();
 			#endregion
 
-			#region Get Entities from Database
+			#region Get Entities with Attribute-Values from Database
 
 			var entitiesValues = from e in Entities
 								 where

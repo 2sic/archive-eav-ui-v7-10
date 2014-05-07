@@ -658,21 +658,41 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get typed value from ValueImportModel
 		/// </summary>
-		private static object GetTypedValue(IValueImportModel newValue, string attributeType = null, string attributeStaticName = null)
+		/// <param name="value">Value to convert</param>
+		/// <param name="attributeType">Attribute Type</param>
+		/// <param name="attributeStaticName">Attribute StaticName</param>
+		/// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
+		private object GetTypedValue(IValueImportModel value, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
 		{
-			object newValueTyped;
-			if (newValue is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
-				newValueTyped = ((ValueImportModel<bool?>)newValue).Value;
-			else if (newValue is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime"))
-				newValueTyped = ((ValueImportModel<DateTime?>)newValue).Value;
-			else if (newValue is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number"))
-				newValueTyped = ((ValueImportModel<decimal?>)newValue).Value;
-			else if (newValue is ValueImportModel<string> &&
-					 (attributeType == null || attributeType == "String" || attributeType == "Hyperlink"))
-				newValueTyped = ((ValueImportModel<string>)newValue).Value;
+			object typedValue;
+			if (value is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
+				typedValue = ((ValueImportModel<bool?>)value).Value;
+			else if (value is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime"))
+				typedValue = ((ValueImportModel<DateTime?>)value).Value;
+			else if (value is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number"))
+				typedValue = ((ValueImportModel<decimal?>)value).Value;
+			else if (value is ValueImportModel<string> && (attributeType == null || attributeType == "String" || attributeType == "Hyperlink"))
+				typedValue = ((ValueImportModel<string>)value).Value;
+			else if (value is ValueImportModel<List<Guid>> && multiValuesSeparator != null)
+			{
+				var entityGuids = ((ValueImportModel<List<Guid>>)value).Value;
+				typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
+			}
 			else
-				throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, newValue.GetType()));
-			return newValueTyped;
+				throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, value.GetType()));
+			return typedValue;
+		}
+
+		private string EntityGuidsToString(IEnumerable<Guid> entityGuids, string separator = ", ", string format = "{0} (EntityId: {1})")
+		{
+			var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
+			foreach (var entityGuid in guidIds.ToList())
+			{
+				var firstEntityId = GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
+				if (firstEntityId != null)
+					guidIds[entityGuid.Key] = firstEntityId;
+			}
+			return string.Join(separator, guidIds.Select(e => string.Format(format, e.Key, e.Value)));
 		}
 
 		/// <summary>
@@ -1462,7 +1482,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get the Values of an Entity in the specified Version
 		/// </summary>
-		public DataTable GetEntityVersionValues(int entityId, int changeId, int? defaultCultureDimension)
+		public DataTable GetEntityVersionValues(int entityId, int changeId, int? defaultCultureDimension, string multiValuesSeparator = null)
 		{
 			var entityVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
@@ -1477,11 +1497,11 @@ namespace ToSic.Eav
 				foreach (var valueModel in attribute.Value)
 				{
 					var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
-					result.Rows.Add(attribute.Key, firstLanguage, GetTypedValue(valueModel));	// Add Main-Language
+					result.Rows.Add(attribute.Key, firstLanguage, GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
 
 					foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
 					{
-						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
+						result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
 					}
 				}
 			}
