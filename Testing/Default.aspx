@@ -13,6 +13,7 @@
 			<ul>
 				<li><a href="?Test=All">All</a></li>
 				<li><a href="?Test=TypeFilter">Type-Filter</a></li>
+				<li><a href="?Test=EntityIdFilter">EntityID Filter</a></li>
 				<li><a href="?Test=ValueFilter">ValueFilter</a></li>
 				<li><a href="?Test=AttributeFilter">Attribute Stripper/Filter</a></li>
 				<li><a href="?Test=ValueSort">ValueSort</a></li>
