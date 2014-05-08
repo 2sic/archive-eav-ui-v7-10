@@ -182,8 +182,8 @@ namespace ToSic.Eav
 						AttributeID = a.AttributeID,
 						IsTitle = a.IsTitle,
 						StaticName = a.Attribute.StaticName,
-						Name = metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
-						Notes = metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
+						Name = metaData.ContainsKey("Name") && metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
+						Notes = metaData.ContainsKey("Notes") && metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
 						Type = a.Attribute.Type,
 						HasTypeMetaData = AttributesInSets.Any(s => s.Set == AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
 						MetaData = metaData
@@ -511,7 +511,15 @@ namespace ToSic.Eav
 				#region Add "normal" Attributes (that are not Entity-Relations)
 				foreach (var a in e.Attributes)
 				{
-					var attributeModel = entityAttributes[a.AttributeID];
+					IAttributeManagement attributeModel;
+					try
+					{
+						attributeModel = entityAttributes[a.AttributeID];
+					}
+					catch (KeyNotFoundException)
+					{
+						continue;
+					}
 					if (attributeModel.IsTitle)
 						entityModel.Title = attributeModel;
 					var valuesModelList = new List<IValue>();

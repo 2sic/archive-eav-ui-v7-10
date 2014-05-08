@@ -17,6 +17,12 @@ namespace ToSic.Eav
 
 			//AddEntity();
 
+			int appId;
+			int.TryParse(Request.QueryString["AppId"], out appId);
+			if (appId == 0)
+				appId = 1;
+
+
 			switch ((Request["Test"] ?? "").ToLower())
 			{
 				case "all":
@@ -50,6 +56,13 @@ namespace ToSic.Eav
 					typeFiltered = EntityTypeFilter("Person ML");
 					litResults.Text = "Found " + typeFiltered.List.Count + " items in the main list";
 					break;
+				case "entityidfilter":
+					var entityIds = Request.QueryString["EntityIds"].Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+					ShowDataSource(EntityIdFilter(entityIds, appId), "EntityId Filter", true);
+					break;
+				case "clearcache":
+					ClearCache(appId);
+					break;
 				Default:
 					break;
 			}
@@ -69,6 +82,16 @@ namespace ToSic.Eav
 			//var source = DataSource.GetInitialDataSource(1, 1);
 			//var entities = source.Out["Default"].List;
 			//ShowEntity(entities[3378]);
+		}
+
+		public void ClearCache(int appId)
+		{
+			var ctx = EavContext.Instance(appId: appId);
+
+			DataSource.GetCache(ctx.ZoneId, ctx.AppId).PurgeCache(ctx.ZoneId, ctx.AppId);
+
+			if (Request.UrlReferrer != null)
+				Response.Redirect(Request.UrlReferrer.AbsoluteUri);
 		}
 
 		// create a entity for test purposes in the DB
@@ -99,28 +122,16 @@ namespace ToSic.Eav
 			ShowDataSource(source, "DataPipelineFactory", true);
 		}
 
-		//private EntityIdFilter EntityIdFilter()
-		//{
-		//	var source = DataSource.GetInitialDataSource("SiteSqlServer", 2, 2);
-		//	//var filterPipeline = (EntityIdFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityIdFilter", source);
+		private EntityIdFilter EntityIdFilter(IEnumerable<int> entityIds, int appId = 1)
+		{
+			var source = DataSource.GetInitialDataSource(appId: appId);
 
-		//	var dataSourceId = 1;
-		//	var pipelineId = 1;
+			var filterPipeline = DataSource.GetDataSource<EntityIdFilter>(appId: appId, upstream: source);
+			filterPipeline.EntityIds = string.Join(",", entityIds);
 
-		//	var configList = new Dictionary<string, object> { { "EntityIds", "[Settings:EntityIds]" } };
-		//	var filterPipeline = new EntityIdFilter(dataSourceId, pipelineId, source);
+			return filterPipeline;
 
-		//	//filterPipeline.Configuration["EntityIds"] = "329, 330";
-		//	//filterPipeline.Configuration["EntityIds"] = Request.QueryString["entities"];
-
-		//	var settingsPropertyProvider = new SimplePropertyProvider();
-		//	settingsPropertyProvider.Values.Add("EntityIds", new[] { 329, 330 });
-		//	filterPipeline.ConfigurationProvider.Sources.Add("Settings", settingsPropertyProvider);
-
-		//	ShowDataSource(filterPipeline, "EntityTypeFilter", true);
-
-		//	return filterPipeline;
-		//}
+		}
 
 		//private DataSource DemoFactory()
 		//{
@@ -306,7 +317,7 @@ namespace ToSic.Eav
 		//}
 
 		#region ShowStuff
-		public void ShowDataSource(DataSources.IDataSource source, string title, bool fullEntities = false)
+		public void ShowDataSource(IDataSource source, string title, bool fullEntities = false)
 		{
 			var output = "<h2>" + title + " (Name: " + source.Name + ")</h2>";
 			Trace.Write("Filtering" + title, "Start");
@@ -315,7 +326,7 @@ namespace ToSic.Eav
 
 			foreach (var dataStream in source.Out)
 			{
-				output += "<h3>" + dataStream.Key + " Count:" + dataStream.Value.List.Count + "</h3>";
+				output += "<h3>Stream: " + dataStream.Key + " - List.Count: " + dataStream.Value.List.Count + "</h3>";
 
 				if (fullEntities)
 				{
@@ -332,25 +343,29 @@ namespace ToSic.Eav
 
 		public string ShowEntity(IEntity entity)
 		{
-			var output = new StringBuilder("EntityId: " + entity.EntityId);
-			output.Append("<br/>RepositoryId: " + entity.RepositoryId);
-			output.Append("<br/>IsPublished: " + entity.IsPublished + "<br/>");
+			var output = new StringBuilder("<ul><li><b>EntityId</b>: " + entity.EntityId + "</li>");
+			output.Append("<li><b>RepositoryId</b>: " + entity.RepositoryId + "</li>");
+			output.Append("<li><b>IsPublished</b>: " + entity.IsPublished + "</li>");
+			output.Append("<li><b>Values:</b><ul>");
 			foreach (var attribute in entity.Attributes)
 			{
-				output.Append(attribute.Key + ": " + attribute.Value[0] + "<br/>");
+				output.AppendFormat("<li><b>{0}</b>: {1}</li>", attribute.Key, attribute.Value[0]);
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
 				if (relationship != null && relationship.TypedContents != null)
 				{
-					output.Append("Entities count: " + relationship.TypedContents.Count() + "<br/>");
+					output.Append("<ul>");
+					output.Append("<li>Entities count: " + relationship.TypedContents.Count() + "</li>");
 					if (relationship.TypedContents.Any())
-						output.Append("Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title[0])) + "<br/>");
+						output.Append("<li>Relationship Titles: " + string.Join(", ", relationship.TypedContents.Where(e => e.Attributes.Any()).Select(e => e.Title == null ? "(no Title)" : e.Title[0])) + "</li>");
+					output.Append("</ul>");
 				}
 			}
-
-			output.Append("Children[\"People\"]: " + entity.Relationships.Children["People"].Count() + "<br/>");
-			output.Append("AllChildren: " + entity.Relationships.AllChildren.Count() + "<br/>");
-			output.Append("AllParents: " + entity.Relationships.AllParents.Count() + "<br/>");
+			output.Append("</li></ul>");
+			output.Append("<li><b>Children[\"People\"]</b>: " + entity.Relationships.Children["People"].Count() + "</li>");
+			output.Append("<li><b>AllChildren</b>: " + entity.Relationships.AllChildren.Count() + "</li>");
+			output.Append("<li><b>AllParents</b>: " + entity.Relationships.AllParents.Count() + "</li>");
+			output.Append("</ul>");
 
 			output.Append("<hr/>");
 			return output.ToString();
