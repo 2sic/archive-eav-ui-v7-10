@@ -512,6 +512,8 @@ namespace ToSic.Eav
 				foreach (var a in e.Attributes)
 				{
 					var attributeModel = entityAttributes[a.AttributeID];
+					if (attributeModel.IsTitle)
+						entityModel.Title = attributeModel;
 					var valuesModelList = new List<IValue>();
 
 					#region Add all Values
