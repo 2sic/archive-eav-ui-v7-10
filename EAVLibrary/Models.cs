@@ -76,14 +76,30 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an Attribute of a Generic Type
+	/// Represents an Attribute with Values of a Generic Type
 	/// </summary>
 	/// <typeparam name="ValueType">Type of the Value</typeparam>
-	public class AttributeModel<ValueType> : IAttribute<ValueType>, IAttributeManagement
+	public abstract class AttributeBaseModel : IAttributeBase
 	{
 		public string Name { get; set; }
 		public string Type { get; set; }
 		public bool IsTitle { get; set; }
+	}
+
+	/// <summary>
+	/// Extended Attribute Model for internal Cache
+	/// </summary>
+	internal class AttributeDefinition : AttributeBaseModel
+	{
+		public int AttributeId { get; set; }
+	}
+
+	/// <summary>
+	/// Represents an Attribute with Values of a Generic Type
+	/// </summary>
+	/// <typeparam name="ValueType">Type of the Value</typeparam>
+	public class AttributeModel<ValueType> : AttributeBaseModel, IAttribute<ValueType>, IAttributeManagement
+	{
 		public IEnumerable<IValue> Values { get; set; }
 		public IValueManagement DefaultValue { get; set; }
 
@@ -96,7 +112,7 @@ namespace ToSic.Eav
 					var value = (IValue<ValueType>)Values.FirstOrDefault();
 					return value != null ? value.TypedContents : default(ValueType);
 				}
-				catch (InvalidCastException)
+				catch
 				{
 					return default(ValueType);
 				}
@@ -118,7 +134,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageIds != null && languageIds.Length > 0)
+				if (languageIds != null && languageIds.Length > 0 && Values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
@@ -259,6 +275,10 @@ namespace ToSic.Eav
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
+		/// <summary>
+		/// Dictionary with all Attribute Definitions
+		/// </summary>
+		internal IDictionary<int, AttributeDefinition> AttributeDefinitions { get; set; }
 	}
 
 	/// <summary>
@@ -315,7 +335,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageIds != null && languageIds.Length > 0)
+				if (languageIds != null && languageIds.Length > 0 && _values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = _values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));

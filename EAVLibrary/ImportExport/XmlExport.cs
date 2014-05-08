@@ -38,6 +38,7 @@ namespace ToSic.Eav.ImportExport
 
 			// Prepare Values
 			var values = (from e in entity.Attributes
+						  where e.Value.Values != null
 						  select new
 						  {
 							  allValues = from v in e.Value.Values

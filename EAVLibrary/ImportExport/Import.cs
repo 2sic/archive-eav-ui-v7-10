@@ -203,7 +203,7 @@ namespace ToSic.Eav.Import
 				}
 
 				// Get vales from old EntityModel
-				var oldEntityModel = _db.GetDataForCache(new[] { existingEntity.EntityID }, _appId, null).Entities.First().Value;
+				var oldEntityModel = _db.GetDataForCache(new[] { existingEntity.EntityID }, _appId, null, true).Entities.First().Value;
 
 				var newValues = entity.Values;
 				if (!_overwriteExistingEntityValues)	// Skip values that are already present in existing Entity

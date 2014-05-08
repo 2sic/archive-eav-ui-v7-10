@@ -31,7 +31,8 @@ namespace ToSic.Eav.ManagementUI
 			_currentEntity = _ctx.GetEntityModel(EntityId);
 
 			// Set Control Heading Text
-			litControlHeading.Text = string.Format(litControlHeading.Text, ChangeId, _currentEntity.Title[DimensionIds], _currentEntity.EntityId);
+			var entityTitle = _currentEntity.Title == null ? "(no Title)" : _currentEntity.Title[DimensionIds];
+			litControlHeading.Text = string.Format(litControlHeading.Text, ChangeId, entityTitle, _currentEntity.EntityId);
 
 			hlkBack.NavigateUrl = ReturnUrl.Replace("[EntityId]", EntityId.ToString());
 		}

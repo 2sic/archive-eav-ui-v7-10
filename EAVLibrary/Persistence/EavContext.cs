@@ -472,7 +472,7 @@ namespace ToSic.Eav
 			if (!entity.IsPublished && isPublished)
 			{
 				if (entity.PublishedEntityID.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-					SaveEntityToDataTimeline(entity);
+				SaveEntityToDataTimeline(entity);
 				entity = PublishEntity(entityId, false);
 			}
 

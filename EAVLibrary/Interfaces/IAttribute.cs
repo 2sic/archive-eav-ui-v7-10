@@ -5,7 +5,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Represents an Attribute
 	/// </summary>
-	public interface IAttribute
+	public interface IAttributeBase
 	{
 		/// <summary>
 		/// Name of the Attribute
@@ -15,6 +15,13 @@ namespace ToSic.Eav
 		/// Type of the Attribute
 		/// </summary>
 		string Type { get; }
+	}
+
+	/// <summary>
+	/// Represents an Attribute with Values
+	/// </summary>
+	public interface IAttribute : IAttributeBase
+	{
 		/// <summary>
 		/// Gets a IEnumerable of all Values of this Entity's Attribute
 		/// </summary>
