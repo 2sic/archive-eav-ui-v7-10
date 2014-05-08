@@ -99,7 +99,7 @@ namespace ToSic.Eav
 				{"Demo4", 123.12},
 				{"Date", DateTime.Now}
 			};
-			var entityModel = new EntityModel("SampleContentType", values, "Title");
+			var entityModel = new EntityModel(100001, "SampleContentType", values, "Title");
 
 			return entityModel;
 		}

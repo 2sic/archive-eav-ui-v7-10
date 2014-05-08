@@ -34,13 +34,14 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Create a new EntityModel. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
 		/// </summary>
-		public EntityModel(string contentTypeName, IDictionary<string, object> values, string titleAttribute)
+		public EntityModel(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute)
 		{
-			IsPublished = true;
+			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
 			Attributes = AttributeModel.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
 			Title = Attributes[titleAttribute];
 			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
+			IsPublished = true;
 			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
 		}
 
