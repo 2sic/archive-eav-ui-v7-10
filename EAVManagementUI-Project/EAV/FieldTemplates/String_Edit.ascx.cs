@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web.UI;
-using System.Linq;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -16,7 +15,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 
 			TextBox1.ToolTip = GetMetaDataValue<string>("Notes");
-			FieldLabel.Text = GetMetaDataValue<string>("Name");
+			FieldLabel.Text = GetMetaDataValue("Name", Attribute.StaticName);
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;

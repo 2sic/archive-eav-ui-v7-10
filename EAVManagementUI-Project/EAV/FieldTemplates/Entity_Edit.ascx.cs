@@ -29,7 +29,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 
 			DropDownList1.ToolTip = GetMetaDataValue<string>("Notes");
-			FieldLabel.Text = GetMetaDataValue<string>("Name");
+			FieldLabel.Text = GetMetaDataValue("Name", Attribute.StaticName);
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;

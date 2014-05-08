@@ -8,7 +8,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			Calendar1.ToolTip = GetMetaDataValue<string>("Notes");
-			FieldLabel.Text = GetMetaDataValue<string>("Name");
+			FieldLabel.Text = GetMetaDataValue("Name", Attribute.StaticName);
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;
