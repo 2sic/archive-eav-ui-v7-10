@@ -20,6 +20,7 @@
 				<li><a href="?Test=PublishingWithDrafts">Publishing with Drafts</a></li>
 				<li><a href="?Test=PublishingPublishedOnly">Publishing - Published only</a></li>
 				<li><a href="?Test=listproperty">Quick Property to access the Out["Default"].List</a></li>
+				<li><a href="?Test=InMemoryEntity">In-Memory Entity</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 			</ul>
 		</div>

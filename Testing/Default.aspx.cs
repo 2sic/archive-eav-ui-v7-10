@@ -63,6 +63,9 @@ namespace ToSic.Eav
 				case "clearcache":
 					ClearCache(appId);
 					break;
+				case "inmemoryentity":
+					litResults.Text = ShowEntity(GetIEntity());
+					break;
 				Default:
 					break;
 			}
@@ -82,6 +85,23 @@ namespace ToSic.Eav
 			//var source = DataSource.GetInitialDataSource(1, 1);
 			//var entities = source.Out["Default"].List;
 			//ShowEntity(entities[3378]);
+		}
+
+		private static IEntity GetIEntity()
+		{
+			var values = new Dictionary<string, object>
+			{
+				{"Title", "Test"},
+				{"FirstName", "Test"},
+				{"Demo1", true},
+				{"Demo2", null},
+				{"Demo3", 123},
+				{"Demo4", 123.12},
+				{"Date", DateTime.Now}
+			};
+			var entityModel = new EntityModel("SampleContentType", values, "Title");
+
+			return entityModel;
 		}
 
 		public void ClearCache(int appId)
@@ -272,7 +292,7 @@ namespace ToSic.Eav
 		{
 			var source = DataSource.GetInitialDataSource();
 
-	      // var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
+			// var filterPipeline = (EntityTypeFilter)DataSource.GetDataSource("ToSic.Eav.DataSources.EntityTypeFilter", 1, 1, source);
 			var filterPipeline = DataSource.GetDataSource<EntityTypeFilter>(1, 1, source);
 			filterPipeline.TypeName = typeName;
 			var valuePipeline = DataSource.GetDataSource<ValueFilter>(1, 1, filterPipeline);
@@ -349,7 +369,8 @@ namespace ToSic.Eav
 			output.Append("<li><b>Values:</b><ul>");
 			foreach (var attribute in entity.Attributes)
 			{
-				output.AppendFormat("<li><b>{0}</b>: {1}</li>", attribute.Key, attribute.Value[0]);
+				var value = attribute.Value[0];
+				output.AppendFormat("<li><b>{0}</b> (Type: {1}): {2}</li>", attribute.Key, value != null ? value.GetType().ToString() : "(null)", value);
 
 				var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
 				if (relationship != null && relationship.TypedContents != null)

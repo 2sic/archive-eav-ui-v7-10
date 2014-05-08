@@ -315,25 +315,11 @@ namespace ToSic.Eav
 														   })
 								   };
 				// Convert to ContentType-Model
-				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType
+				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName)
 				{
-					Name = set.Name,
-					StaticName = set.StaticName,
 					AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
-							? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition
-							{
-								AttributeId = a.AttributeID,
-								Name = a.StaticName,
-								Type = a.Type,
-								IsTitle = a.IsTitle
-							})
-							: set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition
-							{
-								AttributeId = a.AttributeID,
-								Name = a.StaticName,
-								Type = a.Type,
-								IsTitle = a.IsTitle
-							})
+							? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
+							: set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
 				});
 			}
 
@@ -445,7 +431,7 @@ namespace ToSic.Eav
 				// Add all Attributes from that Content-Type
 				foreach (var definition in contentType.AttributeDefinitions.Values)
 				{
-					var attributeModel = GetAttributeManagementModel(definition);
+					var attributeModel = AttributeModel.GetAttributeManagementModel(definition);
 					entityModel.Attributes.Add(((IAttributeBase)attributeModel).Name, attributeModel);
 					entityAttributes.Add(definition.AttributeId, attributeModel);
 				}
@@ -501,7 +487,7 @@ namespace ToSic.Eav
 				foreach (var r in e.RelatedEntities)
 				{
 					var attributeModel = entityAttributes[r.AttributeID];
-					var valueModel = GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
+					var valueModel = ValueModel.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
 					var valuesModelList = new List<IValue> { valueModel };
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
@@ -527,7 +513,7 @@ namespace ToSic.Eav
 					#region Add all Values
 					foreach (var v in a.Values)
 					{
-						var valueModel = GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueID, v.ChangeLogIDCreated);
+						var valueModel = ValueModel.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueID, v.ChangeLogIDCreated);
 						valuesModelList.Add(valueModel);
 					}
 					#endregion
@@ -568,95 +554,7 @@ namespace ToSic.Eav
 			return GetDataForCache(new[] { entityId }, _appId, source, true).Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 		}
 
-		/// <summary>
-		/// Get AttributeModel for specified Typ
-		/// </summary>
-		/// <returns><see cref="AttributeModel{T}"/></returns>
-		private static IAttributeManagement GetAttributeManagementModel(AttributeDefinition definition)
-		{
-			IAttributeManagement typedModel;
-			switch (definition.Type)
-			{
-				case "Boolean":
-					typedModel = new AttributeModel<bool?>();
-					break;
-				case "DateTime":
-					typedModel = new AttributeModel<DateTime?>();
-					break;
-				case "Number":
-					typedModel = new AttributeModel<decimal?>();
-					break;
-				case "Entity":
-					typedModel = new AttributeModel<EntityRelationshipModel>();
-					break;
-				default:
-					typedModel = new AttributeModel<string>();
-					break;
-			}
 
-			typedModel.Type = definition.Type;
-			typedModel.Name = definition.Name;
-			typedModel.IsTitle = definition.IsTitle;
-
-			return typedModel;
-		}
-
-		/// <summary>
-		/// Creates a Typed Value Model
-		/// </summary>
-		private static IValue GetValueModel(string attributeType, string value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated)
-		{
-			return GetValueModel(attributeType, (object)value, languages, valueID, changeLogIDCreated);
-		}
-
-		/// <summary>
-		/// Creates a Typed Value Model for an Entity-Attribute
-		/// </summary>
-		private static IValue GetValueModel(string attributeType, IEnumerable<int> entityIds, IDataSource source)
-		{
-			return GetValueModel(attributeType, entityIds, new List<DimensionModel>(), -1, -1, source);
-		}
-
-		/// <summary>
-		/// Creates a Typed Value Model
-		/// </summary>
-		private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated, IDataSource source = null)
-		{
-			IValueManagement typedModel;
-			var stringValue = value as string;
-			try
-			{
-				switch (attributeType)
-				{
-					case "Boolean":
-						typedModel = new ValueModel<bool?> { TypedContents = string.IsNullOrEmpty(stringValue) ? (bool?)null : bool.Parse(stringValue) };
-						break;
-					case "DateTime":
-						typedModel = new ValueModel<DateTime?> { TypedContents = string.IsNullOrEmpty(stringValue) ? (DateTime?)null : DateTime.Parse(stringValue) };
-						break;
-					case "Number":
-						typedModel = new ValueModel<decimal?> { TypedContents = string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture) };
-						break;
-					case "Entity":
-						var entityIds = value as IEnumerable<int>;
-						typedModel = new ValueModel<EntityRelationshipModel> { TypedContents = new EntityRelationshipModel(source) { EntityIds = entityIds } };
-						break;
-					default:
-						typedModel = new ValueModel<string> { TypedContents = stringValue };
-						break;
-				}
-			}
-			catch
-			{
-				return new ValueModel<string> { TypedContents = stringValue };
-			}
-
-			typedModel.Languages = languages;
-			typedModel.ValueId = valueID;
-			typedModel.ChangeLogIdCreated = changeLogIDCreated;
-
-			return (IValue)typedModel;
-		}
 
 		#endregion
 	}

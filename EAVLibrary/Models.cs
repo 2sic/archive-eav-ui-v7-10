@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Script.Serialization;
 using ToSic.Eav.DataSources;
@@ -28,6 +29,19 @@ namespace ToSic.Eav
 		public IAttribute this[string attributeName]
 		{
 			get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
+		}
+
+		/// <summary>
+		/// Create a new EntityModel. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
+		/// </summary>
+		public EntityModel(string contentTypeName, IDictionary<string, object> values, string titleAttribute)
+		{
+			IsPublished = true;
+			Type = new ContentType(contentTypeName);
+			Attributes = AttributeModel.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
+			Title = Attributes[titleAttribute];
+			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
+			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
 		}
 
 		/// <summary>
@@ -79,11 +93,18 @@ namespace ToSic.Eav
 	/// Represents an Attribute with Values of a Generic Type
 	/// </summary>
 	/// <typeparam name="ValueType">Type of the Value</typeparam>
-	public abstract class AttributeBaseModel : IAttributeBase
+	public class AttributeBaseModel : IAttributeBase
 	{
 		public string Name { get; set; }
 		public string Type { get; set; }
 		public bool IsTitle { get; set; }
+
+		internal AttributeBaseModel(string name, string type, bool isTitle)
+		{
+			Name = name;
+			Type = type;
+			IsTitle = isTitle;
+		}
 	}
 
 	/// <summary>
@@ -92,6 +113,78 @@ namespace ToSic.Eav
 	internal class AttributeDefinition : AttributeBaseModel
 	{
 		public int AttributeId { get; set; }
+
+		public AttributeDefinition(string name, string type, bool isTitle, int attributeId)
+			: base(name, type, isTitle)
+		{
+			AttributeId = attributeId;
+		}
+	}
+
+
+	internal class AttributeModel
+	{
+		/// <summary>
+		/// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
+		/// </summary>
+		internal static Dictionary<string, IAttribute> GetTypedDictionaryForSingleLanguage(IDictionary<string, object> attributes, string titleAttributeName)
+		{
+			var result = new Dictionary<string, IAttribute>();
+
+			foreach (var attribute in attributes)
+			{
+				var attributeType = GetAttributeTypeName(attribute.Value);
+				var baseModel = new AttributeBaseModel(attribute.Key, attributeType, attribute.Key == titleAttributeName);
+				var attributeModel = GetAttributeManagementModel(baseModel);
+				var valuesModelList = new List<IValue>();
+				if (attribute.Value != null)
+				{
+					var valueModel = ValueModel.GetValueModel(baseModel.Type, attribute.Value.ToString());
+					valuesModelList.Add(valueModel);
+				}
+
+				attributeModel.Values = valuesModelList;
+
+				result[attribute.Key] = attributeModel;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get EAV AttributeType for a value, like String, Number, DateTime or Boolean
+		/// </summary>
+		static string GetAttributeTypeName(object value)
+		{
+			if (value is DateTime)
+				return "DateTime";
+			if (value is decimal || value is int || value is double)
+				return "Number";
+			if (value is bool)
+				return "Boolean";
+			return "String";
+		}
+
+		/// <summary>
+		/// Get AttributeModel for specified Typ
+		/// </summary>
+		/// <returns><see cref="AttributeModel{T}"/></returns>
+		internal static IAttributeManagement GetAttributeManagementModel(AttributeBaseModel definition)
+		{
+			switch (definition.Type)
+			{
+				case "Boolean":
+					return new AttributeModel<bool?>(definition.Name, definition.Type, definition.IsTitle);
+				case "DateTime":
+					return new AttributeModel<DateTime?>(definition.Name, definition.Type, definition.IsTitle);
+				case "Number":
+					return new AttributeModel<decimal?>(definition.Name, definition.Type, definition.IsTitle);
+				case "Entity":
+					return new AttributeModel<EntityRelationshipModel>(definition.Name, definition.Type, definition.IsTitle);
+				default:
+					return new AttributeModel<string>(definition.Name, definition.Type, definition.IsTitle);
+			}
+		}
 	}
 
 	/// <summary>
@@ -100,6 +193,8 @@ namespace ToSic.Eav
 	/// <typeparam name="ValueType">Type of the Value</typeparam>
 	public class AttributeModel<ValueType> : AttributeBaseModel, IAttribute<ValueType>, IAttributeManagement
 	{
+		public AttributeModel(string name, string type, bool isTitle) : base(name, type, isTitle) { }
+
 		public IEnumerable<IValue> Values { get; set; }
 		public IValueManagement DefaultValue { get; set; }
 
@@ -271,7 +366,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Represents a Content Type
 	/// </summary>
-	internal class ContentType : IContentType
+	public class ContentType : IContentType
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
@@ -279,6 +374,15 @@ namespace ToSic.Eav
 		/// Dictionary with all Attribute Definitions
 		/// </summary>
 		internal IDictionary<int, AttributeDefinition> AttributeDefinitions { get; set; }
+
+		/// <summary>
+		/// Initializes a new instance of the ContentType class.
+		/// </summary>
+		public ContentType(string name, string staticName = null)
+		{
+			Name = name;
+			StaticName = staticName;
+		}
 	}
 
 	/// <summary>
@@ -387,13 +491,90 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Represents a Value
 	/// </summary>
-	/// <typeparam name="T">Type of the actual Value</typeparam>
-	public class ValueModel<T> : IValue<T>, IValueManagement
+	public class ValueModel
 	{
 		public int ValueId { get; set; }
 		public IEnumerable<ILanguage> Languages { get; set; }
 		public int ChangeLogIdCreated { get; set; }
+
+
+		/// <summary>
+		/// Creates a Typed Value Model
+		/// </summary>
+		internal static IValue GetValueModel(string attributeType, string value)
+		{
+			return GetValueModel(attributeType, (object)value, new DimensionModel[0], -1, -1);
+		}
+		/// <summary>
+		/// Creates a Typed Value Model
+		/// </summary>
+		internal static IValue GetValueModel(string attributeType, string value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated)
+		{
+			return GetValueModel(attributeType, (object)value, languages, valueID, changeLogIDCreated);
+		}
+
+		/// <summary>
+		/// Creates a Typed Value Model for an Entity-Attribute
+		/// </summary>
+		internal static IValue GetValueModel(string attributeType, IEnumerable<int> entityIds, IDataSource source)
+		{
+			return GetValueModel(attributeType, entityIds, new DimensionModel[0], -1, -1, source);
+		}
+
+		/// <summary>
+		/// Creates a Typed Value Model
+		/// </summary>
+		private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated, IDataSource source = null)
+		{
+			IValueManagement typedModel;
+			var stringValue = value as string;
+			try
+			{
+				switch (attributeType)
+				{
+					case "Boolean":
+						typedModel = new ValueModel<bool?>(string.IsNullOrEmpty(stringValue) ? (bool?)null : bool.Parse(stringValue));
+						break;
+					case "DateTime":
+						typedModel = new ValueModel<DateTime?>(string.IsNullOrEmpty(stringValue) ? (DateTime?)null : DateTime.Parse(stringValue));
+						break;
+					case "Number":
+						typedModel = new ValueModel<decimal?>(string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture));
+						break;
+					case "Entity":
+						var entityIds = value as IEnumerable<int>;
+						typedModel = new ValueModel<EntityRelationshipModel>(new EntityRelationshipModel(source) { EntityIds = entityIds });
+						break;
+					default:
+						typedModel = new ValueModel<string>(stringValue);
+						break;
+				}
+			}
+			catch
+			{
+				return new ValueModel<string>(stringValue);
+			}
+
+			typedModel.Languages = languages;
+			typedModel.ValueId = valueID;
+			typedModel.ChangeLogIdCreated = changeLogIDCreated;
+
+			return (IValue)typedModel;
+		}
+	}
+
+	/// <summary>
+	/// Represents a Value
+	/// </summary>
+	/// <typeparam name="T">Type of the actual Value</typeparam>
+	public class ValueModel<T> : ValueModel, IValue<T>, IValueManagement
+	{
 		public T TypedContents { get; internal set; }
+
+		internal ValueModel(T typedContents)
+		{
+			TypedContents = typedContents;
+		}
 	}
 
 	/// <summary>
