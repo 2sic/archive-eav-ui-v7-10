@@ -13,6 +13,10 @@ namespace ToSic.Eav.DataSources
 		#region Configuration-properties
 		private const string TitleAttributeNameKey = "TitleAttributeName";
 		private const string ContentTypeNameKey = "ContentTypeName";
+		/// <summary>
+		/// Name of the EntityId Colum
+		/// </summary>
+		public static readonly string EntityIdColumnName = "EntityId";
 
 		/// <summary>
 		/// Source DataTable
@@ -63,20 +67,28 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
-			// Convert DataTable to a Dictionary of EntityModels
+			var result = ConvertToEntityDictionary(Source, ContentTypeName, TitleAttributeName);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Convert a DataTable to a Dictionary of EntityModels
+		/// </summary>
+		private static Dictionary<int, IEntity> ConvertToEntityDictionary(DataTable source, string contentTypeName, string titleAttributeName)
+		{
 			var result = new Dictionary<int, IEntity>();
-			foreach (DataRow row in Source.Rows)
+			foreach (DataRow row in source.Rows)
 			{
 				try
 				{
-					var entityId = Convert.ToInt32(row["EntityId"]);
-					var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName.ToLower() != "entityid").ToDictionary(col => col.ColumnName, col => row.Field<object>(col.ColumnName));
-					var entity = new EntityModel(entityId, ContentTypeName, values, TitleAttributeName);
+					var entityId = Convert.ToInt32(row[EntityIdColumnName]);
+					var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != EntityIdColumnName).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
+					var entity = new EntityModel(entityId, contentTypeName, values, titleAttributeName);
 					result.Add(entity.EntityId, entity);
 				}
 				catch { }
 			}
-
 			return result;
 		}
 	}

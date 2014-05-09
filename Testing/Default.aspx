@@ -4,12 +4,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Microtests</title>
+	<style type="text/css">
+		body { font-family: Arial; font-size: 12px }
+	</style>
 </head>
 <body>
     <form id="form1" runat="server">
 		<div>
-			<strong>Microtests</strong>
+			<asp:Label ID="lblTimeToRender" runat="server" Text="Time to Render: {0} ms"/>
+			<h1>Microtests</h1>
 			<ul>
 				<li><a href="?Test=All">All</a></li>
 				<li><a href="?Test=TypeFilter">Type-Filter</a></li>
@@ -22,6 +26,8 @@
 				<li><a href="?Test=listproperty">Quick Property to access the Out["Default"].List</a></li>
 				<li><a href="?Test=InMemoryEntity">In-Memory Entity</a></li>
 				<li><a href="?Test=DataTableDataSource">DataTable DataSource</a></li>
+				<li><a href="?Test=SqlDataSourceSimple">SQL DataSource (simple)</a></li>
+				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with configuration)</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 			</ul>
 		</div>

@@ -12,9 +12,12 @@ namespace ToSic.Eav
 {
 	public partial class Default : Page
 	{
+		private const string ConnectionStringName = "SiteSqlServer";
+		private readonly DateTime _startTime = DateTime.Now;
+
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			Configuration.SetConnectionString("SiteSqlServer");
+			Configuration.SetConnectionString(ConnectionStringName);
 
 			//AddEntity();
 
@@ -68,9 +71,13 @@ namespace ToSic.Eav
 					litResults.Text = ShowEntity(GetIEntity());
 					break;
 				case "datatabledatasource":
-					ShowDataSource(DataTableDataSource(), "DataTable DataSource", true);
+					ShowDataSource(GetDataTableDataSource(), "DataTable DataSource", true);
 					break;
-				Default:
+				case "sqldatasourcesimple":
+					ShowDataSource(GetSqlDataSourceSimple(), "SQL DataSource (simple)", true);
+					break;
+				case "sqldatasourcewithconfiguration":
+					ShowDataSource(GetSqlDataSourceWithConfiguration(), "SQL DataSource with configuration", true);
 					break;
 			}
 
@@ -91,12 +98,39 @@ namespace ToSic.Eav
 			//ShowEntity(entities[3378]);
 		}
 
-		private static IDataSource DataTableDataSource()
+		protected void Page_PreRender(object sender, EventArgs e)
+		{
+			var loadTime = (DateTime.Now - _startTime).TotalMilliseconds.ToString();
+			lblTimeToRender.Text = string.Format(lblTimeToRender.Text, loadTime);
+		}
+
+		private static IDataSource GetSqlDataSourceSimple()
+		{
+			var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SiteSqlServer"].ConnectionString;
+			var selectCommand = "select object_id as " + SqlDataSource.EntityIdColumnName + ", * FROM sys.tables";
+			var source = new SqlDataSource(connectionString, selectCommand, "SqlTableInformation", "name");
+			return source;
+		}
+
+		private static IDataSource GetSqlDataSourceWithConfiguration()
+		{
+			var source = new SqlDataSource();
+			source.Configuration["TitleAttributeName"] = "name";
+			source.Configuration["ContentTypeName"] = "SqlTableInformation";
+			source.Configuration["SelectCommand"] = "select object_id as " + SqlDataSource.EntityIdColumnName + ", * FROM sys.tables WHERE name like '%' + @search_name + '%'";
+			source.Configuration["ConnectionString"] = null;
+			source.Configuration["ConnectionStringName"] = ConnectionStringName;
+			source.Configuration.Add("@search_name", "value");
+
+			return source;
+		}
+
+		private static IDataSource GetDataTableDataSource()
 		{
 			var dataTable = new DataTable();
 			dataTable.Columns.AddRange(new[]
 			{
-				new DataColumn("EntityId", typeof(int)),
+				new DataColumn(DataTableDataSource.EntityIdColumnName, typeof(int)),
 				new DataColumn("FullName"),
 				new DataColumn("FirstName"),
 				new DataColumn("LastName"),
@@ -161,7 +195,6 @@ namespace ToSic.Eav
 
 			context.AddEntity(37, newValues, null, null);
 		}
-
 
 		private void DataPipelineFactory()
 		{
