@@ -8,8 +8,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class PublishingFilter : BaseDataSource
 	{
-		public override string Name { get { return "PublishingFilter"; } }
-
 		#region Configuration-properties
 		private const string ShowDraftsKey = "ShowDrafts";
 

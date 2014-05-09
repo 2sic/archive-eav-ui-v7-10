@@ -9,11 +9,6 @@ namespace ToSic.Eav.DataSources
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
 	public class AttributeFilter : BaseDataSource
 	{
-		public override string Name
-		{
-			get { return "AttributeFilter"; }
-		}
-
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";
 

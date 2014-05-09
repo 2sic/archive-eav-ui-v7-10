@@ -9,8 +9,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class EntityIdFilter : BaseDataSource
 	{
-		public override string Name { get { return "EntityIdFilter"; } }
-
 		#region Configuration-properties
 		private const string EntityIdKey = "EntityIds";
 

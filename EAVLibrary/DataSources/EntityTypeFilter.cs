@@ -8,8 +8,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class EntityTypeFilter : BaseDataSource
 	{
-		public override string Name { get { return "EntityTypeFilter"; } }
-
 		#region Configuration-properties
 		private const string TypeNameKey = "TypeName";
 
@@ -20,7 +18,7 @@ namespace ToSic.Eav.DataSources
 		{
 			get { return Configuration[TypeNameKey]; }
 			set { Configuration[TypeNameKey] = value; }
-		}		
+		}
 		#endregion
 
 		/// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ToSic.Eav.DataSources
 {
@@ -10,8 +9,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class ValueFilter : BaseDataSource
 	{
-		public override string Name { get { return "ValueFilter"; } }
-
 		#region Configuration-properties
 
 		private const string AttrKey = "Attribute";

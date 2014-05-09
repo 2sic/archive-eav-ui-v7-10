@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Name of this data source - mainly to aid debugging
 		/// </summary>
-		public abstract string Name { get; }
+		public string Name { get { return GetType().Name; } }
 
 		/// <summary>
 		/// The app this data-source is attached to

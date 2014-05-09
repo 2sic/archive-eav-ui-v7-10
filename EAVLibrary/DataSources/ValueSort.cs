@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Practices.ObjectBuilder2;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,8 +9,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class ValueSort : BaseDataSource
 	{
-		public override string Name { get { return "ValueSort"; } }
-
 		#region Configuration-properties
 
 		private const string AttrKey = "Attributes";

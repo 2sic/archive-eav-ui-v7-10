@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
@@ -66,6 +67,9 @@ namespace ToSic.Eav
 				case "inmemoryentity":
 					litResults.Text = ShowEntity(GetIEntity());
 					break;
+				case "datatabledatasource":
+					ShowDataSource(DataTableDataSource(), "DataTable DataSource", true);
+					break;
 				Default:
 					break;
 			}
@@ -85,6 +89,32 @@ namespace ToSic.Eav
 			//var source = DataSource.GetInitialDataSource(1, 1);
 			//var entities = source.Out["Default"].List;
 			//ShowEntity(entities[3378]);
+		}
+
+		private static IDataSource DataTableDataSource()
+		{
+			var dataTable = new DataTable();
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn("EntityId", typeof(int)),
+				new DataColumn("FullName"),
+				new DataColumn("FirstName"),
+				new DataColumn("LastName"),
+				new DataColumn("City"),
+				new DataColumn("Male", typeof(bool)), 
+				new DataColumn("Birthdate", typeof(DateTime))
+			});
+			for (var i = 1; i <= 10; i++)
+			{
+				var firstName = "First Name " + i;
+				var lastName = "Last Name " + i;
+				var fullName = firstName + " " + lastName;
+				dataTable.Rows.Add(i + 10000, fullName, firstName, lastName, "City " + i, i % 3 == 0, DateTime.Now.AddYears(-27));
+			}
+
+			var source = new DataTableDataSource(dataTable, "SampleContentType", "FullName");
+
+			return source;
 		}
 
 		private static IEntity GetIEntity()

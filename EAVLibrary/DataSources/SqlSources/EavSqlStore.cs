@@ -8,7 +8,6 @@ namespace ToSic.Eav.DataSources.SqlSources
 	/// </summary>
 	public class EavSqlStore : BaseDataSource, RootSources.IRootSource
 	{
-		public override string Name { get { return "EavSqlStore"; } }
 		private readonly EavContext _context;
 		private bool _ready;
 

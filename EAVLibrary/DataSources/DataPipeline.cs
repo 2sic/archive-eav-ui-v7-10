@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ToSic.Eav.DataSources
+﻿namespace ToSic.Eav.DataSources
 {
 	/// <summary>
 	/// Represents a DataPipeline

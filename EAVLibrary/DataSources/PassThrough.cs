@@ -5,8 +5,6 @@
 	/// </summary>
 	public class PassThrough : BaseDataSource
 	{
-		public override string Name { get { return "PassThrough"; } }
-
 		/// <summary>
 		/// Constructs a new PassThrough DataSources
 		/// </summary>

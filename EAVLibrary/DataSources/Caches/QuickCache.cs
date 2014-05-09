@@ -30,11 +30,6 @@ namespace ToSic.Eav.DataSources.Caches
 		private const string _cacheKeySchema = "Z{0}A{1}";
 		public override string CacheKeySchema { get { return _cacheKeySchema; } }
 
-		/// <summary>
-		/// Gets the Name of this DataSource
-		/// </summary>
-		public override string Name { get { return "QuickCache"; } }
-
 		private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
 
 		protected override bool HasCacheItem(string cacheKey)
