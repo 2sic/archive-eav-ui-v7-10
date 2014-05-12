@@ -27,6 +27,8 @@
 				<li><a href="?Test=InMemoryEntity">In-Memory Entity</a></li>
 				<li><a href="?Test=DataTableDataSource">DataTable DataSource</a></li>
 				<li><a href="?Test=SqlDataSourceSimple">SQL DataSource (simple)</a></li>
+				<li><a href="?Test=SqlDataSourceSimple2">SQL DataSource (simple 2)</a></li>
+				<li><a href="?Test=sqldatasourcecomplex">SQL DataSource (complex)</a></li>
 				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with configuration)</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 			</ul>

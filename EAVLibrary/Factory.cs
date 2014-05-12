@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
+using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav
 {
@@ -24,6 +25,8 @@ namespace ToSic.Eav
 				{
 					_container = new UnityContainer();
 					_container = ConfigureDefaultMappings(_container);
+					// register some Default Constructors
+					_container.RegisterType<SqlDataSource>(new InjectionConstructor());
 
 					var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
 					if (section != null && section.Containers["ToSic.Eav"] != null)

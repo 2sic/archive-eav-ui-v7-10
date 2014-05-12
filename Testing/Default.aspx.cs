@@ -76,6 +76,12 @@ namespace ToSic.Eav
 				case "sqldatasourcesimple":
 					ShowDataSource(GetSqlDataSourceSimple(), "SQL DataSource (simple)", true);
 					break;
+				case "sqldatasourcesimple2":
+					ShowDataSource(GetSqlDataSourceSimple2(), "SQL DataSource (simple 2)", true);
+					break;
+				case "sqldatasourcecomplex":
+					ShowDataSource(GetSqlDataSourceComplex(), "SQL DataSource (complex)", true);
+					break;
 				case "sqldatasourcewithconfiguration":
 					ShowDataSource(GetSqlDataSourceWithConfiguration(), "SQL DataSource with configuration", true);
 					break;
@@ -107,17 +113,41 @@ namespace ToSic.Eav
 		private static IDataSource GetSqlDataSourceSimple()
 		{
 			var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SiteSqlServer"].ConnectionString;
-			var selectCommand = "select object_id as " + SqlDataSource.EntityIdColumnName + ", * FROM sys.tables";
+			var selectCommand = "select object_id as " + SqlDataSource.EntityIdDefaultColumnName + ", * FROM sys.tables";
 			var source = new SqlDataSource(connectionString, selectCommand, "SqlTableInformation", "name");
+			return source;
+		}
+
+		private static IDataSource GetSqlDataSourceSimple2()
+		{
+			var source = DataSource.GetDataSource<SqlDataSource>();
+			source.SelectCommand = "Select TOP 10 object_id as EntityId, name as EntityTitle, * FROM sys.tables WHERE name like '%' + @search_name + '%'";
+			source.ConnectionStringName = "SiteSqlServer";
+			source.Configuration.Add("@search_name", "value");
+
+			return source;
+		}
+
+		private static IDataSource GetSqlDataSourceComplex()
+		{
+			var source = DataSource.GetDataSource<SqlDataSource>();
+			source.TitleField = "name"; // Which field is used for the Title, optional, default is "Title"
+			source.EntityIdField = "object_id"; // Which field is used for the EntityId, optional, default is "EntityId"
+			source.ContentType = "File"; // what this data-type is called internally, optional, default is "SqlData"
+			source.SelectCommand = "select * FROM sys.tables WHERE name LIKE '%' + @search_name + '%'";
+			source.ConnectionString = null; // you could apply a different one here
+			source.ConnectionStringName = ConnectionStringName;
+			source.Configuration.Add("@search_name", "value");
+
 			return source;
 		}
 
 		private static IDataSource GetSqlDataSourceWithConfiguration()
 		{
-			var source = new SqlDataSource();
+			var source = DataSource.GetDataSource<SqlDataSource>();
 			source.Configuration["TitleAttributeName"] = "name";
 			source.Configuration["ContentTypeName"] = "SqlTableInformation";
-			source.Configuration["SelectCommand"] = "select object_id as " + SqlDataSource.EntityIdColumnName + ", * FROM sys.tables WHERE name like '%' + @search_name + '%'";
+			source.Configuration["SelectCommand"] = "select object_id as " + SqlDataSource.EntityIdDefaultColumnName + ", * FROM sys.tables WHERE name like '%' + @search_name + '%'";
 			source.Configuration["ConnectionString"] = null;
 			source.Configuration["ConnectionStringName"] = ConnectionStringName;
 			source.Configuration.Add("@search_name", "value");
@@ -337,8 +367,6 @@ namespace ToSic.Eav
 			return filterPipeline;
 		}
 
-
-
 		private static EntityTypeFilter EntityTypeFilter(string typeName, int appId = 1)
 		{
 			var source = DataSource.GetInitialDataSource(appId: appId);
@@ -370,7 +398,7 @@ namespace ToSic.Eav
 			return valuePipeline;
 		}
 
-		private AttributeFilter AttributeFilter(DataSources.IDataSource source)
+		private AttributeFilter AttributeFilter(IDataSource source)
 		{
 			var filterPipeline = DataSource.GetDataSource<AttributeFilter>(1, 1, source);
 			filterPipeline.AttributeNames = "LastName,FirstName";
@@ -378,7 +406,7 @@ namespace ToSic.Eav
 			//ShowDataSource(filterPipeline, "AttributeFilter", true);
 		}
 
-		private ValueSort ValueSort(DataSources.IDataSource source, string attributes, string directions)
+		private ValueSort ValueSort(IDataSource source, string attributes, string directions)
 		{
 			var filterPipeline = DataSource.GetDataSource<ValueSort>(1, 1, source);
 			filterPipeline.Attributes = attributes;// "LastName,FirstName";
@@ -399,7 +427,8 @@ namespace ToSic.Eav
 		//	ShowDataSource(source, "EavSqlStore");
 		//}
 
-		#region ShowStuff
+		#region Show Stuff
+
 		public void ShowDataSource(IDataSource source, string title, bool fullEntities = false)
 		{
 			var output = "<h2>" + title + " (Name: " + source.Name + ")</h2>";
@@ -429,6 +458,8 @@ namespace ToSic.Eav
 			var output = new StringBuilder("<ul><li><b>EntityId</b>: " + entity.EntityId + "</li>");
 			output.Append("<li><b>RepositoryId</b>: " + entity.RepositoryId + "</li>");
 			output.Append("<li><b>IsPublished</b>: " + entity.IsPublished + "</li>");
+			output.Append("<li><b>ContentType</b>: " + entity.Type.Name + "</li>");
+			output.Append("<li><b>Title</b>: " + entity.Title[0] + "</li>");
 			output.Append("<li><b>Values:</b><ul>");
 			foreach (var attribute in entity.Attributes)
 			{
@@ -454,6 +485,7 @@ namespace ToSic.Eav
 			output.Append("<hr/>");
 			return output.ToString();
 		}
+
 		#endregion
 	}
 }
