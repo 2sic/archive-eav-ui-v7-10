@@ -10,6 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class SqlDataSource : BaseDataSource
 	{
+		private IDictionary<int, IEntity> _entities;
+
 		#region Configuration-properties
 		private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
@@ -114,9 +116,12 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
+			if (_entities != null)
+				return _entities;
+
 			EnsureConfigurationIsLoaded();
 
-			var result = new Dictionary<int, IEntity>();
+			_entities = new Dictionary<int, IEntity>();
 
 			// Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
@@ -144,7 +149,7 @@ namespace ToSic.Eav.DataSources
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
 						var entity = new EntityModel(entityId, ContentType, values, TitleField);
-						result.Add(entityId, entity);
+						_entities.Add(entityId, entity);
 					}
 				}
 				finally
@@ -153,7 +158,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return result;
+			return _entities;
 		}
 	}
 }

@@ -27,6 +27,7 @@ namespace ToSic.Eav
 					_container = ConfigureDefaultMappings(_container);
 					// register some Default Constructors
 					_container.RegisterType<SqlDataSource>(new InjectionConstructor());
+					_container.RegisterType<DataTableDataSource>(new InjectionConstructor());
 
 					var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
 					if (section != null && section.Containers["ToSic.Eav"] != null)
