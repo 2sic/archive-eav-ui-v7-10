@@ -112,7 +112,7 @@ namespace ToSic.Eav
 
 		protected void Page_PreRender(object sender, EventArgs e)
 		{
-			var loadTime = (DateTime.Now - _startTime).TotalMilliseconds.ToString();
+			var loadTime = (DateTime.Now - _startTime).TotalMilliseconds;
 			lblTimeToRender.Text = string.Format(lblTimeToRender.Text, loadTime);
 		}
 

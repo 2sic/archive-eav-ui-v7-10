@@ -138,12 +138,18 @@ namespace ToSic.Eav.DataSources
 
 				try
 				{
-					// Get the SQL Column List
+					#region Get the SQL Column List and validate it
 					var columNames = new string[reader.FieldCount];
 					for (var i = 0; i < reader.FieldCount; i++)
 						columNames[i] = reader.GetName(i);
 
-					// Read all Rows from SQL Server
+					if (!columNames.Contains(EntityIdField))
+						throw new Exception(string.Format("SQL Result doesn't contain an EntityId Column with Name \"{0}\"", EntityIdField));
+					if (!columNames.Contains(TitleField))
+						throw new Exception(string.Format("SQL Result doesn't contain an EntityTitle Column with Name \"{0}\"", TitleField));
+					#endregion
+
+					#region Read all Rows from SQL Server
 					while (reader.Read())
 					{
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
@@ -151,6 +157,7 @@ namespace ToSic.Eav.DataSources
 						var entity = new EntityModel(entityId, ContentType, values, TitleField);
 						_entities.Add(entityId, entity);
 					}
+					#endregion
 				}
 				finally
 				{

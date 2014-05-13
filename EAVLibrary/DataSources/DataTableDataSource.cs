@@ -103,17 +103,20 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private static Dictionary<int, IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField)
 		{
+			// Validate Columns
+			if (!source.Columns.Contains(entityIdField))
+				throw new Exception(string.Format("DataTable doesn't contain an EntityId Column with Name \"{0}\"", entityIdField));
+			if (!source.Columns.Contains(titleField))
+				throw new Exception(string.Format("DataTable doesn't contain an EntityTitle Column with Name \"{0}\"", titleField));
+
+			// Pupulate a new Dictionary with EntityModels
 			var result = new Dictionary<int, IEntity>();
 			foreach (DataRow row in source.Rows)
 			{
-				try
-				{
-					var entityId = Convert.ToInt32(row[entityIdField]);
-					var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-					var entity = new EntityModel(entityId, contentType, values, titleField);
-					result.Add(entity.EntityId, entity);
-				}
-				catch { }
+				var entityId = Convert.ToInt32(row[entityIdField]);
+				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
+				var entity = new EntityModel(entityId, contentType, values, titleField);
+				result.Add(entity.EntityId, entity);
 			}
 			return result;
 		}

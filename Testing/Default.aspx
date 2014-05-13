@@ -12,7 +12,7 @@
 <body>
     <form id="form1" runat="server">
 		<div>
-			<asp:Label ID="lblTimeToRender" runat="server" Text="Time to Render: {0} ms"/>
+			<asp:Label ID="lblTimeToRender" runat="server" Text="Time to Render: {0:N2} ms"/>
 			<h1>Microtests</h1>
 			<ul>
 				<li><a href="?Test=All">All</a></li>
