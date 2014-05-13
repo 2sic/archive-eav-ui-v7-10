@@ -65,7 +65,7 @@ namespace ToSic.Eav
 					ShowDataSource(EntityIdFilter(entityIds, appId), "EntityId Filter", true);
 					break;
 				case "clearcache":
-					ClearCache(appId);
+					ClearCache();
 					break;
 				case "inmemoryentity":
 					litResults.Text = ShowEntity(GetIEntity());
@@ -249,11 +249,12 @@ namespace ToSic.Eav
 			return entityModel;
 		}
 
-		public void ClearCache(int appId)
+		public void ClearCache()
 		{
-			var ctx = EavContext.Instance(appId: appId);
-
-			DataSource.GetCache(ctx.ZoneId, ctx.AppId).PurgeCache(ctx.ZoneId, ctx.AppId);
+			var ctx = EavContext.Instance();
+			var apps = ctx.GetApps();
+			foreach (var app in apps)
+				DataSource.GetCache(app.ZoneID, app.AppID).PurgeCache(app.ZoneID, app.AppID);
 
 			if (Request.UrlReferrer != null)
 				Response.Redirect(Request.UrlReferrer.AbsoluteUri);

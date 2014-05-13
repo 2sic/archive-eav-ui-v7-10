@@ -258,7 +258,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageKeys != null && languageKeys.Length > 0)
+				if (languageKeys != null && languageKeys.Length > 0 && Values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageKeys.All(vk => va.Languages.Select(d => d.Key).Contains(vk.ToLower())));
@@ -268,7 +268,7 @@ namespace ToSic.Eav
 						{
 							return ((IValue<ValueType>)valueHavingSpecifiedLanguages).TypedContents;
 						}
-						catch (InvalidCastException) { } // may occour for nullable types
+						catch (InvalidCastException) { }	// may occour for nullable types
 					}
 				}
 				// use Default
@@ -469,7 +469,7 @@ namespace ToSic.Eav
 			get
 			{
 				// Value with Dimensions specified
-				if (languageKeys != null && languageKeys.Length > 0)
+				if (languageKeys != null && languageKeys.Length > 0 && _values != null)
 				{
 					// try match all specified Dimensions
 					var valueHavingSpecifiedLanguages = _values.FirstOrDefault(va => languageKeys.All(lk => va.Languages.Select(d => d.Key).Contains(lk.ToLower())));
@@ -479,7 +479,7 @@ namespace ToSic.Eav
 						{
 							return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
 						}
-						catch (InvalidCastException) { }// may occour for nullable types
+						catch (InvalidCastException) { }	// may occour for nullable types
 					}
 				}
 
