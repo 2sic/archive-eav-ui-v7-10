@@ -11,9 +11,9 @@ namespace ToSic.Eav.DataSources
 	public class SqlDataSource : BaseDataSource
 	{
 		#region Configuration-properties
-		private const string TitleFieldKey = "TitleAttributeName";
+		private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
-		private const string ContentTypeKey = "ContentTypeName";
+		private const string ContentTypeKey = "ContentType";
 		private const string SelectCommandKey = "SelectCommand";
 		private const string ConnectionStringKey = "ConnectionString";
 		private const string ConnectionStringNameKey = "ConnectionStringName";
@@ -102,13 +102,14 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
-		public SqlDataSource(string connectionString, string selectCommand, string contentType, string titleField)
+		public SqlDataSource(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
 			: this()
 		{
 			ConnectionString = connectionString;
 			SelectCommand = selectCommand;
 			ContentType = contentType;
-			TitleField = titleField;
+			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
+			TitleField = titleField ?? EntityTitleDefaultColumnName;
 		}
 
 		private IDictionary<int, IEntity> GetEntities()

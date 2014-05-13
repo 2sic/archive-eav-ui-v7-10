@@ -70,8 +70,14 @@ namespace ToSic.Eav
 				case "inmemoryentity":
 					litResults.Text = ShowEntity(GetIEntity());
 					break;
-				case "datatabledatasource":
-					ShowDataSource(GetDataTableDataSource(), "DataTable DataSource", true);
+				case "datatabledatasource1":
+					ShowDataSource(GetDataTableDataSource1(), "DataTable DataSource 1", true);
+					break;
+				case "datatabledatasource2":
+					ShowDataSource(GetDataTableDataSource2(), "DataTable DataSource 2", true);
+					break;
+				case "datatabledatasource3":
+					ShowDataSource(GetDataTableDataSource3(), "DataTable DataSource 3", true);
 					break;
 				case "sqldatasourcesimple":
 					ShowDataSource(GetSqlDataSourceSimple(), "SQL DataSource (simple)", true);
@@ -114,7 +120,7 @@ namespace ToSic.Eav
 		{
 			var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SiteSqlServer"].ConnectionString;
 			var selectCommand = "select object_id as " + SqlDataSource.EntityIdDefaultColumnName + ", * FROM sys.tables";
-			var source = new SqlDataSource(connectionString, selectCommand, "SqlTableInformation", "name");
+			var source = new SqlDataSource(connectionString, selectCommand, "SqlTableInformation", titleField: "name");
 			return source;
 		}
 
@@ -145,8 +151,8 @@ namespace ToSic.Eav
 		private static IDataSource GetSqlDataSourceWithConfiguration()
 		{
 			var source = DataSource.GetDataSource<SqlDataSource>();
-			source.Configuration["TitleAttributeName"] = "name";
-			source.Configuration["ContentTypeName"] = "SqlTableInformation";
+			source.Configuration["TitleField"] = "name";
+			source.Configuration["ContentType"] = "SqlTableInformation";
 			source.Configuration["SelectCommand"] = "select object_id as " + SqlDataSource.EntityIdDefaultColumnName + ", * FROM sys.tables WHERE name like '%' + @search_name + '%'";
 			source.Configuration["ConnectionString"] = null;
 			source.Configuration["ConnectionStringName"] = ConnectionStringName;
@@ -155,12 +161,12 @@ namespace ToSic.Eav
 			return source;
 		}
 
-		private static IDataSource GetDataTableDataSource()
+		private static IDataSource GetDataTableDataSource1()
 		{
 			var dataTable = new DataTable();
 			dataTable.Columns.AddRange(new[]
 			{
-				new DataColumn(DataTableDataSource.EntityIdColumnName, typeof(int)),
+				new DataColumn(DataTableDataSource.EntityIdDefaultColumnName, typeof(int)),
 				new DataColumn("FullName"),
 				new DataColumn("FirstName"),
 				new DataColumn("LastName"),
@@ -168,6 +174,15 @@ namespace ToSic.Eav
 				new DataColumn("Male", typeof(bool)), 
 				new DataColumn("Birthdate", typeof(DateTime))
 			});
+			AddDummyPeople(dataTable);
+
+			var source = new DataTableDataSource(dataTable, "SampleContentType", titleField: "FullName");
+
+			return source;
+		}
+
+		private static void AddDummyPeople(DataTable dataTable)
+		{
 			for (var i = 1; i <= 10; i++)
 			{
 				var firstName = "First Name " + i;
@@ -175,8 +190,44 @@ namespace ToSic.Eav
 				var fullName = firstName + " " + lastName;
 				dataTable.Rows.Add(i + 10000, fullName, firstName, lastName, "City " + i, i % 3 == 0, DateTime.Now.AddYears(-27));
 			}
+		}
 
-			var source = new DataTableDataSource(dataTable, "SampleContentType", "FullName");
+		private static IDataSource GetDataTableDataSource2()
+		{
+			var dataTable = new DataTable();
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn("EntityId", typeof(int)),
+				new DataColumn("EntityTitle"),
+				new DataColumn("FirstName"),
+				new DataColumn("LastName"),
+				new DataColumn("City"),
+				new DataColumn("Male", typeof(bool)), 
+				new DataColumn("Birthdate", typeof(DateTime))
+			});
+			AddDummyPeople(dataTable);
+
+			var source = new DataTableDataSource(dataTable, "SampleContentType");
+
+			return source;
+		}
+
+		private static IDataSource GetDataTableDataSource3()
+		{
+			var dataTable = new DataTable();
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn("PersonNumber", typeof(int)),
+				new DataColumn("FullName"),
+				new DataColumn("FirstName"),
+				new DataColumn("LastName"),
+				new DataColumn("City"),
+				new DataColumn("Male", typeof(bool)), 
+				new DataColumn("Birthdate", typeof(DateTime))
+			});
+			AddDummyPeople(dataTable);
+
+			var source = new DataTableDataSource(dataTable, "SampleContentType", "PersonNumber", "FullName");
 
 			return source;
 		}

@@ -25,7 +25,9 @@
 				<li><a href="?Test=PublishingPublishedOnly">Publishing - Published only</a></li>
 				<li><a href="?Test=listproperty">Quick Property to access the Out["Default"].List</a></li>
 				<li><a href="?Test=InMemoryEntity">In-Memory Entity</a></li>
-				<li><a href="?Test=DataTableDataSource">DataTable DataSource</a></li>
+				<li><a href="?Test=DataTableDataSource1">DataTable DataSource 1</a></li>
+				<li><a href="?Test=DataTableDataSource2">DataTable DataSource 2</a></li>
+				<li><a href="?Test=DataTableDataSource3">DataTable DataSource 3</a></li>
 				<li><a href="?Test=SqlDataSourceSimple">SQL DataSource (simple)</a></li>
 				<li><a href="?Test=SqlDataSourceSimple2">SQL DataSource (simple 2)</a></li>
 				<li><a href="?Test=sqldatasourcecomplex">SQL DataSource (complex)</a></li>
