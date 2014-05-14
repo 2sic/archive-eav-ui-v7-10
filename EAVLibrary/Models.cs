@@ -132,6 +132,8 @@ namespace ToSic.Eav
 
 	internal class AttributeModel
 	{
+		private static readonly ValueModel<EntityRelationshipModel> EntityRelationshipModelDefaultValue = new ValueModel<EntityRelationshipModel>(new EntityRelationshipModel(null)) { Languages = new DimensionModel[0] };
+
 		/// <summary>
 		/// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
 		/// </summary>
@@ -188,7 +190,7 @@ namespace ToSic.Eav
 				case "Number":
 					return new AttributeModel<decimal?>(definition.Name, definition.Type, definition.IsTitle);
 				case "Entity":
-					return new AttributeModel<EntityRelationshipModel>(definition.Name, definition.Type, definition.IsTitle);
+					return new AttributeModel<EntityRelationshipModel>(definition.Name, definition.Type, definition.IsTitle) { Values = new IValue[] { EntityRelationshipModelDefaultValue } };
 				default:
 					return new AttributeModel<string>(definition.Name, definition.Type, definition.IsTitle);
 			}
@@ -309,7 +311,7 @@ namespace ToSic.Eav
 
 		public override string ToString()
 		{
-			return string.Join(", ", EntityIds.Select(e => e));
+			return EntityIds == null ? string.Empty : string.Join(", ", EntityIds.Select(e => e));
 		}
 
 		public IEnumerator<IEntity> GetEnumerator()
