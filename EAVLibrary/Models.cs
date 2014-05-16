@@ -291,6 +291,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class EntityRelationshipModel : IEnumerable<IEntity>
 	{
+		private static readonly int[] EntityIdsEmpty = new int[0];
 		/// <summary>
 		/// List of Child EntityIds
 		/// </summary>
@@ -307,6 +308,7 @@ namespace ToSic.Eav
 		public EntityRelationshipModel(IDataSource source)
 		{
 			_source = source;
+			EntityIds = EntityIdsEmpty;
 		}
 
 		public override string ToString()
