@@ -49,7 +49,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
-			if (e.Row.RowType == DataControlRowType.EmptyDataRow)
+			if (e.Row.RowType == DataControlRowType.EmptyDataRow || e.Row.RowType == DataControlRowType.Pager)
 				return;
 
 			// Hide some Auto-Generated Columns

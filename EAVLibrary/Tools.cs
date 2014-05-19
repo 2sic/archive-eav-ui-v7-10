@@ -17,8 +17,9 @@ namespace ToSic.Eav
 		/// <param name="items">Entities</param>
 		/// <param name="columnNames">ColumnNames of the Entities</param>
 		/// <param name="dimensionIds">DimensionIds/LanguageIds to show</param>
+		/// <param name="maxValueLength">Shorten Values longer than n Characters</param>
 		/// <returns>A flat DataTable of the Entities</returns>
-		public static DataTable ToDataTable(this IEnumerable<IEntity> items, IEnumerable<string> columnNames, int[] dimensionIds)
+		public static DataTable ToDataTable(this IEnumerable<IEntity> items, IEnumerable<string> columnNames, int[] dimensionIds, int? maxValueLength = null)
 		{
 			var dt = new DataTable();
 
@@ -53,11 +54,16 @@ namespace ToSic.Eav
 				catch (NullReferenceException) { }
 				#endregion
 
-				foreach (DataColumn col in dt.Columns.Cast<DataColumn>().Where(col => !systemColumns.Contains(col.ColumnName)))
+				foreach (var col in dt.Columns.Cast<DataColumn>().Where(col => !systemColumns.Contains(col.ColumnName)))
 				{
 					try
 					{
-						row[col.ColumnName] = item[col.ColumnName][dimensionIds];
+						var value = item[col.ColumnName][dimensionIds];
+						var stringValue = value as string;
+						if (stringValue != null && maxValueLength.HasValue && stringValue.Length > maxValueLength)
+							value = stringValue.Substring(0, maxValueLength.Value) + "…";
+
+						row[col.ColumnName] = value;
 					}
 					catch (NullReferenceException) { } // if attribute has no value
 				}
@@ -82,6 +88,5 @@ namespace ToSic.Eav
 
 			return clone;
 		}
-
 	}
 }
