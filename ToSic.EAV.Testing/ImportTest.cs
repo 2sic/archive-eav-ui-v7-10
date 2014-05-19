@@ -190,7 +190,7 @@ namespace ToSic.Eav.Testing
 			return entity;
 		}
 
-		private Dictionary<string, List<IValueImportModel>> GetEntityValues(Import.Entity entity, Import.AttributeSet attributeSet, Guid? relatedEntity = null, bool isUpdate = false, string now = null)
+		private static Dictionary<string, List<IValueImportModel>> GetEntityValues(Import.Entity entity, Import.AttributeSet attributeSet, Guid? relatedEntity = null, bool isUpdate = false, string now = null)
 		{
 			var values = new Dictionary<string, List<IValueImportModel>>();
 
@@ -407,7 +407,6 @@ namespace ToSic.Eav.Testing
 			Assert.IsFalse(import.ImportLog.Any(l => l.EntryType == EventLogEntryType.Error));
 		}
 
-
 		private static Import.Entity GetSampleNewsEntity(EavContext db, Guid? entityGuid)
 		{
 			var attributeSetStaticName = db.AttributeSets.Where(a => a.AppID == db.AppId && a.Name == "News").Select(a => a.StaticName).Single();
@@ -481,6 +480,43 @@ namespace ToSic.Eav.Testing
 			};
 
 			return entity;
+		}
+
+		[Test]
+		public void BulkImportData()
+		{
+			var entities = new List<Import.Entity>();
+
+			const int numberOfEntities = 1500;
+			for (var i = 0; i < numberOfEntities; i++)
+			{
+				var entityGuid = Guid.Parse("00000000-0000-0000-0000-" + i.ToString("000000000000"));
+				var entity = new Import.Entity
+				{
+					EntityGuid = entityGuid,
+					AttributeSetStaticName = "4e0f8568-a2fe-435c-abda-0602dddeb400",
+					AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId
+				};
+				entity.Values = new Dictionary<string, List<IValueImportModel>>
+				{
+					{ "Name", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Buchs" }}},
+					{ "Live", new List<IValueImportModel>{new ValueImportModel<bool?>(entity) { Value = true }}},
+					{ "NumberOfCards", new List<IValueImportModel>{new ValueImportModel<decimal?>(entity) { Value = 5 }}},
+					{ "Notes", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Test 1234567890" }}},
+					{ "Uses2Reserve", new List<IValueImportModel>{new ValueImportModel<bool?>(entity) { Value = true }}},
+					{ "Website", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "http://www.2sic.com" }}},
+					{ "Email", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Dummy@Test.com" }}},
+					{ "Price", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "40.-" }}},
+					{ "Canton", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "SG" }}},
+				};
+
+				entities.Add(entity);
+			}
+
+			var import = new Import.Import(2, 2, "BulkImportData", overwriteExistingEntityValues: true);
+			import.RunImport(null, entities);
+
+			Assert.IsEmpty(import.ImportLog.Where(l => l.EntryType == EventLogEntryType.Error));
 		}
 	}
 }
