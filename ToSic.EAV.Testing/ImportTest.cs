@@ -486,6 +486,7 @@ namespace ToSic.Eav.Testing
 		public void BulkImportData()
 		{
 			var entities = new List<Import.Entity>();
+			var now = DateTime.Now.ToShortTimeString();
 
 			const int numberOfEntities = 1500;
 			for (var i = 0; i < numberOfEntities; i++)
@@ -499,7 +500,7 @@ namespace ToSic.Eav.Testing
 				};
 				entity.Values = new Dictionary<string, List<IValueImportModel>>
 				{
-					{ "Name", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Buchs" }}},
+					{ "Name", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Buchs " + now }}},
 					{ "Live", new List<IValueImportModel>{new ValueImportModel<bool?>(entity) { Value = true }}},
 					{ "NumberOfCards", new List<IValueImportModel>{new ValueImportModel<decimal?>(entity) { Value = 5 }}},
 					{ "Notes", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Test 1234567890" }}},
@@ -508,6 +509,7 @@ namespace ToSic.Eav.Testing
 					{ "Email", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "Dummy@Test.com" }}},
 					{ "Price", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "40.-" }}},
 					{ "Canton", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = "SG" }}},
+					{ "Now", new List<IValueImportModel>{new ValueImportModel<string>(entity) { Value = now }}},
 				};
 
 				entities.Add(entity);

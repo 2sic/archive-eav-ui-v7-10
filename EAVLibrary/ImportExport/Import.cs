@@ -202,12 +202,9 @@ namespace ToSic.Eav.Import
 					_db.DeleteEntity(draftEntityId.Value);
 				}
 
-				// Get vales from old EntityModel
-				var oldEntityModel = _db.GetDataForCache(new[] { existingEntity.EntityID }, _appId, null, true).Entities.First().Value;
-
 				var newValues = entity.Values;
 				if (!_overwriteExistingEntityValues)	// Skip values that are already present in existing Entity
-					newValues = entity.Values.Where(v => oldEntityModel[v.Key] == null).ToDictionary(v => v.Key, v => v.Value);
+					newValues = entity.Values.Where(v => existingEntity.Values.All(ev => ev.Attribute.StaticName != v.Key)).ToDictionary(v => v.Key, v => v.Value);
 
 				_db.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues);
 			}
