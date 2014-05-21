@@ -81,7 +81,9 @@ namespace ToSic.Eav
 			var entityIds = Entities.Where(e => e.AttributeSetID == attributeSetId && e.ChangeLogIDDeleted == null).Select(e => e.EntityID).ToArray();
 			if (!entityIds.Any())
 				return null;
-			var entitiesModel = GetDataForCache(entityIds, _appId, source, true).Entities;
+			var publishedEntities = DataSource.GetInitialDataSource(_zoneId, _appId).List.Where(e => entityIds.Contains(e.Key));
+			var draftEntities = DataSource.GetInitialDataSource(_zoneId, _appId, true).List.Where(e => entityIds.Contains(e.Key));
+			var entitiesModel = publishedEntities.Union(draftEntities);
 
 			var columnNames = GetAttributes(attributeSetId).Select(a => a.StaticName);
 
