@@ -42,6 +42,7 @@ namespace ToSic.Eav.ManagementUI
 		#endregion
 
 		#region Properties
+
 		public int AttributeSetId { get; set; }
 		public int EntityId { get; set; }
 		public bool IsDialog { get; set; }
@@ -215,7 +216,6 @@ namespace ToSic.Eav.ManagementUI
 			return serializer.Serialize(objectToSerialize);
 		}
 
-
 		/// <summary>
 		/// Add Form Controls for Insert-Mode
 		/// </summary>
@@ -247,6 +247,7 @@ namespace ToSic.Eav.ManagementUI
 
 			IsPublished = true;
 		}
+
 		#endregion
 
 		#region Event Handlers for Button-Clicks

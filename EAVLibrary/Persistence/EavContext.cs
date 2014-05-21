@@ -169,6 +169,13 @@ namespace ToSic.Eav
 		/// </summary>
 		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
 		{
+			// Prevent duplicate add of FieldProperties
+			if (assignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
+			{
+				if (GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber, null, null).Any(e => e.AttributeSetID == attributeSetId))
+					throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber));
+			}
+
 			var changeId = GetChangeLogId();
 
 			var newEntity = new Entity
@@ -476,7 +483,7 @@ namespace ToSic.Eav
 			if (!entity.IsPublished && isPublished)
 			{
 				if (entity.PublishedEntityID.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-				SaveEntityToDataTimeline(entity);
+					SaveEntityToDataTimeline(entity);
 				entity = PublishEntity(entityId, false);
 			}
 
