@@ -359,8 +359,8 @@ namespace ToSic.Eav
 			// Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
 			if (filterByEntityIds)
 				entityIds = entityIds.Union(from e in Entities
-											where e.PublishedEntityID.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityID.Value) && e.ChangeLogDeleted == null
-											select e.PublishedEntityID.Value).ToArray();
+											where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
+											select e.PublishedEntityId.Value).ToArray();
 			#endregion
 
 			#region Get Entities with Attribute-Values from Database
@@ -373,7 +373,7 @@ namespace ToSic.Eav
 									 (	// filter by EntityIds (if set)
 										 !filterByEntityIds ||
 										 entityIds.Contains(e.EntityID) ||
-										 (e.PublishedEntityID.HasValue && entityIds.Contains(e.PublishedEntityID.Value))	// also load Drafts
+										 (e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value))	// also load Drafts
 										 )
 								 orderby
 									 e.EntityID	// guarantees Published appear before draft
@@ -387,7 +387,7 @@ namespace ToSic.Eav
 									 e.KeyString,
 									 e.AssignmentObjectTypeID,
 									 e.IsPublished,
-									 e.PublishedEntityID,
+									 e.PublishedEntityId,
 									 RelatedEntities = from r in e.EntityParentRelationships
 													   group r by r.AttributeID
 														   into rg
@@ -440,12 +440,12 @@ namespace ToSic.Eav
 				}
 
 				// If entity is a draft, add references to Published Entity
-				if (!e.IsPublished && e.PublishedEntityID.HasValue)
+				if (!e.IsPublished && e.PublishedEntityId.HasValue)
 				{
 					// Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-					entityModel.PublishedEntity = entities[e.PublishedEntityID.Value];
+					entityModel.PublishedEntity = entities[e.PublishedEntityId.Value];
 					((EntityModel)entityModel.PublishedEntity).DraftEntity = entityModel;
-					entityModel.EntityId = e.PublishedEntityID.Value;
+					entityModel.EntityId = e.PublishedEntityId.Value;
 				}
 
 				#region Add assignmentObjectTypes with Key

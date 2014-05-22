@@ -50,6 +50,7 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets", "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.AttributeSet), "AttributeSet1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
 
 #endregion
 
@@ -3012,6 +3013,28 @@ namespace ToSic.Eav
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "Entity")]
+        public EntityCollection<Entity> EntitiesModified
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Entity>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "Entity");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Entity>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "Entity", value);
+                }
+            }
+        }
 
         #endregion
 
@@ -4361,24 +4384,48 @@ namespace ToSic.Eav
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> PublishedEntityID
+        public Nullable<global::System.Int32> PublishedEntityId
         {
             get
             {
-                return _PublishedEntityID;
+                return _PublishedEntityId;
             }
             set
             {
-                OnPublishedEntityIDChanging(value);
-                ReportPropertyChanging("PublishedEntityID");
-                _PublishedEntityID = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("PublishedEntityID");
-                OnPublishedEntityIDChanged();
+                OnPublishedEntityIdChanging(value);
+                ReportPropertyChanging("PublishedEntityId");
+                _PublishedEntityId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("PublishedEntityId");
+                OnPublishedEntityIdChanged();
             }
         }
-        private Nullable<global::System.Int32> _PublishedEntityID;
-        partial void OnPublishedEntityIDChanging(Nullable<global::System.Int32> value);
-        partial void OnPublishedEntityIDChanged();
+        private Nullable<global::System.Int32> _PublishedEntityId;
+        partial void OnPublishedEntityIdChanging(Nullable<global::System.Int32> value);
+        partial void OnPublishedEntityIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> ChangeLogIDModified
+        {
+            get
+            {
+                return _ChangeLogIDModified;
+            }
+            set
+            {
+                OnChangeLogIDModifiedChanging(value);
+                ReportPropertyChanging("ChangeLogIDModified");
+                _ChangeLogIDModified = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ChangeLogIDModified");
+                OnChangeLogIDModifiedChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _ChangeLogIDModified;
+        partial void OnChangeLogIDModifiedChanging(Nullable<global::System.Int32> value);
+        partial void OnChangeLogIDModifiedChanged();
 
         #endregion
 
@@ -4621,6 +4668,44 @@ namespace ToSic.Eav
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<EntityRelationship>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities", "ToSIC_EAV_EntityRelationships", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog")]
+        public ChangeLog ChangeLogModified
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<ChangeLog>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<ChangeLog>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<ChangeLog> ChangeLogModifiedReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<ChangeLog>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<ChangeLog>("ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog", value);
                 }
             }
         }

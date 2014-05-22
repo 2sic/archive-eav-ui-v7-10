@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="EAVModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+    <Schema Namespace="EAVModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityType Name="ToSIC_EAV_Apps">
           <Key>
             <PropertyRef Name="AppID" />
@@ -136,7 +136,8 @@
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
           <Property Name="ChangeLogDeleted" Type="int" />
           <Property Name="IsPublished" Type="bit" Nullable="false" />
-          <Property Name="PublishedEntityID" Type="int" />
+          <Property Name="PublishedEntityId" Type="int" />
+          <Property Name="ChangeLogModified" Type="int" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_EntityRelationships">
           <Key>
@@ -392,6 +393,18 @@
             </Principal>
             <Dependent Role="ToSIC_EAV_Entities">
               <PropertyRef Name="AttributeSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ToSIC_EAV_ChangeLog">
+              <PropertyRef Name="ChangeID" />
+            </Principal>
+            <Dependent Role="ToSIC_EAV_Entities">
+              <PropertyRef Name="ChangeLogModified" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -651,6 +664,10 @@
             <End Role="ToSIC_EAV_AttributeSets" EntitySet="ToSIC_EAV_AttributeSets" />
             <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
           </AssociationSet>
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
+            <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
+            <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
+          </AssociationSet>
           <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated" Association="Self.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated">
             <End Role="ToSIC_EAV_ChangeLog" EntitySet="ToSIC_EAV_ChangeLog" />
             <End Role="ToSIC_EAV_Entities" EntitySet="ToSIC_EAV_Entities" />
@@ -858,6 +875,10 @@
           <Parameter Name="AppId" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="DataTimeline" EntityType="ToSic.Eav.DataTimelineItem" />
+          <AssociationSet Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" Association="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
+            <End Role="ChangeLog" EntitySet="ChangeLogs" />
+            <End Role="Entity" EntitySet="Entities" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="AssignmentObjectType">
           <Key>
@@ -972,7 +993,9 @@
           <NavigationProperty Name="EntityChildRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <NavigationProperty Name="EntityParentRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <Property Name="IsPublished" Type="Boolean" Nullable="false" />
-          <Property Name="PublishedEntityID" Type="Int32" />
+          <Property Name="PublishedEntityId" Type="Int32" />
+          <Property Name="ChangeLogIDModified" Type="Int32" />
+          <NavigationProperty Name="ChangeLogModified" Relationship="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" FromRole="Entity" ToRole="ChangeLog" />
         </EntityType>
         <EntityType Name="EavValue">
           <Key>
@@ -1113,6 +1136,7 @@
           <NavigationProperty Name="ValuesCreated" Relationship="ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated" FromRole="ToSIC_EAV_ChangeLog" ToRole="EavValue" />
           <NavigationProperty Name="ValuesDeleted" Relationship="ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted" FromRole="ToSIC_EAV_ChangeLog" ToRole="EavValue" />
           <NavigationProperty Name="ValuesModified" Relationship="ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified" FromRole="ChangeLog" ToRole="EavValue" />
+          <NavigationProperty Name="EntitiesModified" Relationship="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" FromRole="ChangeLog" ToRole="Entity" />
         </EntityType>
         <Association Name="FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated">
           <End Type="ToSic.Eav.ChangeLog" Role="ToSIC_EAV_ChangeLog" Multiplicity="1" />
@@ -1466,6 +1490,18 @@
           <Property Name="SysLogID" Type="Int32" />
           <Property Name="NewData" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
+          <End Type="ToSic.Eav.ChangeLog" Role="ChangeLog" Multiplicity="0..1" />
+          <End Type="ToSic.Eav.Entity" Role="Entity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChangeLog">
+              <PropertyRef Name="ChangeID" />
+            </Principal>
+            <Dependent Role="Entity">
+              <PropertyRef Name="ChangeLogIDModified" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1547,7 +1583,8 @@
           <EntitySetMapping Name="Entities">
             <EntityTypeMapping TypeName="ToSic.Eav.Entity">
               <MappingFragment StoreEntitySet="ToSIC_EAV_Entities">
-                <ScalarProperty Name="PublishedEntityID" ColumnName="PublishedEntityID" />
+                <ScalarProperty Name="ChangeLogIDModified" ColumnName="ChangeLogModified" />
+                <ScalarProperty Name="PublishedEntityId" ColumnName="PublishedEntityId" />
                 <ScalarProperty Name="IsPublished" ColumnName="IsPublished" />
                 <ScalarProperty Name="ChangeLogIDDeleted" ColumnName="ChangeLogDeleted" />
                 <ScalarProperty Name="ChangeLogIDCreated" ColumnName="ChangeLogCreated" />
@@ -1797,6 +1834,7 @@
         <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" />
         <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets" />
         <EntityTypeShape EntityType="ToSic.Eav.DataTimelineItem" Width="1.75" PointX="15.625" PointY="9.125" />
+        <AssociationConnector Association="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" />
       </Diagram>
     </Diagrams>
   </Designer>
