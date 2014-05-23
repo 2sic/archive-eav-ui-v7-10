@@ -19,6 +19,7 @@ namespace ToSic.Eav
 		public IAttribute Title { get; internal set; }
 		public Dictionary<string, IAttribute> Attributes { get; internal set; }
 		public IContentType Type { get; internal set; }
+		public DateTime Modified { get; internal set; }
 		[ScriptIgnore]
 		public RelationshipManager Relationships { get; internal set; }
 		public bool IsPublished { get; internal set; }
@@ -55,7 +56,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Create a new EntityModel
 		/// </summary>
-		internal EntityModel(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships = null)
+		internal EntityModel(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
@@ -64,6 +65,7 @@ namespace ToSic.Eav
 			Type = type;
 			IsPublished = isPublished;
 			RepositoryId = repositoryId;
+			Modified = modified;
 
 			if (allRelationships == null)
 				allRelationships = new List<EntityRelationshipItem>();

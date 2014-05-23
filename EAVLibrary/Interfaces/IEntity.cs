@@ -37,6 +37,10 @@ namespace ToSic.Eav
 		/// </summary>
 		IAttribute Title { get; }
 		/// <summary>
+		/// Gets the Last Modified DateTime
+		/// </summary>
+		DateTime Modified { get; }
+		/// <summary>
 		/// Gets an Attribute by its StaticName
 		/// </summary>
 		/// <param name="attributeName">StaticName of the Attribute</param>

@@ -512,6 +512,7 @@ namespace ToSic.Eav
 			output.Append("<li><b>IsPublished</b>: " + entity.IsPublished + "</li>");
 			output.Append("<li><b>ContentType</b>: " + entity.Type.Name + "</li>");
 			output.Append("<li><b>Title</b>: " + entity.Title[0] + "</li>");
+			output.Append("<li><b>Modified</b>: " + entity.Modified + "</li>");
 			output.Append("<li><b>Values:</b><ul>");
 			foreach (var attribute in entity.Attributes)
 			{

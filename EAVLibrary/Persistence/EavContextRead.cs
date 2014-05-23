@@ -388,6 +388,7 @@ namespace ToSic.Eav
 									 e.AssignmentObjectTypeID,
 									 e.IsPublished,
 									 e.PublishedEntityId,
+									 Modified = e.ChangeLogModified.Timestamp,
 									 RelatedEntities = from r in e.EntityParentRelationships
 													   group r by r.AttributeID
 														   into rg
@@ -427,7 +428,7 @@ namespace ToSic.Eav
 			foreach (var e in entitiesValues)
 			{
 				var contentType = (ContentType)contentTypes[e.AttributeSetID];
-				var entityModel = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships);
+				var entityModel = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships, e.Modified);
 
 				var entityAttributes = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
 
