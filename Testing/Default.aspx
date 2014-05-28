@@ -34,6 +34,10 @@
 				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with configuration)</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 			</ul>
+			Other tests
+			<ul>
+				<li><a href="?Test=Other&T2=RequestProvider">Test request parameter fallback</a></li>
+			</ul>
 		</div>
 		<asp:Literal runat="server" ID="litResults" />
     </form>

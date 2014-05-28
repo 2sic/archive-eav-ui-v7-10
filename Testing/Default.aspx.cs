@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Web.ModelBinding;
 using System.Web.UI;
 using ToSic.Eav.DataSources;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
@@ -91,6 +92,9 @@ namespace ToSic.Eav
 				case "sqldatasourcewithconfiguration":
 					ShowDataSource(GetSqlDataSourceWithConfiguration(), "SQL DataSource with configuration", true);
 					break;
+				case "other":
+					RunOtherTests();
+					break;
 			}
 
 			//Tests2dm();
@@ -108,6 +112,16 @@ namespace ToSic.Eav
 			//var source = DataSource.GetInitialDataSource(1, 1);
 			//var entities = source.Out["Default"].List;
 			//ShowEntity(entities[3378]);
+		}
+
+		protected void RunOtherTests()
+		{
+			switch (Request.QueryString["T2"].ToLower())
+			{
+				case "RequestProvider":
+					//var rp = new QueryStringValueProvider();
+					break;
+			}
 		}
 
 		protected void Page_PreRender(object sender, EventArgs e)
