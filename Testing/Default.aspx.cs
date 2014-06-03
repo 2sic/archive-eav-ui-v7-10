@@ -559,11 +559,15 @@ namespace ToSic.Eav
 				appDs.AppSwitch = 2;
 				appDs.ZoneSwitch = 2;
 			}
-			var result = "<h2>Lists in out (should contain all content-types of App " + appDs.AppId + " Zone " +
+
+			var result = "";
+			if(!swapAppAndZone)
+				result += appDs["Test"].Name;
+			result += "<h2>Lists in out (should contain all content-types of App " + appDs.AppId + " Zone " +
 			             appDs.ZoneId + ")</h2><ol>";
 			foreach (var outStream in appDs.Out)
 			{
-				result += "<li>" + outStream.Key + "</li>";
+				result += "<li>\"" + outStream.Key + "\" (" + outStream.Value.List.Count + ")" + "</li>";
 			}
 			result += "</ol>";
 			return result;

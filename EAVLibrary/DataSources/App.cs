@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
-		public new IDictionary<string, IDataStream> Out {
+		public override IDictionary<string, IDataStream> Out {
 			get
 			{
 				if (_requiresRebuildOfOut)

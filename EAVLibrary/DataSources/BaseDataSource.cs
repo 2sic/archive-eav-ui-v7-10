@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
 		public virtual int ZoneId { get; set; }
 
 		public IDictionary<string, IDataStream> In { get; internal set; }
-		public IDictionary<string, IDataStream> Out { get; internal set; }
+		public virtual IDictionary<string, IDataStream> Out { get; internal set; }
 
 		public IDataStream this[string outName]
 		{
