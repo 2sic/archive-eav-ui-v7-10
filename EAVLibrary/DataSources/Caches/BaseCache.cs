@@ -83,6 +83,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected abstract void RemoveCacheItem(string cacheKey);
 
+		/// <summary>
+		/// Ensure cache for current AppId
+		/// </summary>
 		protected CacheItem EnsureCache()
 		{
 			if (ZoneApps == null || AssignmentObjectTypes == null)
@@ -109,6 +112,9 @@ namespace ToSic.Eav.DataSources.Caches
 			return GetCacheItem(cacheKey);
 		}
 
+		/// <summary>
+		/// Clear Cache for specific Zone/App
+		/// </summary>
 		public void PurgeCache(int zoneId, int appId)
 		{
 			var cacheKey = string.Format(CacheKeySchema, zoneId, appId);
@@ -116,6 +122,9 @@ namespace ToSic.Eav.DataSources.Caches
 			RemoveCacheItem(cacheKey);
 		}
 
+		/// <summary>
+		/// Clear Zones/Apps List
+		/// </summary>
 		public void PurgeGlobalCache()
 		{
 			ZoneApps = null;
