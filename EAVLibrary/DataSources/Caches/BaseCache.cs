@@ -41,7 +41,6 @@ namespace ToSic.Eav.DataSources.Caches
 			return EnsureCache().DraftEntities;
 		}
 
-
 		/// <summary>
 		/// The root DataSource
 		/// </summary>
@@ -84,6 +83,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected abstract void RemoveCacheItem(string cacheKey);
 
+		/// <summary>
+		/// Ensure cache for current AppId
+		/// </summary>
 		protected CacheItem EnsureCache()
 		{
 			if (ZoneApps == null || AssignmentObjectTypes == null)
@@ -110,6 +112,9 @@ namespace ToSic.Eav.DataSources.Caches
 			return GetCacheItem(cacheKey);
 		}
 
+		/// <summary>
+		/// Clear Cache for specific Zone/App
+		/// </summary>
 		public void PurgeCache(int zoneId, int appId)
 		{
 			var cacheKey = string.Format(CacheKeySchema, zoneId, appId);
@@ -117,6 +122,9 @@ namespace ToSic.Eav.DataSources.Caches
 			RemoveCacheItem(cacheKey);
 		}
 
+		/// <summary>
+		/// Clear Zones/Apps List
+		/// </summary>
 		public void PurgeGlobalCache()
 		{
 			ZoneApps = null;
@@ -149,6 +157,14 @@ namespace ToSic.Eav.DataSources.Caches
 		{
 			var cache = EnsureCache();
 			return cache.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		}
+
+		/// <summary>
+		/// Get all Content Types
+		/// </summary>
+		public IDictionary<int, IContentType> GetContentTypes()
+		{
+			return EnsureCache().ContentTypes;
 		}
 
 		/// <summary>
