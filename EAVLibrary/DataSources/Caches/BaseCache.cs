@@ -41,7 +41,6 @@ namespace ToSic.Eav.DataSources.Caches
 			return EnsureCache().DraftEntities;
 		}
 
-
 		/// <summary>
 		/// The root DataSource
 		/// </summary>
@@ -149,6 +148,14 @@ namespace ToSic.Eav.DataSources.Caches
 		{
 			var cache = EnsureCache();
 			return cache.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		}
+
+		/// <summary>
+		/// Get all Content Types
+		/// </summary>
+		public IDictionary<int, IContentType> GetContentTypes()
+		{
+			return EnsureCache().ContentTypes;
 		}
 
 		/// <summary>
