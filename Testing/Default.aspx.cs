@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web.ModelBinding;
 using System.Web.UI;
+using System.Web.UI.WebControls.Expressions;
 using ToSic.Eav.DataSources;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
@@ -96,6 +97,10 @@ namespace ToSic.Eav
 					ShowRelationshipFilterOptions();
 					//if(Request.QueryString["tag"] != null || Request.QueryString["tagcat"] != null)
 						ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
+					break;
+				case "appds":
+					litResults.Text += TestAppDataSource(false);
+					litResults.Text += TestAppDataSource(true);
 					break;
 				case "other":
 					RunOtherTests();
@@ -543,6 +548,25 @@ namespace ToSic.Eav
 				relFilter.Filter = Request.QueryString["tagid"];
 			}
 			return relFilter;
+		}
+
+		public string TestAppDataSource(bool swapAppAndZone)
+		{
+			var source = DataSource.GetInitialDataSource();
+			var appDs = DataSource.GetDataSource<DataSources.App>(1, 1, source);
+			if (swapAppAndZone)
+			{
+				appDs.AppSwitch = 2;
+				appDs.ZoneSwitch = 2;
+			}
+			var result = "<h2>Lists in out (should contain all content-types of App " + appDs.AppId + " Zone " +
+			             appDs.ZoneId + ")</h2><ol>";
+			foreach (var outStream in appDs.Out)
+			{
+				result += "<li>" + outStream.Key + "</li>";
+			}
+			result += "</ol>";
+			return result;
 		}
 
 		// this was a test for a parent-filter, but I don't think I'll ever need this feature

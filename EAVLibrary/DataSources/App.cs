@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources
@@ -11,22 +13,54 @@ namespace ToSic.Eav.DataSources
 	public class App : BaseDataSource
 	{
 		#region Configuration-properties
-		private const string AppIdKey = "AppId";
-		private const string ZoneIdKey = "ZoneId";
+		private const string AppSwitchKey = "AppSwitch";
+		private const string ZoneSwitchKey = "ZoneSwitch";
 
 		/// <summary>
-		/// The name of the type to filter for. 
+		/// An alternate app to switch to
 		/// </summary>
-		public int AppId
+		public int AppSwitch
 		{
-			get { return Int32.Parse(Configuration[AppIdKey]); }
-			set { Configuration[AppIdKey] = value.ToString(); }
+			get { return Int32.Parse(Configuration[AppSwitchKey]); }
+			set
+			{
+				Configuration[AppSwitchKey] = value.ToString();
+				AppId = value;
+				_requiresRebuildOfOut = true;
+			}
 		}
-		public int ZoneId
+
+		/// <summary>
+		/// An alternate zone to switch to
+		/// </summary>
+		public int ZoneSwitch
 		{
-			get { return Int32.Parse(Configuration[ZoneIdKey]); }
-			set { Configuration[ZoneIdKey] = value.ToString(); }
-		}		
+			get { return Int32.Parse(Configuration[ZoneSwitchKey]); }
+			set
+			{
+				Configuration[ZoneSwitchKey] = value.ToString();
+				ZoneId = value;
+				_requiresRebuildOfOut = true;
+			}
+		}
+
+		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
+		private bool _requiresRebuildOfOut = true;
+		public new IDictionary<string, IDataStream> Out {
+			get
+			{
+				if (_requiresRebuildOfOut)
+				{
+					// if the rebuilt is required because the app or zone are not default, then attach it first
+					if (AppSwitch != 0 && ZoneSwitch != 0)
+						AttachOtherDataSource();
+					// now create all streams
+					CreateOutWithAllStreams();
+					_requiresRebuildOfOut = false;
+				}
+				return _Out;
+			}
+		}
 		#endregion
 
 		/// <summary>
@@ -34,51 +68,56 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public App()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-			Configuration.Add(AppIdKey, "0");
-			Configuration.Add(ZoneIdKey, "0");
+			// this one is unusual, so don't pre-attach a default data stream
+			//Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+
+			// Set default switch-keys to 0 = no switch
+			Configuration.Add(AppSwitchKey, "0");
+			Configuration.Add(ZoneSwitchKey, "0");
 		}
 
-		private bool _initialized = false;
-		private void EnsureDataSourceIsInitialized()
+		/// <summary>
+		/// Attach a different data source than is currently attached...
+		/// this is needed when a zone/app change
+		/// </summary>
+		private void AttachOtherDataSource()
 		{
-			if (!_initialized)
-			{
-				bool mustChangeDS = (AppId != 0 && ZoneId != 0);
+			// all not-set properties will auto-initialize
+			if (ZoneSwitch != 0)
+				ZoneId = ZoneSwitch; //In[DataSource.DefaultStreamName].Source.ZoneId;
+			if (AppSwitch != 0)
+				AppId = AppSwitch; // In[DataSource.DefaultStreamName].Source.ZoneId;
 
-				// all not-set properties will auto-initialize
-				if (ZoneId == 0)
-					ZoneId = In["Default"].Source.ZoneId;
-				if (AppId == 0)
-					AppId = In["Default"].Source.ZoneId;
+			var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
+			In.Remove(DataSource.DefaultStreamName);
+			In.Add(DataSource.DefaultStreamName, newDs[DataSource.DefaultStreamName]);
+		}
 
-				if (mustChangeDS)
-				{
-					var newDS = Eav.DataSource.GetInitialDataSource(zoneId: ZoneId, appId: AppId);
-					In.Remove("Default");
-					In.Add("Default", newDS["Default"]);
-				}
-
-				// now provide all data streams for all data types
-				var cache = (BaseCache)DataSource.GetCache(zoneId: ZoneId, appId: AppId);
-				var listOfTypes = cache;
-
-				_initialized = true;
-			}
+		/// <summary>
+		/// Create a stream for each data-type
+		/// </summary>
+		private void CreateOutWithAllStreams()
+		{
+			var upstream = In[DataSource.DefaultStreamName].Source;
+			_Out.Clear();
+			_Out.Add(DataSource.DefaultStreamName, upstream.Out[DataSource.DefaultStreamName]);
 			
+			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
+			// because the "real" source already applies filters like published
+			var cache = (BaseCache) DataSource.GetCache(zoneId: ZoneId, appId: AppId);
+			var listOfTypes = cache.GetContentTypes();
+			foreach (var contentType in listOfTypes)
+			{
+				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstream);
+				var typeName = contentType.Value.Name;
+				if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@"))
+				{
+					ds.TypeName = contentType.Value.Name;
+					if (!_Out.ContainsKey(typeName))
+						_Out.Add(contentType.Value.Name, ds.Out[DataSource.DefaultStreamName]);
+				}
+			}
 		}
-
-		private IDictionary<int, IEntity> GetEntities()
-		{
-			EnsureConfigurationIsLoaded();
-			EnsureDataSourceIsInitialized();
-
-			var foundType = DataSource.GetCache(ZoneId, AppId).GetContentType(TypeName);
-
-			return (from e in In[DataSource.DefaultStreamName].List
-					where e.Value.Type == foundType
-					select e).ToDictionary(x => x.Key, y => y.Value);
-		}
-
 	}
+
 }
