@@ -92,6 +92,11 @@ namespace ToSic.Eav
 				case "sqldatasourcewithconfiguration":
 					ShowDataSource(GetSqlDataSourceWithConfiguration(), "SQL DataSource with configuration", true);
 					break;
+				case "relationshipfilter":
+					ShowRelationshipFilterOptions();
+					//if(Request.QueryString["tag"] != null || Request.QueryString["tagcat"] != null)
+						ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
+					break;
 				case "other":
 					RunOtherTests();
 					break;
@@ -493,6 +498,68 @@ namespace ToSic.Eav
 		//	ShowDataSource(source, "EavSqlStore");
 		//}
 
+		private void ShowRelationshipFilterOptions()
+		{
+			var tags = new []{"C#","Razor", "Responsive", "Video", "Gallery"};
+			var tagIds = new[] {6484, 6483, 6485, 6488, 6487};
+			var tagCats = new[] {"Design", "Technology", "Use Case"};
+			var parentNames = new[] {"2sic", "2sic 2", "mettlers home"};
+			//var parentIds = new[]{}
+			string output = "<ul>";
+
+			for (var i = 0; i <= tags.Length - 1; i++)
+				output += "<li>"
+				          + "<a href='?Test=RelationshipFilter&tag=" + tags[i] + "'>test with " + tags[i] + "</a>"
+						  + " (<a href='?Test=RelationshipFilter&tagid=" + tagIds[i] + "'>id " + tagIds[i] + "</a>)"
+				          + "</li>";
+
+			for(var i= 0; i<= tagCats.Length-1;i++)
+				output += "<li><a href='?Test=RelationshipFilter&tagCat=" + tagCats[i] + "'>tag category with " + tagCats[i] + "</a></li>";
+			for (var i = 0; i <= tagCats.Length - 1; i++)
+				output += "<li><a href='?Test=RelationshipFilter&parent=" + parentNames[i] + "'>parents with " + parentNames[i] + "</a></li>";
+			output += "</ul>";
+
+			litResults.Text = output;	
+		}
+
+		private RelationshipFilter ApplyRelationshipFilter()
+		{
+			var filterPipeline = EntityTypeFilter("Store");
+			var relFilter = DataSource.GetDataSource<RelationshipFilter>(1,1, filterPipeline);
+			relFilter.Relationship = "Tags";
+			if (Request.QueryString["tag"] != null)
+			{
+				relFilter.CompareAttribute = "EntityTitle";
+				relFilter.Filter = Request.QueryString["Tag"];
+			}
+			else if (Request.QueryString["tagcategory"] != null)
+			{
+				relFilter.CompareAttribute = "TagCategory";
+				relFilter.Filter = Request.QueryString["TagCat"];
+			}
+			else
+			{
+				relFilter.CompareAttribute = "EntityId";
+				relFilter.Filter = Request.QueryString["tagid"];
+			}
+			return relFilter;
+		}
+
+		// this was a test for a parent-filter, but I don't think I'll ever need this feature
+		//private RelationshipFilter ApplyRelationshipParentFilter()
+		//{
+		//	var filterPipeline = EntityTypeFilter("Tag");
+		//	//filterPipeline.TypeName = "Store";
+		//	var relFilter = DataSource.GetDataSource<RelationshipFilter>(1,1, filterPipeline);
+		//	// relFilter.Relationship = "Store";
+		//	// relFilter.CompareAttribute = "TagCategory";
+		//	relFilter.ChildOrParent = "parent";
+		//	relFilter.ParentType = "Store";
+		//	relFilter.Filter = Request.QueryString["parent"];
+
+
+		//	return relFilter;
+		//}
 		#region Show Stuff
 
 		public void ShowDataSource(IDataSource source, string title, bool fullEntities = false)
@@ -516,7 +583,7 @@ namespace ToSic.Eav
 			}
 
 			Trace.Write("Filtering" + title, "Done");
-			litResults.Text = output;
+			litResults.Text += output;
 		}
 
 		public string ShowEntity(IEntity entity)

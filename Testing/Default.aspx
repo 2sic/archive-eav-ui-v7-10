@@ -33,6 +33,7 @@
 				<li><a href="?Test=sqldatasourcecomplex">SQL DataSource (complex)</a></li>
 				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with configuration)</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
+				<li><a href="?Test=RelationshipFilter">RelationshipFilter</a></li>
 			</ul>
 			Other tests
 			<ul>
