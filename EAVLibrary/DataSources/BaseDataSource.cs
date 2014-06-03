@@ -65,6 +65,9 @@ namespace ToSic.Eav.DataSources
 		/// <param name="dataSource">DataSource to attach</param>
 		public void Attach(IDataSource dataSource)
 		{
+			// ensure list is blank, otherwise we'll have name conflicts when replacing a source
+			if (In.Count > 0)
+				In.Clear();
 			foreach (var dataStream in dataSource.Out)
 				In.Add(dataStream.Key, dataStream.Value);
 		}

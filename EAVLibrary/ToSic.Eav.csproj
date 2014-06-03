@@ -75,6 +75,7 @@
     <Compile Include="DataSources\DataStream.cs" />
     <Compile Include="DataSources\DataTableDataSource.cs" />
     <Compile Include="DataSources\EntityIdFilter.cs" />
+    <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\PublishingFilter.cs" />
     <Compile Include="DataSources\SqlDataSource.cs" />
     <Compile Include="DataSources\RelationshipFilter.cs" />
