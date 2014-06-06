@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Tokens
 	public abstract class BaseTokenReplace
 	{
 		//private const string ExpressionDefault = "(?:\\[(?:(?<object>[^\\]\\[:]+):(?<property>[^\\]\\[\\|]+))(?:\\|(?:(?<format>[^\\]\\[]+)\\|(?<ifEmpty>[^\\]\\[]+))|\\|(?:(?<format>[^\\|\\]\\[]+)))?\\])|(?<text>\\[[^\\]\\[]+\\])|(?<text>[^\\]\\[]+)";
-		private const string ExpressionDefault = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<ifEmpty>[^\[\}])|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)";
+		private const string ExpressionDefault = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<ifEmpty>[^\[\}]+)|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)";
 
 		private static readonly Regex Tokenizer = new Regex(ExpressionDefault, RegexOptions.Compiled);
 		/// <summary>
