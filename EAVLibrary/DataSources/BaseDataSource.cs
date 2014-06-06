@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
 		public virtual int ZoneId { get; set; }
 
 		public IDictionary<string, IDataStream> In { get; internal set; }
-		public IDictionary<string, IDataStream> Out { get; internal set; }
+		public virtual IDictionary<string, IDataStream> Out { get; internal set; }
 
 		public IDataStream this[string outName]
 		{
@@ -65,6 +65,9 @@ namespace ToSic.Eav.DataSources
 		/// <param name="dataSource">DataSource to attach</param>
 		public void Attach(IDataSource dataSource)
 		{
+			// ensure list is blank, otherwise we'll have name conflicts when replacing a source
+			if (In.Count > 0)
+				In.Clear();
 			foreach (var dataStream in dataSource.Out)
 				In.Add(dataStream.Key, dataStream.Value);
 		}
