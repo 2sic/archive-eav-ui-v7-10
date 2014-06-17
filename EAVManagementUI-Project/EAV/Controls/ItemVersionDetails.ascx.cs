@@ -27,7 +27,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			_ctx = EavContext.Instance(AppId);
+			_ctx = EavContext.Instance(null, AppId);
 			_currentEntity = _ctx.GetEntityModel(EntityId);
 
 			// Set Control Heading Text
