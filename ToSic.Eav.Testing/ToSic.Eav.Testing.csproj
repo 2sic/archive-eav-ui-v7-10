@@ -70,7 +70,7 @@
     <Compile Include="VersioningTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EAVLibrary\ToSic.Eav.csproj">
+    <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
       <Name>ToSic.Eav</Name>
     </ProjectReference>
