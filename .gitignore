@@ -154,4 +154,7 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
-*.dll
+
+# Exclusions for ToSic EAV
+Testing/Bin/ToSic.Eav.dll
+Testing/Bin/ToSic.Eav.pdb
