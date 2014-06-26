@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "EAVLibrary\ToSic.Eav.csproj", "{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "ToSic.Eav\ToSic.Eav.csproj", "{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ManagementUI", "EAVManagementUI-Project\ToSic.Eav.ManagementUI.csproj", "{B0E86C3B-C791-4544-9B81-707F28196680}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ManagementUI", "ToSic.Eav.ManagementUI\ToSic.Eav.ManagementUI.csproj", "{B0E86C3B-C791-4544-9B81-707F28196680}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Testing", "http://localhost:52352", "{7EC6E8EB-084E-4FEC-82CF-0D68BD2F6C0E}"
 	ProjectSection(WebsiteProperties) = preProject
