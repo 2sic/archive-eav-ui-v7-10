@@ -38,14 +38,13 @@ namespace ToSic.Eav.DataSources.Tokens
 	{
 		protected Dictionary<string, IPropertyAccess> PropertySource;
 
-		//protected override string replacedTokenValue(string strObjectName, string strPropertyName, string strFormat)
-		protected override string replacedTokenValue(string strObjectName, string strPropertyName)
+		protected override string replacedTokenValue(string strObjectName, string strPropertyName, string strFormat)
 		{
 			var result = string.Empty;
 			var propertyNotFound = false;
 			if (PropertySource.ContainsKey(strObjectName.ToLower()))
 			{
-				result = PropertySource[strObjectName.ToLower()].GetProperty(strPropertyName, ref propertyNotFound);
+				result = PropertySource[strObjectName.ToLower()].GetProperty(strPropertyName, strFormat, ref propertyNotFound);
 			}
 			return result;
 		}

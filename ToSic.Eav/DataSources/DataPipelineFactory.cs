@@ -35,8 +35,8 @@ namespace ToSic.Eav.DataSources
 			{
 				#region Init Configuration Provider
 				var configurationProvider = new ConfigurationProvider();
-				var cettingsPropertySource = new AssignedEntityAttributePropertyAccess("settings", dataPipelinePart.EntityGuid, metaDataSource);
-				configurationProvider.Sources.Add(cettingsPropertySource.Name, cettingsPropertySource);
+				var settingsPropertySource = new AssignedEntityAttributePropertyAccess("settings", dataPipelinePart.EntityGuid, metaDataSource);
+				configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
 				configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
 
 				// attach all propertyProviders

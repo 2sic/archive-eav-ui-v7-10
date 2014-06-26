@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="ToSic.Eav.Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="Default" %>
 
 <!DOCTYPE html>
 
@@ -35,6 +35,7 @@
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 				<li><a href="?Test=RelationshipFilter">RelationshipFilter</a></li>
 				<li><a href="?Test=AppDS">App Data Source</a></li>
+				<li><a href="?Test=Token">Configuration - Token Replacement</a></li>
 			</ul>
 			Other tests
 			<ul>

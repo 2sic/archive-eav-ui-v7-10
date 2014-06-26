@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Tokens
 	public abstract class BaseTokenReplace
 	{
 		//private const string ExpressionDefault = "(?:\\[(?:(?<object>[^\\]\\[:]+):(?<property>[^\\]\\[\\|]+))(?:\\|(?:(?<format>[^\\]\\[]+)\\|(?<ifEmpty>[^\\]\\[]+))|\\|(?:(?<format>[^\\|\\]\\[]+)))?\\])|(?<text>\\[[^\\]\\[]+\\])|(?<text>[^\\]\\[]+)";
-		private const string ExpressionDefault = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<ifEmpty>[^\[\}]+)|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)";
+		private const string ExpressionDefault = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<format>[^\]\[]*)\|(?:(?<ifEmpty>[^\[\}]+)|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))|\|(?:(?<format>[^\|\]\[]+)))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)";
 
 		private static readonly Regex Tokenizer = new Regex(ExpressionDefault, RegexOptions.Compiled);
 		/// <summary>
@@ -82,10 +82,9 @@ namespace ToSic.Eav.DataSources.Tokens
 					//	strObjectName = ObjectLessToken;
 					//}
 					string strPropertyName = currentMatch.Result("${property}");
-					//string strFormat = currentMatch.Result("${format}");
+					string strFormat = currentMatch.Result("${format}");
 					string strIfEmptyReplacment = currentMatch.Result("${ifEmpty}");
-					//string strConversion = replacedTokenValue(strObjectName, strPropertyName, strFormat);
-					string strConversion = replacedTokenValue(strObjectName, strPropertyName);
+					string strConversion = replacedTokenValue(strObjectName, strPropertyName, strFormat);
 					if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
 					{
 						strConversion = strIfEmptyReplacment;
@@ -100,7 +99,6 @@ namespace ToSic.Eav.DataSources.Tokens
 			return Result.ToString();
 		}
 
-		//protected abstract string replacedTokenValue(string strObjectName, string strPropertyName, string strFormat);
-		protected abstract string replacedTokenValue(string strObjectName, string strPropertyName);
+		protected abstract string replacedTokenValue(string strObjectName, string strPropertyName, string strFormat);
 	}
 }

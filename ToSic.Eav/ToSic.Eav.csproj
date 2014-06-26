@@ -54,7 +54,6 @@
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
@@ -62,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataSources\DataSource.cs" />
-    <Compile Include="DataSources\AssignedEntityAttributePropertyAccess.cs" />
+    <Compile Include="DataSources\Tokens\PropertyAccess\AssignedEntityAttributePropertyAccess.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="DataSources\BaseDataSource.cs" />
     <Compile Include="DataSources\Caches\BaseCache.cs" />
@@ -90,7 +89,7 @@
     <Compile Include="DataSources\IMetaDataSource.cs" />
     <Compile Include="DataSources\Tokens\BaseCustomTokenReplace.cs" />
     <Compile Include="DataSources\Tokens\BaseTokenReplace.cs" />
-    <Compile Include="DataSources\Tokens\IPropertyAccess.cs" />
+    <Compile Include="DataSources\Tokens\PropertyAccess\IPropertyAccess.cs" />
     <Compile Include="DataSources\PassThrough.cs" />
     <Compile Include="DataSources\RootSources\IRootSource.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
