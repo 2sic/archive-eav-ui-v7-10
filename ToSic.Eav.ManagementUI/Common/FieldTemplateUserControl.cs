@@ -58,11 +58,11 @@ namespace ToSic.Eav.ManagementUI
 			base.OnLoad(e);
 
 			// Set EAVField wrapper div and hidden field for Enabled / Disabled state
-			var allowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue");
+			//var allowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue");
 			var addressMask = GetMetaDataValue<string>("AddressMask");
 			var wrapperStartText = "<div class='eav-field dnnFormItem' data-staticname='" + Attribute.StaticName + "' data-enabled='" + Enabled.ToString().ToLower() +
 							   "' data-ismasterrecord='" + MasterRecord.ToString().ToLower() + "' data-fieldtype='" + Attribute.Type + "' data-fieldsubtype='" + GetMetaDataValue<string>("InputType") + "'" +
-							   (allowMultiValue != null ? " data-allowmultivalue='" + allowMultiValue.Value.ToString().ToLower() + "' " : "") +
+							   //(allowMultiValue != null ? " data-allowmultivalue='" + allowMultiValue.Value.ToString().ToLower() + "' " : "") +
 							   (addressMask != null ? " data-addressmask='" + addressMask + "' " : "") + ">";
 			_wrapperStart.Text = wrapperStartText;
 

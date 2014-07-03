@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Web.UI;
 using System.Linq;
 
@@ -17,27 +19,33 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			SetDataSource();
+			//SetDataSource();
 
 			if (!IsPostBack && AllowMultiValue)
 			{
 				hfEntityIds.Visible = true;
-				pnlMultiValues.Visible = true;
-				phAddMultiValue.Visible = true;
 				if(RelatedEntities != null)
 					hfEntityIds.Value = string.Join(",", RelatedEntities.EntityIds);
 			}
 
-			DropDownList1.ToolTip = GetMetaDataValue<string>("Notes");
 			FieldLabel.Text = GetMetaDataValue("Name", Attribute.StaticName);
 
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;
+
+            // Set configuration on hiddenfield
+		    var configurationObject = new
+		    {
+                AllowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue"),
+                Entities = SelectableEntities(),
+                SelectedEntities = RelatedEntities != null ? RelatedEntities.EntityIds : new List<int>()
+		    };
+            hfConfiguration.Attributes.Add("ng-init", "configuration=" + new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(configurationObject) + "");
 		}
 
-		public void SetDataSource()
-		{
-			var dsrc = DataSource.GetInitialDataSource(ZoneId, AppId);
+	    protected IEnumerable SelectableEntities()
+	    {
+	        var dsrc = DataSource.GetInitialDataSource(ZoneId, AppId);
 			IContentType foundType = null;
 			var strEntityType = GetMetaDataValue<string>("EntityType");
 			if (!string.IsNullOrWhiteSpace(strEntityType))
@@ -47,10 +55,10 @@ namespace ToSic.Eav.ManagementUI
 						   where l.Value.Type == foundType || foundType == null
 						   select new { Value = l.Key, Text = l.Value.Title == null || l.Value.Title[DimensionIds] == null || string.IsNullOrWhiteSpace(l.Value.Title[DimensionIds].ToString()) ? "(no Title, " + l.Key + ")" : l.Value.Title[DimensionIds] };
 
-			DropDownList1.DataSource = entities;
-		}
+	        return entities;
+	    }
 
-		protected override void OnPreRender(EventArgs e)
+	    protected override void OnPreRender(EventArgs e)
 		{
 			if (!IsPostBack)
 			{
@@ -63,36 +71,14 @@ namespace ToSic.Eav.ManagementUI
 		{
 			get
 			{
-				if (AllowMultiValue)
-					return string.IsNullOrWhiteSpace(hfEntityIds.Value) ? new int[0] : hfEntityIds.Value.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-
-				return string.IsNullOrEmpty(DropDownList1.SelectedValue) ? new int[0] : new int[1] { int.Parse(DropDownList1.SelectedValue) };
+				return string.IsNullOrWhiteSpace(hfEntityIds.Value) ? new int[0] : hfEntityIds.Value.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
 			}
 		}
 
 		public override Control DataControl
 		{
-			get { return AllowMultiValue ? (Control)DropDownList1 : hfEntityIds; }
+			get { return hfEntityIds; }
 		}
 
-		/// <summary>
-		/// Mark Item as selected
-		/// </summary>
-		protected void DropDownList1_DataBound(object sender, EventArgs e)
-		{
-			DropDownList1.ClearSelection();
-			if (AllowMultiValue || RelatedEntities == null)
-				return;
-
-			foreach (var entityId in RelatedEntities.EntityIds)
-			{
-				var item = DropDownList1.Items.FindByValue(entityId.ToString());
-				if (item != null)
-				{
-					item.Selected = true;
-					break;
-				}
-			}
-		}
 	}
 }

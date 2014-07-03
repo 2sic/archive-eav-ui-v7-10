@@ -1,0 +1,5 @@
+﻿.eav-entityselect-item { border: 1px solid #DDD;width: 200px; }
+.eav-entityselect-item div { padding: 3px 10px 3px 20px;position: relative; }
+.eav-entityselect-item span { display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;padding-right: 25px; }
+.eav-entityselect-item-remove { width: 15px;height: 15px;background: red;display: block;text-indent: -9999px;position: absolute;right: 5px;top: 5px; }
+.eav-entityselect-selector { width: 200px; }

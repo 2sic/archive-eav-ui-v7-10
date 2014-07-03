@@ -9,7 +9,7 @@
 <asp:Panel ID="pnlNavigateBack" runat="server" Visible='<%# IsDialog %>'>
 	<asp:HyperLink ID="hlnkNavigateBack" NavigateUrl='<%# ReturnUrl %>' runat="server" Text="Back" />
 </asp:Panel>
-<asp:Panel runat="server" ID="pnlEditForm" CssClass="eav-form">
+<asp:Panel runat="server" ID="pnlEditForm" CssClass="eav-form" ng-app="2sic-EAV">
 	<asp:PlaceHolder runat="server" ID="phFields" />
 	<div class='eav-field-system eav-field-published dnnFormItem'>
 		<asp:Label ID="FieldLabel" runat="server" Text="Published" />

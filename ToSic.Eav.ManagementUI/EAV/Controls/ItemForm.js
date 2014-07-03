@@ -542,7 +542,7 @@
 
 		$(target).html(message).attr("title", toolTip);
 	},
-	InitEntityMultiSelector: function (wrapper, reinit) {
+	/*InitEntityMultiSelector: function (wrapper, reinit) {
 		var multiValuesWrapper = wrapper.find(".MultiValuesWrapper");
 		var baseDropDown = wrapper.find("select");
 		if (reinit) {
@@ -586,7 +586,7 @@
 		var fieldWrapper = $(hyperlink).closest(".eav-field");
 		$(hyperlink).closest(".MultiValueItem").remove();
 		Eav.SyncSelectedEntities(fieldWrapper);
-	},
+	},*/
 
 	Gps: {
 		_mapsApiInitDone: false,
@@ -811,19 +811,20 @@ Eav.FieldControllerManager = {
 
 	entity: function (objWrapper) {
 		// init Entity Selection
-		if (objWrapper.attr("data-allowmultivalue") == "true")
-			Eav.InitEntityMultiSelector(objWrapper);
+		//if (objWrapper.attr("data-allowmultivalue") == "true")
+		//	Eav.InitEntityMultiSelector(objWrapper);
 
 		var Controller = new Object();
 		var field = objWrapper.find("select");
 		Controller.SetReadOnly = function (readOnlyState) { field.prop("disabled", readOnlyState); objWrapper.find("a").prop("disabled", readOnlyState); };
 		Controller.SetValue = function (value) {
-			if (objWrapper.attr("data-allowmultivalue") == "true") {
+			/*if (objWrapper.attr("data-allowmultivalue") == "true") {
 				alert("Multi-Value SetValue() is untested!");	// must set hidden field and add/init DropDowns for each value
 				objWrapper.find("input[type=hidden][id$='_hfEntityIds']").val(value);
 				Eav.InitEntityMultiSelector(objWrapper, true);
 			} else
-				field.val(value);
+				field.val(value);*/
+		    alert("Set-value is untested!");
 		};
 		Controller.GetValue = function () {
 			if (objWrapper.attr("data-allowmultivalue") == "true")
