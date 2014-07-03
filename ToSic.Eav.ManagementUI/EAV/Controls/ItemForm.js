@@ -828,7 +828,7 @@ Eav.FieldControllerManager = {
 		};
 		Controller.GetValue = function () {
 			if (objWrapper.attr("data-allowmultivalue") == "true")
-				return objWrapper.find("input[type=hidden][id$='_hfEntityIds']").val();
+				return objWrapper.find("input[type=text][id$='_hfEntityIds']").val();
 			else
 				return field.val();
 		};
