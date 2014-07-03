@@ -320,8 +320,9 @@ namespace ToSic.Eav
 
 		public IEnumerator<IEntity> GetEnumerator()
 		{
-			if (_entities == null)
-				_entities = _source == null ? new List<IEntity>() : _source.Out[DataSource.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
+		    if (_entities == null)
+		        //_entities = _source == null ? new List<IEntity>() : _source.Out[DataSource.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
+		        _entities = _source == null ? new List<IEntity>() : EntityIds.Select(l => _source.Out[DataSource.DefaultStreamName].List[l]).ToList();
 
 			return new EntityEnum(_entities);
 		}
