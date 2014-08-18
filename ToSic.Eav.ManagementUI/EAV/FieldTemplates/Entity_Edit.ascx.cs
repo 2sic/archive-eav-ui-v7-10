@@ -38,10 +38,21 @@ namespace ToSic.Eav.ManagementUI
 		    {
                 AllowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue"),
                 Entities = SelectableEntities(),
-                SelectedEntities = RelatedEntities != null ? RelatedEntities.EntityIds : new List<int>()
+                SelectedEntities = RelatedEntities != null ? RelatedEntities.EntityIds : new List<int>(),
+                AttributeSetId = GetContentType(GetMetaDataValue<string>("EntityType")). // ToDo: Need AttributeSetId on IContentType interface
 		    };
             hfConfiguration.Attributes.Add("ng-init", "configuration=" + new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(configurationObject) + "");
+
+            var newDialogUrl = (IsDialog ? "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]" : NewItemUrl).Replace("[AttributeSetId]", AttributeSetId.ToString());
 		}
+
+        private IContentType GetContentType(string contentTypeName)
+        {
+            var strEntityType = GetMetaDataValue<string>("EntityType");
+            if (!string.IsNullOrWhiteSpace(strEntityType))
+                return DataSource.GetCache(ZoneId.Value, AppId).GetContentType(strEntityType);
+            return null;
+        }
 
 	    protected IEnumerable SelectableEntities()
 	    {

@@ -11,7 +11,7 @@
     <input style="display:none;" type="text" runat="server" id="hfConfiguration" ng-value="configuration | json" />
     <input style="display:none;" type="text" runat="server" id="hfEntityIds" ng-value="entityIds()" />
 
-    <div ui-tree="options">
+    <div ui-tree="options" data-empty-place-holder-enabled="false">
         <ol ui-tree-nodes ng-model="configuration.SelectedEntities">
             <li ng-repeat="item in configuration.SelectedEntities" ui-tree-node class="eav-entityselect-item">
                 <div ui-tree-handle ng-init="itemText = (configuration.Entities | filter:{Value: item})[0].Text">
@@ -27,6 +27,13 @@
         <option ng-repeat="item in configuration.Entities" ng-disabled="configuration.SelectedEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
     </select>
 
+    <a open-dialog="EavDialogCreateNewEntity">Create Entity</a>
+
+    <div id="EavDialogCreateNewEntity">
+        Create a new Entity!
+    </div>
+
 </div>
 <Eav:DimensionMenu ID="DimensionMenu1" runat="server" />
 <br />
+
