@@ -33,37 +33,39 @@ namespace ToSic.Eav.ManagementUI
 			if (ShowDataControlOnly)
 				FieldLabel.Visible = false;
 
-            // Set configuration on hiddenfield
-		    var configurationObject = new
+            // Set configuration on attribute
+		    var configuration = new
 		    {
                 AllowMultiValue = GetMetaDataValue<bool?>("AllowMultiValue"),
                 Entities = SelectableEntities(),
                 SelectedEntities = RelatedEntities != null ? RelatedEntities.EntityIds : new List<int>(),
-                AttributeSetId = GetContentType(GetMetaDataValue<string>("EntityType")). // ToDo: Need AttributeSetId on IContentType interface
+                AttributeSetId = ContentType == null ? new int?() : ContentType.AttributeSetId
 		    };
-            hfConfiguration.Attributes.Add("ng-init", "configuration=" + new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(configurationObject) + "");
-
-            var newDialogUrl = (IsDialog ? "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]" : NewItemUrl).Replace("[AttributeSetId]", AttributeSetId.ToString());
+            hfConfiguration.Attributes.Add("ng-init", "configuration=" + new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(configuration));
 		}
 
-        private IContentType GetContentType(string contentTypeName)
-        {
-            var strEntityType = GetMetaDataValue<string>("EntityType");
-            if (!string.IsNullOrWhiteSpace(strEntityType))
-                return DataSource.GetCache(ZoneId.Value, AppId).GetContentType(strEntityType);
-            return null;
-        }
+	    private IContentType ContentType
+	    {
+	        get
+	        {
+	            var strEntityType = GetMetaDataValue<string>("EntityType");
+                if (!string.IsNullOrWhiteSpace(strEntityType))
+                    return DataSource.GetCache(ZoneId.Value, AppId).GetContentType(strEntityType);
+	            return null;
+	        }
+	    }
 
 	    protected IEnumerable SelectableEntities()
 	    {
 	        var dsrc = DataSource.GetInitialDataSource(ZoneId, AppId);
-			IContentType foundType = null;
-			var strEntityType = GetMetaDataValue<string>("EntityType");
-			if (!string.IsNullOrWhiteSpace(strEntityType))
-				foundType = DataSource.GetCache(dsrc.ZoneId, dsrc.AppId).GetContentType(strEntityType);
+            //IContentType foundType = null;
+            //var strEntityType = GetMetaDataValue<string>("EntityType");
+            //if (!string.IsNullOrWhiteSpace(strEntityType))
+            //    foundType = DataSource.GetCache(dsrc.ZoneId, dsrc.AppId).GetContentType(strEntityType);
+	        //var foundType = ContentType;
 
 			var entities = from l in dsrc["Default"].List
-						   where l.Value.Type == foundType || foundType == null
+                           where l.Value.Type == ContentType || ContentType == null
 						   select new { Value = l.Key, Text = l.Value.Title == null || l.Value.Title[DimensionIds] == null || string.IsNullOrWhiteSpace(l.Value.Title[DimensionIds].ToString()) ? "(no Title, " + l.Key + ")" : l.Value.Title[DimensionIds] };
 
 	        return entities;

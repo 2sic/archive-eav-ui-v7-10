@@ -150,6 +150,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
+                    itemFormControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					var formViewMode = System.Web.UI.WebControls.FormViewMode.Insert;
 					if (Mode == ManagementMode.EditItem)
 					{
@@ -157,6 +158,7 @@ namespace ToSic.Eav.ManagementUI
 						formViewMode = System.Web.UI.WebControls.FormViewMode.Edit;
 					}
 					itemFormControl.InitForm(formViewMode);
+			        itemFormControl.PreventRedirect = Request.QueryString["PreventRedirect"] == "true";
 					Controls.Add(itemFormControl);
 					break;
 				case ManagementMode.Items:

@@ -94,6 +94,15 @@ namespace ToSic.Eav.ManagementUI {
         protected global::System.Web.UI.WebControls.RadioButtonList rblPublished;
         
         /// <summary>
+        /// hfLastAction control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfLastAction;
+        
+        /// <summary>
         /// pnlEditDefaultFirstEN control.
         /// </summary>
         /// <remarks>

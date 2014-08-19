@@ -126,6 +126,12 @@
 		$(".eav-field", form).each(function (i, field) {
 			Eav.AttachFieldController($(field), $(form));
 		});
+
+        // Close parent window if last action is set
+		var lastAction = $("input[type=hidden][id$='_hfLastAction']", form).val();
+	    if (lastAction != "" && window.top.EavEditDialogs != null)
+	        window.top.jQuery("#" + window.top.jQuery(window.top.EavEditDialogs[window.top.EavEditDialogs.length - 1]).attr("id")).dialog("close");
+
 	},
 
 	// Attaches a controller to the target (Eav field)

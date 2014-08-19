@@ -27,11 +27,7 @@
         <option ng-repeat="item in configuration.Entities" ng-disabled="configuration.SelectedEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
     </select>
 
-    <a open-dialog="EavDialogCreateNewEntity">Create Entity</a>
-
-    <div id="EavDialogCreateNewEntity">
-        Create a new Entity!
-    </div>
+    <a ng-if="CreateEntityAllowed()" ng-click="OpenNewEntityDialog()">Create Entity</a>
 
 </div>
 <Eav:DimensionMenu ID="DimensionMenu1" runat="server" />

@@ -385,7 +385,9 @@ namespace ToSic.Eav
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
-		/// <summary>
+	    public int AttributeSetId { get; private set; }
+
+	    /// <summary>
 		/// Dictionary with all Attribute Definitions
 		/// </summary>
 		internal IDictionary<int, AttributeDefinition> AttributeDefinitions { get; set; }
@@ -393,11 +395,21 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Initializes a new instance of the ContentType class.
 		/// </summary>
-		public ContentType(string name, string staticName = null)
+		public ContentType(string name, string staticName, int attributeSetId)
 		{
 			Name = name;
 			StaticName = staticName;
+		    AttributeSetId = attributeSetId;
 		}
+
+        /// <summary>
+        /// Overload for in-memory entities
+        /// </summary>
+        /// <param name="name"></param>
+	    public ContentType(string name)
+        {
+            Name = name;
+        }
 	}
 
 	/// <summary>

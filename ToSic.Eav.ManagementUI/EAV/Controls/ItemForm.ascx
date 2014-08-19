@@ -21,14 +21,14 @@
 		</div>
 	</div>
 	<br />
+    <asp:HiddenField runat="server" ID="hfLastAction" />
 </asp:Panel>
 <asp:Panel runat="server" ID="pnlEditDefaultFirstEN" CssClass="eav-message-defaultfirst dnnFormMessage dnnFormInfo" Visible="False">
 </asp:Panel>
-<%--<asp:Panel runat="server" ID="pnlEditDefaultFirstDE" CssClass="eav-message-defaultfirst dnnFormMessage dnnFormInfo" Visible="False">
-    Bitte zuerst in der Standardsprache erfassen.
-</asp:Panel>--%>
+
 <asp:Panel runat="server" ID="pnlActions" Visible='<%# !HideNavigationButtons %>'>
     <asp:LinkButton CssClass="eav-save" ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
 	<asp:LinkButton CssClass="eav-cancel" ID="btnCancel" runat="server" Text="Cancel" CausesValidation="false" OnClick="btnCancel_Click" />
 	<asp:Hyperlink CssClass="eav-history" ID="hlkShowHistory" runat="server" Text="Show History" NavigateUrl='<%# GetHistoryUrl() %>' />
 </asp:Panel>
+

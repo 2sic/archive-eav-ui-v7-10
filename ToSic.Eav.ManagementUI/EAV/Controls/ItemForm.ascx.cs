@@ -60,6 +60,7 @@ namespace ToSic.Eav.ManagementUI
 			set { _addClientScriptAndCss = value; }
 		}
 		public string ItemHistoryUrl { get; set; }
+        public string NewItemUrl { get; set; }
 		public bool IsPublished
 		{
 			get { return rblPublished.SelectedValue == "Published"; }
@@ -205,6 +206,7 @@ namespace ToSic.Eav.ManagementUI
 			pnlEditForm.Attributes["data-defaultculturedimension"] = DefaultCultureDimension.ToString();
 			pnlEditForm.Attributes["data-activeculturedimension"] = DimensionIds.SingleOrDefault().ToString();
 			pnlEditForm.Attributes["data-applicationpath"] = Request.ApplicationPath;
+            pnlEditForm.Attributes["data-newdialogurl"] = (IsDialog ? "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]" : NewItemUrl);
 			// Set default values to ensure valid JSON/JavaScript
 			litJsonEntityId.Text = "0";
 			litJsonEntityModel.Text = "null";
@@ -281,6 +283,8 @@ namespace ToSic.Eav.ManagementUI
 
 			if (Canceled != null)
 				Canceled(this, null);
+
+		    hfLastAction.Value = "Cancelled";
 		}
 
 		public void Save()
@@ -296,6 +300,8 @@ namespace ToSic.Eav.ManagementUI
 				default:
 					throw new NotSupportedException();
 			}
+
+            hfLastAction.Value = "Saved";
 		}
 
 		private void Insert()
