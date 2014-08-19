@@ -171,6 +171,7 @@
     <Compile Include="EavManagementApp2.aspx.designer.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
     </Compile>
+    <Compile Include="EAV\API\EntityPickerController.cs" />
     <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
       <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
