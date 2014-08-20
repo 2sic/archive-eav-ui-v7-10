@@ -20,8 +20,6 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			//SetDataSource();
-
 			if (!IsPostBack && AllowMultiValue)
 			{
 				hfEntityIds.Visible = true;

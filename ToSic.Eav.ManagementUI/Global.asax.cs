@@ -16,7 +16,7 @@ namespace ToSic.Eav.ManagementUI
         {
             RouteTable.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{action}"
+                routeTemplate: "api/EAV/{controller}/{action}"
             );
         }
 

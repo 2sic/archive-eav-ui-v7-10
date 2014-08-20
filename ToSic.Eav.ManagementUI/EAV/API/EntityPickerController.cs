@@ -9,13 +9,8 @@ namespace ToSic.Eav.ManagementUI.API
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        /// <param name="attributeSetId"></param>
-        /// <param name="dimensionId"></param>
-        /// <returns></returns>
         [HttpGet]
-        public IEnumerable<dynamic> GetAvailableEntities(int zoneId, int appId, int? attributeSetId, int? dimensionId)
+        public IEnumerable<dynamic> GetAvailableEntities(int zoneId, int appId, int? attributeSetId = null, int? dimensionId = null)
         {
             var dimensionIds = (dimensionId.HasValue ? dimensionId : 0).Value;
 

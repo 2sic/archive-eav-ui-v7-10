@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
     <title>AttributeSet</title>
-	<script src="../Scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
+	<script src="../../Scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
 </head>
 <body>
     <form id="form1" runat="server">

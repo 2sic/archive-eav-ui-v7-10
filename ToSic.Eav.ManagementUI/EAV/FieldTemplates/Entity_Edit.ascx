@@ -1,7 +1,6 @@
 ﻿<%@ Control Language="C#" Inherits="ToSic.Eav.ManagementUI.Entity_Edit" CodeBehind="Entity_Edit.ascx.cs" AutoEventWireup="True" %>
 <%@ Register Src="../Controls/DimensionMenu.ascx" TagPrefix="Eav" TagName="DimensionMenu" %>
 
-<script type="text/javascript" src="/EAV/FieldTemplates/EavDialogService.js"></script>
 <script type="text/javascript" src="/EAV/FieldTemplates/Entity_Edit.js"></script>
 <link rel="stylesheet" href="/EAV/FieldTemplates/Entity_Edit.css"/>
 
@@ -24,9 +23,9 @@
     </div>
         
     <select class="eav-entityselect-selector" ng-model="selectedEntity" ng-change="AddEntity()" ng-show="configuration.AllowMultiValue || configuration.SelectedEntities.length < 1">
-        <option value="">{{configuration.AllowMultiValue ? '-- add more --' : '-- choose --'}}</option>
+        <option value="">-- choose --</option>
+        <option value="new" ng-if="CreateEntityAllowed()">-- new --</option>
         <option ng-repeat="item in configuration.Entities" ng-disabled="configuration.SelectedEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
-        <option value="new" ng-if="CreateEntityAllowed()">Create new Entity...</option>
     </select>
 
 </div>

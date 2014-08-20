@@ -70,9 +70,13 @@ namespace ToSic.Eav.ManagementUI
 		{
 			parent.Page.Header.Controls.Add(new LiteralControl
 			{
+                // ToDo: Convert to array of JavaScript-Paths and CSS-Paths (relative)
 				Text = "<script src='" + parent.ResolveClientUrl("ItemForm.js") + "' type='text/javascript'></script>" +
 					"<script src='" + parent.ResolveClientUrl("ItemFormEntityModelCreator.js") + "' type='text/javascript'></script>" +
-					"<link rel='stylesheet' href='" + parent.ResolveClientUrl("ItemForm.css") + "'/>"
+					"<link rel='stylesheet' href='" + parent.ResolveClientUrl("ItemForm.css") + "'/>" +
+                    "<script type='text/javascript' src='/EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>" +
+                    "<script type='text/javascript' src='/EAV/AngularServices/EavApiService.js'></script>" +
+                    "<script type='text/javascript' src='/EAV/AngularServices/EavDialogService.js'></script>"
 			});
 		}
 
