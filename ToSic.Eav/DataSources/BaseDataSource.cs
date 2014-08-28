@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace ToSic.Eav.DataSources
 {
@@ -72,6 +73,20 @@ namespace ToSic.Eav.DataSources
 				In.Add(dataStream.Key, dataStream.Value);
 		}
 
+
+        public void Attach(string streamName, IDataSource dataSource)
+        {
+            Attach(streamName, dataSource["Default"]);
+        }
+
+        public void Attach(string streamName, IDataStream dataStream)
+        {
+            if (In.ContainsKey(streamName))
+                In.Remove(streamName);
+
+            In.Add(streamName, dataStream);
+        }
+
 		#region User Interface - not implemented yet
 		//public virtual bool AllowUserEdit
 		//{
@@ -107,5 +122,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		#endregion
-	}
+
+
+    }
 }
