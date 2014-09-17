@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ToSic.Eav.DataSource">
+    <Position X="4.25" Y="8" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AECAAAAAAQAAQAAEABCQAAAAACAAAAEAAAAEACBAAAA=</HashCode>
+      <FileName>DataSources\DataSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.BaseDataSource" Collapsed="true">
+    <Position X="5.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAACAAAACAEASAAEAAQAAIAAAAAAgAAAAAQAACI=</HashCode>
+      <FileName>DataSources\BaseDataSource.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.1" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.SqlSources.EavSqlStore" Collapsed="true">
+    <Position X="4.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAACCAAAABQEAAAAAAAAAAAQAAAAAAAAABARAAAA=</HashCode>
+      <FileName>DataSources\SqlSources\EavSqlStore.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.321" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Caches.BaseCache" Collapsed="true">
+    <Position X="6" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABQgAAAAAQABQIAgCABAAASQgAkABAAAAEAYABA=</HashCode>
+      <FileName>DataSources\Caches\BaseCache.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.986" Collapsed="true" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.Caches.QuickCache" Collapsed="true">
+    <Position X="6" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQgAAAIAAAAAABgGABAAAQAAAAABAAAAEAAAAA=</HashCode>
+      <FileName>DataSources\Caches\QuickCache.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.EntityTypeFilter" Collapsed="true">
+    <Position X="8" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAABBAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\EntityTypeFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.AttributeFilter" Collapsed="true">
+    <Position X="11.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>DataSources\AttributeFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.DataStream" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DataSources\DataStream.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.325" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.ConfigurationProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAABQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\ConfigurationProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.ValueFilter" Collapsed="true">
+    <Position X="13.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAGAQAAAAAAAAAAAAAAAAAAAAAgAACAAAA=</HashCode>
+      <FileName>DataSources\ValueFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ToSic.Eav.DataSources.ValueSort" Collapsed="true">
+    <Position X="9.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACgAEAQAAAAAAAAAQAAACAAAABAAAAACAAAA=</HashCode>
+      <FileName>DataSources\ValueSort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="ToSic.Eav.DataSources.IDataSource">
+    <Position X="8.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAACAAAACAEACAAAAAQAAAAAAAAAgAAAAAQAAAI=</HashCode>
+      <FileName>DataSources\IDataSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataStream">
+    <Position X="12.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DataSources\IDataStream.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IConfigurationProvider" Collapsed="true">
+    <Position X="12.25" Y="2.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\IConfigurationProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ToSic.Eav.DataSources.IDataTarget">
+    <Position X="10.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>DataSources\IDataTarget.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Delegate Name="ToSic.Eav.DataSources.GetListDelegate" Collapsed="true">
+    <Position X="10.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSources\DataStream.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
