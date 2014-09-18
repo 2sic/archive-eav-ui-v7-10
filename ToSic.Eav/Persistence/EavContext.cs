@@ -119,7 +119,12 @@ namespace ToSic.Eav
 			else
 			{
 				if (appId.HasValue)
-					_zoneId = Apps.Where(a => a.AppID == appId.Value).Select(a => a.ZoneID).Single();
+				{
+					var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
+					if (!zoneIdOfApp.HasValue)
+						throw new ArgumentException("AppId " + appId.Value + " doesn't exist.", "appId");
+					_zoneId = zoneIdOfApp.Value;
+				}
 				else
 					_zoneId = DataSource.DefaultZoneId;
 			}
