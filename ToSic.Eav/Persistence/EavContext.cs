@@ -114,6 +114,9 @@ namespace ToSic.Eav
 		/// </summary>
 		public void InitZoneApp(int? zoneId = null, int? appId = null)
 		{
+            if (appId.HasValue && !Apps.Any(a => a.AppID == appId.Value))
+                throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+
 			if (zoneId.HasValue)
 				_zoneId = zoneId.Value;
 			else
@@ -121,8 +124,8 @@ namespace ToSic.Eav
 				if (appId.HasValue)
 				{
 					var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
-					if (!zoneIdOfApp.HasValue)
-						throw new ArgumentException("AppId " + appId.Value + " doesn't exist.", "appId");
+                    //if (!zoneIdOfApp.HasValue)
+                    //    throw new ArgumentException("AppId " + appId.Value + " doesn't exist.", "appId");
 					_zoneId = zoneIdOfApp.Value;
 				}
 				else
