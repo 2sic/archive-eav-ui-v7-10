@@ -31,14 +31,18 @@
 <div ng-app="pipelineDesinger">
 	<div ng-controller="designerController">
 		<div id="pipeline" class="pipelineDesigner">
-			<div id="dataSource{{dataSource.id}}"
+			{{pipeline.dataSources.length}}
+			<div id="dataSource_{{guid}}"
 				class="dataSource w"
 				style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
-				ng-repeat="dataSource in pipeline.dataSources">
-				{{dataSource.title}}
+				ng-repeat="(guid, dataSource) in pipeline.dataSources">
+				<div class="name">{{dataSource.name}}</div>
+				<div class="description">{{dataSource.description}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
 			</div>
 		</div>
+		<pre>{{pipeline | json}}</pre>
+		<button ng-click="savePipeline()">Save Pipeline</button>
 	</div>
 </div>

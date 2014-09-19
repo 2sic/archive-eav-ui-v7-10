@@ -11,9 +11,9 @@
 	<link rel="stylesheet" href="EAV/PipelineDesigner/PipelineDesigner.css">
 </head>
 <body>
-	<form id="form1" runat="server">
-		<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
-	</form>
+	<%--<form id="form1" runat="server">--%>
+	<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
+	<%--</form>--%>
 
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 	<script src="Scripts/jquery-ui-1.10.2.min.js"></script>

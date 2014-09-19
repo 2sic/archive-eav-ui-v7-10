@@ -15,35 +15,29 @@ pipelineDesigner.run(function (pipeline) {
 
 
 	pipeline.set({
-		'dataSources': [
-		  {
-		  	'id': 0,
-		  	'title': 'Published',
-		  	'text': '',
-		  	'top': 200,
-		  	'left': 20,
-		  },
-		  {
-		  	'id': 1,
-		  	'title': 'Private',
-		  	'text': '',
-		  	'top': 20,
-		  	'left': 500,
-		  },
-		  {
-		  	'id': 2,
-		  	'title': 'Pending',
-		  	'text': 'Pending review',
-		  	'top': 340,
-		  	'left': 420,
-		  },
-		],
+		'dataSources': {
+			guid1: {
+				fqn: 'ToSic.ToSexy.DataSources.ModuleDataSource, ToSic.ToSexy',
+				name: 'Module Data Source',
+				description: 'Provides data to the module',
+				top: 27,
+				left: 0
+			},
+			guid2: {
+				fqn: 'ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav',
+				name: 'Cached DB',
+				description: '',
+				top: 287,
+				left: 390
+			}
+		}
+		,
 		'connections': [
-		  { 'from': 'dataSource0', 'to': 'dataSource1', 'label': 'retract' },
-		  { 'from': 'dataSource1', 'to': 'dataSource2', 'label': 'submit for publication' },
-		  { 'from': 'dataSource1', 'to': 'dataSource0', 'label': 'publish' },
-		  { 'from': 'dataSource2', 'to': 'dataSource0', 'label': 'publish' },
-		  { 'from': 'dataSource2', 'to': 'dataSource1', 'label': 'retract' },
+		  { 'from': 'guid1', 'to': 'guid2', 'label': 'Default-Default' },
+		  //{ 'from': 'dataSource1', 'to': 'dataSource2', 'label': 'submit for publication' },
+		  //{ 'from': 'dataSource1', 'to': 'dataSource0', 'label': 'publish' },
+		  //{ 'from': 'dataSource2', 'to': 'dataSource0', 'label': 'publish' },
+		  //{ 'from': 'dataSource2', 'to': 'dataSource1', 'label': 'retract' },
 		],
 	});
 
@@ -61,18 +55,13 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			ConnectionOverlays: [
 			  ['Arrow', { location: 1 }],
 			  ['Label', {
-			  	location: 0.8,
+			  	location: 0.5,
 			  	id: 'label',
 			  	cssClass: 'aLabel connectionLabel'
 			  }]
 			],
 			Container: 'pipeline'
 		});
-
-		var windows = jsPlumb.getSelector('#pipeline .dataSource');
-
-		// initialise draggable elements.
-		//instance.draggable(windows);
 
 		instance.bind('connection', function (info) {
 			info.connection.getOverlay('label').setLabel(info.connection.id);
@@ -114,8 +103,11 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			inline_edit_input_cancel($(this));
 		});
 
+		var dataSourceIdPrefix = 'dataSource_';
+
 		// suspend drawing and initialise.
 		instance.doWhileSuspended(function () {
+			var windows = jsPlumb.getSelector('#pipeline .dataSource');
 
 			// make each '.ep' div a source and give it some parameters to work with.  here we tell it
 			// to use a Continuous anchor and the StateMachine connectors, and also we give it the
@@ -148,12 +140,28 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			// read connections from flowchart and connect them
 			$.each($scope.pipeline.connections, function (index, value) {
 				instance.connect({
-					source: value.from,
-					target: value.to
+					source: dataSourceIdPrefix + value.from,
+					target: dataSourceIdPrefix + value.to
 				}).getOverlay('label').setLabel(value.label);
 			});
 			// make all DataSources draggable
-			instance.draggable($('.dataSource'), { grid: [20, 20] });
+			instance.draggable($('.dataSource'), {
+				grid: [20, 20],
+				// Update $scope on drag
+				drag: function () {
+					var offset = $(this).offset();
+					var entityGuid = $(this).attr('id').substr(dataSourceIdPrefix.length);
+					$scope.$apply(function () {
+						var dataSource = $scope.pipeline.dataSources[entityGuid];
+						dataSource.top = offset.top;
+						dataSource.left = offset.left;
+					});
+				}
+			});
 		});
 	});
+
+	$scope.savePipeline = function () {
+		//alert("save");
+	}
 });
