@@ -15,7 +15,7 @@ pipelineDesigner.run(function (pipeline) {
 
 
 	pipeline.set({
-		'nodes': [
+		'dataSources': [
 		  {
 		  	'id': 0,
 		  	'title': 'Published',
@@ -39,11 +39,11 @@ pipelineDesigner.run(function (pipeline) {
 		  },
 		],
 		'connections': [
-		  { 'from': 'node0', 'to': 'node1', 'label': 'retract' },
-		  { 'from': 'node1', 'to': 'node2', 'label': 'submit for publication' },
-		  { 'from': 'node1', 'to': 'node0', 'label': 'publish' },
-		  { 'from': 'node2', 'to': 'node0', 'label': 'publish' },
-		  { 'from': 'node2', 'to': 'node1', 'label': 'retract' },
+		  { 'from': 'dataSource0', 'to': 'dataSource1', 'label': 'retract' },
+		  { 'from': 'dataSource1', 'to': 'dataSource2', 'label': 'submit for publication' },
+		  { 'from': 'dataSource1', 'to': 'dataSource0', 'label': 'publish' },
+		  { 'from': 'dataSource2', 'to': 'dataSource0', 'label': 'publish' },
+		  { 'from': 'dataSource2', 'to': 'dataSource1', 'label': 'retract' },
 		],
 	});
 
@@ -54,52 +54,26 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 	'use strict';
 	$scope.pipeline = pipeline.get();
 
-
 	jsPlumb.ready(function () {
 		var instance = jsPlumb.getInstance({
-			Endpoint: ['Dot', { radius: 2 }],
-			HoverPaintStyle: { strokeStyle: '#1e8151', lineWidth: 2 },
+			// default drag options
+			DragOptions: { cursor: 'pointer', zIndex: 2000 },
 			ConnectionOverlays: [
-			  [
-				'Arrow', {
-					location: 1,
-					id: 'arrow',
-					length: 14,
-					foldback: 0.8
-				}
-			  ],
-			  [
-				'Label',
-				{
-					label: 'Click to edit',
-					id: 'label',
-					cssClass: 'aLabel connectionLabel',
-					location: 0.62,
-				}
-			  ]
+			  ['Arrow', { location: 1 }],
+			  ['Label', {
+			  	location: 0.8,
+			  	id: 'label',
+			  	cssClass: 'aLabel connectionLabel'
+			  }]
 			],
 			Container: 'pipeline'
 		});
-		//instance.doWhileSuspended(function () {
-		//	instance.connect({ source: 'node0', target: 'node1' });
-		//});
 
-		var windows = jsPlumb.getSelector('#pipeline .node');
+		var windows = jsPlumb.getSelector('#pipeline .dataSource');
 
 		// initialise draggable elements.
-		instance.draggable(windows);
+		//instance.draggable(windows);
 
-		// bind a click listener to each connection; the connection is deleted. you could of course
-		// just do this: jsPlumb.bind('click', jsPlumb.detach), but I wanted to make it clear what was
-		// happening.
-		//instance.bind('click', function(c) {
-		//  instance.detach(c);
-		//});
-
-		// bind a connection listener. note that the parameter passed to this function contains more than
-		// just the new connection - see the documentation for a full list of what is included in 'info'.
-		// this listener sets the connection's internal
-		// id as the label overlay's text.
 		instance.bind('connection', function (info) {
 			info.connection.getOverlay('label').setLabel(info.connection.id);
 		});
@@ -140,6 +114,7 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			inline_edit_input_cancel($(this));
 		});
 
+		// suspend drawing and initialise.
 		instance.doWhileSuspended(function () {
 
 			// make each '.ep' div a source and give it some parameters to work with.  here we tell it
@@ -175,10 +150,10 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 				instance.connect({
 					source: value.from,
 					target: value.to
-				});//.getOverlay('label').setLabel(value.label);
+				}).getOverlay('label').setLabel(value.label);
 			});
-			// make all nodes draggable
-			instance.draggable($('.node'), { grid: [20, 20] });
+			// make all DataSources draggable
+			instance.draggable($('.dataSource'), { grid: [20, 20] });
 		});
 	});
 });

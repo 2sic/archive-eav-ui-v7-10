@@ -30,12 +30,12 @@
 
 <div ng-app="pipelineDesinger">
 	<div ng-controller="designerController">
-		<div id="pipeline" class="demo statemachine-demo">
-			<div id="node{{node.id}}"
-				class="node w"
-				style="top: {{node.top}}px; left: {{node.left}}px"
-				ng-repeat="node in pipeline.nodes">
-				{{node.title}}
+		<div id="pipeline" class="pipelineDesigner">
+			<div id="dataSource{{dataSource.id}}"
+				class="dataSource w"
+				style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
+				ng-repeat="dataSource in pipeline.dataSources">
+				{{dataSource.title}}
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
 			</div>

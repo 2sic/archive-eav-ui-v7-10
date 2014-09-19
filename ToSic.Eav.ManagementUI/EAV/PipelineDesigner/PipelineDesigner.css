@@ -1,4 +1,25 @@
-.flowchart-demo .window {
+.dataSource {
+	background-color: white;
+	border: 1px solid #346789;
+	border-radius: 0.5em;
+	box-shadow: 2px 2px 19px #e0e0e0;
+	color: black;
+	height: 80px;
+	line-height: 80px;
+	padding: 0.5em;
+	position: absolute;
+	transition: box-shadow 0.15s ease-in 0s;
+	width: 150px;
+}
+
+.dataSource, .label {
+	box-shadow: 2px 2px 19px #aaa;
+	cursor: pointer;
+	text-align: center;
+	z-index: 24;
+}
+
+.pipelineDesigner .dataSource {
 	border: 1px solid #346789;
 	box-shadow: 2px 2px 19px #aaa;
 	-o-box-shadow: 2px 2px 19px #aaa;
@@ -18,7 +39,7 @@
 	font-size: 0.9em;
 }
 
-	.flowchart-demo .window:hover {
+	.pipelineDesigner .dataSource:hover {
 		box-shadow: 2px 2px 19px #444;
 		-o-box-shadow: 2px 2px 19px #444;
 		-webkit-box-shadow: 2px 2px 19px #444;
@@ -27,15 +48,15 @@
 		filter: alpha(opacity=60);
 	}
 
-.flowchart-demo .active {
+.pipelineDesigner .active {
 	border: 1px dotted green;
 }
 
-.flowchart-demo .hover {
+.pipelineDesigner .hover {
 	border: 1px dotted red;
 }
 
-#flowchartWindow1 {
+/*#flowchartWindow1 {
 	top: 34em;
 	left: 5em;
 }
@@ -53,31 +74,52 @@
 #flowchartWindow4 {
 	top: 23em;
 	left: 22em;
-}
+}*/
 
-.flowchart-demo ._jsPlumb_connector {
+.pipelineDesigner ._jsPlumb_connector {
 	z-index: 4;
 }
 
-.flowchart-demo ._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
+.pipelineDesigner ._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
 	z-index: 21;
 	cursor: pointer;
 }
 
-.flowchart-demo .aLabel {
+.pipelineDesigner .aLabel {
 	background-color: white;
 	padding: 0.4em;
 	font: 12px sans-serif;
 	color: #444;
-	z-index: 21;
+	z-index: 25;
 	border: 1px dotted gray;
 	opacity: 0.8;
 	filter: alpha(opacity=80);
 	cursor: pointer;
 }
 
-	.flowchart-demo .aLabel._jsPlumb_hover {
+	.pipelineDesigner .aLabel._jsPlumb_hover {
 		background-color: #5C96BC;
 		color: white;
 		border: 1px solid white;
 	}
+
+
+
+.ep {
+	position: absolute;
+	bottom: 37%;
+	right: 5px;
+	width: 1em;
+	height: 1em;
+	background-color: orange;
+	cursor: pointer;
+	box-shadow: 0px 0px 2px black;
+	-webkit-transition: -webkit-box-shadow 0.25s ease-in;
+	-moz-transition: -moz-box-shadow 0.25s ease-in;
+	transition: box-shadow 0.25s ease-in;
+}
+
+	.ep:hover {
+		box-shadow: 0px 0px 6px black;
+	}
+

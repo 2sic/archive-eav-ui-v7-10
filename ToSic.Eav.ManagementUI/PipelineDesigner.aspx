@@ -8,7 +8,7 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Pipeline Designer</title>
-	<link rel="stylesheet" href="EAV/PipelineDesigner/workflowDemo.css">
+	<link rel="stylesheet" href="EAV/PipelineDesigner/PipelineDesigner.css">
 </head>
 <body>
 	<form id="form1" runat="server">
@@ -18,7 +18,6 @@
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 	<script src="Scripts/jquery-ui-1.10.2.min.js"></script>
 	<script src="Scripts/angular.min.js"></script>
-	<%--<script src="EAV/PipelineDesigner/jsPlumb/jquery.jsPlumb-1.4.1-all.js"></script>--%>
 	<script src="EAV/PipelineDesigner/jsPlumb/jquery.jsPlumb-1.6.4.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesigner.js"></script>
 </body>
