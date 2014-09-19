@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="PipelineDesigner.ascx.cs" Inherits="ToSic.Eav.ManagementUI.EAV.PipelineDesigner.PipelineDesigner" %>
-<div class="dnnForm scSettings dnnClear">
+<%--<div class="dnnForm scSettings dnnClear">
 	<h2>Edit DataSource</h2>
 	<div id="main">
 		<div id="render"></div>
@@ -26,4 +26,20 @@
 		pipelineDesigner.webServicesUrl = "/PipelineDesignerServices.asmx";
 		pipelineDesigner.init();
 	});
-</script>
+</script>--%>
+
+<div ng-app="myApp">
+	<div ng-controller="MyController">
+		<div id="workflow" class="demo statemachine-demo">
+			<div id="node{{node.id}}"
+				class="node w"
+				style="top: {{node.top}}px; left: {{node.left}}px"
+				ng-dblclick="open()"
+				ng-repeat="node in flowchart.nodes">
+				{{node.title}}
+     
+				<div class="ep"></div>
+			</div>
+		</div>
+	</div>
+</div>

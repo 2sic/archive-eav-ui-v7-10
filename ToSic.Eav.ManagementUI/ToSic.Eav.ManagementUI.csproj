@@ -61,6 +61,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll</HintPath>
     </Reference>
@@ -124,15 +125,18 @@
     <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
-    <Content Include="EAV\PipelineDesigner\demo-new.css" />
     <Content Include="EAV\PipelineDesigner\flowchartDemo.css" />
+    <Content Include="EAV\PipelineDesigner\jsPlumb\jquery.jsPlumb-1.4.1-all-min.js" />
+    <Content Include="EAV\PipelineDesigner\jsPlumb\jquery.jsPlumb-1.6.4-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
+    <Content Include="EAV\PipelineDesigner\workflowDemo.css" />
     <Content Include="Global.asax" />
+    <Content Include="PipelineDesigner.aspx" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
     <Content Include="Scripts\angular-ui-tree.min.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="packages.config" />
-    <Content Include="EAV\PipelineDesigner\dom.jsPlumb-1.6.4-min.js" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.2.min.js" />
     <Content Include="Scripts\fancybox\blank.gif" />
@@ -160,7 +164,7 @@
     <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.js" />
     <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.pack.js" />
     <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
-    <Content Include="EAV\PipelineDesigner\pipelineDesigner.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesignerSample.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -348,6 +352,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="PipelineDesigner.aspx.cs">
+      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PipelineDesigner.aspx.designer.cs">
+      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.master.cs">

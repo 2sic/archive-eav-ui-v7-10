@@ -1,4 +1,4 @@
-.window {
+.flowchart-demo .window {
 	border: 1px solid #346789;
 	box-shadow: 2px 2px 19px #aaa;
 	-o-box-shadow: 2px 2px 19px #aaa;
@@ -8,85 +8,63 @@
 	border-radius: 0.5em;
 	opacity: 0.8;
 	filter: alpha(opacity=80);
-	/*width: 5em;*/
-	/*height: 9em;
-	line-height: 9em;*/
-	min-width: 170px;
 	text-align: center;
 	z-index: 20;
 	position: absolute;
 	background-color: #eeeeef;
 	color: black;
 	font-family: helvetica;
-	/*padding: 0.5em;*/
-	vert-align: middle;
-	padding-top: 30px;
-	padding-bottom: 30px;
+	padding: 0.5em;
 	font-size: 0.9em;
 }
 
-	.window:hover {
+	.flowchart-demo .window:hover {
 		box-shadow: 2px 2px 19px #444;
 		-o-box-shadow: 2px 2px 19px #444;
 		-webkit-box-shadow: 2px 2px 19px #444;
 		-moz-box-shadow: 2px 2px 19px #444;
-		/*opacity: 0.6;
-		filter: alpha(opacity=60);*/
+		opacity: 0.6;
+		filter: alpha(opacity=60);
 	}
 
-.active {
+.flowchart-demo .active {
 	border: 1px dotted green;
 }
 
-.hover {
+.flowchart-demo .hover {
 	border: 1px dotted red;
 }
 
-#window1 {
+#flowchartWindow1 {
 	top: 34em;
 	left: 5em;
 }
 
-#window2 {
+#flowchartWindow2 {
 	top: 7em;
 	left: 36em;
 }
 
-#window3 {
+#flowchartWindow3 {
 	top: 27em;
 	left: 48em;
 }
 
-#window4 {
+#flowchartWindow4 {
 	top: 23em;
 	left: 22em;
 }
 
-._jsPlumb_connector {
+.flowchart-demo ._jsPlumb_connector {
 	z-index: 4;
 }
 
-._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
+.flowchart-demo ._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
 	z-index: 21;
 	cursor: pointer;
 }
 
-.hl {
-	border: 3px solid red;
-}
-
-#debug {
-	position: absolute;
-	background-color: black;
-	color: red;
-	z-index: 5000;
-}
-
-._jsPlumb_dragging {
-	z-index: 4000;
-}
-
-.aLabel {
+.flowchart-demo .aLabel {
 	background-color: white;
 	padding: 0.4em;
 	font: 12px sans-serif;
@@ -95,23 +73,11 @@
 	border: 1px dotted gray;
 	opacity: 0.8;
 	filter: alpha(opacity=80);
+	cursor: pointer;
 }
 
-
-.DataSourceTitle {
-	font-weight: bold;
-}
-.DataSourceContextMenu {
-	display: none;
-	background-color: #5D85A1;
-    left: -130px;
-    min-height: 100px;
-    position: absolute;
-    top: 0;
-    min-width: 130px;
-	padding-top: 5px;
-	text-align: left;
-}
-.DataSourceContextMenu .Label {
-	font-weight: bold;
-}
+	.flowchart-demo .aLabel._jsPlumb_hover {
+		background-color: #5C96BC;
+		color: white;
+		border: 1px solid white;
+	}
