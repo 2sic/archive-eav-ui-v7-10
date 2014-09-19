@@ -28,16 +28,15 @@
 	});
 </script>--%>
 
-<div ng-app="myApp">
-	<div ng-controller="MyController">
-		<div id="workflow" class="demo statemachine-demo">
+<div ng-app="pipelineDesinger">
+	<div ng-controller="designerController">
+		<div id="pipeline" class="demo statemachine-demo">
 			<div id="node{{node.id}}"
 				class="node w"
 				style="top: {{node.top}}px; left: {{node.left}}px"
-				ng-dblclick="open()"
-				ng-repeat="node in flowchart.nodes">
+				ng-repeat="node in pipeline.nodes">
 				{{node.title}}
-     
+				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
 			</div>
 		</div>

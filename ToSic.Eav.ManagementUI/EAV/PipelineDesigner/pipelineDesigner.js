@@ -1,65 +1,41 @@
-var myModule = angular.module('myApp', []);
+var pipelineDesigner = angular.module('pipelineDesinger', []);
 
-myModule.factory('flowchart', function () {
+pipelineDesigner.factory('pipeline', function () {
 	'use strict';
-	var flowchart = null;
+	var pipeline = null;
 
 	return {
-		get: function () { return flowchart; },
-		set: function (fc) { flowchart = fc; }
+		get: function () { return pipeline; },
+		set: function (fc) { pipeline = fc; }
 	};
 });
 
-myModule.run(function (flowchart) {
+pipelineDesigner.run(function (pipeline) {
 	'use strict';
-	var instance = jsPlumb.getInstance({
-		Endpoint: ['Dot', { radius: 2 }],
-		HoverPaintStyle: { strokeStyle: '#1e8151', lineWidth: 2 },
-		ConnectionOverlays: [
-		  [
-			'Arrow', {
-				location: 1,
-				id: 'arrow',
-				length: 14,
-				foldback: 0.8
-			}
-		  ],
-		  [
-			'Label',
-			{
-				label: 'Click to edit',
-				id: 'label',
-				cssClass: 'aLabel connectionLabel',
-				location: 0.62,
-			}
-		  ]
-		],
-		Container: 'workflow'
-	});
-	flowchart.set({
-		'id': 1,
-		'instance': instance,
+
+
+	pipeline.set({
 		'nodes': [
 		  {
-			'id': 0,
-			'title': 'Published',
-			'text': '',
-			'top': 200,
-			'left': 20,
+		  	'id': 0,
+		  	'title': 'Published',
+		  	'text': '',
+		  	'top': 200,
+		  	'left': 20,
 		  },
 		  {
-			'id': 1,
-			'title': 'Private',
-			'text': '',
-			'top': 20,
-			'left': 500,
+		  	'id': 1,
+		  	'title': 'Private',
+		  	'text': '',
+		  	'top': 20,
+		  	'left': 500,
 		  },
 		  {
-			'id': 2,
-			'title': 'Pending',
-			'text': 'Pending review',
-			'top': 340,
-			'left': 420,
+		  	'id': 2,
+		  	'title': 'Pending',
+		  	'text': 'Pending review',
+		  	'top': 340,
+		  	'left': 420,
 		  },
 		],
 		'connections': [
@@ -70,17 +46,45 @@ myModule.run(function (flowchart) {
 		  { 'from': 'node2', 'to': 'node1', 'label': 'retract' },
 		],
 	});
+
+
 });
 
-myModule.controller('MyController',
-  function ($scope, flowchart) {
+pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 	'use strict';
-	$scope.flowchart = flowchart.get();
-	var instance = $scope.flowchart.instance;
+	$scope.pipeline = pipeline.get();
+
 
 	jsPlumb.ready(function () {
+		var instance = jsPlumb.getInstance({
+			Endpoint: ['Dot', { radius: 2 }],
+			HoverPaintStyle: { strokeStyle: '#1e8151', lineWidth: 2 },
+			ConnectionOverlays: [
+			  [
+				'Arrow', {
+					location: 1,
+					id: 'arrow',
+					length: 14,
+					foldback: 0.8
+				}
+			  ],
+			  [
+				'Label',
+				{
+					label: 'Click to edit',
+					id: 'label',
+					cssClass: 'aLabel connectionLabel',
+					location: 0.62,
+				}
+			  ]
+			],
+			Container: 'pipeline'
+		});
+		//instance.doWhileSuspended(function () {
+		//	instance.connect({ source: 'node0', target: 'node1' });
+		//});
 
-		var windows = jsPlumb.getSelector('#workflow .node');
+		var windows = jsPlumb.getSelector('#pipeline .node');
 
 		// initialise draggable elements.
 		instance.draggable(windows);
@@ -147,7 +151,7 @@ myModule.controller('MyController',
 			instance.makeSource(windows, {
 				filter: '.ep',        // only supported by jquery
 				anchor: 'Continuous',
-				connector: ['Flowchart', { curviness: 30 }],
+				connector: ['StateMachine', { curviness: 30 }],
 				connectorStyle: {
 					strokeStyle: '#5c96bc',
 					lineWidth: 2,
@@ -167,15 +171,14 @@ myModule.controller('MyController',
 			});
 
 			// read connections from flowchart and connect them
-			$.each($scope.flowchart.connections, function (index, value) {
+			$.each($scope.pipeline.connections, function (index, value) {
 				instance.connect({
 					source: value.from,
 					target: value.to
-				}).getOverlay('label').setLabel(value.label);
+				});//.getOverlay('label').setLabel(value.label);
 			});
 			// make all nodes draggable
 			instance.draggable($('.node'), { grid: [20, 20] });
 		});
 	});
-  }
-);
+});
