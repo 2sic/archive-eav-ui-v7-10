@@ -15,7 +15,7 @@ pipelineDesigner.run(function (pipeline) {
 
 
 	pipeline.set({
-		'dataSources': {
+		dataSources: {
 			guid1: {
 				fqn: 'ToSic.ToSexy.DataSources.ModuleDataSource, ToSic.ToSexy',
 				name: 'Module Data Source',
@@ -30,11 +30,10 @@ pipelineDesigner.run(function (pipeline) {
 				top: 287,
 				left: 390
 			}
-		}
-		,
-		'connections': [
-		  { 'from': 'guid1', 'out': 'DefaultOut', 'to': 'guid2', 'in': 'DefaultIn' },
-		  { 'from': 'guid2', 'out': 'DefaultOut', 'to': 'guid1', 'in': 'DefaultIn' },
+		},
+		connections: [
+		  { from: 'guid1', out: 'DefaultOut', to: 'guid2', in: 'DefaultIn' },
+		  { from: 'guid2', out: 'DefaultOut', to: 'guid1', in: 'DefaultIn' },
 		  //{ 'from': 'dataSource1', 'to': 'dataSource2', 'label': 'submit for publication' },
 		  //{ 'from': 'dataSource1', 'to': 'dataSource0', 'label': 'publish' },
 		  //{ 'from': 'dataSource2', 'to': 'dataSource0', 'label': 'publish' },
@@ -53,12 +52,13 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 
 
 	jsPlumb.ready(function () {
+
 		var instance = jsPlumb.getInstance({
 			Anchor: 'Continuous',
 			DragOptions: { cursor: 'pointer', zIndex: 2000, hoverClass: 'dragHover' },	// default drag options
 			Connector: ['StateMachine', { curviness: 30 }],
-			ConnectionOverlays: [['Arrow', { location: 1 }]],
-			Endpoint: ['Dot', { radius: 5 }],
+			ConnectionOverlays: [['Arrow', { location: 0.7 }]],
+			Endpoint: ['Dot', { radius: 8 }],
 			EndpointOverlays: [
 				['Label', {
 					//location: 0.5,
@@ -75,6 +75,8 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			},
 			Container: 'pipeline'
 		});
+
+		$scope.jsPlumbInstance = instance;
 
 		//instance.bind('connection', function (info) {
 		//	info.connection.getOverlay('label').setLabel(info.connection.id);
@@ -141,14 +143,16 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 				grid: [20, 20],
 				drag: $scope.dataSourceDrag
 			});
+
 		});
 	});
 
+	// Update DataSoruce Position on Drag
 	$scope.dataSourceDrag = function () {
-		var offset = $(this).offset();
-		var entityGuid = $(this).attr('id').substr($scope.dataSourceIdPrefix.length);
+		var $this = $(this);
+		var offset = $this.offset();
+		var dataSource = $this.scope().dataSource;
 		$scope.$apply(function () {
-			var dataSource = $scope.pipeline.dataSources[entityGuid];
 			dataSource.top = Math.round(offset.top);
 			dataSource.left = Math.round(offset.left);
 		});
@@ -156,5 +160,19 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 
 	$scope.savePipeline = function () {
 		//alert("save");
+	}
+
+	$scope.showEndpointOverlays = true;
+	$scope.toggleEndpointOverlays = function () {
+		$scope.showEndpointOverlays = !$scope.showEndpointOverlays;
+
+		angular.forEach($scope.jsPlumbInstance.getAllConnections(), function (connection) {
+			angular.forEach(connection.endpoints, function (endpoint) {
+				if ($scope.showEndpointOverlays)
+					endpoint.showOverlays();
+				else
+					endpoint.hideOverlays();
+			});
+		});
 	}
 });

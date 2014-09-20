@@ -34,7 +34,7 @@
 			{{pipeline.dataSources.length}}
 			<div id="dataSource_{{guid}}"
 				class="dataSource"
-				style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
+				ng-attr-style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
 				ng-repeat="(guid, dataSource) in pipeline.dataSources">
 				<div class="name">{{dataSource.name}}</div>
 				<div class="description">{{dataSource.description}}</div>
@@ -44,5 +44,6 @@
 		</div>
 		<pre>{{pipeline | json}}</pre>
 		<button ng-click="savePipeline()">Save Pipeline</button>
+		<button ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
 	</div>
 </div>
