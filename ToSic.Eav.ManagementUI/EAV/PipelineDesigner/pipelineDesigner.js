@@ -10,27 +10,39 @@ pipelineDesigner.factory('pipeline', function () {
 	};
 });
 
+
+
+pipelineDesigner.directive('myCustomer', function () {
+	return {
+		template: 'Sample Template'
+	};
+});
+
+
 pipelineDesigner.run(function (pipeline) {
 	'use strict';
 
 
 	pipeline.set({
-		dataSources: {
-			guid1: {
+		dataSources: [
+			{
+				guid: 'guid1',
 				fqn: 'ToSic.ToSexy.DataSources.ModuleDataSource, ToSic.ToSexy',
 				name: 'Module Data Source',
 				description: 'Provides data to the module',
 				top: 47,
 				left: 700
 			},
-			guid2: {
+			{
+				guid: 'guid2',
 				fqn: 'ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav',
 				name: 'Cached DB',
 				description: '',
 				top: 287,
 				left: 390
 			}
-		},
+		],
+
 		connections: [
 		  { from: 'guid1', out: 'DefaultOut', to: 'guid2', in: 'DefaultIn' },
 		  { from: 'guid2', out: 'DefaultOut', to: 'guid1', in: 'DefaultIn' },
@@ -59,13 +71,11 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			Endpoint: ['Dot', { radius: 8 }],
 			EndpointOverlays: [
 				['Label', {
-					//location: 0.5,
 					id: 'endpointLabel',
 					label: 'Default',
 					cssClass: 'endpointLabel',
 					events: {
 						dblclick: function (labelOverlay, originalEvent) {
-							originalEvent.preventDefault();
 							var newLabel = prompt("Rename Stream", labelOverlay.label);
 							if (newLabel)
 								labelOverlay.setLabel(newLabel);
@@ -87,14 +97,14 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		// suspend drawing and initialise
 		instance.doWhileSuspended(function () {
 			var dataSources = jsPlumb.getSelector('#pipeline .dataSource');
+			$scope.dataSourcesCount = dataSources.length;
 
-			// make each '.ep' div a source
-			instance.makeSource(dataSources, { filter: '.ep', });
+			$scope.makeSource(dataSources);
 
 			// initialise all DataSource elements as connection targets
-			instance.makeTarget(dataSources);
+			$scope.makeTarget(dataSources);
 
-			// read connections from Pipeline and connect them
+			// read connections from Pipeline and connect DataSources
 			$.each($scope.pipeline.connections, function (index, value) {
 				var connection = instance.connect({
 					source: $scope.dataSourceIdPrefix + value.from,
@@ -103,13 +113,36 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 				connection.endpoints[0].getOverlay('endpointLabel').setLabel(value.out);
 				connection.endpoints[1].getOverlay('endpointLabel').setLabel(value.in);
 			});
-			// make all DataSources draggable
-			instance.draggable($('.dataSource'), {
-				grid: [20, 20],
-				drag: $scope.dataSourceDrag
-			});
 		});
 	});
+
+	$scope.makeSource = function (dataSources) {
+		if (typeof $scope.jsPlumbInstance == "undefined") return; // prevents duplicate makeSource() on first initialization
+		$scope.jsPlumbInstance.makeSource(dataSources, { filter: '.ep', });
+
+		// make DataSources draggable
+		$scope.jsPlumbInstance.draggable(dataSources, {
+			grid: [20, 20],
+			drag: $scope.dataSourceDrag
+		});
+	}
+
+	$scope.makeTarget = function (dataSources) {
+		if (typeof $scope.jsPlumbInstance == "undefined") return; // prevents duplicate makeSource() on first initialization
+		
+		$scope.jsPlumbInstance.makeTarget(dataSources);
+	}
+
+	$scope.editName = function (dataSource) {
+		var newName = prompt("Rename DataSource", dataSource.name);
+		if (newName != undefined)
+			dataSource.name = newName;
+	}
+	$scope.editDescription = function (dataSource) {
+		var newDescription = prompt("Edit Description", dataSource.description);
+		if (newDescription != undefined)
+			dataSource.description = newDescription;
+	}
 
 
 	// Update DataSoruce Position on Drag
@@ -138,6 +171,7 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		});
 	}
 
+
 	// Sync UI-Connections to Pipeline-Object
 	$scope.syncConnections = function () {
 		var connectionInfos = [];
@@ -153,12 +187,38 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		$scope.pipeline.connections = connectionInfos;
 	}
 
+	// Add new DataSource
+	$scope.addDataSource = function (fqn) {
+		$scope.dataSourcesCount++;
+		$scope.pipeline.dataSources.push({ fqn: fqn, guid: 'unsaved' + $scope.dataSourcesCount });
+
+	}
+	// ensure new DataSources are jsPlumb Sources when DOM is ready
+	$scope.$on('ngRepeatFinished', function (ngRepeatFinishedEvent) {
+		$scope.makeSource($(".dataSource:last"));
+		$scope.makeTarget($(".dataSource:last"));
+	});
+
 
 	// Save Pipeline
 	$scope.savePipeline = function () {
-
 		$scope.syncConnections();
 
 		console.log("save...");
+	}
+});
+
+
+// Rise event ngRepeatFinished when ng-repeat has finished
+// Source: http://stackoverflow.com/questions/15207788/calling-a-function-when-ng-repeat-has-finished
+pipelineDesigner.directive('onFinishRender', function () {
+	return {
+		restrict: 'A',
+		link: function (scope, element, attr) {
+			if (scope.$last === true) {
+				//scope.$evalAsync(attr.onFinishRender);
+				scope.$emit('ngRepeatFinished');
+			}
+		}
 	}
 });

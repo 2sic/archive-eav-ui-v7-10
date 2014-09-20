@@ -31,19 +31,20 @@
 <div ng-app="pipelineDesinger">
 	<div ng-controller="designerController">
 		<div id="pipeline" class="pipelineDesigner">
-			{{pipeline.dataSources.length}}
-			<div id="dataSource_{{guid}}"
+			<div id="dataSource_{{dataSource.guid}}"
 				class="dataSource"
+				on-finish-render
 				ng-attr-style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
-				ng-repeat="(guid, dataSource) in pipeline.dataSources">
-				<div class="name">{{dataSource.name}}</div>
-				<div class="description">{{dataSource.description}}</div>
+				ng-repeat="dataSource in pipeline.dataSources">
+				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.name || '(unnamed)'}}</div>
+				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.description || '(no description)'}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
 			</div>
 		</div>
-		<pre>{{pipeline | json}}</pre>
 		<button ng-click="savePipeline()">Save Pipeline</button>
 		<button ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
+		<button ng-click="addDataSource('ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav')">Add DataSource</button>
+		<pre>{{pipeline | json}}</pre>
 	</div>
 </div>
