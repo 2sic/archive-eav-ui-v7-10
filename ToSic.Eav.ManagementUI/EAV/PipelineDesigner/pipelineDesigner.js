@@ -129,7 +129,7 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 
 	$scope.makeTarget = function (dataSources) {
 		if (typeof $scope.jsPlumbInstance == "undefined") return; // prevents duplicate makeSource() on first initialization
-		
+
 		$scope.jsPlumbInstance.makeTarget(dataSources);
 	}
 
@@ -193,11 +193,19 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		$scope.pipeline.dataSources.push({ fqn: fqn, guid: 'unsaved' + $scope.dataSourcesCount });
 
 	}
-	// ensure new DataSources are jsPlumb Sources when DOM is ready
-	$scope.$on('ngRepeatFinished', function (ngRepeatFinishedEvent) {
+	// Ensure new DataSources are jsPlumb-Sources when DOM is ready
+	$scope.$on('ngRepeatFinished', function () {
 		$scope.makeSource($(".dataSource:last"));
 		$scope.makeTarget($(".dataSource:last"));
 	});
+
+
+	// Delete DataSource
+	$scope.remove = function (array, index) {
+		var element = $('#' + $scope.dataSourceIdPrefix + array[index].guid);
+		$scope.jsPlumbInstance.detachAllConnections(element);
+		array.splice(index, 1);
+	}
 
 
 	// Save Pipeline
@@ -211,12 +219,11 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 
 // Rise event ngRepeatFinished when ng-repeat has finished
 // Source: http://stackoverflow.com/questions/15207788/calling-a-function-when-ng-repeat-has-finished
-pipelineDesigner.directive('onFinishRender', function () {
+pipelineDesigner.directive('enablerenderfinishedevent', function () {
 	return {
 		restrict: 'A',
-		link: function (scope, element, attr) {
+		link: function (scope) {
 			if (scope.$last === true) {
-				//scope.$evalAsync(attr.onFinishRender);
 				scope.$emit('ngRepeatFinished');
 			}
 		}

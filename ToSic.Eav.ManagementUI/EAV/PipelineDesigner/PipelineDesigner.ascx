@@ -33,13 +33,14 @@
 		<div id="pipeline" class="pipelineDesigner">
 			<div id="dataSource_{{dataSource.guid}}"
 				class="dataSource"
-				on-finish-render
+				enablerenderfinishedevent
 				ng-attr-style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
 				ng-repeat="dataSource in pipeline.dataSources">
 				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.name || '(unnamed)'}}</div>
 				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.description || '(no description)'}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
+				<div class="delete" ng-click="remove(pipeline.dataSources, $index)">remove</div>
 			</div>
 		</div>
 		<button ng-click="savePipeline()">Save Pipeline</button>
