@@ -47,15 +47,13 @@ pipelineDesigner.run(function (pipeline) {
 pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 	'use strict';
 	$scope.pipeline = pipeline.get();
-
 	$scope.dataSourceIdPrefix = 'dataSource_';
 
-
 	jsPlumb.ready(function () {
-
+		// init new jsPlumb Instance
 		var instance = jsPlumb.getInstance({
 			Anchor: 'Continuous',
-			DragOptions: { cursor: 'pointer', zIndex: 2000, hoverClass: 'dragHover' },	// default drag options
+			DragOptions: { cursor: 'pointer', zIndex: 2000, hoverClass: 'dragHover' },
 			Connector: ['StateMachine', { curviness: 30 }],
 			ConnectionOverlays: [['Arrow', { location: 0.7 }]],
 			Endpoint: ['Dot', { radius: 8 }],
@@ -64,7 +62,15 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 					//location: 0.5,
 					id: 'endpointLabel',
 					label: 'Default',
-					cssClass: 'endpointLabel'
+					cssClass: 'endpointLabel',
+					events: {
+						dblclick: function (labelOverlay, originalEvent) {
+							originalEvent.preventDefault();
+							var newLabel = prompt("Rename Stream", labelOverlay.label);
+							if (newLabel)
+								labelOverlay.setLabel(newLabel);
+						}
+					}
 				}]
 			],
 			PaintStyle: {
@@ -75,51 +81,10 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			},
 			Container: 'pipeline'
 		});
-
 		$scope.jsPlumbInstance = instance;
 
-		//instance.bind('connection', function (info) {
-		//	info.connection.getOverlay('label').setLabel(info.connection.id);
-		//});
 
-		// Inline Editing Input
-		//function inline_edit_input(object) {
-		//	var label = object;
-		//	var value = label.text();
-		//	label.empty();
-		//	label.append('<input type="text" value="' + value + '" data-value-orig="' + value + '" />')
-		//	  .append('<div class="actions"><button class="btn btn-xs btn-default">Abbrechen</button><button class="btn btn-xs btn-primary">Speichern</button></div>');
-		//}
-
-		//function inline_edit_input_save(object) {
-		//	var label = object.parent().parent();
-		//	var value = label.find('input').val();
-		//	label.empty();
-		//	label.append(value);
-		//}
-
-		//function inline_edit_input_cancel(object) {
-		//	var label = object.parent().parent();
-		//	var value = label.find('input').attr('data-value-orig');
-		//	label.empty();
-		//	label.append(value);
-		//}
-
-		//// Connection Label Inline Editing
-		//$(document).on("dblclick", ".connectionLabel", function (event) {
-		//	inline_edit_input($(this));
-		//});
-		//// Save
-		//$(document).on("click", ".connectionLabel .btn-primary", function (event) {
-		//	inline_edit_input_save($(this));
-		//});
-		//// Cancel
-		//$(document).on("click", ".connectionLabel .btn-default", function (event) {
-		//	inline_edit_input_cancel($(this));
-		//});
-
-
-		// suspend drawing and initialise.
+		// suspend drawing and initialise
 		instance.doWhileSuspended(function () {
 			var dataSources = jsPlumb.getSelector('#pipeline .dataSource');
 
@@ -143,9 +108,9 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 				grid: [20, 20],
 				drag: $scope.dataSourceDrag
 			});
-
 		});
 	});
+
 
 	// Update DataSoruce Position on Drag
 	$scope.dataSourceDrag = function () {
@@ -158,10 +123,7 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		});
 	}
 
-	$scope.savePipeline = function () {
-		//alert("save");
-	}
-
+	// Show/Hide Endpoint Overlays
 	$scope.showEndpointOverlays = true;
 	$scope.toggleEndpointOverlays = function () {
 		$scope.showEndpointOverlays = !$scope.showEndpointOverlays;
@@ -174,5 +136,29 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 					endpoint.hideOverlays();
 			});
 		});
+	}
+
+	// Sync UI-Connections to Pipeline-Object
+	$scope.syncConnections = function () {
+		var connectionInfos = [];
+		angular.forEach($scope.jsPlumbInstance.getAllConnections(), function (connection) {
+			connectionInfos.push({
+				from: connection.sourceId.substr($scope.dataSourceIdPrefix.length),
+				out: connection.endpoints[0].getOverlay('endpointLabel').label,
+				to: connection.targetId.substr($scope.dataSourceIdPrefix.length),
+				in: connection.endpoints[1].getOverlay('endpointLabel').label
+			});
+		});
+
+		$scope.pipeline.connections = connectionInfos;
+	}
+
+
+	// Save Pipeline
+	$scope.savePipeline = function () {
+
+		$scope.syncConnections();
+
+		console.log("save...");
 	}
 });
