@@ -133,7 +133,6 @@
     <Content Include="EAV\PipelineDesigner\jsPlumb\jquery.jsPlumb-1.6.4.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
-    <Content Include="EAV\PipelineDesigner\workflowDemo.css" />
     <Content Include="Global.asax" />
     <Content Include="PipelineDesigner.aspx" />
     <Content Include="Scripts\angular-ui-tree.min.css" />

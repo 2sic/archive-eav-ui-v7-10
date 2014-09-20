@@ -33,7 +33,7 @@
 		<div id="pipeline" class="pipelineDesigner">
 			{{pipeline.dataSources.length}}
 			<div id="dataSource_{{guid}}"
-				class="dataSource w"
+				class="dataSource"
 				style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
 				ng-repeat="(guid, dataSource) in pipeline.dataSources">
 				<div class="name">{{dataSource.name}}</div>
