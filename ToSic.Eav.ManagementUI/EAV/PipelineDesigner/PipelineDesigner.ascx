@@ -38,14 +38,16 @@
 				ng-repeat="dataSource in pipeline.dataSources">
 				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.name || '(unnamed)'}}</div>
 				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.description || '(no description)'}}</div>
+				<div class="typename" ng-attr-title="{{dataSource.typeName}}">Type: {{dataSource.typeName | typename: 'class'}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
-				<div class="delete" ng-click="remove(pipeline.dataSources, $index)">remove</div>
+				<div class="delete" ng-click="remove(pipeline.dataSources, $index)"></div>
 			</div>
 		</div>
 		<button ng-click="savePipeline()">Save Pipeline</button>
 		<button ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
 		<button ng-click="addDataSource('ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav')">Add DataSource</button>
+		<button ng-click="repaint()">Repaint Connections</button>
 		<pre>{{pipeline | json}}</pre>
 	</div>
 </div>

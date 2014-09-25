@@ -1,7 +1,7 @@
 .dataSource {
-	height: 80px;
+	min-height: 80px;
 	transition: box-shadow 0.15s ease-in 0s;
-	width: 150px;
+	min-width: 170px;
 	border: 1px solid #346789;
 	box-shadow: 2px 2px 19px #aaa;
 	-o-box-shadow: 2px 2px 19px #aaa;
@@ -38,14 +38,33 @@
 		font-size: 0.8em;
 	}
 
+	.dataSource .typename {
+		font-size: 0.8em;
+		display: none;
+	}
+
+	.dataSource .delete {
+		display: none;
+		position: absolute;
+		top: 0;
+		right: 0;
+		background-image: url('assets/Delete.png');
+		width: 16px;
+		height: 16px;
+	}
+
+	.dataSource:hover .delete, .dataSource:hover .typename {
+		display: block;
+	}
 
 
-.pipelineDesigner ._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
+
+._jsPlumb_endpoint, .endpointTargetLabel, .endpointSourceLabel {
 	z-index: 21;
 	cursor: pointer;
 }
 
-.pipelineDesigner .endpointLabel {
+.endpointLabel {
 	background-color: white;
 	padding: 0.4em;
 	font: 12px sans-serif;
@@ -57,7 +76,7 @@
 	cursor: pointer;
 }
 
-	.pipelineDesigner .endpointLabel._jsPlumb_hover {
+	.endpointLabel._jsPlumb_hover {
 		background-color: #5C96BC;
 		color: white;
 		border: 1px solid white;

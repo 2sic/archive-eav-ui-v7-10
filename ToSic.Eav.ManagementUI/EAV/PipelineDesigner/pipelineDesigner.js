@@ -1,4 +1,4 @@
-var pipelineDesigner = angular.module('pipelineDesinger', []);
+var pipelineDesigner = angular.module('pipelineDesinger', ['pipelineDesinger.filters']);
 
 pipelineDesigner.factory('pipeline', function () {
 	'use strict';
@@ -27,7 +27,7 @@ pipelineDesigner.run(function (pipeline) {
 		dataSources: [
 			{
 				guid: 'guid1',
-				fqn: 'ToSic.ToSexy.DataSources.ModuleDataSource, ToSic.ToSexy',
+				typeName: 'ToSic.ToSexy.DataSources.ModuleDataSource, ToSic.ToSexy',
 				name: 'Module Data Source',
 				description: 'Provides data to the module',
 				top: 47,
@@ -35,7 +35,7 @@ pipelineDesigner.run(function (pipeline) {
 			},
 			{
 				guid: 'guid2',
-				fqn: 'ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav',
+				typeName: 'ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav',
 				name: 'Cached DB',
 				description: '',
 				top: 287,
@@ -144,7 +144,6 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 			dataSource.description = newDescription;
 	}
 
-
 	// Update DataSoruce Position on Drag
 	$scope.dataSourceDrag = function () {
 		var $this = $(this);
@@ -188,12 +187,12 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 	}
 
 	// Add new DataSource
-	$scope.addDataSource = function (fqn) {
+	$scope.addDataSource = function (typeName) {
 		$scope.dataSourcesCount++;
-		$scope.pipeline.dataSources.push({ fqn: fqn, guid: 'unsaved' + $scope.dataSourcesCount });
+		$scope.pipeline.dataSources.push({ typeName: typeName, guid: 'unsaved' + $scope.dataSourcesCount });
 
 	}
-	// Ensure new DataSources are jsPlumb-Sources when DOM is ready
+	// Ensure new DataSources are jsPlumb-Sources/Targets when DOM is ready
 	$scope.$on('ngRepeatFinished', function () {
 		$scope.makeSource($(".dataSource:last"));
 		$scope.makeTarget($(".dataSource:last"));
@@ -202,7 +201,9 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 
 	// Delete DataSource
 	$scope.remove = function (array, index) {
-		var element = $('#' + $scope.dataSourceIdPrefix + array[index].guid);
+		var dataSource = array[index];
+		if (!confirm('Delete DataSource "' + (dataSource.name || '(unnamed)') + '"?')) return;
+		var element = $('#' + $scope.dataSourceIdPrefix + dataSource.guid);
 		$scope.jsPlumbInstance.detachAllConnections(element);
 		array.splice(index, 1);
 	}
@@ -213,6 +214,11 @@ pipelineDesigner.controller('designerController', function ($scope, pipeline) {
 		$scope.syncConnections();
 
 		console.log("save...");
+	}
+
+	// Repaint jsPlumb
+	$scope.repaint = function() {
+		$scope.jsPlumbInstance.repaintEverything();
 	}
 });
 
@@ -228,4 +234,24 @@ pipelineDesigner.directive('enablerenderfinishedevent', function () {
 			}
 		}
 	}
+});
+
+// Filters for "ClassName, AssemblyName"
+angular.module('pipelineDesinger.filters', []).filter('typename', function () {
+	return function (input, format) {
+		var globalParts = input.match(/[^,\s]+/g);
+
+		switch (format) {
+			case 'classfqn':
+				if (globalParts)
+					return globalParts[0];
+			case 'class':
+				if (globalParts) {
+					var classfqn = globalParts[0].match(/[^\.]+/g);
+					return classfqn[classfqn.length - 1];
+				}
+		}
+
+		return input;
+	};
 });
