@@ -1,5 +1,8 @@
-var pipelineDesigner = angular.module('pipelineDesinger', ['pipelineDesinger.filters']);
+var pipelineDesigner = angular.module('pipelineDesinger', ['pipelineDesinger.filters', 'ngResource']);
 
+pipelineDesigner.config(['$locationProvider', function ($locationProvider) {
+	$locationProvider.html5Mode(true);
+}]);
 
 // Rise event ngRepeatFinished when ng-repeat has finished
 // Source: http://stackoverflow.com/questions/15207788/calling-a-function-when-ng-repeat-has-finished

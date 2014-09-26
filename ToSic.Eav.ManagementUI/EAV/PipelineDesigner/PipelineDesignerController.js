@@ -1,6 +1,6 @@
-pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipeline', function ($scope, pipeline) {
+pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFactory', function ($scope, pipelineFactory) {
 	'use strict';
-	$scope.pipeline = pipeline.get();
+	$scope.pipeline = pipelineFactory.getPipeline();
 	$scope.dataSourceIdPrefix = 'dataSource_';
 
 	jsPlumb.ready(function () {

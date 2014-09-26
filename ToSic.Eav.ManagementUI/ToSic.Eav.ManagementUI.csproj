@@ -135,8 +135,11 @@
     <Content Include="EAV\PipelineDesigner\services\PipelineService.js" />
     <Content Include="Global.asax" />
     <Content Include="PipelineDesigner.aspx" />
+    <Content Include="Scripts\angular-resource.js" />
+    <Content Include="Scripts\angular-resource.min.js" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
     <Content Include="Scripts\angular-ui-tree.min.js" />
+    <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
@@ -174,6 +177,10 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\jquery.min.map" />
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
+    <Content Include="Scripts\angular-resource.min.js.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">

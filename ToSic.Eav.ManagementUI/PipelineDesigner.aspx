@@ -18,6 +18,7 @@
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 	<script src="Scripts/jquery-ui-1.10.2.min.js"></script>
 	<script src="Scripts/angular.min.js"></script>
+	<script src="Scripts/angular-resource.min.js"></script>
 	<script src="EAV/PipelineDesigner/assets/jquery.jsPlumb-1.6.4.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesigner.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesignerController.js"></script>
