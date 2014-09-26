@@ -20,5 +20,7 @@
 	<script src="Scripts/angular.min.js"></script>
 	<script src="EAV/PipelineDesigner/assets/jquery.jsPlumb-1.6.4.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesigner.js"></script>
+	<script src="EAV/PipelineDesigner/PipelineDesignerController.js"></script>
+	<script src="EAV/PipelineDesigner/services/PipelineService.js"></script>
 </body>
 </html>

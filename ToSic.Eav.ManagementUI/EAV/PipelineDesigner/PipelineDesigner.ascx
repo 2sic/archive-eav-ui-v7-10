@@ -29,7 +29,7 @@
 </script>--%>
 
 <div ng-app="pipelineDesinger">
-	<div ng-controller="designerController">
+	<div ng-controller="pipelineDesignerController">
 		<div id="pipeline" class="pipelineDesigner">
 			<div id="dataSource_{{dataSource.guid}}"
 				class="dataSource"

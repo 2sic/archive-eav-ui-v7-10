@@ -126,11 +126,13 @@
     <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
     <Content Include="EAV\PipelineDesigner\assets\Delete.png" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesignerController.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.6.4-min.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.6.4.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
+    <Content Include="EAV\PipelineDesigner\services\PipelineService.js" />
     <Content Include="Global.asax" />
     <Content Include="PipelineDesigner.aspx" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
