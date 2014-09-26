@@ -1,10 +1,10 @@
 ﻿pipelineDesigner.factory('pipelineFactory', ['$resource', '$location', function ($resource, $location) {
 	'use strict';
 
-	var pipelineResource = $resource('/api/pipeline/:pipelineEntityId');
+	var pipelineResource = $resource('http://localhost:50774/api/EAV/PipelineDesigner/:action');
 
 	var pipelineId = $location.search().PipelineId;
-	var pipeline = pipelineResource.get({ pipelineEntityId: $location.search().PipelineId });
+	var pipeline = pipelineResource.get({ action: 'GetPipeline', pipelineEntityId: $location.search().PipelineId });
 
 	return {
 		getPipeline: function () {

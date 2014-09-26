@@ -16,12 +16,12 @@ namespace ToSic.Eav.ManagementUI.API
 			_context.UserName = null;	// ToDo: Ensure UserName
 		}
 
+		[HttpGet]
 		public Dictionary<string, IEnumerable<Dictionary<string, object>>> GetPipeline(int pipelineEntityId)
 		{
 			var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
 
-			//var pipelineEntityId = int.Parse(HttpContext.Current.Request.QueryString["PipelineEntityId"]);
 			var dataPipeline = source["Default"].List[pipelineEntityId];	// ToDo: Ensure it's of Type "PipelineEntity" so users cannot graze all Entities
 			var dataPipelineParts = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, dataPipeline.EntityGuid);
 
