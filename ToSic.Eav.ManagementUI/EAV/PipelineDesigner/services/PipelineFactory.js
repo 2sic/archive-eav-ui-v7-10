@@ -9,6 +9,18 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', function ($resource) {
         getPipeline: function (pipelineEntityId) {
             var getPipeline = pipelineResource.get({ action: 'GetPipeline', pipelineEntityId: pipelineEntityId });
 
+            // modify retrieved Data
+            getPipeline.$promise.then(function (data) {
+                // Add Out-DataSource
+                data.DataSources.push({
+                    Name: "Out",
+                    EntityGuid: "Out",
+                    PartAssemblyAndType: "Out",
+                    VisualDesignerData: { Top: 100, Left: 100 }
+                });
+            });
+
+
             return getPipeline;
         },
         savePipeline: function (pipeline) {

@@ -8,8 +8,8 @@ pipelineDesigner.config(['$locationProvider', function ($locationProvider) {
 pipelineDesigner.directive('datasource', function () {
     return {
         restrict: 'A',
-        link: function (scope, element, attrs) {
-            scope.makeDataSource(scope.dataSource, element, attrs);
+        link: function (scope, element) {
+            scope.makeDataSource(scope.dataSource, element);
             if (scope.$last === true) {
                 scope.$emit('ngRepeatFinished');
             }
