@@ -26,7 +26,7 @@ angular.module('pipelineDesinger.filters', []).filter('typename', function () {
 			case 'classfqn':
 				if (globalParts)
 					return globalParts[0];
-			case 'class':
+			case 'className':
 				if (globalParts) {
 					var classfqn = globalParts[0].match(/[^\.]+/g);
 					return classfqn[classfqn.length - 1];

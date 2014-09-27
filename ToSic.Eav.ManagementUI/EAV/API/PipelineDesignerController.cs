@@ -20,41 +20,46 @@ namespace ToSic.Eav.ManagementUI.API
         /// Get a Pipeline with DataSources
         /// </summary>
         [HttpGet]
-        public Dictionary<string, object> GetPipeline(int pipelineEntityId)
+        public Dictionary<string, object> GetPipeline(int pipelineEntityId = 0)
         {
-            #region Get the Entity descripting the Pipeline
-            var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
-            var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
-
-            var entities = source["Default"].List;
-            IEntity pipelineEntity;
-            try
-            {
-                pipelineEntity = entities[pipelineEntityId];
-                if (pipelineEntity.Type.StaticName != "DataPipeline")
-                    throw new Exception("pipelineEntityId is not an DataPipeline Entity");
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", pipelineEntityId), "pipelineEntityId");
-            }
-            #endregion
-
-            // Get DataSources in this Pipeline
-            var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
-
-            #region Deserialize some Entity-Values
-            var pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-            pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
-
+            Dictionary<string, object> pipelineJson = null;
             var dataSourcesJson = new List<Dictionary<string, object>>();
-            var ser = new JavaScriptSerializer();
-            foreach (var dataSource in Helpers.GetEntityValues(dataSources))
+
+            if (pipelineEntityId > 0)
             {
-                dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
-                dataSourcesJson.Add(dataSource);
+                #region Get the Entity descripting the Pipeline
+                var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
+                var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
+
+                var entities = source["Default"].List;
+                IEntity pipelineEntity;
+                try
+                {
+                    pipelineEntity = entities[pipelineEntityId];
+                    if (pipelineEntity.Type.StaticName != "DataPipeline")
+                        throw new Exception("pipelineEntityId is not an DataPipeline Entity");
+                }
+                catch (Exception)
+                {
+                    throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", pipelineEntityId), "pipelineEntityId");
+                }
+                #endregion
+
+                // Get DataSources in this Pipeline
+                var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
+
+                #region Deserialize some Entity-Values
+                pipelineJson = Helpers.GetEntityValues(pipelineEntity);
+                pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
+
+                var ser = new JavaScriptSerializer();
+                foreach (var dataSource in Helpers.GetEntityValues(dataSources))
+                {
+                    dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
+                    dataSourcesJson.Add(dataSource);
+                }
+                #endregion
             }
-            #endregion
 
             // return consolidated Data
             return new Dictionary<string, object>
@@ -65,19 +70,29 @@ namespace ToSic.Eav.ManagementUI.API
             };
         }
 
-
-
         /// <summary>
         /// Get installed DataSources from .NET Runtime as InMemory-Entities
         /// </summary>
-        private static IEnumerable<DataSourceInfo> GetInstalledDataSources()
+        private static IEnumerable<object> GetInstalledDataSources()
         {
-            var result = new List<DataSourceInfo>();
+            var result = new List<object>();
             var installedDataSources = DataSource.GetInstalledDataSources();
             foreach (var dataSource in installedDataSources)
             {
+                #region Create Instance of DataSource to get In- and Out-Streams
                 var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
                 ICollection<string> inStreamNames = null;
+                if (dataSourceInstance is IDataTarget)
+                {
+                    try
+                    {
+                        inStreamNames = ((IDataTarget)dataSourceInstance).In.Keys;
+                    }
+                    catch (Exception)
+                    {
+                        inStreamNames = new[] { "(unknown)" };
+                    }
+                }
                 ICollection<string> outStreamNames;
                 try
                 {
@@ -85,12 +100,14 @@ namespace ToSic.Eav.ManagementUI.API
                 }
                 catch (Exception)
                 {
-                    outStreamNames = null;
+                    outStreamNames = new[] { "(unknown)" };
                 }
+                #endregion
 
-                result.Add(new DataSourceInfo
+                result.Add(new
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
+                    ClassName = dataSource.Name,
                     In = inStreamNames,
                     Out = outStreamNames
                 });
@@ -99,19 +116,11 @@ namespace ToSic.Eav.ManagementUI.API
             return result;
         }
 
-        public struct DataSourceInfo
-        {
-            public string PartAssemblyAndType { get; set; }
-            public ICollection<string> In { get; set; }
-            public ICollection<string> Out { get; set; }
-        }
-
         /// <summary>
         /// Update an Entity with new values. Values not in the list will not change at the moment.
         /// </summary>
         public bool UpdateEntity(int entityId, IDictionary newValues)
         {
-
             return _context.UpdateEntity(entityId, newValues) != null;
         }
 

@@ -35,19 +35,22 @@
                 id="dataSource_{{dataSource.EntityGuid}}"
 				class="dataSource"
 				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
-				ng-repeat="dataSource in pipeline.DataSources">
+				ng-repeat="dataSource in pipelineData.DataSources">
 				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
 				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
-				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'class'}}</div>
+				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
-				<div class="delete" ng-click="remove(pipeline.DataSources, $index)"></div>
+				<div class="delete" ng-click="remove(pipelineData.DataSources, $index)"></div>
 			</div>
 		</div>
 		<button ng-click="savePipeline()">Save Pipeline</button>
 		<button ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
-		<button ng-click="addDataSource('ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav')">Add DataSource</button>
 		<button ng-click="repaint()">Repaint Connections</button>
-		<pre>{{pipeline | json}}</pre>
+	    <select ng-model="addDataSourceType" ng-options="d.ClassName for d in pipelineData.DataSourcesDefinitions | orderBy: 'ClassName'">
+	        <option value="">-- DataSource Type --</option>
+	    </select>
+        <button ng-click="addDataSource()" ng-disabled="!addDataSourceType">Add DataSource</button>
+		<pre>{{pipelineData | json}}</pre>
 	</div>
 </div>

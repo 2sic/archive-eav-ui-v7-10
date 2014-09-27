@@ -3,8 +3,9 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
     // Load Pipeline Data
     var pipelineEntityId = $location.search().PipelineId;
-    $scope.pipeline = pipelineFactory.getPipeline(pipelineEntityId);
+    $scope.pipelineData = pipelineFactory.getPipeline(pipelineEntityId);
 
+    $scope.dataSourcesCount = 0;
     $scope.dataSourceIdPrefix = 'dataSource_';
 
     jsPlumb.ready(function () {
@@ -21,7 +22,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				    label: 'Default',
 				    cssClass: 'endpointLabel',
 				    events: {
-				        dblclick: function (labelOverlay, originalEvent) {
+				        dblclick: function (labelOverlay) {
 				            var newLabel = prompt("Rename Stream", labelOverlay.label);
 				            if (newLabel)
 				                labelOverlay.setLabel(newLabel);
@@ -51,7 +52,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
         //    $scope.makeTarget(dataSources);
 
         //    // read connections from Pipeline and connect DataSources
-        //    $.each($scope.pipeline.connections, function (index, value) {
+        //    $.each($scope.pipelineData.connections, function (index, value) {
         //        var connection = instance.connect({
         //            source: $scope.dataSourceIdPrefix + value.from,
         //            target: $scope.dataSourceIdPrefix + value.to
@@ -88,6 +89,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
             grid: [20, 20],
             drag: $scope.dataSourceDrag
         });
+
+        $scope.dataSourcesCount++;
     }
 
     $scope.editName = function (dataSource) {
@@ -140,19 +143,22 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
             });
         });
 
-        $scope.pipeline.connections = connectionInfos;
+        $scope.pipelineData.connections = connectionInfos;
     }
 
     // Add new DataSource
-    $scope.addDataSource = function (partAssemblyAndType) {
-        $scope.dataSourcesCount++;
-        $scope.pipeline.DataSources.push({ PartAssemblyAndType: partAssemblyAndType, EntityGuid: 'unsaved' + $scope.dataSourcesCount });
+    $scope.addDataSource = function () {
+        $scope.pipelineData.DataSources.push({
+            VisualDesignerData: { Top: 100, Left: 100 },
+            PartAssemblyAndType: $scope.addDataSourceType.PartAssemblyAndType,
+            EntityGuid: 'unsaved' + ($scope.dataSourcesCount + 1)
+        });
     }
 
     // Initialize jsPlumb Connections once after all DataSources were created in the DOM
     $scope.connectionsInitialized = false;
     $scope.$on('ngRepeatFinished', function () {
-        
+
     });
 
     // Delete DataSource
