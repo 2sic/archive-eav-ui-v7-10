@@ -77,14 +77,14 @@ namespace ToSic.Eav.DataSources
 		#endregion
 	}
 
-	/// <summary>
-	/// Internal interface for building the object
-	/// </summary>
-	public interface IDataSourceInternals
-	{
-		#region Configuration -- not implemented yet
-		// IEntity ConfigEntity { set; }
-		// Dictionary<string, string> ConfigValues { set; }
-		#endregion
-	}
+    ///// <summary>
+    ///// Internal interface for building the object
+    ///// </summary>
+    //public interface IDataSourceInternals
+    //{
+    //    #region Configuration -- not implemented yet
+    //    // IEntity ConfigEntity { set; }
+    //    // Dictionary<string, string> ConfigValues { set; }
+    //    #endregion
+    //}
 }

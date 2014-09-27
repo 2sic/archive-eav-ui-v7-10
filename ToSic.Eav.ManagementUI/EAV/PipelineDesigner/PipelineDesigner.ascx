@@ -31,17 +31,17 @@
 <div ng-app="pipelineDesinger">
 	<div ng-controller="pipelineDesignerController">
 		<div id="pipeline" class="pipelineDesigner">
-			<div id="dataSource_{{dataSource.guid}}"
+			<div datasource
+                id="dataSource_{{dataSource.EntityGuid}}"
 				class="dataSource"
-				enablerenderfinishedevent
-				ng-attr-style="top: {{dataSource.top}}px; left: {{dataSource.left}}px"
-				ng-repeat="dataSource in pipeline.dataSources">
-				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.name || '(unnamed)'}}</div>
-				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.description || '(no description)'}}</div>
-				<div class="typename" ng-attr-title="{{dataSource.typeName}}">Type: {{dataSource.typeName | typename: 'class'}}</div>
+				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
+				ng-repeat="dataSource in pipeline.DataSources">
+				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
+				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
+				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'class'}}</div>
 				<!--ng-dblclick="open()"-->
 				<div class="ep"></div>
-				<div class="delete" ng-click="remove(pipeline.dataSources, $index)"></div>
+				<div class="delete" ng-click="remove(pipeline.DataSources, $index)"></div>
 			</div>
 		</div>
 		<button ng-click="savePipeline()">Save Pipeline</button>

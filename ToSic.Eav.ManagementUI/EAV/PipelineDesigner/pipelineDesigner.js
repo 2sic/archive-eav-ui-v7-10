@@ -4,17 +4,17 @@ pipelineDesigner.config(['$locationProvider', function ($locationProvider) {
 	$locationProvider.html5Mode(true);
 }]);
 
-// Rise event ngRepeatFinished when ng-repeat has finished
-// Source: http://stackoverflow.com/questions/15207788/calling-a-function-when-ng-repeat-has-finished
-pipelineDesigner.directive('enablerenderfinishedevent', function () {
-	return {
-		restrict: 'A',
-		link: function (scope) {
-			if (scope.$last === true) {
-				scope.$emit('ngRepeatFinished');
-			}
-		}
-	}
+// datasource directive makes an element a DataSource with jsPlumb
+pipelineDesigner.directive('datasource', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            scope.makeDataSource(scope.dataSource, element, attrs);
+            if (scope.$last === true) {
+                scope.$emit('ngRepeatFinished');
+            }
+        }
+    }
 });
 
 // Filters for "ClassName, AssemblyName"
