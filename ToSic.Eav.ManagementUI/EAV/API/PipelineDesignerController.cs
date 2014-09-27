@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.ManagementUI.API
@@ -40,18 +41,31 @@ namespace ToSic.Eav.ManagementUI.API
             #endregion
 
             // Get DataSources in this Pipeline
-            var datasources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
+            var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
 
-            // Consollidate Streams to a single Dictionary
-            var result = Helpers.GetEntitiesForJson(new Dictionary<string, object>
+            #region Deserialize some Entity-Values
+            var pipelineJson = Helpers.GetEntityValues(pipelineEntity);
+            pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
+
+            var dataSourcesJson = new List<Dictionary<string, object>>();
+            var ser = new JavaScriptSerializer();
+            foreach (var dataSource in Helpers.GetEntityValues(dataSources))
             {
-                {"Pipeline", pipelineEntity},
-                {"DataSources", datasources},
-                {"DataSourcesDefinitions", GetInstalledDataSources()}
-            });
+                dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
+                dataSourcesJson.Add(dataSource);
+            }
+            #endregion
 
-            return result;
+            // return consolidated Data
+            return new Dictionary<string, object>
+            {
+                {"Pipeline", pipelineJson},
+                {"DataSources", dataSourcesJson},
+                {"DataSourcesDefinitions", GetInstalledDataSources()}
+            };
         }
+
+
 
         /// <summary>
         /// Get installed DataSources from .NET Runtime as InMemory-Entities

@@ -60,6 +60,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSources\DataPipelineWiring.cs" />
     <Compile Include="DataSources\DataSource.cs" />
     <Compile Include="DataSources\Tokens\PropertyAccess\AssignedEntityAttributePropertyAccess.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />

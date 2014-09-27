@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using ToSic.Eav.DataSources.Tokens;
 
 namespace ToSic.Eav.DataSources
@@ -10,8 +9,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataPipelineFactory
 	{
-		private static readonly Regex WireRegex = new Regex("(?<SourceId>.*):(?<SourceOutName>.*)>(?<TargetId>.*):(?<TargetInName>.*)");
-
 		/// <summary>
 		/// Creates a DataSource from a PipelineEntity for specified Zone and App
 		/// </summary>
@@ -55,18 +52,13 @@ namespace ToSic.Eav.DataSources
 			#endregion
 
 			#region Loop and create all Stream Wirings
-			var streamWiring = dataPipeline["StreamWiring"][0].ToString().Split(new[] { "\r\n" }, StringSplitOptions.None);
 
-			foreach (var wire in streamWiring)
+		    var wirings = DataPipelineWiring.Deserialize((string)dataPipeline["StreamWiring"][0]);
+
+            foreach (var wire in wirings)
 			{
-				var wireMatch = WireRegex.Match(wire);
-				var sourceId = wireMatch.Groups["SourceId"].Value;
-				var sourceOutName = wireMatch.Groups["SourceOutName"].Value;
-				var targetId = wireMatch.Groups["TargetId"].Value;
-				var targetInName = wireMatch.Groups["TargetInName"].Value;
-
-				var sourceDsrc = pipeline[sourceId];
-				((IDataTarget)pipeline[targetId]).In[targetInName] = sourceDsrc.Out[sourceOutName];
+				var sourceDsrc = pipeline[wire.From];
+				((IDataTarget)pipeline[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
 			}
 			#endregion
 
