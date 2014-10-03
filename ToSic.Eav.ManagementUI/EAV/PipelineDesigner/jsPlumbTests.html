@@ -19,9 +19,9 @@
             Container: 'pipeline'
         });
         jsPlumb.ready(function () {
-            var dataSources = jsPlumb.getSelector(".dataSource");
-            instance.addEndpoint(dataSources);
-            jsPlumb.draggable(dataSources);
+        	var dataSources = instance.getSelector(".dataSource");
+        	instance.addEndpoint(dataSources);
+        	instance.draggable(dataSources);
         });
     </script>
 </body>

@@ -60,26 +60,26 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 			//    };
 			//}
 
-			var sourceEndpoint = {
-				endpoint: "Dot",
-				//paintStyle: { fillStyle: "#225588", radius: 7 },
-				//isSource: true,
-				//connector: ["Bezier", { curviness: 0 }],//["Flowchart", { stub: [30, 30], gap: 10 }], // "Straight", // [ "Flowchart", { stub:[40, 60], gap:10 } ],                                                                     
-				//connectorStyle: pipelineDesigner.connectorPaintStyle,
-				//hoverPaintStyle: pipelineDesigner.connectorHoverStyle,
-				//connectorHoverStyle: pipelineDesigner.connectorHoverStyle,
-				//dragOptions: {},
-				//maxConnections: -1
-				//                overlays:[
-				//                  [ "Label", dynEndpointOverlay("from", false)
-				////                    { 
-				////                       location:[0.5, 1.5], 
-				////                       label:"Drag",
-				////                       cssClass:"endpointSourceLabel" 
-				////                   } 
-				//                    ]
-				//                ]
-			}
+			//var sourceEndpoint = {
+			//	endpoint: "Dot",
+			//paintStyle: { fillStyle: "#225588", radius: 7 },
+			//isSource: true,
+			//connector: ["Bezier", { curviness: 0 }],//["Flowchart", { stub: [30, 30], gap: 10 }], // "Straight", // [ "Flowchart", { stub:[40, 60], gap:10 } ],                                                                     
+			//connectorStyle: pipelineDesigner.connectorPaintStyle,
+			//hoverPaintStyle: pipelineDesigner.connectorHoverStyle,
+			//connectorHoverStyle: pipelineDesigner.connectorHoverStyle,
+			//dragOptions: {},
+			//maxConnections: -1
+			//                overlays:[
+			//                  [ "Label", dynEndpointOverlay("from", false)
+			////                    { 
+			////                       location:[0.5, 1.5], 
+			////                       label:"Drag",
+			////                       cssClass:"endpointSourceLabel" 
+			////                   } 
+			//                    ]
+			//                ]
+			//}
 
 
 			//$scope.jsPlumbInstance.addEndpoint(element);
@@ -92,7 +92,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 			// make DataSources draggable
 			$scope.jsPlumbInstance.draggable(element, {
-			   // grid: [20, 20],
+				// grid: [20, 20],
 				drag: $scope.dataSourceDrag
 			});
 		});
@@ -103,8 +103,6 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	// Initialize jsPlumb Connections once after all DataSources were created in the DOM
 	$scope.connectionsInitialized = false;
 	$scope.$on('ngRepeatFinished', function () {
-		console.log("ngRepeatFinished");
-
 		if ($scope.connectionsInitialized) return;
 
 		$scope.initWirings();
@@ -113,24 +111,15 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	});
 
 	$scope.initWirings = function () {
-		//$scope.jsPlumbInstance.addEndpoint(jsPlumb.getSelector('.dataSource'));
-
-		return;
-		console.log("initWirings");
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 			angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
-				try {
-					// read connections from Pipeline and connect DataSources
-					console.log('From ' + $scope.dataSourceIdPrefix + wire.From);
-					console.log('To ' + $scope.dataSourceIdPrefix + wire.To);
-					var connection = $scope.jsPlumbInstance.connect({
-						source: $scope.dataSourceIdPrefix + wire.From,
-						target: $scope.dataSourceIdPrefix + wire.To
-					});
-					//connection.endpoints[0].getOverlay('endpointLabel').setLabel(value.Out);
-					//connection.endpoints[1].getOverlay('endpointLabel').setLabel(value.In);
-				}
-				catch (e) { }
+				// read connections from Pipeline and connect DataSources
+				var connection = $scope.jsPlumbInstance.connect({
+					source: $scope.dataSourceIdPrefix + wire.From,
+					target: $scope.dataSourceIdPrefix + wire.To
+				});
+				connection.endpoints[0].getOverlay('endpointLabel').setLabel(wire.Out);
+				connection.endpoints[1].getOverlay('endpointLabel').setLabel(wire.In);
 			});
 		});
 	}

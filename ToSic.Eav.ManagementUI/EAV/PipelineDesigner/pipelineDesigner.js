@@ -5,16 +5,18 @@ pipelineDesigner.config(['$locationProvider', function ($locationProvider) {
 }]);
 
 // datasource directive makes an element a DataSource with jsPlumb
-pipelineDesigner.directive('datasource', function () {
-    return {
-        restrict: 'A',
-        link: function (scope, element) {
-            scope.makeDataSource(scope.dataSource, element);
-            if (scope.$last === true) {
-                scope.$emit('ngRepeatFinished');
-            }
-        }
-    }
+pipelineDesigner.directive('datasource', function ($timeout) {
+	return {
+		restrict: 'A',
+		link: function (scope, element) {
+			scope.makeDataSource(scope.dataSource, element);
+			if (scope.$last === true) {
+				$timeout(function () {
+					scope.$emit('ngRepeatFinished');
+				});
+			}
+		}
+	}
 });
 
 // Filters for "ClassName, AssemblyName"

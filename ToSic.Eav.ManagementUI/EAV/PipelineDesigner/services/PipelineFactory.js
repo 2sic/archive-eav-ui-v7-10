@@ -16,7 +16,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', function ($resource) {
 					Name: "Out",
 					EntityGuid: "Out",
 					PartAssemblyAndType: "Out",
-					VisualDesignerData: { Top: 100, Left: 100 }
+					VisualDesignerData: { Top: 40, Left: 410 }
 				});
 			});
 
