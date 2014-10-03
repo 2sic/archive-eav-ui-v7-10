@@ -7,146 +7,150 @@ using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.ManagementUI.API
 {
-    public class PipelineDesignerController : ApiController
-    {
-        private readonly EavContext _context = EavContext.Instance(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
+	public class PipelineDesignerController : ApiController
+	{
+		private readonly EavContext _context = EavContext.Instance(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
 
-        public PipelineDesignerController()
-        {
-            _context.UserName = null;	// ToDo: Ensure UserName
-        }
+		public PipelineDesignerController()
+		{
+			_context.UserName = null;	// ToDo: Ensure UserName
+		}
 
-        /// <summary>
-        /// Get a Pipeline with DataSources
-        /// </summary>
-        [HttpGet]
-        public Dictionary<string, object> GetPipeline(int pipelineEntityId = 0)
-        {
-            Dictionary<string, object> pipelineJson = null;
-            var dataSourcesJson = new List<Dictionary<string, object>>();
+		/// <summary>
+		/// Get a Pipeline with DataSources
+		/// </summary>
+		[HttpGet]
+		public Dictionary<string, object> GetPipeline(int pipelineEntityId = 0)
+		{
+			Dictionary<string, object> pipelineJson = null;
+			var dataSourcesJson = new List<Dictionary<string, object>>();
 
-            if (pipelineEntityId > 0)
-            {
-                #region Get the Entity descripting the Pipeline
-                var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
-                var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
+			if (pipelineEntityId > 0)
+			{
+				#region Get the Entity descripting the Pipeline
+				var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
+				var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
 
-                var entities = source["Default"].List;
-                IEntity pipelineEntity;
-                try
-                {
-                    pipelineEntity = entities[pipelineEntityId];
-                    if (pipelineEntity.Type.StaticName != "DataPipeline")
-                        throw new Exception("pipelineEntityId is not an DataPipeline Entity");
-                }
-                catch (Exception)
-                {
-                    throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", pipelineEntityId), "pipelineEntityId");
-                }
-                #endregion
+				var entities = source["Default"].List;
+				IEntity pipelineEntity;
+				try
+				{
+					pipelineEntity = entities[pipelineEntityId];
+					if (pipelineEntity.Type.StaticName != "DataPipeline")
+						throw new Exception("pipelineEntityId is not an DataPipeline Entity");
+				}
+				catch (Exception)
+				{
+					throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", pipelineEntityId), "pipelineEntityId");
+				}
+				#endregion
 
-                // Get DataSources in this Pipeline
-                var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
+				// Get DataSources in this Pipeline
+				var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
 
-                #region Deserialize some Entity-Values
-                pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-                pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
+				#region Deserialize some Entity-Values
+				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
+				pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
 
-                var ser = new JavaScriptSerializer();
-                foreach (var dataSource in Helpers.GetEntityValues(dataSources))
-                {
-                    dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
-                    dataSourcesJson.Add(dataSource);
-                }
-                #endregion
-            }
+				var ser = new JavaScriptSerializer();
+				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
+				{
+					try
+					{
+						dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
+					}
+					catch (ArgumentException) { }
+					dataSourcesJson.Add(dataSource);
+				}
+				#endregion
+			}
 
-            // return consolidated Data
-            return new Dictionary<string, object>
-            {
-                {"Pipeline", pipelineJson},
-                {"DataSources", dataSourcesJson},
-                {"DataSourcesDefinitions", GetInstalledDataSources()}
-            };
-        }
+			// return consolidated Data
+			return new Dictionary<string, object>
+			{
+				{"Pipeline", pipelineJson},
+				{"DataSources", dataSourcesJson}
+			};
+		}
 
-        /// <summary>
-        /// Get installed DataSources from .NET Runtime as InMemory-Entities
-        /// </summary>
-        private static IEnumerable<object> GetInstalledDataSources()
-        {
-            var result = new List<object>();
-            var installedDataSources = DataSource.GetInstalledDataSources();
-            foreach (var dataSource in installedDataSources)
-            {
-                #region Create Instance of DataSource to get In- and Out-Streams
-                var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
-                ICollection<string> inStreamNames = null;
-                if (dataSourceInstance is IDataTarget)
-                {
-                    try
-                    {
-                        inStreamNames = ((IDataTarget)dataSourceInstance).In.Keys;
-                    }
-                    catch (Exception)
-                    {
-                        inStreamNames = new[] { "(unknown)" };
-                    }
-                }
-                ICollection<string> outStreamNames;
-                try
-                {
-                    outStreamNames = dataSourceInstance.Out.Keys;
-                }
-                catch (Exception)
-                {
-                    outStreamNames = new[] { "(unknown)" };
-                }
-                #endregion
+		/// <summary>
+		/// Get installed DataSources from .NET Runtime
+		/// </summary>
+		[HttpGet]
+		public IEnumerable<object> GetInstalledDataSources()
+		{
+			var result = new List<object>();
+			var installedDataSources = DataSource.GetInstalledDataSources();
+			foreach (var dataSource in installedDataSources)
+			{
+				#region Create Instance of DataSource to get In- and Out-Streams
+				var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
+				ICollection<string> inStreamNames = null;
+				if (dataSourceInstance is IDataTarget)
+				{
+					try
+					{
+						inStreamNames = ((IDataTarget)dataSourceInstance).In.Keys;
+					}
+					catch (Exception)
+					{
+						inStreamNames = new[] { "(unknown)" };
+					}
+				}
+				ICollection<string> outStreamNames;
+				try
+				{
+					outStreamNames = dataSourceInstance.Out.Keys;
+				}
+				catch (Exception)
+				{
+					outStreamNames = new[] { "(unknown)" };
+				}
+				#endregion
 
-                result.Add(new
-                {
-                    PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
-                    ClassName = dataSource.Name,
-                    In = inStreamNames,
-                    Out = outStreamNames
-                });
-            }
+				result.Add(new
+				{
+					PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
+					ClassName = dataSource.Name,
+					In = inStreamNames,
+					Out = outStreamNames
+				});
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        /// <summary>
-        /// Update an Entity with new values. Values not in the list will not change at the moment.
-        /// </summary>
-        public bool UpdateEntity(int entityId, IDictionary newValues)
-        {
-            return _context.UpdateEntity(entityId, newValues) != null;
-        }
+		/// <summary>
+		/// Update an Entity with new values. Values not in the list will not change at the moment.
+		/// </summary>
+		public bool UpdateEntity(int entityId, IDictionary newValues)
+		{
+			return _context.UpdateEntity(entityId, newValues) != null;
+		}
 
-        /// <summary>
-        /// Update an Entity with new values. Values not in the list will not change at the moment.
-        /// </summary>
-        public bool UpdateEntityByGuid(Guid entityGuid, IDictionary newValues)
-        {
-            return _context.UpdateEntity(entityGuid, newValues) != null;
-        }
+		/// <summary>
+		/// Update an Entity with new values. Values not in the list will not change at the moment.
+		/// </summary>
+		public bool UpdateEntityByGuid(Guid entityGuid, IDictionary newValues)
+		{
+			return _context.UpdateEntity(entityGuid, newValues) != null;
+		}
 
-        /// <summary>
-        /// Update an Entity with new values. Values not in the list will not change at the moment.
-        /// </summary>
-        public bool AddEntity(int attributeSetId, IDictionary values, int assignmentObjectType, Guid keyGuid)
-        {
-            var newEntity = _context.AddEntity(attributeSetId, values, null, keyGuid, assignmentObjectType);
-            return newEntity != null;
-        }
+		/// <summary>
+		/// Update an Entity with new values. Values not in the list will not change at the moment.
+		/// </summary>
+		public bool AddEntity(int attributeSetId, IDictionary values, int assignmentObjectType, Guid keyGuid)
+		{
+			var newEntity = _context.AddEntity(attributeSetId, values, null, keyGuid, assignmentObjectType);
+			return newEntity != null;
+		}
 
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        public bool DeleteEntityByGuid(Guid entityGuid)
-        {
-            return _context.DeleteEntity(entityGuid);
-        }
-    }
+		/// <summary>
+		/// Delete an Entity
+		/// </summary>
+		public bool DeleteEntityByGuid(Guid entityGuid)
+		{
+			return _context.DeleteEntity(entityGuid);
+		}
+	}
 }
