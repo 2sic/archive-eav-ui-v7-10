@@ -3,14 +3,22 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 	// Load Pipeline Data
 	var pipelineEntityId = $location.search().PipelineId;
-	$scope.pipelineData = pipelineFactory.getPipeline(pipelineEntityId);
-	$scope.installedDataSources = pipelineFactory.getInstalledDataSources();
+	var data = pipelineFactory.getPipeline(pipelineEntityId);
+	//data.then(function (results) {
+	//	console.log("done");
+	//	$scope.pipelineData = results[0];
+	//	$scope.installedDataSources = results[1];
+	//});
+	//$scope.pipelineData = data;
+	data.then(function (result) {
+		$scope.pipelineData = result;
+	});
+	//$scope.installedDataSources = pipelineFactory.getInstalledDataSources();
 
 	$scope.dataSourcesCount = 0;
 	$scope.dataSourceIdPrefix = 'dataSource_';
 
 	jsPlumb.ready(function () {
-		console.log("Ready");
 		// init new jsPlumb Instance
 		var instance = jsPlumb.getInstance({
 			Anchor: 'Continuous',
@@ -45,7 +53,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	});
 
 	$scope.makeDataSource = function (dataSource, element) {
-		console.log('makeDataSource');
+		//console.log('makeDataSource');
 		// suspend drawing and initialise
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 
@@ -114,6 +122,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 			angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
 				// read connections from Pipeline and connect DataSources
+				return;
 				var connection = $scope.jsPlumbInstance.connect({
 					source: $scope.dataSourceIdPrefix + wire.From,
 					target: $scope.dataSourceIdPrefix + wire.To
