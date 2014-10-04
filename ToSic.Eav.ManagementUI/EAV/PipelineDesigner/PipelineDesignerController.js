@@ -3,17 +3,9 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 	// Load Pipeline Data
 	var pipelineEntityId = $location.search().PipelineId;
-	var data = pipelineFactory.getPipeline(pipelineEntityId);
-	//data.then(function (results) {
-	//	console.log("done");
-	//	$scope.pipelineData = results[0];
-	//	$scope.installedDataSources = results[1];
-	//});
-	//$scope.pipelineData = data;
-	data.then(function (result) {
+	pipelineFactory.getPipeline(pipelineEntityId).then(function (result) {
 		$scope.pipelineData = result;
 	});
-	//$scope.installedDataSources = pipelineFactory.getInstalledDataSources();
 
 	$scope.dataSourcesCount = 0;
 	$scope.dataSourceIdPrefix = 'dataSource_';
@@ -113,16 +105,9 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	$scope.$on('ngRepeatFinished', function () {
 		if ($scope.connectionsInitialized) return;
 
-		$scope.initWirings();
-
-		$scope.connectionsInitialized = true;
-	});
-
-	$scope.initWirings = function () {
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 			angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
 				// read connections from Pipeline and connect DataSources
-				return;
 				var connection = $scope.jsPlumbInstance.connect({
 					source: $scope.dataSourceIdPrefix + wire.From,
 					target: $scope.dataSourceIdPrefix + wire.To
@@ -131,29 +116,45 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				connection.endpoints[1].getOverlay('endpointLabel').setLabel(wire.In);
 			});
 		});
-	}
+
+		$scope.connectionsInitialized = true;
+	});
 
 	// Add new DataSource
 	$scope.addDataSource = function () {
 		$scope.pipelineData.DataSources.push({
 			VisualDesignerData: { Top: 100, Left: 100 },
+			Name: "",
+			Description: "",
 			PartAssemblyAndType: $scope.addDataSourceType.PartAssemblyAndType,
 			EntityGuid: 'unsaved' + ($scope.dataSourcesCount + 1)
 		});
 	}
 
+	// Delete a DataSource
+	$scope.remove = function (index) {
+		var dataSource = $scope.pipelineData.DataSources[index];
+		if (!confirm('Delete DataSource "' + (dataSource.Name || '(unnamed)') + '"?')) return;
+		var element = $('#' + $scope.dataSourceIdPrefix + dataSource.EntityGuid);
+		$scope.jsPlumbInstance.detachAllConnections(element);
+		$scope.pipelineData.DataSources.splice(index, 1);
+	}
+
+	// Edit name of a DataSource
 	$scope.editName = function (dataSource) {
 		var newName = prompt("Rename DataSource", dataSource.Name);
 		if (newName != undefined)
 			dataSource.Name = newName;
 	}
+
+	// Edit Description of a DataSource
 	$scope.editDescription = function (dataSource) {
 		var newDescription = prompt("Edit Description", dataSource.Description);
 		if (newDescription != undefined)
 			dataSource.Description = newDescription;
 	}
 
-	// Update DataSoruce Position on Drag
+	// Update DataSource Position on Drag
 	$scope.dataSourceDrag = function () {
 		var $this = $(this);
 		var offset = $this.offset();
@@ -179,8 +180,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		});
 	}
 
-
-	// Sync UI-Connections to Pipeline-Object
+	// Sync jsPlumb Connections to the pipelineData-Object
 	$scope.syncConnections = function () {
 		var connectionInfos = [];
 		angular.forEach($scope.jsPlumbInstance.getAllConnections(), function (connection) {
@@ -193,15 +193,6 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		});
 
 		$scope.pipelineData.Pipeline.StreamWiring = connectionInfos;
-	}
-
-	// Delete DataSource
-	$scope.remove = function (index) {
-		var dataSource = $scope.pipelineData.DataSources[index];
-		if (!confirm('Delete DataSource "' + (dataSource.Name || '(unnamed)') + '"?')) return;
-		var element = $('#' + $scope.dataSourceIdPrefix + dataSource.EntityGuid);
-		$scope.jsPlumbInstance.detachAllConnections(element);
-		$scope.pipelineData.DataSources.splice(index, 1);
 	}
 
 	// Save Pipeline

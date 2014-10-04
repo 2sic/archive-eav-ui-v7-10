@@ -5,70 +5,31 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', function ($resou
 	var pipelineResource = $resource('/api/EAV/PipelineDesigner/:action');
 
 	return {
-		// get a Pipeline with Pipeline Info and Pipeline Parts
+		// get a Pipeline with Pipeline Info with Pipeline Parts and Installed DataSources
 		getPipeline: function (pipelineEntityId) {
-
-			//console.log("Begin getPipeline");
-
 			var deferred = $q.defer();
 
 			var getPipeline = pipelineResource.get({ action: 'GetPipeline', pipelineEntityId: pipelineEntityId });
 			var getInstalledDataSources = pipelineResource.query({ action: 'GetInstalledDataSources' });
 
+			// Join and modify retrieved Data
+			$q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function (results) {
+				var model = results[0];
 
-			var promises = $q.all([getPipeline, getInstalledDataSources]).then(function (results) {
-				var model = {
-					Pipeline: results[0].Pipeline,
-					DataSources: results[0].DataSources,
-					//InstalledDataSources: results[1],
-				};
-				//var getPipelineResult = results[0];
-				//getPipelineResult.test = "TEST123";
-				//console.log(getPipelineResult);
-				//getPipelineResult.installedDataSources = results[1];
-				//var installedDataSources = results[1];
-				console.log(results);
-				console.log(results.length);
-				console.log(results[0]);
-				console.log(results[0].DataSources);
+				// Append Out-DataSource
+				model.DataSources.push({
+					Name: "Out",
+					EntityGuid: "Out",
+					PartAssemblyAndType: "Out",
+					VisualDesignerData: { Top: 40, Left: 410 }
+				});
 
-				//deferred.resolve(results[0]);
-				deferred.resolve({ "Pipeline": "test" });
-				//console.log("Values:");
-				//console.log(values[0]);
-				//console.log(values[1]);
+				model.InstalledDataSources = results[1];
+
+				deferred.resolve(model);
 			});
 
-			//console.log(getPipeline);
-			//console.log(promises);
-
-			//.then(function (res1) {
-			//	//res = { "Test": "Test" };
-			//	console.log("all resolved");
-
-			//	deferred.resolve(['Hello', 'world!']);
-
-
-			//	console.log(res1);
-			//});
-
-			//console.log("End getPipeline");
 			return deferred.promise;
-
-			//// modify retrieved Data
-			//getPipeline.$promise.then(function (data) {
-			//	// Append Out-DataSource
-			//	data.DataSources.push({
-			//		Name: "Out",
-			//		EntityGuid: "Out",
-			//		PartAssemblyAndType: "Out",
-			//		VisualDesignerData: { Top: 40, Left: 410 }
-			//	});
-			//});
-
-			//console.log($q.all(getPipeline));
-
-			//return $q.all(getPipeline, dataSources);
 		},
 		savePipeline: function (pipeline) {
 

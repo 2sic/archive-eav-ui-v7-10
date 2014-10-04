@@ -47,11 +47,10 @@
 		<button ng-click="savePipeline()">Save Pipeline</button>
 		<button ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
 		<button ng-click="repaint()">Repaint Connections</button>
-		<select ng-model="addDataSourceType" ng-options="d.ClassName for d in installedDataSources | orderBy: 'ClassName'">
+		<select ng-model="addDataSourceType" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | orderBy: 'ClassName'">
 			<option value="">-- DataSource Type --</option>
 		</select>
 		<button ng-click="addDataSource()" ng-disabled="!addDataSourceType">Add DataSource</button>
-		<button ng-click="initWirings()">Init Wirings</button>
 		<pre>{{pipelineData | json}}</pre>
 	</div>
 </div>
