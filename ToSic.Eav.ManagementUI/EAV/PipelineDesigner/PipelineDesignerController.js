@@ -48,7 +48,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		paintStyle: { strokeStyle: "#7AB02C", fillStyle: "transparent", radius: 7, lineWidth: 3 },
 		maxConnections: -1,
 		isSource: true,
-		anchor: "Top",
+		//anchor: "Top",
+		anchor: [0.5, 0, 0, -1],
 		overlays: getEndpointOverlays(true)
 	};
 
@@ -57,9 +58,23 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		paintStyle: { fillStyle: "#7AB02C", radius: 11 },
 		maxConnections: -1,
 		isTarget: true,
-		anchor: "Bottom",
+		//anchor: "Bottom",
+		anchor: [0.5, 1, 0, 1],
 		overlays: getEndpointOverlays(false)
 	};
+
+	var alignAnchors = function (element) {
+		var endpoints = $scope.jsPlumbInstance.getEndpoints(element);
+		angular.forEach(endpoints, function (endpoint) {
+			var inCount = 2;
+			//var outCount = 2;
+			if (endpoint.isSource)
+				endpoint.setAnchor([0.5, 0, 0, -1]);
+
+			//else if (endpoint.isTarget)
+			//	endpoint.setAnchor([0.5, 1, 0, 1]);
+		});
+	}
 
 	$scope.makeDataSource = function (dataSource, element) {
 		// suspend drawing and initialise
@@ -77,6 +92,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				if (dataSource.Definition.In)// make the DataSource a Target for new Endpoints
 					$scope.jsPlumbInstance.makeTarget(element, targetEndpoint);
 			}
+
+			alignAnchors(element);
 
 			// make DataSources draggable
 			$scope.jsPlumbInstance.draggable(element, {
@@ -110,13 +127,14 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 				// Ensure In- and Out-Endpoint exist
 				if (!$scope.jsPlumbInstance.getEndpoint(fromUuid))
-					addEndpoint(jsPlumb.getSelector('#' + sourceElementId), wire.Out, true);
+					addEndpoint(jsPlumb.getSelector('#' + sourceElementId), wire.Out, false);
 				if (!$scope.jsPlumbInstance.getEndpoint(toUuid))
 					addEndpoint(jsPlumb.getSelector('#' + targetElementId), wire.In, true);
 
 				$scope.jsPlumbInstance.connect({ uuids: [fromUuid, toUuid] });
 			});
 		});
+		//$scope.repaint();	// repaint to continuous connections are aligned correctly
 
 		$scope.connectionsInitialized = true;
 	});
