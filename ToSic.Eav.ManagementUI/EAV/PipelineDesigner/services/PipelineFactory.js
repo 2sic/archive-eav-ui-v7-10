@@ -14,21 +14,22 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 			// Join and modify retrieved Data
 			$q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function (results) {
-				var model = results[0];
-				model.InstalledDataSources = results[1];
+				var model = JSON.parse(angular.toJson(results[0]));	// workaround to remove AngularJS Promise from the result-Objects
+				model.InstalledDataSources = JSON.parse(angular.toJson(results[1]));
 
 				// Append Out-DataSource
 				model.DataSources.push({
 					Name: "Out",
 					EntityGuid: "Out",
 					PartAssemblyAndType: "Out",
-					VisualDesignerData: { Top: 40, Left: 410 }
+					VisualDesignerData: { Top: 40, Left: 410 },
+					AllowDelete: false
 				});
 				model.InstalledDataSources.push({
 					PartAssemblyAndType: "Out",
 					ClassName: "Out",
-					In: null,
-					Out: ["Content", "Presentation", "ListContent", "ListPresentation"]
+					In: ["Content", "Presentation", "ListContent", "ListPresentation"],
+					Out: null
 				});
 
 				// Add Navigation-Property from each DataSource to its Definition
