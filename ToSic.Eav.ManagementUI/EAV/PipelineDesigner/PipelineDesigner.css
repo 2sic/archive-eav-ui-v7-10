@@ -29,6 +29,10 @@
 		filter: alpha(opacity=60);
 	}
 
+	.dataSource.jsPlumb_dragged {
+		z-index: 27;
+	}
+
 	.dataSource .name {
 		margin-top: 10px;
 		font-weight: bold;
@@ -64,7 +68,7 @@
 	cursor: pointer;
 }
 
-.endpointLabel {
+.endpointTargetLabel, .endpointSourceLabel {
 	background-color: white;
 	padding: 0.4em;
 	font: 12px sans-serif;
@@ -76,7 +80,7 @@
 	cursor: pointer;
 }
 
-	.endpointLabel._jsPlumb_hover {
+	.endpointSourceLabel._jsPlumb_hover, .endpointTargetLabel._jsPlumb_hover {
 		background-color: #5C96BC;
 		color: white;
 		border: 1px solid white;
@@ -85,7 +89,7 @@
 	}
 
 
-.ep {
+/*.ep {
 	position: absolute;
 	bottom: 37%;
 	right: 5px;
@@ -101,4 +105,4 @@
 
 	.ep:hover {
 		box-shadow: 0 0 6px black;
-	}
+	}*/

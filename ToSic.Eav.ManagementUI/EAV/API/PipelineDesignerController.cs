@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Script.Serialization;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.ManagementUI.API
 {
@@ -84,27 +85,23 @@ namespace ToSic.Eav.ManagementUI.API
 			foreach (var dataSource in installedDataSources)
 			{
 				#region Create Instance of DataSource to get In- and Out-Streams
-				var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
-				ICollection<string> inStreamNames = null;
-				if (dataSourceInstance is IDataTarget)
+				ICollection<string> outStreamNames = new[] { "Default" };
+				ICollection<string> inStreamNames = new[] { "Default" };
+				if (!dataSource.IsInterface && !dataSource.IsAbstract)
 				{
+					var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
 					try
 					{
-						inStreamNames = ((IDataTarget)dataSourceInstance).In.Keys;
+						outStreamNames = dataSourceInstance.Out.Keys;
 					}
 					catch (Exception)
 					{
-						inStreamNames = new[] { "(unknown)" };
+						outStreamNames = new[] { "(unknown)" };
 					}
 				}
-				ICollection<string> outStreamNames;
-				try
+				else if (dataSource.IsInterface && dataSource == typeof(ICache))
 				{
-					outStreamNames = dataSourceInstance.Out.Keys;
-				}
-				catch (Exception)
-				{
-					outStreamNames = new[] { "(unknown)" };
+					inStreamNames = null;
 				}
 				#endregion
 

@@ -1,5 +1,5 @@
 ﻿// PipelineFactory provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
-pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', function ($resource, $q) {
+pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', function ($resource, $q, $filter) {
 	'use strict';
 
 	var pipelineResource = $resource('/api/EAV/PipelineDesigner/:action');
@@ -15,6 +15,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', function ($resou
 			// Join and modify retrieved Data
 			$q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function (results) {
 				var model = results[0];
+				model.InstalledDataSources = results[1];
 
 				// Append Out-DataSource
 				model.DataSources.push({
@@ -23,8 +24,17 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', function ($resou
 					PartAssemblyAndType: "Out",
 					VisualDesignerData: { Top: 40, Left: 410 }
 				});
+				model.InstalledDataSources.push({
+					PartAssemblyAndType: "Out",
+					ClassName: "Out",
+					In: null,
+					Out: ["Content", "Presentation", "ListContent", "ListPresentation"]
+				});
 
-				model.InstalledDataSources = results[1];
+				// Add Navigation-Property from each DataSource to its Definition
+				angular.forEach(model.DataSources, function (dataSource) {
+					dataSource.Definition = $filter('filter')(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+				});
 
 				deferred.resolve(model);
 			});

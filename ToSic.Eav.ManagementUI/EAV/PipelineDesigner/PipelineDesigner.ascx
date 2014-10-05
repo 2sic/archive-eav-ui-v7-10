@@ -40,7 +40,7 @@
 				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
 				<!--ng-dblclick="open()"-->
-				<div class="ep"></div>
+				<%--<div class="ep"></div>--%>
 				<div class="delete" ng-click="remove($index)"></div>
 			</div>
 		</div>

@@ -13,82 +13,118 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	jsPlumb.ready(function () {
 		// init new jsPlumb Instance
 		var instance = jsPlumb.getInstance({
-			Anchor: 'Continuous',
-			DragOptions: { cursor: 'pointer', zIndex: 2000, hoverClass: 'dragHover' },
-			Connector: ['StateMachine', { curviness: 30 }],
+			//Anchor: 'Continuous',
+			//DragOptions: { cursor: 'pointer', zIndex: 2000, hoverClass: 'dragHover' },
+			//Connector: ['StateMachine', { curviness: 30 }],
 			ConnectionOverlays: [['Arrow', { location: 0.7 }]],
-			Endpoint: ['Dot', { radius: 8 }],
-			EndpointOverlays: [
-				['Label', {
-					id: 'endpointLabel',
-					label: 'Default',
-					cssClass: 'endpointLabel',
-					events: {
-						dblclick: function (labelOverlay) {
-							var newLabel = prompt("Rename Stream", labelOverlay.label);
-							if (newLabel)
-								labelOverlay.setLabel(newLabel);
-						}
-					}
-				}]
-			],
-			PaintStyle: {
-				strokeStyle: '#5c96bc',
-				lineWidth: 2,
-				outlineColor: 'transparent',
-				outlineWidth: 4
-			},
+			//EndpointOverlays: [
+			//	['Label', {
+			//		id: 'endpointLabel',
+			//		location: [0.5, -0.5],
+			//		label: 'Default',
+			//		cssClass: 'endpointLabel',
+			//		events: {
+			//			dblclick: function (labelOverlay) {
+			//				var newLabel = prompt("Rename Stream", labelOverlay.label);
+			//				if (newLabel)
+			//					labelOverlay.setLabel(newLabel);
+			//			}
+			//		}
+			//	}]
+			//],
+			//PaintStyle: {
+			//	strokeStyle: '#5c96bc',
+			//	lineWidth: 2,
+			//	outlineColor: 'transparent',
+			//	outlineWidth: 4
+			//},
 			Container: 'pipeline'
 		});
-		//jsPlumb.Defaults.MaxConnections = 5;
 		$scope.jsPlumbInstance = instance;
 	});
 
+	// this is the paint style for the connecting lines..
+	var connectorPaintStyle = {
+		lineWidth: 4,
+		strokeStyle: "#61B7CF",
+		joinstyle: "round",
+		outlineColor: "white",
+		outlineWidth: 2
+	};
+
+	// the definition of source endpoints (the small blue ones)
+	$scope.sourceEndpoint = {
+		endpoint: "Dot",
+		paintStyle: {
+			strokeStyle: "#7AB02C",
+			fillStyle: "transparent",
+			radius: 7,
+			lineWidth: 3
+		},
+		isSource: true,
+		connector: ["Bezier", { curviness: 70 }],
+		//connector: ["StateMachine", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
+		connectorStyle: connectorPaintStyle,
+		//hoverPaintStyle: endpointHoverStyle,
+		//connectorHoverStyle: connectorHoverStyle,
+		//dragOptions: {},
+		anchor: "Top",
+		overlays: [
+			['Label', {
+				id: 'endpointLabel',
+				location: [0.5, -0.5],
+				label: 'Default',
+				cssClass: 'endpointSourceLabel',
+				events: {
+					dblclick: function (labelOverlay) {
+						var newLabel = prompt("Rename Stream", labelOverlay.label);
+						if (newLabel)
+							labelOverlay.setLabel(newLabel);
+					}
+				}
+			}]
+		]
+	};
+
+	// the definition of target endpoints (will appear when the user drags a connection) 
+	$scope.targetEndpoint = {
+		endpoint: "Dot",
+		paintStyle: { fillStyle: "#7AB02C", radius: 11 },
+		//hoverPaintStyle: endpointHoverStyle,
+		maxConnections: -1,
+		dropOptions: { hoverClass: "hover", activeClass: "active" },
+		isTarget: true,
+		anchor: "Bottom",
+		overlays: [
+			['Label', {
+				//id: 'endpointLabel',
+				location: [0.5, 1.5],
+				label: 'Default',
+				cssClass: 'endpointTargetLabel',
+				events: {
+					dblclick: function (labelOverlay) {
+						var newLabel = prompt("Rename Stream", labelOverlay.label);
+						if (newLabel)
+							labelOverlay.setLabel(newLabel);
+					}
+				}
+			}]
+		]
+	};
+
 	$scope.makeDataSource = function (dataSource, element) {
-		//console.log('makeDataSource');
 		// suspend drawing and initialise
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
-
-			$scope.jsPlumbInstance.makeSource(element, { filter: '.ep', });
-			$scope.jsPlumbInstance.makeTarget(element);
-
-			//var dynEndpointOverlay = function (label, isTarget) {
-			//    return {
-			//        location: [0.5, (isTarget ? -0.5 : 1.5)],
-			//        label: label,
-			//        cssClass: "endpoint" + (isTarget ? "Target" : "Source") + "Label"
-			//    };
-			//}
-
-			//var sourceEndpoint = {
-			//	endpoint: "Dot",
-			//paintStyle: { fillStyle: "#225588", radius: 7 },
-			//isSource: true,
-			//connector: ["Bezier", { curviness: 0 }],//["Flowchart", { stub: [30, 30], gap: 10 }], // "Straight", // [ "Flowchart", { stub:[40, 60], gap:10 } ],                                                                     
-			//connectorStyle: pipelineDesigner.connectorPaintStyle,
-			//hoverPaintStyle: pipelineDesigner.connectorHoverStyle,
-			//connectorHoverStyle: pipelineDesigner.connectorHoverStyle,
-			//dragOptions: {},
-			//maxConnections: -1
-			//                overlays:[
-			//                  [ "Label", dynEndpointOverlay("from", false)
-			////                    { 
-			////                       location:[0.5, 1.5], 
-			////                       label:"Drag",
-			////                       cssClass:"endpointSourceLabel" 
-			////                   } 
-			//                    ]
-			//                ]
-			//}
-
-
-			//$scope.jsPlumbInstance.addEndpoint(element);
-
-			//$scope.jsPlumbInstance.addEndpoint(element, sourceEndpoint, {
-			//    anchor: [1, 1, 0, 0],
-			//    //overlays: [["Label", dynEndpointOverlay("Label", false)]],
-			//    //enabled: true
-			//});
+			if (dataSource.Definition != null) {
+				// Add Out-Endpoints
+				angular.forEach(dataSource.Definition.Out, function (name) {
+					$scope.addOutConnection(element, name);
+				});
+				// Add In-Endpoints
+				angular.forEach(dataSource.Definition.In, function (name) {
+					$scope.addInConnection(element, name);
+				});
+			}
 
 			// make DataSources draggable
 			$scope.jsPlumbInstance.draggable(element, {
@@ -100,10 +136,19 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		$scope.dataSourcesCount++;
 	}
 
+	$scope.addOutConnection = function (element, name) {
+		$scope.jsPlumbInstance.addEndpoint(element, $scope.targetEndpoint);
+	}
+	$scope.addInConnection = function (element, name) {
+		$scope.jsPlumbInstance.addEndpoint(element, $scope.sourceEndpoint);
+	}
+
 	// Initialize jsPlumb Connections once after all DataSources were created in the DOM
 	$scope.connectionsInitialized = false;
 	$scope.$on('ngRepeatFinished', function () {
 		if ($scope.connectionsInitialized) return;
+
+		return;
 
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 			angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
@@ -112,8 +157,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 					source: $scope.dataSourceIdPrefix + wire.From,
 					target: $scope.dataSourceIdPrefix + wire.To
 				});
-				connection.endpoints[0].getOverlay('endpointLabel').setLabel(wire.Out);
-				connection.endpoints[1].getOverlay('endpointLabel').setLabel(wire.In);
+				//connection.endpoints[0].getOverlay('endpointLabel').setLabel(wire.Out);
+				//connection.endpoints[1].getOverlay('endpointLabel').setLabel(wire.In);
 			});
 		});
 
