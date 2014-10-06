@@ -10,9 +10,9 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	$scope.dataSourcesCount = 0;
 	$scope.dataSourceIdPrefix = 'dataSource_';
 
+	// init new jsPlumb Instance
 	jsPlumb.ready(function () {
-		// init new jsPlumb Instance
-		var instance = jsPlumb.getInstance({
+		$scope.jsPlumbInstance = jsPlumb.getInstance({
 			Connector: ["Bezier", { curviness: 70 }],
 			ConnectionOverlays: [['Arrow', { location: 0.7 }]],
 			PaintStyle: {
@@ -24,9 +24,18 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 			},
 			Container: 'pipeline'
 		});
-		$scope.jsPlumbInstance = instance;
+		// If connection on Out-DataSource was removed, remove custom Endpoint
+		$scope.jsPlumbInstance.bind("connectionDetached", function (info) {
+			if (info.targetId == $scope.dataSourceIdPrefix + 'Out') {
+				var fixedEndpoints = angular.element(info.target).scope().dataSource.Definition.In;
+				var label = info.targetEndpoint.getOverlay('endpointLabel').label;
+				if (fixedEndpoints.indexOf(label) == -1)
+					$scope.jsPlumbInstance.deleteEndpoint(info.targetEndpoint);
+			}
+		});
 	});
 
+	//#region jsPlumb Endpoint Definitions
 	var getEndpointOverlays = function (isSource) {
 		return [['Label', {
 			id: 'endpointLabel',
@@ -49,7 +58,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		maxConnections: -1,
 		isSource: true,
 		//anchor: "Top",
-		anchor: [0.5, 0, 0, -1],
+		anchor: ["Continuous", { faces: ["top"] }],
+		//anchor: [0.5, 0, 0, -1],
 		overlays: getEndpointOverlays(true)
 	};
 
@@ -59,23 +69,26 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		maxConnections: -1,
 		isTarget: true,
 		//anchor: "Bottom",
-		anchor: [0.5, 1, 0, 1],
+		anchor: ["Continuous", { faces: ["bottom"] }],
+		//anchor: [0.5, 1, 0, 1],
 		overlays: getEndpointOverlays(false)
 	};
+	//#endregion
 
-	var alignAnchors = function (element) {
-		var endpoints = $scope.jsPlumbInstance.getEndpoints(element);
-		angular.forEach(endpoints, function (endpoint) {
-			var inCount = 2;
-			//var outCount = 2;
-			if (endpoint.isSource)
-				endpoint.setAnchor([0.5, 0, 0, -1]);
+	//var alignAnchors = function (element) {
+	//	var endpoints = $scope.jsPlumbInstance.getEndpoints(element);
+	//	angular.forEach(endpoints, function (endpoint) {
+	//		var inCount = 2;
+	//		//var outCount = 2;
+	//		if (endpoint.isSource)
+	//			endpoint.setAnchor([0.5, 0, 0, -1]);
 
-			//else if (endpoint.isTarget)
-			//	endpoint.setAnchor([0.5, 1, 0, 1]);
-		});
-	}
+	//		//else if (endpoint.isTarget)
+	//		//	endpoint.setAnchor([0.5, 1, 0, 1]);
+	//	});
+	//}
 
+	// make a DataSource with Endpoints, called by the datasource-Directive
 	$scope.makeDataSource = function (dataSource, element) {
 		// suspend drawing and initialise
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
@@ -89,11 +102,12 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				angular.forEach(dataSource.Definition.In, function (name) {
 					addEndpoint(element, name, true);
 				});
-				if (dataSource.Definition.In)// make the DataSource a Target for new Endpoints
+				// make the DataSource a Target for new Endpoints
+				if (dataSource.Definition.In)
 					$scope.jsPlumbInstance.makeTarget(element, targetEndpoint);
 			}
 
-			alignAnchors(element);
+			//alignAnchors(element);
 
 			// make DataSources draggable
 			$scope.jsPlumbInstance.draggable(element, {
@@ -134,7 +148,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				$scope.jsPlumbInstance.connect({ uuids: [fromUuid, toUuid] });
 			});
 		});
-		//$scope.repaint();	// repaint to continuous connections are aligned correctly
+		$scope.repaint();	// repaint to continuous connections are aligned correctly
 
 		$scope.connectionsInitialized = true;
 	});
@@ -156,8 +170,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		var dataSource = $scope.pipelineData.DataSources[index];
 		if (!confirm('Delete DataSource "' + (dataSource.Name || '(unnamed)') + '"?')) return;
 		var elementId = $scope.dataSourceIdPrefix + dataSource.EntityGuid;
-		$scope.jsPlumbInstance.selectEndpoints({ source: elementId }).remove();
-		$scope.jsPlumbInstance.selectEndpoints({ target: elementId }).remove();
+		$scope.jsPlumbInstance.selectEndpoints({ element: elementId }).remove();
 		$scope.pipelineData.DataSources.splice(index, 1);
 	}
 
@@ -198,8 +211,8 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 			endpoints.hideOverlays();
 	}
 
-	// Sync jsPlumb Connections to the pipelineData-Object
-	$scope.syncConnections = function () {
+	// Sync jsPlumb Connections and StreamsOut to the pipelineData-Object
+	var syncPipelineData = function () {
 		var connectionInfos = [];
 		angular.forEach($scope.jsPlumbInstance.getAllConnections(), function (connection) {
 			connectionInfos.push({
@@ -209,15 +222,22 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				In: connection.endpoints[1].getOverlay('endpointLabel').label
 			});
 		});
-
 		$scope.pipelineData.Pipeline.StreamWiring = connectionInfos;
+
+		var streamsOut = [];
+		$scope.jsPlumbInstance.selectEndpoints({ target: $scope.dataSourceIdPrefix + "Out" }).each(function (endpoint) {
+			streamsOut.push(endpoint.getOverlay('endpointLabel').label);
+		});
+		$scope.pipelineData.Pipeline.StreamsOut = streamsOut.join(",");
 	}
 
 	// Save Pipeline
 	$scope.savePipeline = function () {
-		$scope.syncConnections();
+		syncPipelineData();
 
 		console.log("save...");
+
+		pipelineFactory.savePipeline($scope.pipelineData.Pipeline, $scope.pipelineData.DataSources);
 		// Notes: Must also delete Pipeline-Parts which were removed (better on server side)
 	}
 

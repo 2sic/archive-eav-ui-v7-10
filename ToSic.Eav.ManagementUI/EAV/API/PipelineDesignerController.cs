@@ -117,37 +117,44 @@ namespace ToSic.Eav.ManagementUI.API
 			return result;
 		}
 
-		/// <summary>
-		/// Update an Entity with new values. Values not in the list will not change at the moment.
-		/// </summary>
-		public bool UpdateEntity(int entityId, IDictionary newValues)
+		[HttpPost]
+		//public int SavePipeline(int? pipelineEntityId, [FromBody] dynamic pipeline, [FromBody] dynamic dataSources)
+		public int SavePipeline(int? pipelineEntityId)
 		{
-			return _context.UpdateEntity(entityId, newValues) != null;
+			return -1;
 		}
 
-		/// <summary>
-		/// Update an Entity with new values. Values not in the list will not change at the moment.
-		/// </summary>
-		public bool UpdateEntityByGuid(Guid entityGuid, IDictionary newValues)
-		{
-			return _context.UpdateEntity(entityGuid, newValues) != null;
-		}
+		///// <summary>
+		///// Update an Entity with new values. Values not in the list will not change at the moment.
+		///// </summary>
+		//public bool UpdateEntity(int entityId, IDictionary newValues)
+		//{
+		//	return _context.UpdateEntity(entityId, newValues) != null;
+		//}
 
-		/// <summary>
-		/// Update an Entity with new values. Values not in the list will not change at the moment.
-		/// </summary>
-		public bool AddEntity(int attributeSetId, IDictionary values, int assignmentObjectType, Guid keyGuid)
-		{
-			var newEntity = _context.AddEntity(attributeSetId, values, null, keyGuid, assignmentObjectType);
-			return newEntity != null;
-		}
+		///// <summary>
+		///// Update an Entity with new values. Values not in the list will not change at the moment.
+		///// </summary>
+		//public bool UpdateEntityByGuid(Guid entityGuid, IDictionary newValues)
+		//{
+		//	return _context.UpdateEntity(entityGuid, newValues) != null;
+		//}
 
-		/// <summary>
-		/// Delete an Entity
-		/// </summary>
-		public bool DeleteEntityByGuid(Guid entityGuid)
-		{
-			return _context.DeleteEntity(entityGuid);
-		}
+		///// <summary>
+		///// Update an Entity with new values. Values not in the list will not change at the moment.
+		///// </summary>
+		//public bool AddEntity(int attributeSetId, IDictionary values, int assignmentObjectType, Guid keyGuid)
+		//{
+		//	var newEntity = _context.AddEntity(attributeSetId, values, null, keyGuid, assignmentObjectType);
+		//	return newEntity != null;
+		//}
+
+		///// <summary>
+		///// Delete an Entity
+		///// </summary>
+		//public bool DeleteEntityByGuid(Guid entityGuid)
+		//{
+		//	return _context.DeleteEntity(entityGuid);
+		//}
 	}
 }

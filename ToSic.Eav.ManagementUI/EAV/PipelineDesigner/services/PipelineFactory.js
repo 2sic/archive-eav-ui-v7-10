@@ -42,8 +42,8 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 			return deferred.promise;
 		},
-		savePipeline: function (pipeline) {
-
+		savePipeline: function (pipeline, dataSources) {
+			pipelineResource.save({ action: 'SavePipeline', pipelineEntityId: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
 		}
 	}
 }]);
