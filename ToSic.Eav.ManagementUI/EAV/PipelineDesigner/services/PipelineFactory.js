@@ -9,7 +9,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 		getPipeline: function (pipelineEntityId) {
 			var deferred = $q.defer();
 
-			var getPipeline = pipelineResource.get({ action: 'GetPipeline', pipelineEntityId: pipelineEntityId });
+			var getPipeline = pipelineResource.get({ action: 'GetPipeline', id: pipelineEntityId });
 			var getInstalledDataSources = pipelineResource.query({ action: 'GetInstalledDataSources' });
 
 			// Join and modify retrieved Data
@@ -32,7 +32,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 					Out: null
 				});
 
-				// Add Navigation-Property from each DataSource to its Definition
+				// Add Definition to each DataSource
 				angular.forEach(model.DataSources, function (dataSource) {
 					dataSource.Definition = $filter('filter')(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
 				});
@@ -43,7 +43,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 			return deferred.promise;
 		},
 		savePipeline: function (pipeline, dataSources) {
-			pipelineResource.save({ action: 'SavePipeline', pipelineEntityId: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
+			pipelineResource.save({ action: 'SavePipeline', Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
 		}
 	}
 }]);

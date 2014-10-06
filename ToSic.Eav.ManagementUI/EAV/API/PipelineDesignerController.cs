@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Script.Serialization;
 using ToSic.Eav.DataSources;
@@ -21,12 +21,12 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Get a Pipeline with DataSources
 		/// </summary>
 		[HttpGet]
-		public Dictionary<string, object> GetPipeline(int pipelineEntityId = 0)
+		public Dictionary<string, object> GetPipeline(int id = 0)
 		{
 			Dictionary<string, object> pipelineJson = null;
 			var dataSourcesJson = new List<Dictionary<string, object>>();
 
-			if (pipelineEntityId > 0)
+			if (id > 0)
 			{
 				#region Get the Entity descripting the Pipeline
 				var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
@@ -36,13 +36,13 @@ namespace ToSic.Eav.ManagementUI.API
 				IEntity pipelineEntity;
 				try
 				{
-					pipelineEntity = entities[pipelineEntityId];
+					pipelineEntity = entities[id];
 					if (pipelineEntity.Type.StaticName != "DataPipeline")
-						throw new Exception("pipelineEntityId is not an DataPipeline Entity");
+						throw new Exception("id is not an DataPipeline Entity");
 				}
 				catch (Exception)
 				{
-					throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", pipelineEntityId), "pipelineEntityId");
+					throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", id), "id");
 				}
 				#endregion
 
@@ -117,11 +117,43 @@ namespace ToSic.Eav.ManagementUI.API
 			return result;
 		}
 
+		/// <summary>
+		/// Save Pipeline
+		/// </summary>
+		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
+		/// <param name="id">PipelineEntityId</param>
 		[HttpPost]
-		//public int SavePipeline(int? pipelineEntityId, [FromBody] dynamic pipeline, [FromBody] dynamic dataSources)
-		public int SavePipeline(int? pipelineEntityId)
+		public string SavePipeline([FromBody] dynamic data, int id = 0)
 		{
-			return -1;
+			// Serialize some Entity-Values
+			var pipeline = data.pipeline;
+			var wirings = ((Newtonsoft.Json.Linq.JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
+			pipeline.StreamWiring = DataPipelineWiring.Serialize(wirings);
+
+			UpdateEntity(id, pipeline);
+
+			// ToDo: Make dataSource.Definition a function so it's not in the JSON
+
+			var dataSources = data.dataSources;
+			// ToDo: Remove deleted DataSources
+			// ToDo: Save new DataSources
+			// ToDo: Update existing DataSources
+
+			return pipeline.Name;
+		}
+
+		private void UpdateEntity(int entityId, dynamic newValues, IList<string> excludeKeys = null)
+		{
+			var newValuesDict = ((Newtonsoft.Json.Linq.JObject)newValues).ToObject<IDictionary<string, object>>();
+			if (excludeKeys == null)
+				excludeKeys = new List<string>();
+
+			excludeKeys.Add("EntityGuid");
+			excludeKeys.Add("EntityId");
+
+			newValuesDict.Where(i => !excludeKeys.Contains(i.Key));
+
+			//_context.UpdateEntity(entityId, newValuesDict);
 		}
 
 		///// <summary>
