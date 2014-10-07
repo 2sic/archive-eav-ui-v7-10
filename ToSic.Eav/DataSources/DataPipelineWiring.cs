@@ -10,13 +10,15 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public static class DataPipelineWiring
 	{
-		private static readonly Regex WireRegex = new Regex("(?<From>.*):(?<Out>.*)>(?<To>.*):(?<In>.*)");
+		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)");
 
 		/// <summary>
 		/// Deserialize a string of Wiring Infos to WireInfo Objects
 		/// </summary>
 		public static IEnumerable<WireInfo> Deserialize(string wiringsSerialized)
 		{
+			if (string.IsNullOrWhiteSpace(wiringsSerialized)) return null;
+
 			var wirings = wiringsSerialized.Split(new[] { "\r\n" }, StringSplitOptions.None);
 
 			return wirings.Select(wire => WireRegex.Match(wire)).Select(match => new WireInfo
@@ -37,7 +39,7 @@ namespace ToSic.Eav.DataSources
 		}
 	}
 
-	
+
 	/// <summary>
 	/// Represent a Wire which connects DataSources in a Pipeline
 	/// </summary>

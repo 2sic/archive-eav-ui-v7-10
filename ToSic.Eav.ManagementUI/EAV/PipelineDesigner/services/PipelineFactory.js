@@ -11,12 +11,11 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 	var postProcessDataSources = function (model) {
 		// Append Out-DataSource
 		model.DataSources.push({
-			Name: "Out",
-			Description: "",
-			EntityGuid: "Out",
-			PartAssemblyAndType: "Out",
-			VisualDesignerData: { Top: 50, Left: 410 },
-			AllowDelete: false
+			Name: 'Out',
+			Description: '',
+			EntityGuid: 'Out',
+			PartAssemblyAndType: 'Out',
+			VisualDesignerData: { Top: 50, Left: 410 }
 		});
 
 		// Add Definition to each DataSource
@@ -27,10 +26,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 	return {
 		// get a Pipeline with Pipeline Info with Pipeline Parts and Installed DataSources
-		getPipeline: function (pipelineEntityId) {
+		getPipeline: function (pipelineEntityId, appId) {
 			var deferred = $q.defer();
 
-			var getPipeline = pipelineResource.get({ action: 'GetPipeline', id: pipelineEntityId });
+			var getPipeline = pipelineResource.get({ action: 'GetPipeline', id: pipelineEntityId, appId: appId });
 			var getInstalledDataSources = pipelineResource.query({ action: 'GetInstalledDataSources' });
 
 			// Join and modify retrieved Data
@@ -40,19 +39,23 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 				// Init new Pipeline Object
 				if (!pipelineEntityId) {
-					model.Pipeline = {};
+					model.Pipeline = {
+						AllowEdit: 'True'
+					};
 				}
 
 				model.InstalledDataSources.push({
-					PartAssemblyAndType: "Out",
-					ClassName: "Out",
-					In: ["Content", "Presentation", "ListContent", "ListPresentation"],
+					PartAssemblyAndType: 'Out',
+					ClassName: 'Out',
+					In: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
 					Out: null
 				});
 
 				postProcessDataSources(model);
 
 				deferred.resolve(model);
+			}, function (reason) {
+				alert('Failed to get Pipeline. ' + reason.data.ExceptionMessage);
 			});
 
 			return deferred.promise;
@@ -65,7 +68,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 		},
 		savePipeline: function (appId, pipeline, dataSources) {
 			if (!appId)
-				return $q.reject("AppId must be set to save a Pipeline");
+				return $q.reject('AppId must be set to save a Pipeline');
 
 			return pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources }).$promise;
 		}

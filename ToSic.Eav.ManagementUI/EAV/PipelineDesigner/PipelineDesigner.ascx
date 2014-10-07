@@ -11,7 +11,8 @@
 				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
 				<!--ng-dblclick="open()"-->
-				<div class="delete" ng-click="remove($index)" ng-if="dataSource.AllowDelete!=false"></div>
+				<div class="ep" ng-if="dataSource.PartAssemblyAndType!='Out'"></div>
+				<div class="delete" ng-click="remove($index)" ng-if="dataSource.PartAssemblyAndType!='Out'"></div>
 			</div>
 		</div>
 		<button ng-click="savePipeline()">Save Pipeline</button>
@@ -21,6 +22,7 @@
 			<option value="">-- DataSource Type --</option>
 		</select>
 		<button ng-click="addDataSource()" ng-disabled="!addDataSourceType">Add DataSource</button>
-		<pre>{{pipelineData | json}}</pre>
+		<div notifications="bottom right"></div>
+		<%--<pre>{{pipelineData | json}}</pre>--%>
 	</div>
 </div>
