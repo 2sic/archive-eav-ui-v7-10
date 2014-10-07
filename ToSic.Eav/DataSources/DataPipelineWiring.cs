@@ -5,10 +5,16 @@ using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <summary>
+	/// Helper for DataPipeline Wiring of DataSources
+	/// </summary>
 	public static class DataPipelineWiring
 	{
 		private static readonly Regex WireRegex = new Regex("(?<From>.*):(?<Out>.*)>(?<To>.*):(?<In>.*)");
 
+		/// <summary>
+		/// Deserialize a string of Wiring Infos to WireInfo Objects
+		/// </summary>
 		public static IEnumerable<WireInfo> Deserialize(string wiringsSerialized)
 		{
 			var wirings = wiringsSerialized.Split(new[] { "\r\n" }, StringSplitOptions.None);
@@ -22,12 +28,19 @@ namespace ToSic.Eav.DataSources
 			});
 		}
 
+		/// <summary>
+		/// Serialize Wire Infos to a String
+		/// </summary>
 		public static string Serialize(IEnumerable<WireInfo> wirings)
 		{
 			return string.Join("\r\n", wirings.Select(w => w.ToString()));
 		}
 	}
 
+	
+	/// <summary>
+	/// Represent a Wire which connects DataSources in a Pipeline
+	/// </summary>
 	public struct WireInfo
 	{
 		public string From { get; set; }

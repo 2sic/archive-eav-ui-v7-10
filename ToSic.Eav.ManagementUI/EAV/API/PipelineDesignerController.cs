@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 
@@ -15,6 +17,7 @@ namespace ToSic.Eav.ManagementUI.API
 		public PipelineDesignerController()
 		{
 			_context.UserName = null;	// ToDo: Ensure UserName
+			_context.InitZoneApp();	// ToDo: Ensure AppId
 		}
 
 		/// <summary>
@@ -53,14 +56,9 @@ namespace ToSic.Eav.ManagementUI.API
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
 				pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
 
-				var ser = new JavaScriptSerializer();
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
-					try
-					{
-						dataSource["VisualDesignerData"] = ser.Deserialize<object>((string)dataSource["VisualDesignerData"]);
-					}
-					catch (ArgumentException) { }
+					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
 					dataSourcesJson.Add(dataSource);
 				}
 				#endregion
@@ -123,37 +121,70 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="id">PipelineEntityId</param>
 		[HttpPost]
-		public string SavePipeline([FromBody] dynamic data, int id = 0)
+		public string SavePipeline([FromBody] dynamic data, int appId, int id = 0)
 		{
-			// Serialize some Entity-Values
+			#region Save Pipeline Parts
+			var dataSources = data.dataSources;
+
+			// ToDo: Resolve correct IDs
+			var pipelinePartAttributeSetId = 50;
+			var pipelineEntityGuid = Guid.Parse("0a049dc5-5d7e-48b7-9168-1c41a585811c");
+
+			var newDataSources = new Dictionary<string, Guid>();
+
+			foreach (var dataSource in dataSources)
+			{
+				if (dataSource.PartAssemblyAndType == "Out") continue;	// Don't save Out-DataSource
+
+				// Update existing DataSource or add a new one
+				var newValues = GetEntityValues(dataSource);
+				if (dataSource.EntityId != null)
+					_context.UpdateEntity((int)dataSource.EntityId, newValues);
+				else
+				{
+					Entity entitiy = _context.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, DataSource.AssignmentObjectTypeIdDataPipeline);
+					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
+				}
+			}
+			// ToDo: Remove deleted DataSources
+			#endregion
+
+			#region Save Pipeline
 			var pipeline = data.pipeline;
-			var wirings = ((Newtonsoft.Json.Linq.JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
+
+			// Update Wirings of entities just added
+			var wiringsOriginal = ((JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
+			var wirings = new List<WireInfo>();
+			foreach (var wireInfo in wiringsOriginal)
+			{
+				var newWireInfo = wireInfo;
+				if (newDataSources.ContainsKey(wireInfo.From))
+					newWireInfo.From = newDataSources[wireInfo.From].ToString();
+				if (newDataSources.ContainsKey(wireInfo.To))
+					newWireInfo.To = newDataSources[wireInfo.To].ToString();
+
+				wirings.Add(newWireInfo);
+			}
 			pipeline.StreamWiring = DataPipelineWiring.Serialize(wirings);
 
-			UpdateEntity(id, pipeline);
+			_context.UpdateEntity(id, GetEntityValues(pipeline));
 
-			// ToDo: Make dataSource.Definition a function so it's not in the JSON
-
-			var dataSources = data.dataSources;
-			// ToDo: Remove deleted DataSources
-			// ToDo: Save new DataSources
-			// ToDo: Update existing DataSources
-
+			#endregion
 			return pipeline.Name;
 		}
 
-		private void UpdateEntity(int entityId, dynamic newValues, IList<string> excludeKeys = null)
+		/// <summary>
+		/// Update an Entity with values from a JObject
+		/// </summary>
+		/// <param name="newValues">JObject with new Values</param>
+		/// <param name="excludeKeys">Keys of values to exclude</param>
+		private static IDictionary GetEntityValues(JToken newValues, IEnumerable<string> excludeKeys = null)
 		{
-			var newValuesDict = ((Newtonsoft.Json.Linq.JObject)newValues).ToObject<IDictionary<string, object>>();
-			if (excludeKeys == null)
-				excludeKeys = new List<string>();
+			var newValuesDict = newValues.ToObject<IDictionary<string, object>>();
 
-			excludeKeys.Add("EntityGuid");
-			excludeKeys.Add("EntityId");
+			var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
 
-			newValuesDict.Where(i => !excludeKeys.Contains(i.Key));
-
-			//_context.UpdateEntity(entityId, newValuesDict);
+			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key) && (excludeKeys == null || !excludeKeys.Contains(i.Key))).ToDictionary(k => k.Key, v => v.Value);
 		}
 
 		///// <summary>

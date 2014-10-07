@@ -4,6 +4,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 	var pipelineResource = $resource('/api/EAV/PipelineDesigner/:action');
 
+	var getDataSourceDefinitionProperty = function (model, dataSource) {
+		return $filter('filter')(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+	};
+
 	return {
 		// get a Pipeline with Pipeline Info with Pipeline Parts and Installed DataSources
 		getPipeline: function (pipelineEntityId) {
@@ -22,7 +26,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 					Name: "Out",
 					EntityGuid: "Out",
 					PartAssemblyAndType: "Out",
-					VisualDesignerData: { Top: 40, Left: 410 },
+					VisualDesignerData: { Top: 50, Left: 410 },
 					AllowDelete: false
 				});
 				model.InstalledDataSources.push({
@@ -34,7 +38,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 				// Add Definition to each DataSource
 				angular.forEach(model.DataSources, function (dataSource) {
-					dataSource.Definition = $filter('filter')(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+					dataSource.Definition = function () { return getDataSourceDefinitionProperty(model, dataSource); }
 				});
 
 				deferred.resolve(model);
@@ -42,8 +46,11 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 
 			return deferred.promise;
 		},
-		savePipeline: function (pipeline, dataSources) {
-			pipelineResource.save({ action: 'SavePipeline', Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
+		getNewDataSource: function (model, dataSourceBase) {
+			return { Definition: function () { return getDataSourceDefinitionProperty(model, dataSourceBase); } }
+		},
+		savePipeline: function (appId, pipeline, dataSources) {
+			pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
 		}
 	}
 }]);
