@@ -24,32 +24,19 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Get a Pipeline with DataSources
 		/// </summary>
 		[HttpGet]
-		public Dictionary<string, object> GetPipeline(int id = 0)
+		public Dictionary<string, object> GetPipeline(int? id = null)
 		{
 			Dictionary<string, object> pipelineJson = null;
 			var dataSourcesJson = new List<Dictionary<string, object>>();
 
-			if (id > 0)
+			if (id.HasValue)
 			{
-				#region Get the Entity descripting the Pipeline
+				// Get the Entity descripting the Pipeline
 				var source = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
-				var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
-
-				var entities = source["Default"].List;
-				IEntity pipelineEntity;
-				try
-				{
-					pipelineEntity = entities[id];
-					if (pipelineEntity.Type.StaticName != "DataPipeline")
-						throw new Exception("id is not an DataPipeline Entity");
-				}
-				catch (Exception)
-				{
-					throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", id), "id");
-				}
-				#endregion
+				var pipelineEntity = GetPipelineEntity(id.Value, source);
 
 				// Get DataSources in this Pipeline
+				var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
 				var dataSources = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntity.EntityGuid);
 
 				#region Deserialize some Entity-Values
@@ -70,6 +57,33 @@ namespace ToSic.Eav.ManagementUI.API
 				{"Pipeline", pipelineJson},
 				{"DataSources", dataSourcesJson}
 			};
+		}
+
+		/// <summary>
+		/// Get an Entity Describing a Pipeline
+		/// </summary>
+		/// <param name="entityId">EntityId</param>
+		/// <param name="dataSource">DataSource to load Entity from</param>
+		private static IEntity GetPipelineEntity(int entityId, IDataSource dataSource = null)
+		{
+			if (dataSource == null)
+				dataSource = DataSource.GetInitialDataSource(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
+
+			var entities = dataSource["Default"].List;
+
+			IEntity pipelineEntity;
+			try
+			{
+				pipelineEntity = entities[entityId];
+				if (pipelineEntity.Type.StaticName != "DataPipeline")
+					throw new Exception("id is not an DataPipeline Entity");
+			}
+			catch (Exception)
+			{
+				throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", entityId), "entityId");
+			}
+
+			return pipelineEntity;
 		}
 
 		/// <summary>
@@ -119,22 +133,49 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Save Pipeline
 		/// </summary>
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
+		/// <param name="appId">AppId this Pipeline belogs to</param>
 		/// <param name="id">PipelineEntityId</param>
 		[HttpPost]
-		public string SavePipeline([FromBody] dynamic data, int appId, int id = 0)
+		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			#region Save Pipeline Parts
-			var dataSources = data.dataSources;
+			// Get/Save Pipeline EntityGuid to assign Pipeline Parts to it
+			Guid pipelineEntityGuid;
+			if (id.HasValue)
+			{
+				var entity = GetPipelineEntity(id.Value);
+				pipelineEntityGuid = entity.EntityGuid;
+			}
+			else
+			{
+				Entity entity = SavePipelineEntity(null, data.pipeline);
+				pipelineEntityGuid = entity.EntityGUID;
+				id = entity.EntityID;
+			}
 
-			// ToDo: Resolve correct IDs
+			// ToDo: Resolve correct ID
 			var pipelinePartAttributeSetId = 50;
-			var pipelineEntityGuid = Guid.Parse("0a049dc5-5d7e-48b7-9168-1c41a585811c");
+			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
 
+			// Update Pipeline Entity with new Wirings etc.
+			SavePipelineEntity(id.Value, data.pipeline, newDataSources);
+
+			//return new HttpResponseMessage(HttpStatusCode.OK);
+			return GetPipeline(id.Value);
+		}
+
+		/// <summary>
+		/// Save PipelineParts (DataSources) to EAV
+		/// </summary>
+		/// <param name="dataSources">JSON describing the DataSources</param>
+		/// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
+		/// <param name="pipelinePartAttributeSetId">AttributeSetId of PipelineParts</param>
+		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId)
+		{
 			var newDataSources = new Dictionary<string, Guid>();
 
 			foreach (var dataSource in dataSources)
 			{
-				if (dataSource.PartAssemblyAndType == "Out") continue;	// Don't save Out-DataSource
+				if (dataSource.PartAssemblyAndType == "Out") continue; // Don't save Out-DataSource
 
 				// Update existing DataSource or add a new one
 				var newValues = GetEntityValues(dataSource);
@@ -146,31 +187,50 @@ namespace ToSic.Eav.ManagementUI.API
 					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
-			// ToDo: Remove deleted DataSources
-			#endregion
 
-			#region Save Pipeline
-			var pipeline = data.pipeline;
+			// ToDo: Remove deleted DataSources
+
+			return newDataSources;
+		}
+
+		private Entity SavePipelineEntity(int? id, dynamic pipeline, IDictionary<string, Guid> newDataSources = null)
+		{
+			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
+			// A new Pipeline Entity must be saved twice, this only works
+			dynamic pipelineClone = ((JObject)pipeline).DeepClone();
+
+			var wirings = ((JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
 
 			// Update Wirings of entities just added
-			var wiringsOriginal = ((JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
-			var wirings = new List<WireInfo>();
-			foreach (var wireInfo in wiringsOriginal)
+			if (newDataSources != null)
 			{
-				var newWireInfo = wireInfo;
-				if (newDataSources.ContainsKey(wireInfo.From))
-					newWireInfo.From = newDataSources[wireInfo.From].ToString();
-				if (newDataSources.ContainsKey(wireInfo.To))
-					newWireInfo.To = newDataSources[wireInfo.To].ToString();
+				var wiringsNew = new List<WireInfo>();
+				foreach (var wireInfo in wirings)
+				{
+					var newWireInfo = wireInfo;
+					if (newDataSources.ContainsKey(wireInfo.From))
+						newWireInfo.From = newDataSources[wireInfo.From].ToString();
+					if (newDataSources.ContainsKey(wireInfo.To))
+						newWireInfo.To = newDataSources[wireInfo.To].ToString();
 
-				wirings.Add(newWireInfo);
+					wiringsNew.Add(newWireInfo);
+				}
+				wirings = wiringsNew;
 			}
-			pipeline.StreamWiring = DataPipelineWiring.Serialize(wirings);
+			pipelineClone.StreamWiring = DataPipelineWiring.Serialize(wirings);
 
-			_context.UpdateEntity(id, GetEntityValues(pipeline));
+			// Add/Update Entity
+			Entity result;
 
-			#endregion
-			return pipeline.Name;
+			var attriguteSetId = 49; // ToDo: Get correct ID
+
+			IDictionary newValues = GetEntityValues(pipelineClone);
+			if (id.HasValue)
+				result = _context.UpdateEntity(id.Value, newValues);
+			else
+				result = _context.AddEntity(attriguteSetId, newValues, null, null);
+
+			return result;
 		}
 
 		/// <summary>
@@ -186,38 +246,5 @@ namespace ToSic.Eav.ManagementUI.API
 
 			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key) && (excludeKeys == null || !excludeKeys.Contains(i.Key))).ToDictionary(k => k.Key, v => v.Value);
 		}
-
-		///// <summary>
-		///// Update an Entity with new values. Values not in the list will not change at the moment.
-		///// </summary>
-		//public bool UpdateEntity(int entityId, IDictionary newValues)
-		//{
-		//	return _context.UpdateEntity(entityId, newValues) != null;
-		//}
-
-		///// <summary>
-		///// Update an Entity with new values. Values not in the list will not change at the moment.
-		///// </summary>
-		//public bool UpdateEntityByGuid(Guid entityGuid, IDictionary newValues)
-		//{
-		//	return _context.UpdateEntity(entityGuid, newValues) != null;
-		//}
-
-		///// <summary>
-		///// Update an Entity with new values. Values not in the list will not change at the moment.
-		///// </summary>
-		//public bool AddEntity(int attributeSetId, IDictionary values, int assignmentObjectType, Guid keyGuid)
-		//{
-		//	var newEntity = _context.AddEntity(attributeSetId, values, null, keyGuid, assignmentObjectType);
-		//	return newEntity != null;
-		//}
-
-		///// <summary>
-		///// Delete an Entity
-		///// </summary>
-		//public bool DeleteEntityByGuid(Guid entityGuid)
-		//{
-		//	return _context.DeleteEntity(entityGuid);
-		//}
 	}
 }

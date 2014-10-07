@@ -116,6 +116,12 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	$scope.$on('ngRepeatFinished', function () {
 		if ($scope.connectionsInitialized) return;
 
+		initWirings();
+
+		$scope.connectionsInitialized = true;
+	});
+
+	var initWirings = function () {
 		$scope.jsPlumbInstance.doWhileSuspended(function () {
 			angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
 				// read connections from Pipeline
@@ -134,9 +140,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 			});
 		});
 		$scope.repaint();	// repaint to continuous connections are aligned correctly
-
-		$scope.connectionsInitialized = true;
-	});
+	}
 
 	// Add new DataSource
 	$scope.addDataSource = function () {
@@ -223,7 +227,22 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	$scope.savePipeline = function () {
 		syncPipelineData();
 
-		pipelineFactory.savePipeline($location.search().AppId, $scope.pipelineData.Pipeline, $scope.pipelineData.DataSources);
+		pipelineFactory.savePipeline($location.search().AppId, $scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(function (success) {
+			alert('Pipeline saved successfully');
+
+			$scope.pipelineData.Pipeline = success.Pipeline;
+			$scope.pipelineData.DataSources = success.DataSources;
+			pipelineFactory.postProcessDataSources($scope.pipelineData);
+
+			$scope.jsPlumbInstance.reset();
+
+			$timeout(function () {	// init wirings when DOM is ready
+				initWirings();
+			});
+
+		}, function (reason) {
+			alert('Failed: ' + reason);
+		});
 	}
 
 	// Repaint jsPlumb

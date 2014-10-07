@@ -8,6 +8,23 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 		return $filter('filter')(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
 	};
 
+	var postProcessDataSources = function (model) {
+		// Append Out-DataSource
+		model.DataSources.push({
+			Name: "Out",
+			Description: "",
+			EntityGuid: "Out",
+			PartAssemblyAndType: "Out",
+			VisualDesignerData: { Top: 50, Left: 410 },
+			AllowDelete: false
+		});
+
+		// Add Definition to each DataSource
+		angular.forEach(model.DataSources, function (dataSource) {
+			dataSource.Definition = function () { return getDataSourceDefinitionProperty(model, dataSource); }
+		});
+	};
+
 	return {
 		// get a Pipeline with Pipeline Info with Pipeline Parts and Installed DataSources
 		getPipeline: function (pipelineEntityId) {
@@ -21,14 +38,11 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 				var model = JSON.parse(angular.toJson(results[0]));	// workaround to remove AngularJS Promise from the result-Objects
 				model.InstalledDataSources = JSON.parse(angular.toJson(results[1]));
 
-				// Append Out-DataSource
-				model.DataSources.push({
-					Name: "Out",
-					EntityGuid: "Out",
-					PartAssemblyAndType: "Out",
-					VisualDesignerData: { Top: 50, Left: 410 },
-					AllowDelete: false
-				});
+				// Init new Pipeline Object
+				if (!pipelineEntityId) {
+					model.Pipeline = {};
+				}
+
 				model.InstalledDataSources.push({
 					PartAssemblyAndType: "Out",
 					ClassName: "Out",
@@ -36,21 +50,24 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 					Out: null
 				});
 
-				// Add Definition to each DataSource
-				angular.forEach(model.DataSources, function (dataSource) {
-					dataSource.Definition = function () { return getDataSourceDefinitionProperty(model, dataSource); }
-				});
+				postProcessDataSources(model);
 
 				deferred.resolve(model);
 			});
 
 			return deferred.promise;
 		},
+		postProcessDataSources: function (model) {
+			postProcessDataSources(model);
+		},
 		getNewDataSource: function (model, dataSourceBase) {
 			return { Definition: function () { return getDataSourceDefinitionProperty(model, dataSourceBase); } }
 		},
 		savePipeline: function (appId, pipeline, dataSources) {
-			pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources });
+			if (!appId)
+				return $q.reject("AppId must be set to save a Pipeline");
+
+			return pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources }).$promise;
 		}
 	}
 }]);
