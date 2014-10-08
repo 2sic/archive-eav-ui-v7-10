@@ -133,9 +133,11 @@
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.6.4.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
-    <Content Include="EAV\PipelineDesigner\services\PipelineFactory.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
     <Content Include="Global.asax" />
     <Content Include="PipelineDesigner.aspx" />
+    <Content Include="Scripts\angular-animate.js" />
+    <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-resource.js" />
     <Content Include="Scripts\angular-resource.min.js" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
@@ -171,6 +173,8 @@
     <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.pack.js" />
     <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesignerSample.js" />
+    <Content Include="Scripts\toaster.css" />
+    <Content Include="Scripts\toaster.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -182,6 +186,7 @@
     <Content Include="Scripts\jquery.min.map" />
     <Content Include="Scripts\jquery-1.9.1.min.map" />
     <Content Include="Scripts\angular-resource.min.js.map" />
+    <Content Include="Scripts\angular-animate.min.js.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">

@@ -22,7 +22,7 @@
 			<option value="">-- DataSource Type --</option>
 		</select>
 		<button ng-click="addDataSource()" ng-disabled="!addDataSourceType">Add DataSource</button>
-		<div notifications="bottom right"></div>
+		<toaster-container></toaster-container>
 		<%--<pre>{{pipelineData | json}}</pre>--%>
 	</div>
 </div>

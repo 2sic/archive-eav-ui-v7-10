@@ -31,6 +31,10 @@ namespace ToSic.Eav
 		/// <summary>
 		/// StaticName of the DataPipeline AttributeSet
 		/// </summary>
+		public readonly static string DataPipelineStaticName = "DataPipeline";
+		/// <summary>
+		/// StaticName of the DataPipelinePart AttributeSet
+		/// </summary>
 		public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
 		/// <summary>
 		/// Default In-/Out-Stream Name

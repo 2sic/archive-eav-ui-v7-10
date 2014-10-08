@@ -14,12 +14,6 @@ namespace ToSic.Eav.ManagementUI.API
 	{
 		private EavContext _context;
 
-		//public PipelineDesignerController()
-		//{
-		//	_context.UserName = null;	// ToDo: Ensure UserName
-		//	_context.InitZoneApp();	// ToDo: Ensure AppId
-		//}
-
 		/// <summary>
 		/// Get a Pipeline with DataSources
 		/// </summary>
@@ -140,7 +134,21 @@ namespace ToSic.Eav.ManagementUI.API
 		[HttpPost]
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
+			const string userName = "EAV Pipeline Designer";
+			return SavePipeline(data, appId, id, userName);
+		}
+
+		/// <summary>
+		/// Save Pipeline
+		/// </summary>
+		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
+		/// <param name="appId">AppId this Pipeline belogs to</param>
+		/// <param name="id">PipelineEntityId</param>
+		/// <param name="userName">Username performing this Save-Action</param>
+		protected Dictionary<string, object> SavePipeline(dynamic data, int appId, int? id = null, string userName = null)
+		{
 			_context = EavContext.Instance(appId: appId);
+			_context.UserName = userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
 			// Get/Save Pipeline EntityGuid. Its required to assign Pipeline Parts to it.
@@ -157,10 +165,9 @@ namespace ToSic.Eav.ManagementUI.API
 				id = entity.EntityID;
 			}
 
-			// ToDo: Resolve correct ID
-			var pipelinePartAttributeSetId = 50;
+			var pipelinePartAttributeSetId = _context.GetAttributeSet(DataSource.DataPipelinePartStaticName).AttributeSetID;
 			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
-			DeletedRemovedPipelineParts(data.dataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
+			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 
 			// Update Pipeline Entity with new Wirings etc.
 			SavePipelineEntity(id.Value, data.pipeline, newDataSources);
@@ -181,7 +188,7 @@ namespace ToSic.Eav.ManagementUI.API
 			foreach (var dataSource in dataSources)
 			{
 				// Skip Out-DataSource
-				if (dataSource.PartAssemblyAndType == "Out") continue;
+				if (dataSource.EntityGuid == "Out") continue;
 
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
@@ -201,13 +208,14 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <summary>
 		/// Delete Pipeline Parts (DataSources) that are not present
 		/// </summary>
-		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Guid pipelineEntityGuid, int zoneId, int appId)
+		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId)
 		{
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
 
-			// Get EntityGuids from the UI (except Out)
-			var newEntityGuids = dataSources.Select(d => (string)((JObject)d).Property("EntityGuid").Value).Where(g => g != "Out").Select(Guid.Parse);
+			// Get EntityGuids from the UI (except Out and unsaved)
+			var newEntityGuids = dataSources.Select(d => (string)((JObject)d).Property("EntityGuid").Value).Where(g => g != "Out" && !g.StartsWith("unsaved")).Select(Guid.Parse).ToList();
+			newEntityGuids.AddRange(newDataSources.Values);
 
 			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
 				_context.DeleteEntity(entityToDelet);
@@ -240,17 +248,9 @@ namespace ToSic.Eav.ManagementUI.API
 			pipelineClone.StreamWiring = DataPipelineWiring.Serialize(wirings);
 
 			// Add/Update Entity
-			Entity result;
-
-			var attriguteSetId = 49; // ToDo: Get correct ID
-
+			var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
 			IDictionary newValues = GetEntityValues(pipelineClone);
-			if (id.HasValue)
-				result = _context.UpdateEntity(id.Value, newValues);
-			else
-				result = _context.AddEntity(attriguteSetId, newValues, null, null);
-
-			return result;
+			return id.HasValue ? _context.UpdateEntity(id.Value, newValues) : _context.AddEntity(attributeSetId, newValues, null, null);
 		}
 
 		/// <summary>

@@ -1,5 +1,12 @@
-pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFactory', '$location', '$timeout', function ($scope, pipelineFactory, $location, $timeout) {
+pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'toaster', function ($scope, pipelineFactory, $location, $timeout, $filter, toaster) {
 	'use strict';
+
+	var showNotification = function (type, title, body, autoHide) {
+		toaster.clear();
+		toaster.pop(type, title, body, autoHide ? null : 0);
+	}
+
+	showNotification('note', 'Loading');
 
 	// Init
 	$scope.dataSourcesCount = 0;
@@ -10,8 +17,16 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	var appId = $location.search().AppId;
 	pipelineFactory.getPipeline(pipelineEntityId, appId).then(function (result) {
 		$scope.pipelineData = result;
+		showNotification('note', 'Loaded', "You can now desing the Pipeline", true);
+
+		// If a new Pipeline is made, add some Default-DataSources
+		if (!$scope.pipelineData.Pipeline.EntityId) {
+			$timeout(function () {
+				$scope.addDataSource('ToSic.Eav.DataSources.App, ToSic.Eav', { Top: 400, Left: 450 });
+			});
+		}
 	}, function (reason) {
-		alert('Failed to load Pipeline. ' + reason);
+		showNotification('error', reason.data ? reason.data.Message : "Error Loading Pipeline", reason.data ? reason.data.ExceptionMessage : reason);
 	});
 
 	// init new jsPlumb Instance
@@ -47,7 +62,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 		return [['Label', {
 			id: 'endpointLabel',
 			location: [0.5, isSource ? -0.5 : 1.5],
-			label: 'Unnamed',
+			label: 'Default',
 			cssClass: isSource ? 'endpointSourceLabel' : 'endpointTargetLabel',
 			events: {
 				dblclick: function (labelOverlay) {
@@ -71,7 +86,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	// the definition of target endpoints (will appear when the user drags a connection) 
 	var targetEndpoint = {
 		paintStyle: { fillStyle: '#7AB02C', radius: 11 },
-		maxConnections: -1,
+		maxConnections: 1,
 		isTarget: true,
 		anchor: ['Continuous', { faces: ['bottom'] }],
 		overlays: getEndpointOverlays(false)
@@ -93,9 +108,12 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				angular.forEach(dataSourceDefinition.In, function (name) {
 					addEndpoint(element, name, true);
 				});
-				// make the DataSource a Target for new Endpoints
-				if (dataSourceDefinition.In)
-					$scope.jsPlumbInstance.makeTarget(element, targetEndpoint);
+				// make the DataSource a Target for new Endpoints (if .In is an Array)
+				if (dataSourceDefinition.In) {
+					var targetEndpointUnlimited = targetEndpoint;
+					targetEndpointUnlimited.maxConnections = -1;
+					$scope.jsPlumbInstance.makeTarget(element, targetEndpointUnlimited);
+				}
 
 				$scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: '.ep', });
 			}
@@ -146,12 +164,17 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	});
 
 	// Add new DataSource
-	$scope.addDataSource = function () {
+	$scope.addDataSource = function (partAssemblyAndType, visualDesignerData) {
+		if (!partAssemblyAndType)
+			partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+		if (!visualDesignerData)
+			visualDesignerData = { Top: 100, Left: 100 };
+
 		var newDataSource = {
-			VisualDesignerData: { Top: 100, Left: 100 },
-			Name: '',
+			VisualDesignerData: visualDesignerData,
+			Name: $filter('typename')(partAssemblyAndType, 'className'),
 			Description: '',
-			PartAssemblyAndType: $scope.addDataSourceType.PartAssemblyAndType,
+			PartAssemblyAndType: partAssemblyAndType,
 			EntityGuid: 'unsaved' + ($scope.dataSourcesCount + 1)
 		};
 		// Extend it with a Property to it's Definition
@@ -228,15 +251,19 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 	// Save Pipeline
 	$scope.savePipeline = function () {
+		showNotification('note', "Saving...");
+
 		syncPipelineData();
 
 		pipelineFactory.savePipeline(appId, $scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(pipelineSaved, function (reason) {
-			alert('Failed: ' + reason);
+			showNotification('error', "Save Failed", reason);
 		});
 	}
 
 	// Handle Pipeline Saved
 	var pipelineSaved = function (success) {
+		showNotification('success', "Saved", "Pipeline " + success.Pipeline.EntityId);
+
 		// Update PipelineData with data retrieved from the Server
 		$scope.pipelineData.Pipeline = success.Pipeline;
 		$scope.pipelineData.DataSources = success.DataSources;
