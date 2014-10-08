@@ -1,12 +1,7 @@
-pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'toaster', function ($scope, pipelineFactory, $location, $timeout, $filter, toaster) {
+pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification) {
 	'use strict';
 
-	var showNotification = function (type, title, body, autoHide) {
-		toaster.clear();
-		toaster.pop(type, title, body, autoHide ? null : 0);
-	}
-
-	showNotification('note', 'Loading');
+	uiNotification.note('Loading');
 
 	// Init
 	$scope.dataSourcesCount = 0;
@@ -17,7 +12,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 	var appId = $location.search().AppId;
 	pipelineFactory.getPipeline(pipelineEntityId, appId).then(function (result) {
 		$scope.pipelineData = result;
-		showNotification('note', 'Loaded', "You can now desing the Pipeline", true);
+		uiNotification.note('Ready', "You can now desing the Pipeline", true);
 
 		// If a new Pipeline is made, add some Default-DataSources
 		if (!$scope.pipelineData.Pipeline.EntityId) {
@@ -26,7 +21,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 			});
 		}
 	}, function (reason) {
-		showNotification('error', reason.data ? reason.data.Message : "Error Loading Pipeline", reason.data ? reason.data.ExceptionMessage : reason);
+		uiNotification.error(reason.data ? reason.data.Message : "Error Loading Pipeline", reason.data ? reason.data.ExceptionMessage : reason);
 	});
 
 	// init new jsPlumb Instance
@@ -41,7 +36,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 				outlineColor: 'white',
 				outlineWidth: 2
 			},
-			Container: 'pipeline'
+			Container: 'pipelineContainer'
 		});
 		// If connection on Out-DataSource was removed, remove custom Endpoint
 		$scope.jsPlumbInstance.bind('connectionDetached', function (info) {
@@ -120,7 +115,7 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 			// make DataSources draggable
 			$scope.jsPlumbInstance.draggable(element, {
-				// grid: [20, 20],
+				grid: [20, 20],
 				drag: $scope.dataSourceDrag
 			});
 		});
@@ -165,8 +160,10 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 	// Add new DataSource
 	$scope.addDataSource = function (partAssemblyAndType, visualDesignerData) {
-		if (!partAssemblyAndType)
+		if (!partAssemblyAndType) {
 			partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+			$scope.addDataSourceType = null;
+		}
 		if (!visualDesignerData)
 			visualDesignerData = { Top: 100, Left: 100 };
 
@@ -251,18 +248,18 @@ pipelineDesigner.controller('pipelineDesignerController', ['$scope', 'pipelineFa
 
 	// Save Pipeline
 	$scope.savePipeline = function () {
-		showNotification('note', "Saving...");
+		uiNotification.note("Saving...");
 
 		syncPipelineData();
 
 		pipelineFactory.savePipeline(appId, $scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(pipelineSaved, function (reason) {
-			showNotification('error', "Save Failed", reason);
+			uiNotification.error("Save Failed", reason);
 		});
 	}
 
 	// Handle Pipeline Saved
 	var pipelineSaved = function (success) {
-		showNotification('success', "Saved", "Pipeline " + success.Pipeline.EntityId);
+		uiNotification.success("Saved", "Pipeline " + success.Pipeline.EntityId, true);
 
 		// Update PipelineData with data retrieved from the Server
 		$scope.pipelineData.Pipeline = success.Pipeline;

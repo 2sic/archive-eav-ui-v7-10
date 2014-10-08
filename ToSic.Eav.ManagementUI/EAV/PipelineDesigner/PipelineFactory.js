@@ -15,7 +15,8 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', funct
 			Description: 'The module/template which will show this data',
 			EntityGuid: 'Out',
 			PartAssemblyAndType: 'SexyContentTemplate',
-			VisualDesignerData: { Top: 50, Left: 410 }
+			VisualDesignerData: { Top: 50, Left: 410 },
+			ReadOnly: true
 		});
 
 		// Add Definition to each DataSource

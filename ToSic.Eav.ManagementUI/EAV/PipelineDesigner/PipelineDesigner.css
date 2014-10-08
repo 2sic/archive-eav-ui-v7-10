@@ -1,7 +1,13 @@
+.actions {
+	width: 210px;
+	position: fixed;
+	right: 0;
+}
+
 .dataSource {
-	min-height: 80px;
+	min-height: 100px;
 	transition: box-shadow 0.15s ease-in 0s;
-	min-width: 170px;
+	min-width: 190px;
 	border: 1px solid #346789;
 	box-shadow: 2px 2px 19px #aaa;
 	-o-box-shadow: 2px 2px 19px #aaa;

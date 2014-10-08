@@ -1,4 +1,4 @@
-var pipelineDesigner = angular.module('pipelineDesinger', ['pipelineDesinger.filters', 'ngResource']);
+var pipelineDesigner = angular.module('pipelineDesinger', ['pipelineDesinger.filters', 'ngResource', 'toaster']);
 
 pipelineDesigner.config(['$locationProvider', function ($locationProvider) {
 	$locationProvider.html5Mode(true);
