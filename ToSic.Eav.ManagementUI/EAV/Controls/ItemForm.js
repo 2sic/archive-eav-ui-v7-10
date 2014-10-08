@@ -127,10 +127,10 @@
 			Eav.AttachFieldController($(field), $(form));
 		});
 
-        // Close parent window if last action is set
+		// Close parent window if last action is set
 		var lastAction = $("input[type=hidden][id$='_hfLastAction']", form).val();
-	    if (lastAction != "" && window.top.EavEditDialogs != null)
-	        window.top.jQuery("#" + window.top.jQuery(window.top.EavEditDialogs[window.top.EavEditDialogs.length - 1]).attr("id")).dialog("close");
+		if (lastAction != "" && window.top.EavEditDialogs != null)
+			window.top.jQuery("#" + window.top.jQuery(window.top.EavEditDialogs[window.top.EavEditDialogs.length - 1]).attr("id")).dialog("close");
 
 	},
 
@@ -830,7 +830,7 @@ Eav.FieldControllerManager = {
 				Eav.InitEntityMultiSelector(objWrapper, true);
 			} else
 				field.val(value);*/
-		    alert("Set-value is untested!");
+			alert("Set-value is untested!");
 		};
 		Controller.GetValue = function () {
 			if (objWrapper.attr("data-allowmultivalue") == "true")
@@ -875,5 +875,5 @@ $.ajaxTransport(function (options, originalOptions, jqXHR) {
 
 // Contstruct angular module for EAV
 (function () {
-    angular.module('2sic-EAV', ['ui.tree']);
+	angular.module('2sic-EAV', ['ui.tree', 'eavGlobalConfigurationProvider', 'eavDialogService']);
 })();

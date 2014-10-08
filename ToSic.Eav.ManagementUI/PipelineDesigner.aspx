@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="Scripts/toaster.css" />
 	<link rel="stylesheet" href="CSS/bootstrap.min.css" />
 	<link rel="stylesheet" href="CSS/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="Scripts/jquery-ui-1.10.3.css" />
 </head>
 <body>
 	<%--<form id="form1" runat="server">--%>
@@ -27,6 +28,8 @@
 	<script src="EAV/PipelineDesigner/PipelineDesigner.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesignerController.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineFactory.js"></script>
-	<script src="EAV/PipelineDesigner/NotificationService.js"></script>
+	<script src="EAV/AngularServices/NotificationService.js"></script>
+	<script src='EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
+	<script src='EAV/AngularServices/EavDialogService.js'></script>
 </body>
 </html>

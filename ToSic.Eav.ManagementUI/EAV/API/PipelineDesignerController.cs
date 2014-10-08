@@ -15,6 +15,40 @@ namespace ToSic.Eav.ManagementUI.API
 		private EavContext _context;
 
 		/// <summary>
+		/// Get URL to configure a DataSource
+		/// </summary>
+		/// <param name="appId">AppId of the Pipeline/DataSource</param>
+		/// <param name="dataSourceEntityGuid">EntityGuid of the DataSource</param>
+		/// <param name="partAssemblyAndType">Type</param>
+		/// <param name="newItemUrl">URL Schema to NewItem-Form</param>
+		/// <param name="editItemUrl">URL Schema to EditItem-Form</param>
+		[HttpGet]
+		public object GetDataSourceConfigurationUrl(int appId, Guid dataSourceEntityGuid, string partAssemblyAndType, string newItemUrl, string editItemUrl)
+		{
+			_context = EavContext.Instance(appId: appId);
+			var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
+
+			// ToDo: Refactor,
+			string attributeSetName;
+			switch (partAssemblyAndType)
+			{
+				case "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav":
+					attributeSetName = "Configuration of an EntityTypeFilter DataSource";
+					break;
+				case "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav":
+					attributeSetName = "Configuration of an EntityIdFilter Data Source";
+					break;
+				default:
+					throw new ArgumentException("No Configuration AttributeSet assigned for this DataSource Type", "partAssemblyAndType");
+			}
+			var attributeSetId = cache.GetContentType(attributeSetName).AttributeSetId;
+
+			var url = Forms.GetItemFormUrl(dataSourceEntityGuid, attributeSetId, DataSource.AssignmentObjectTypeIdDataPipeline, newItemUrl, editItemUrl);
+
+			return new { Url = url };
+		}
+
+		/// <summary>
 		/// Get a Pipeline with DataSources
 		/// </summary>
 		[HttpGet]

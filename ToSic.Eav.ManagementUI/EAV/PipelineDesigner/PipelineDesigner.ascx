@@ -2,15 +2,16 @@
 <div ng-app="pipelineDesinger">
 	<div ng-controller="pipelineDesignerController">
 		<div id="pipelineContainer">
-			<div datasource
+			<div
+				ng-repeat="dataSource in pipelineData.DataSources"
+				datasource
 				id="dataSource_{{dataSource.EntityGuid}}"
 				class="dataSource"
 				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
-				ng-repeat="dataSource in pipelineData.DataSources">
-				<div class="name" ng-dblclick="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
-				<div class="description" ng-dblclick="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
+				ng-dblclick="configureDataSource(dataSource)">
+				<div class="name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
+				<div class="description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
-				<!--ng-dblclick="open()"-->
 				<div class="ep" ng-if="dataSource.ReadOnly != true"></div>
 				<div class="delete" ng-click="remove($index)" ng-if="dataSource.ReadOnly != true"></div>
 			</div>
