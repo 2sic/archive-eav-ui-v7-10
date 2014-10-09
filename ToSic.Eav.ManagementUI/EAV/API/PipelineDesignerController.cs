@@ -28,7 +28,7 @@ namespace ToSic.Eav.ManagementUI.API
 			_context = EavContext.Instance(appId: appId);
 			var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
 
-			// ToDo: Refactor,
+			// ToDo: Refactor
 			string attributeSetName;
 			switch (partAssemblyAndType)
 			{
@@ -191,6 +191,9 @@ namespace ToSic.Eav.ManagementUI.API
 			{
 				var entity = GetPipelineEntity(id.Value, source);
 				pipelineEntityGuid = entity.EntityGuid;
+
+				if (((IAttribute<bool?>)entity["AllowEdit"]).TypedContents == false)
+					throw new InvalidOperationException("Pipeline has AllowEdit set to false");
 			}
 			else
 			{
@@ -255,15 +258,20 @@ namespace ToSic.Eav.ManagementUI.API
 				_context.DeleteEntity(entityToDelet);
 		}
 
+		/// <summary>
+		/// Save a Pipeline Entity to EAV
+		/// </summary>
+		/// <param name="id">EntityId of the Entity describing the Pipeline</param>
+		/// <param name="pipeline">JSON with the new Entity-Values</param>
+		/// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
 		private Entity SavePipelineEntity(int? id, dynamic pipeline, IDictionary<string, Guid> newDataSources = null)
 		{
 			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
-			// A new Pipeline Entity must be saved twice, this only works
-			dynamic pipelineClone = ((JObject)pipeline).DeepClone();
+			// A new Pipeline Entity must be saved twice, but some Field-Values are changed before saving it
+			dynamic pipelineClone = pipeline.DeepClone();
 
-			var wirings = ((JArray)pipeline.StreamWiring).ToObject<IEnumerable<WireInfo>>();
-
-			// Update Wirings of entities just added
+			// Update Wirings of Entities just added
+			var wirings = pipeline.StreamWiring.ToObject<IEnumerable<WireInfo>>();
 			if (newDataSources != null)
 			{
 				var wiringsNew = new List<WireInfo>();
@@ -291,14 +299,13 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Update an Entity with values from a JObject
 		/// </summary>
 		/// <param name="newValues">JObject with new Values</param>
-		/// <param name="excludeKeys">Keys of values to exclude</param>
-		private static IDictionary GetEntityValues(JToken newValues, IEnumerable<string> excludeKeys = null)
+		private static IDictionary GetEntityValues(JToken newValues)
 		{
 			var newValuesDict = newValues.ToObject<IDictionary<string, object>>();
 
 			var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
 
-			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key) && (excludeKeys == null || !excludeKeys.Contains(i.Key))).ToDictionary(k => k.Key, v => v.Value);
+			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key)).ToDictionary(k => k.Key, v => v.Value);
 		}
 	}
 }

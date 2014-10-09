@@ -22,9 +22,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 			ReadOnly: true
 		});
 
-		// Add Definition to each DataSource
+		// Extend each DataSource with Definition-Property and ReadOnly Status
 		angular.forEach(model.DataSources, function (dataSource) {
 			dataSource.Definition = function () { return getDataSourceDefinitionProperty(model, dataSource); }
+			dataSource.ReadOnly = dataSource.ReadOnly || !model.Pipeline.AllowEdit;
 		});
 	};
 
@@ -78,7 +79,15 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 			if (!appId)
 				return $q.reject('AppId must be set to save a Pipeline');
 
-			return pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSources }).$promise;
+			// Remove some Properties from the DataSource before Saving
+			var dataSourcesPrepared = [];
+			angular.forEach(dataSources, function (dataSource) {
+				var dataSourceClone = angular.copy(dataSource);
+				delete dataSourceClone.ReadOnly;
+				dataSourcesPrepared.push(dataSourceClone);
+			});
+
+			return pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
 		},
 		// Get the URL
 		getDataSourceConfigurationUrl: function (appId, dataSource) {

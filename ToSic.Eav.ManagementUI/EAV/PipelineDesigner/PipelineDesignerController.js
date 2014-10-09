@@ -1,3 +1,4 @@
+// AngularJS Controller for the Pipeline Designer
 pipelineDesigner.controller('pipelineDesignerController',
 			['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService',
 	function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification, eavDialogService) {
@@ -7,20 +8,23 @@ pipelineDesigner.controller('pipelineDesignerController',
 		uiNotification.note('Loading');
 		$scope.dataSourcesCount = 0;
 		$scope.dataSourceIdPrefix = 'dataSource_';
+		$scope.debug = false;
 
 		// Load Pipeline Data
 		var pipelineEntityId = $location.search().PipelineId;
 		var appId = $location.search().AppId;
+		// Stop if no AppId is set
 		if (!appId) {
 			$timeout(function () {
-				uiNotification.error('please specify an AppId');
+				uiNotification.error('Please specify an AppId');
 			});
 			return;
 		}
-
+		// Get Data from PipelineFactory (Web API)
 		pipelineFactory.getPipeline(pipelineEntityId, appId).then(function (result) {
 			$scope.pipelineData = result;
-			uiNotification.note('Ready', 'You can now desing the Pipeline', true);
+			$scope.readOnly = !result.Pipeline.AllowEdit;
+			uiNotification.note('Ready', $scope.readOnly ? 'This pipeline is read only' : 'You can now desing the Pipeline', true);
 
 			// If a new Pipeline is made, add some Default-DataSources
 			if (!$scope.pipelineData.Pipeline.EntityId) {
@@ -69,6 +73,8 @@ pipelineDesigner.controller('pipelineDesignerController',
 				cssClass: isSource ? 'endpointSourceLabel' : 'endpointTargetLabel',
 				events: {
 					dblclick: function (labelOverlay) {
+						if ($scope.readOnly) return;
+
 						var newLabel = prompt('Rename Stream', labelOverlay.label);
 						if (newLabel)
 							labelOverlay.setLabel(newLabel);
@@ -122,10 +128,12 @@ pipelineDesigner.controller('pipelineDesignerController',
 				}
 
 				// make DataSources draggable
-				$scope.jsPlumbInstance.draggable(element, {
-					grid: [20, 20],
-					drag: $scope.dataSourceDrag
-				});
+				if (!$scope.readOnly) {
+					$scope.jsPlumbInstance.draggable(element, {
+						grid: [20, 20],
+						drag: $scope.dataSourceDrag
+					});
+				}
 			});
 
 			$scope.dataSourcesCount++;
@@ -133,8 +141,13 @@ pipelineDesigner.controller('pipelineDesignerController',
 
 		// Add a jsPlumb Endpoint to an Element
 		var addEndpoint = function (element, name, isIn) {
+			var dataSource = element.scope().dataSource;
 			var uuid = element.attr('id') + (isIn ? '_in_' : '_out_') + name;
-			var endPoint = $scope.jsPlumbInstance.addEndpoint(element, (isIn ? targetEndpoint : sourceEndpoint), { uuid: uuid });
+			var params = {
+				uuid: uuid,
+				enabled: !dataSource.ReadOnly || dataSource.EntityGuid == 'Out'	// Endpoints on Out-DataSource must be always enabled
+			};
+			var endPoint = $scope.jsPlumbInstance.addEndpoint(element, (isIn ? targetEndpoint : sourceEndpoint), params);
 			endPoint.getOverlay('endpointLabel').setLabel(name);
 		}
 
@@ -317,5 +330,10 @@ pipelineDesigner.controller('pipelineDesignerController',
 		// Repaint jsPlumb
 		$scope.repaint = function () {
 			$scope.jsPlumbInstance.repaintEverything();
+		}
+
+		// Show/Hide Debug info
+		$scope.toogleDebug = function () {
+			$scope.debug = !$scope.debug;
 		}
 	}]);

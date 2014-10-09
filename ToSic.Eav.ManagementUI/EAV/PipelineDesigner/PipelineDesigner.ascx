@@ -12,22 +12,23 @@
 				<div class="name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
 				<div class="description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
-				<div class="ep" ng-if="dataSource.ReadOnly != true"></div>
-				<div class="delete" ng-click="remove($index)" ng-if="dataSource.ReadOnly != true"></div>
+				<div class="ep" ng-if="!dataSource.ReadOnly"></div>
+				<div class="delete" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
 			</div>
 		</div>
 		<div class="actions panel panel-default">
 			<div class="panel-heading">Actions</div>
-			<div class="panel-body">
+			<fieldset class="panel-body" ng-disabled="readOnly">
 				<button class="btn btn-primary btn-block" ng-click="savePipeline()">Save</button>
 				<select class="form-control" ng-model="addDataSourceType" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | orderBy: 'ClassName'">
 					<option value="">-- Add DataSource --</option>
 				</select>
-				<button class="btn btn-default btn-sm" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays == true ? "Hide" : "Show" }} Overlays</button>
+				<button class="btn btn-default btn-sm" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
 				<button class="btn btn-default btn-sm" ng-click="repaint()">Repaint</button>
-			</div>
+				<button class="btn btn-default btn-sm" ng-click="toogleDebug()">{{debug ? 'Hide' : 'Show'}} Debug Info</button>
+			</fieldset>
 		</div>
-		<toaster-container />
-		<%--<pre>{{pipelineData | json}}</pre>--%>
+		<toaster-container></toaster-container>
+		<pre ng-if="debug">{{pipelineData | json}}</pre>
 	</div>
 </div>
