@@ -58,6 +58,15 @@ namespace ToSic.Eav.ManagementUI
 			}
 		}
 
+		public Guid? KeyGuid
+		{
+			get
+			{
+				try { return Guid.Parse(Request.QueryString["KeyGuid"]); }
+				catch { return null; }
+			}
+		}
+
 		private int? _assignmentObjectTypeId;
 		public int? AssignmentObjectTypeId
 		{
@@ -134,7 +143,7 @@ namespace ToSic.Eav.ManagementUI
 					contentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
 					contentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
 					contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
-					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
+					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "keyGuid", "[KeyGuid]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
 					contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					Controls.Add(contentTypeFieldsControl);
 					break;
@@ -147,6 +156,7 @@ namespace ToSic.Eav.ManagementUI
 					itemFormControl.AttributeSetId = AttributeSetId.Value;
 					itemFormControl.AssignmentObjectTypeId = AssignmentObjectTypeId;
 					itemFormControl.KeyNumber = KeyNumber;
+					itemFormControl.KeyGuid = KeyGuid;
 					itemFormControl.AddClientScriptAndCss = AddFormClientScriptAndCss;
 					itemFormControl.ReturnUrl = ReturnUrl ?? GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
 					itemFormControl.ItemHistoryUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);

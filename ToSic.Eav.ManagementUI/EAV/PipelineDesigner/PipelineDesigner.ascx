@@ -18,15 +18,16 @@
 		</div>
 		<div class="actions panel panel-default">
 			<div class="panel-heading">Actions</div>
-			<fieldset class="panel-body" ng-disabled="readOnly">
-				<button class="btn btn-primary btn-block" ng-click="savePipeline()">Save</button>
-				<select class="form-control" ng-model="addDataSourceType" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | orderBy: 'ClassName'">
+			<div class="panel-body">
+				<button class="btn btn-primary btn-block" ng-disabled="readOnly" ng-click="savePipeline()">Save</button>
+				<select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | orderBy: 'ClassName'">
 					<option value="">-- Add DataSource --</option>
 				</select>
 				<button class="btn btn-default btn-sm" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
 				<button class="btn btn-default btn-sm" ng-click="repaint()">Repaint</button>
 				<button class="btn btn-default btn-sm" ng-click="toogleDebug()">{{debug ? 'Hide' : 'Show'}} Debug Info</button>
-			</fieldset>
+				<button class="btn btn-default btn-sm" ng-click="queryPipeline()">Query this Pipeline</button>
+			</div>
 		</div>
 		<toaster-container></toaster-container>
 		<pre ng-if="debug">{{pipelineData | json}}</pre>

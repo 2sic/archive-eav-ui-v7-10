@@ -1,7 +1,7 @@
 // AngularJS Controller for the Pipeline Designer
 pipelineDesigner.controller('pipelineDesignerController',
-			['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService',
-	function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification, eavDialogService) {
+			['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService', '$log',
+	function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification, eavDialogService, $log) {
 		'use strict';
 
 		// Init
@@ -27,7 +27,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			uiNotification.note('Ready', $scope.readOnly ? 'This pipeline is read only' : 'You can now desing the Pipeline', true);
 
 			// If a new Pipeline is made, add some Default-DataSources
-			if (!$scope.pipelineData.Pipeline.EntityId) {
+			if (!pipelineEntityId) {
 				$timeout(function () {
 					$scope.addDataSource('ToSic.Eav.DataSources.App, ToSic.Eav', { Top: 400, Left: 450 });
 				});
@@ -299,7 +299,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 		// #region Save Pipeline
 		// Save Pipeline
 		$scope.savePipeline = function () {
-			savePipelineInternal(pipelineSaved);
+			savePipelineInternal();
 		}
 
 		var savePipelineInternal = function () {
@@ -318,6 +318,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 
 			// Update PipelineData with data retrieved from the Server
 			$scope.pipelineData.Pipeline = success.Pipeline;
+			pipelineEntityId = success.Pipeline.EntityId;
 			$scope.pipelineData.DataSources = success.DataSources;
 			pipelineFactory.postProcessDataSources($scope.pipelineData);
 
@@ -335,5 +336,26 @@ pipelineDesigner.controller('pipelineDesignerController',
 		// Show/Hide Debug info
 		$scope.toogleDebug = function () {
 			$scope.debug = !$scope.debug;
+		}
+
+		// Query the Pipeline
+		$scope.queryPipeline = function() {
+			// Ensure the Pipeline is saved
+			if (!pipelineEntityId) {
+				savePipelineInternal();
+				return;
+			}
+
+			// Query pipelineFactory for the result...
+			uiNotification.note('Running Query ...');
+
+			pipelineFactory.queryPipeline(appId, pipelineEntityId).then(function(success) {
+				// Show Result in a UI-Dialog
+				uiNotification.clear();
+				eavDialogService.open({ title: 'Query result', content: '<pre id="pipelineQueryResult">' + $filter('json')(success) + '</pre>' });
+				$log.info(success);
+			}, function(reason) {
+				uiNotification.error('Query failed', reason);
+			});
 		}
 	}]);

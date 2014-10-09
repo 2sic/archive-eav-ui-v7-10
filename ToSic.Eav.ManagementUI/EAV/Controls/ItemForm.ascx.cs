@@ -50,6 +50,7 @@ namespace ToSic.Eav.ManagementUI
 		public bool PreventRedirect { get; set; }
 		public string ReturnUrl { get; set; }
 		public int? KeyNumber { get; set; }
+		public Guid? KeyGuid { get; set; }
 		public int? AssignmentObjectTypeId { get; set; }
 		public int? DefaultCultureDimension { get; set; }
 		public int? AppId { get; set; }
@@ -60,7 +61,7 @@ namespace ToSic.Eav.ManagementUI
 			set { _addClientScriptAndCss = value; }
 		}
 		public string ItemHistoryUrl { get; set; }
-        public string NewItemUrl { get; set; }
+		public string NewItemUrl { get; set; }
 		public bool IsPublished
 		{
 			get { return rblPublished.SelectedValue == "Published"; }
@@ -206,7 +207,7 @@ namespace ToSic.Eav.ManagementUI
 			pnlEditForm.Attributes["data-defaultculturedimension"] = DefaultCultureDimension.ToString();
 			pnlEditForm.Attributes["data-activeculturedimension"] = DimensionIds.SingleOrDefault().ToString();
 			pnlEditForm.Attributes["data-applicationpath"] = Request.ApplicationPath;
-            pnlEditForm.Attributes["data-newdialogurl"] = (IsDialog ? "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]" : NewItemUrl);
+			pnlEditForm.Attributes["data-newdialogurl"] = (IsDialog ? "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]" : NewItemUrl);
 			// Set default values to ensure valid JSON/JavaScript
 			litJsonEntityId.Text = "0";
 			litJsonEntityModel.Text = "null";
@@ -284,7 +285,7 @@ namespace ToSic.Eav.ManagementUI
 			if (Canceled != null)
 				Canceled(this, null);
 
-		    hfLastAction.Value = "Cancelled";
+			hfLastAction.Value = "Cancelled";
 		}
 
 		public void Save()
@@ -301,7 +302,7 @@ namespace ToSic.Eav.ManagementUI
 					throw new NotSupportedException();
 			}
 
-            hfLastAction.Value = "Saved";
+			hfLastAction.Value = "Saved";
 		}
 
 		private void Insert()
@@ -322,10 +323,11 @@ namespace ToSic.Eav.ManagementUI
 				dimensionIds.Add(DefaultCultureDimension.Value);
 
 			Entity result;
-			if (AssignmentObjectTypeId.HasValue)
-				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, AssignmentObjectTypeId.Value, dimensionIds: dimensionIds, isPublished: IsPublished);
+			var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : EavContext.DefaultAssignmentObjectTypeId;
+			if (!KeyGuid.HasValue)
+				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 			else
-				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, dimensionIds: dimensionIds, isPublished: IsPublished);
+				result = Db.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 
 			RedirectToListItems();
 

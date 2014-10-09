@@ -7,12 +7,20 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Tokens;
 
 namespace ToSic.Eav.ManagementUI.API
 {
 	public class PipelineDesignerController : ApiController
 	{
 		private EavContext _context;
+
+		public PipelineDesignerController()
+		{
+			// Preserving circular reference
+			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+		}
 
 		/// <summary>
 		/// Get URL to configure a DataSource
@@ -306,6 +314,24 @@ namespace ToSic.Eav.ManagementUI.API
 			var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
 
 			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key)).ToDictionary(k => k.Key, v => v.Value);
+		}
+
+		/// <summary>
+		/// Query the Result of a Pipline
+		/// </summary>
+		[HttpGet]
+		public object QueryPipeline(int appId, int id)
+		{
+			return QueryPipeline(appId, id, null);
+		}
+
+		/// <summary>
+		/// Query the Result of a Pipline
+		/// </summary>
+		protected object QueryPipeline(int appId, int id, IPropertyAccess[] configurationPropertyAccesses)
+		{
+			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;
+			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
 	}
 }

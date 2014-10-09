@@ -99,6 +99,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 				newItemUrl: eavGlobalConfigurationProvider.newItemUrl + '&PreventRedirect=true',
 				editItemUrl: eavGlobalConfigurationProvider.editItemUrl + '&PreventRedirect=true'
 			}).$promise;
+		},
+		// Query the Data of a Pipeline
+		queryPipeline: function(appId, id) {
+			return pipelineResource.get({ action: 'QueryPipeline', appId: appId, id: id }).$promise;
 		}
 	}
 }]);
