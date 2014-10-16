@@ -5,7 +5,7 @@
 }
 
 .dataSource {
-	min-height: 100px;
+	height: 100px;
 	transition: box-shadow 0.15s ease-in 0s;
 	min-width: 190px;
 	border: 1px solid #346789;
@@ -39,15 +39,20 @@
 		z-index: 27;
 	}
 
+	.dataSource .name, .dataSource .description {
+		display: inline-block;
+		max-width: 215px;
+		max-height: 14px;
+		overflow: hidden;
+	}
+
 	.dataSource .name {
 		margin-top: 25px;
 		font-weight: bold;
-		display: inline-block;
 	}
 
 	.dataSource .description {
 		font-size: 0.8em;
-		display: inline-block;
 	}
 
 	.dataSource .typename {
@@ -80,9 +85,9 @@
 		border: 1px dotted green;
 	}
 
-	._jsPlumb_endpoint.hover, .dataSource.active.hover {
-		border: 1px dotted red;
-	}
+		._jsPlumb_endpoint.hover, .dataSource.active.hover {
+			border: 1px dotted red;
+		}
 
 .endpointTargetLabel, .endpointSourceLabel {
 	background-color: white;

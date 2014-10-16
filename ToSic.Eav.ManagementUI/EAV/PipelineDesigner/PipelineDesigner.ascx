@@ -8,12 +8,13 @@
 				id="dataSource_{{dataSource.EntityGuid}}"
 				class="dataSource"
 				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
+				title="Double click to edit the Configuration"
 				ng-dblclick="configureDataSource(dataSource)">
-				<div class="name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br/>
-				<div class="description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br/>
+				<div class="name" title="Click to edit the Name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br/>
+				<div class="description" title="Click to edit the Description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br/>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
-				<div class="ep" ng-if="!dataSource.ReadOnly"></div>
-				<div class="delete" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
+				<div class="ep" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly"></div>
+				<div class="delete" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
 			</div>
 		</div>
 		<div class="actions panel panel-default">
