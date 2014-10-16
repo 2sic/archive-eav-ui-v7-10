@@ -359,7 +359,8 @@ pipelineDesigner.controller('pipelineDesignerController',
 			pipelineFactory.queryPipeline(appId, pipelineEntityId).then(function(success) {
 				// Show Result in a UI-Dialog
 				uiNotification.clear();
-				eavDialogService.open({ title: 'Query result', content: '<pre id="pipelineQueryResult">' + $filter('json')(success) + '</pre>' });
+				eavDialogService.open({ title: 'Query result', content: '<div>The following Result was also logged to the Browser Console.<pre id="pipelineQueryResult">' +$filter('json') (success) + '</pre></div>'
+				});
 				$log.info(success);
 			}, function(reason) {
 				uiNotification.error('Query failed', reason);

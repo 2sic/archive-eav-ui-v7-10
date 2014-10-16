@@ -14,9 +14,7 @@
 	<link rel="stylesheet" href="Scripts/jquery-ui-1.10.3.css" />
 </head>
 <body>
-	<%--<form id="form1" runat="server">--%>
 	<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
-	<%--</form>--%>
 
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 	<script src="Scripts/jquery-ui-1.10.2.min.js"></script>
@@ -24,7 +22,7 @@
 	<script src="Scripts/angular-resource.min.js"></script>
 	<script src="Scripts/angular-animate.min.js"></script>
 	<script src="Scripts/toaster.js"></script>
-	<script src="EAV/PipelineDesigner/assets/jquery.jsPlumb-1.6.4.js"></script>
+	<script src="EAV/PipelineDesigner/assets/jquery.jsPlumb-1.6.4-min.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesigner.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineDesignerController.js"></script>
 	<script src="EAV/PipelineDesigner/PipelineFactory.js"></script>

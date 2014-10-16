@@ -95,6 +95,10 @@ public partial class Default : Page
 				//if(Request.QueryString["tag"] != null || Request.QueryString["tagcat"] != null)
 				ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
 				break;
+			case "datapipelinefactory":
+				var source = DataPipelineFactory.GetDataSource(1, 347, null);
+				ShowDataSource(source, "DataPipelineFactory");
+				break;
 			case "appds":
 				litResults.Text += TestAppDataSource(false);
 				litResults.Text += TestAppDataSource(true);
@@ -115,9 +119,6 @@ public partial class Default : Page
 		//AttributeFilter(typeFiltered);
 		//Chain6();
 		//EntityIdFilter();
-		//DataPipelineFactory();
-
-
 
 		//var source = DataSource.GetInitialDataSource(1, 1);
 		//var entities = source.Out["Default"].List;
@@ -316,15 +317,6 @@ public partial class Default : Page
 
 		context.AddEntity(37, newValues, null, null);
 	}
-
-	//private void DataPipelineFactory()
-	//{
-	//	Trace.Write("DataPipelineFactory", "Before Init");
-	//	var source = DataSources.DataPipelineFactory.GetDataSource(1, 1, 347, null);
-	//	Trace.Write("DataPipelineFactory", "End Init");
-
-	//	ShowDataSource(source, "DataPipelineFactory", true);
-	//}
 
 	private EntityIdFilter EntityIdFilter(IEnumerable<int> entityIds, int appId = 1)
 	{

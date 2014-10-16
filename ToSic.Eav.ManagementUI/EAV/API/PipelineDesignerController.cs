@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -82,8 +83,6 @@ namespace ToSic.Eav.ManagementUI.API
 				{"DataSources", dataSourcesJson}
 			};
 		}
-
-
 
 		/// <summary>
 		/// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
@@ -278,18 +277,56 @@ namespace ToSic.Eav.ManagementUI.API
 		}
 
 		/// <summary>
-		/// Query the Result of a Pipline
+		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
 		[HttpGet]
 		public object QueryPipeline(int appId, int id)
 		{
-			return QueryPipeline(appId, id, null);
+			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
+
+			return QueryPipeline(appId, id, configurationPropertyAccesses);
+		}
+
+		/// <summary>
+		/// Get Test Parameters for a Pipeline from the Pipeline-Entity
+		/// </summary>
+		private static IEnumerable<IPropertyAccess> GetPipelineTestParameters(int appId, int pipelineEntityId)
+		{
+			// Get the Entity describing the Pipeline
+			var source = DataSource.GetInitialDataSource(appId: appId);
+			var pipelineEntity = DataPipeline.GetPipelineEntity(pipelineEntityId, source);
+
+			// Parse Test-Parameters in Format [Token:Property]=Value
+			var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
+			if (testParameters == null)
+				return null;
+			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\]):(?<Value>[^\r]*)");
+
+			// Create a list of static Property Accessors
+			var result = new List<IPropertyAccess>();
+			foreach (Match testParam in paramMatches)
+			{
+				var token = testParam.Groups["Token"].Value.ToLower();
+
+				// Ensure a PropertyAccess exists
+				var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticPropertyAccess;
+				if (propertyAccess == null)
+				{
+					propertyAccess = new StaticPropertyAccess(token);
+					result.Add(propertyAccess);
+				}
+
+				// Add the static value
+				propertyAccess.Properties.Add(testParam.Groups["Property"].Value, testParam.Groups["Value"].Value);
+			}
+
+			return result;
 		}
 
 		/// <summary>
 		/// Query the Result of a Pipline
 		/// </summary>
-		protected object QueryPipeline(int appId, int id, IPropertyAccess[] configurationPropertyAccesses)
+		protected object QueryPipeline(int appId, int id, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
 		{
 			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;
 			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));

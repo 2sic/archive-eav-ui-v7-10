@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
 		/// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
 		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IPropertyAccess[] configurationPropertyAccesses)
+		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
 		{
 			var source = DataSource.GetInitialDataSource(appId: appId);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);	// ToDo: Validate change/extension with zoneId and appId Parameter
@@ -50,9 +50,7 @@ namespace ToSic.Eav.DataSources
 			#endregion
 
 			#region Loop and create all Stream Wirings
-
 			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline["StreamWiring"][0]);
-
 			foreach (var wire in wirings)
 			{
 				var sourceDsrc = pipeline[wire.From];
