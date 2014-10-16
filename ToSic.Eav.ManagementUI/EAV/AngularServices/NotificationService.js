@@ -3,8 +3,11 @@ pipelineDesigner.factory('uiNotification', ['toaster', function (toaster) {
 	'use strict';
 
 	var showNote = function (type, title, body, autoHide) {
-		toaster.clear();
-		toaster.pop(type, title, body, autoHide ? null : 0);
+		// wrap teaster in ready-Event because notes would't be show if teaster is used before
+		angular.element(document).ready(function () {
+			toaster.clear();
+			toaster.pop(type, title, body, autoHide ? null : 0);
+		});
 	};
 
 	return {
@@ -28,6 +31,9 @@ pipelineDesigner.factory('uiNotification', ['toaster', function (toaster) {
 		},
 		success: function (title, body, autoHide) {
 			showNote('success', title, body, autoHide);
+		},
+		wait: function (title) {
+			showNote('note', title ? title : 'Please wait ..', "This shouldn't take long", false);
 		}
 	};
 }]);

@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="PipelineDesigner.ascx.cs" Inherits="ToSic.Eav.ManagementUI.EAV.PipelineDesigner.PipelineDesigner" %>
-<div ng-app="pipelineDesinger">
+<div ng-app="pipelineDesinger" class="ng-cloak">
 	<div ng-controller="pipelineDesignerController">
 		<div id="pipelineContainer">
 			<div
@@ -9,8 +9,8 @@
 				class="dataSource"
 				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
 				ng-dblclick="configureDataSource(dataSource)">
-				<div class="name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div>
-				<div class="description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div>
+				<div class="name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br/>
+				<div class="description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br/>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
 				<div class="ep" ng-if="!dataSource.ReadOnly"></div>
 				<div class="delete" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>

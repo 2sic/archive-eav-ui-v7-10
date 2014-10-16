@@ -5,7 +5,8 @@ pipelineDesigner.controller('pipelineDesignerController',
 		'use strict';
 
 		// Init
-		uiNotification.note('Loading');
+		uiNotification.wait();
+		$scope.readOnly = true;
 		$scope.dataSourcesCount = 0;
 		$scope.dataSourceIdPrefix = 'dataSource_';
 		$scope.debug = false;
@@ -21,9 +22,9 @@ pipelineDesigner.controller('pipelineDesignerController',
 			return;
 		}
 		// Get Data from PipelineFactory (Web API)
-		pipelineFactory.getPipeline(pipelineEntityId, appId).then(function (result) {
-			$scope.pipelineData = result;
-			$scope.readOnly = !result.Pipeline.AllowEdit;
+		pipelineFactory.getPipeline(pipelineEntityId, appId).then(function (success) {
+			$scope.pipelineData = success;
+			$scope.readOnly = !success.Pipeline.AllowEdit;
 			uiNotification.note('Ready', $scope.readOnly ? 'This pipeline is read only' : 'You can now desing the Pipeline', true);
 
 			// If a new Pipeline is made, add some Default-DataSources
@@ -40,6 +41,13 @@ pipelineDesigner.controller('pipelineDesignerController',
 		jsPlumb.ready(function () {
 			$scope.jsPlumbInstance = jsPlumb.getInstance({
 				Connector: ['Bezier', { curviness: 70 }],
+				HoverPaintStyle: {
+					lineWidth: 4,
+					strokeStyle: "#216477",
+					outlineWidth: 2,
+					outlineColor: "white"
+				},
+				EndpointHoverStyle: { fillStyle: "#216477", strokeStyle: "#216477" },
 				ConnectionOverlays: [['Arrow', { location: 0.7 }]],
 				PaintStyle: {
 					lineWidth: 4,
@@ -98,7 +106,8 @@ pipelineDesigner.controller('pipelineDesignerController',
 			maxConnections: 1,
 			isTarget: true,
 			anchor: ['Continuous', { faces: ['bottom'] }],
-			overlays: getEndpointOverlays(false)
+			overlays: getEndpointOverlays(false),
+			dropOptions: { hoverClass: "hover", activeClass: "active" }
 		};
 		// #endregion
 
@@ -215,7 +224,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			if (dataSource.ReadOnly) return;
 
 			var newName = prompt('Rename DataSource', dataSource.Name);
-			if (newName != undefined)
+			if (newName != undefined && newName.trim())
 				dataSource.Name = newName;
 		}
 
@@ -224,7 +233,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			if (dataSource.ReadOnly) return;
 
 			var newDescription = prompt('Edit Description', dataSource.Description);
-			if (newDescription != undefined)
+			if (newDescription != undefined && newDescription.trim())
 				dataSource.Description = newDescription;
 		}
 
@@ -245,11 +254,11 @@ pipelineDesigner.controller('pipelineDesignerController',
 
 			// Ensure dataSource Entity is saved
 			if (!dataSourceIsPersisted(dataSource)) {
-				savePipelineInternal();
+				$scope.savePipeline();
 				return;
 			}
 
-			uiNotification.note('Please Wait ..');
+			uiNotification.wait();
 
 			pipelineFactory.getDataSourceConfigurationUrl(appId, dataSource).then(function (success) {
 				uiNotification.clear();
@@ -299,11 +308,8 @@ pipelineDesigner.controller('pipelineDesignerController',
 		// #region Save Pipeline
 		// Save Pipeline
 		$scope.savePipeline = function () {
-			savePipelineInternal();
-		}
-
-		var savePipelineInternal = function () {
-			uiNotification.note('Saving...');
+			uiNotification.wait('Saving...');
+			$scope.readOnly = true;
 
 			syncPipelineData();
 
@@ -319,6 +325,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			// Update PipelineData with data retrieved from the Server
 			$scope.pipelineData.Pipeline = success.Pipeline;
 			pipelineEntityId = success.Pipeline.EntityId;
+			$scope.readOnly = !success.Pipeline.AllowEdit;
 			$scope.pipelineData.DataSources = success.DataSources;
 			pipelineFactory.postProcessDataSources($scope.pipelineData);
 
@@ -342,12 +349,12 @@ pipelineDesigner.controller('pipelineDesignerController',
 		$scope.queryPipeline = function() {
 			// Ensure the Pipeline is saved
 			if (!pipelineEntityId) {
-				savePipelineInternal();
+				$scope.savePipeline();
 				return;
 			}
 
 			// Query pipelineFactory for the result...
-			uiNotification.note('Running Query ...');
+			uiNotification.wait('Running Query ...');
 
 			pipelineFactory.queryPipeline(appId, pipelineEntityId).then(function(success) {
 				// Show Result in a UI-Dialog

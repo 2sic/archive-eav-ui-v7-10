@@ -42,10 +42,12 @@
 	.dataSource .name {
 		margin-top: 25px;
 		font-weight: bold;
+		display: inline-block;
 	}
 
 	.dataSource .description {
 		font-size: 0.8em;
+		display: inline-block;
 	}
 
 	.dataSource .typename {
@@ -73,6 +75,14 @@
 	z-index: 21;
 	cursor: pointer;
 }
+
+	._jsPlumb_endpoint.active {
+		border: 1px dotted green;
+	}
+
+	._jsPlumb_endpoint.hover {
+		border: 1px dotted red;
+	}
 
 .endpointTargetLabel, .endpointSourceLabel {
 	background-color: white;
@@ -111,3 +121,8 @@
 	.ep:hover {
 		box-shadow: 0 0 6px black;
 	}
+
+
+.ng-cloak {
+	display: none !important;
+}
