@@ -325,6 +325,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			// Update PipelineData with data retrieved from the Server
 			$scope.pipelineData.Pipeline = success.Pipeline;
 			pipelineEntityId = success.Pipeline.EntityId;
+			$location.search('PipelineId', success.Pipeline.EntityId);
 			$scope.readOnly = !success.Pipeline.AllowEdit;
 			$scope.pipelineData.DataSources = success.DataSources;
 			pipelineFactory.postProcessDataSources($scope.pipelineData);
