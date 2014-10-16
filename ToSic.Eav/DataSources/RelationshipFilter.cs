@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter Entities by Value in a Related Entity
 	/// </summary>
+	[PipelineDesigner]
 	public class RelationshipFilter : BaseDataSource
 	{
 		#region Configuration-properties

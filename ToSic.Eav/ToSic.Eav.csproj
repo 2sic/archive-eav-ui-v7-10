@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
     <Compile Include="DataSources\DataSource.cs" />
+    <Compile Include="DataSources\Pipeline\PipelineDesignerAttribute.cs" />
     <Compile Include="DataSources\Tokens\PropertyAccess\AssignedEntityAttributePropertyAccess.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="DataSources\BaseDataSource.cs" />

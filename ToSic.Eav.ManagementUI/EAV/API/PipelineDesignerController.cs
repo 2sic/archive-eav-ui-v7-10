@@ -86,14 +86,14 @@ namespace ToSic.Eav.ManagementUI.API
 
 
 		/// <summary>
-		/// Get installed DataSources from .NET Runtime
+		/// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
 		/// </summary>
 		[HttpGet]
 		public IEnumerable<object> GetInstalledDataSources()
 		{
 			var result = new List<object>();
 			var installedDataSources = DataSource.GetInstalledDataSources();
-			foreach (var dataSource in installedDataSources)
+			foreach (var dataSource in installedDataSources.Where(d => d.GetCustomAttributes(typeof(PipelineDesignerAttribute), false).Any()))
 			{
 				#region Create Instance of DataSource to get In- and Out-Streams
 				ICollection<string> outStreamNames = new string[0];

@@ -6,6 +6,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
+	[PipelineDesigner]
 	public class PublishingFilter : BaseDataSource
 	{
 		#region Configuration-properties

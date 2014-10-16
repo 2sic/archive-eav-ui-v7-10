@@ -5,6 +5,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// <summary>
 	/// Caching interface for standard Eav Cache
 	/// </summary>
+	[PipelineDesigner]
 	public interface ICache : IDataSource
 	{
 		/// <summary>

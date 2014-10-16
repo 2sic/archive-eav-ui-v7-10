@@ -14,10 +14,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 	var postProcessDataSources = function (model) {
 		// Append Out-DataSource for the UI
 		model.DataSources.push({
-			Name: '2SexyContent Module',
-			Description: 'The module/template which will show this data',
+			Name: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.Name,
+			Description: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.Description,
 			EntityGuid: 'Out',
-			PartAssemblyAndType: 'SexyContentTemplate',
+			PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
 			VisualDesignerData: { Top: 50, Left: 410 },
 			ReadOnly: true
 		});
@@ -51,10 +51,11 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 
 				// Add Out-DataSource for the UI
 				model.InstalledDataSources.push({
-					PartAssemblyAndType: 'SexyContentTemplate',
-					ClassName: 'SexyContentTemplate',
-					In: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
-					Out: null
+					PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
+					ClassName: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
+					In: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.In,
+					Out: null,
+					allowNew: false
 				});
 
 				postProcessDataSources(model);
@@ -96,8 +97,8 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 				appId: appId,
 				dataSourceEntityGuid: dataSource.EntityGuid,
 				dataSourceFullName: $filter('typename')(dataSource.PartAssemblyAndType, 'classFullName'),
-				newItemUrl: eavGlobalConfigurationProvider.newItemUrl + '&PreventRedirect=true',
-				editItemUrl: eavGlobalConfigurationProvider.editItemUrl + '&PreventRedirect=true'
+				newItemUrl: eavGlobalConfigurationProvider.itemForm.newItemUrl + '&PreventRedirect=true',
+				editItemUrl: eavGlobalConfigurationProvider.itemForm.editItemUrl + '&PreventRedirect=true'
 			}).$promise;
 		},
 		// Query the Data of a Pipeline

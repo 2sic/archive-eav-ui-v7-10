@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// DataSource to only pass through configured AttributeNames
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
+	[PipelineDesigner]
 	public class AttributeFilter : BaseDataSource
 	{
 		#region Configuration-properties

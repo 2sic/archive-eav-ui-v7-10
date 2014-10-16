@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Return only Entities having a specific value in an Attribute
 	/// </summary>
+	[PipelineDesigner]
 	public class ValueFilter : BaseDataSource
 	{
 		#region Configuration-properties

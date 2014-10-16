@@ -76,11 +76,11 @@
 	cursor: pointer;
 }
 
-	._jsPlumb_endpoint.active {
+	._jsPlumb_endpoint.active, .dataSource.active {
 		border: 1px dotted green;
 	}
 
-	._jsPlumb_endpoint.hover {
+	._jsPlumb_endpoint.hover, .dataSource.active.hover {
 		border: 1px dotted red;
 	}
 

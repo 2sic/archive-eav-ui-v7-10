@@ -20,7 +20,7 @@
 			<div class="panel-heading">Actions</div>
 			<div class="panel-body">
 				<button class="btn btn-primary btn-block" ng-disabled="readOnly" ng-click="savePipeline()">Save</button>
-				<select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | orderBy: 'ClassName'">
+				<select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
 					<option value="">-- Add DataSource --</option>
 				</select>
 				<button class="btn btn-default btn-sm" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>

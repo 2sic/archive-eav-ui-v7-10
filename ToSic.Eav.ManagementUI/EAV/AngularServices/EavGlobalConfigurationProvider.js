@@ -7,8 +7,19 @@ angular.module('eavGlobalConfigurationProvider', [])
 			apiBaseUrl: "/api",
 			defaultApiParams: {},
 			dialogClass: "eavDialog",
-			newItemUrl: "/EAVManagement.aspx?ManagementMode=NewItem&AttributeSetId=[AttributeSetId]&CultureDimension=[CultureDimension]&KeyNumber=[KeyNumber]&KeyGuid=[KeyGuid]&AssignmentObjectTypeId=[AssignmentObjectTypeId]",
-			editItemUrl: "/EAVManagement.aspx?ManagementMode=EditItem&EntityId=[EntityId]&CultureDimension=2"
+			itemForm: {
+				newItemUrl: "/EAVManagement.aspx?ManagementMode=NewItem&AttributeSetId=[AttributeSetId]&CultureDimension=[CultureDimension]&KeyNumber=[KeyNumber]&KeyGuid=[KeyGuid]&AssignmentObjectTypeId=[AssignmentObjectTypeId]",
+				editItemUrl: "/EAVManagement.aspx?ManagementMode=EditItem&EntityId=[EntityId]&CultureDimension=2"
+			},
+			pipelineDesigner: {
+				outDataSource: {
+					ClassName: 'SexyContentTemplate',
+					In: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
+					Name: '2SexyContent Module',
+					Description: 'The module/template which will show this data'
+				},
+
+			}
 		};
 
 	});

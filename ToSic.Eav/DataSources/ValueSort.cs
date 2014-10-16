@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
+	[PipelineDesigner]
 	public class ValueSort : BaseDataSource
 	{
 		#region Configuration-properties
@@ -66,7 +67,7 @@ namespace ToSic.Eav.DataSources
 			#region Languages check - not fully implemented yet, only supports "default"
 			var lang = Languages.ToLower();
 			if (lang != "default")
-				throw  new Exception("Can't filter for languages other than 'default'");
+				throw new Exception("Can't filter for languages other than 'default'");
 
 			if (lang == "default") lang = ""; // no language is automatically the default language
 
@@ -75,10 +76,10 @@ namespace ToSic.Eav.DataSources
 			#endregion
 
 			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
-			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray(); 
+			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();
 			var results = (from e in In[DataSource.DefaultStreamName].List
-				where e.Value.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
-				select e);
+						   where e.Value.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
+						   select e);
 
 			// if list is blank, stop here and return blank list
 			if (!results.Any())
@@ -86,7 +87,7 @@ namespace ToSic.Eav.DataSources
 
 			IOrderedEnumerable<KeyValuePair<int, IEntity>> ordered = null;
 
-			for(var i = 0; i < attr.Count(); i++)
+			for (var i = 0; i < attr.Count(); i++)
 			{
 				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
@@ -111,7 +112,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return ordered.ToDictionary(x => x.Key, y => y.Value); 
+			return ordered.ToDictionary(x => x.Key, y => y.Value);
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)
