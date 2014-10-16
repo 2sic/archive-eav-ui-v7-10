@@ -5,7 +5,7 @@ using System.Linq;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Return only Entities having a specific value in an Attribute
 	/// </summary>
 	public class ValueFilter : BaseDataSource
 	{
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new ValueFilter
 		/// </summary>
 		public ValueFilter()
 		{

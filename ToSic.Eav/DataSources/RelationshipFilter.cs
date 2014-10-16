@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Filter Entities by Value in a Related Entity
 	/// </summary>
 	public class RelationshipFilter : BaseDataSource
 	{
@@ -17,8 +16,8 @@ namespace ToSic.Eav.DataSources
 		private const string CompareAttributeKey = "CompareAttribute";
 		private const string CompareModeKey = "Mode";
 		private const string ChildOrParentKey = "ChildOrParent";
-		private readonly string[] _childOrParentPossibleValues = {"child"};//, "parent"};
-		private readonly string[] _compareModeValues = {"default", "contains"};
+		private readonly string[] _childOrParentPossibleValues = { "child" };//, "parent"};
+		private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
 
 		//private const string LangKey = "Language";
@@ -62,11 +61,11 @@ namespace ToSic.Eav.DataSources
 			get { return Configuration[CompareModeKey]; }
 			set
 			{
-				if(_compareModeValues.Contains(value.ToLower()))
+				if (_compareModeValues.Contains(value.ToLower()))
 					Configuration[CompareModeKey] = value.ToLower();
 				else
 					throw new Exception("Value '" + value + "' not allowed for CompareMode");
-				
+
 			}
 		}
 		public string ChildOrParent
@@ -91,7 +90,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new RelationshipFilter
 		/// </summary>
 		public RelationshipFilter()
 		{
@@ -114,10 +113,10 @@ namespace ToSic.Eav.DataSources
 			var _filter = Filter;
 			var mode = CompareMode.ToLower();
 			if (mode == "contains") mode = "default";
-			if(mode != "default")
-				throw  new Exception("Can't use CompareMode other than 'default'");
+			if (mode != "default")
+				throw new Exception("Can't use CompareMode other than 'default'");
 			var childParent = ChildOrParent;
-			if(!_childOrParentPossibleValues.Contains(childParent)) // != "child")
+			if (!_childOrParentPossibleValues.Contains(childParent)) // != "child")
 				throw new Exception("can only find related children at the moment, must set ChildOrParent to 'child'");
 			//var lang = Languages.ToLower();
 			//if (lang != "default")
@@ -129,27 +128,27 @@ namespace ToSic.Eav.DataSources
 			// only get those, having a relationship on this name
 			var results = // (ChildOrParent == "child") ?
 				(from e in In[DataSource.DefaultStreamName].List
-					where e.Value.Relationships.Children[relationship].Any()
-					select e);
-				//: (from e in In[DataSource.DefaultStreamName].List
-				//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
-				//	select e);
-	
-			if(ChildOrParent == "child")
+				 where e.Value.Relationships.Children[relationship].Any()
+				 select e);
+			//: (from e in In[DataSource.DefaultStreamName].List
+			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
+			//	select e);
+
+			if (ChildOrParent == "child")
 			{
 				results = (from e in results
-					where e.Value.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
-					select e);
+						   where e.Value.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
+						   select e);
 			}
 			else
 			{
-				throw(new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'"));
+				throw (new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'"));
 				//results = (from e in results
 				//		   where e.Value.Relationships.AllParents.Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
 				//		   select e);
 			}
 
-			return results.ToDictionary(x => x.Key, y => y.Value); 
+			return results.ToDictionary(x => x.Key, y => y.Value);
 		}
 
 		private string getStringToCompare(IEntity e, string a, char special)
@@ -159,13 +158,13 @@ namespace ToSic.Eav.DataSources
 				// get either the special id or title, if title or normal field, then use language [0] = default
 				return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])[0].ToString();
 			}
-			catch 
+			catch
 			{
 				throw (new Exception(
 					"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn't exist. Was trying to compare the attribute '" + a + "'"));
 			}
 		}
 
-		
+
 	}
 }

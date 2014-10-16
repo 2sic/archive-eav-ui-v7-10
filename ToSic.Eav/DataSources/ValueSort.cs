@@ -5,7 +5,7 @@ using System.Linq;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Sort Entity by values in specified Attributes
 	/// </summary>
 	public class ValueSort : BaseDataSource
 	{
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new ValueSort
 		/// </summary>
 		public ValueSort()
 		{

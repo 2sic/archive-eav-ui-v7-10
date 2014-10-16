@@ -27,29 +27,20 @@ namespace ToSic.Eav.ManagementUI.API
 		/// </summary>
 		/// <param name="appId">AppId of the Pipeline/DataSource</param>
 		/// <param name="dataSourceEntityGuid">EntityGuid of the DataSource</param>
-		/// <param name="partAssemblyAndType">Type</param>
+		/// <param name="dataSourceFullName">FullName of the DataSource Type</param>
 		/// <param name="newItemUrl">URL Schema to NewItem-Form</param>
 		/// <param name="editItemUrl">URL Schema to EditItem-Form</param>
 		[HttpGet]
-		public object GetDataSourceConfigurationUrl(int appId, Guid dataSourceEntityGuid, string partAssemblyAndType, string newItemUrl, string editItemUrl)
+		public object GetDataSourceConfigurationUrl(int appId, Guid dataSourceEntityGuid, string dataSourceFullName, string newItemUrl, string editItemUrl)
 		{
 			_context = EavContext.Instance(appId: appId);
 			var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
 
-			// ToDo: Refactor
-			string attributeSetName;
-			switch (partAssemblyAndType)
-			{
-				case "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav":
-					attributeSetName = "Configuration of an EntityTypeFilter DataSource";
-					break;
-				case "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav":
-					attributeSetName = "Configuration of an EntityIdFilter Data Source";
-					break;
-				default:
-					throw new ArgumentException("No Configuration AttributeSet assigned for this DataSource Type", "partAssemblyAndType");
-			}
-			var attributeSetId = cache.GetContentType(attributeSetName).AttributeSetId;
+			var attributeSetName = "|Config " + dataSourceFullName;
+			var contentType = cache.GetContentType(attributeSetName);
+			if (contentType == null)
+				throw new ArgumentException("No Configuration found for Name " + attributeSetName, "dataSourceFullName");
+			var attributeSetId = contentType.AttributeSetId;
 
 			var url = Forms.GetItemFormUrl(dataSourceEntityGuid, attributeSetId, DataSource.AssignmentObjectTypeIdDataPipeline, newItemUrl, editItemUrl);
 
@@ -67,12 +58,10 @@ namespace ToSic.Eav.ManagementUI.API
 
 			if (id.HasValue)
 			{
-				// Get the Entity describing the Pipeline
+				// Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
 				var source = DataSource.GetInitialDataSource(appId: appId);
-				var pipelineEntity = GetPipelineEntity(id.Value, source);
-
-				// Get DataSources in this Pipeline
-				var dataSources = GetPipelineParts(source.ZoneId, source.AppId, pipelineEntity.EntityGuid);
+				var pipelineEntity = DataPipeline.GetPipelineEntity(id.Value, source);
+				var dataSources = DataPipeline.GetPipelineParts(source.ZoneId, source.AppId, pipelineEntity.EntityGuid);
 
 				#region Deserialize some Entity-Values
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
@@ -94,35 +83,7 @@ namespace ToSic.Eav.ManagementUI.API
 			};
 		}
 
-		/// <summary>
-		/// Get an Entity Describing a Pipeline
-		/// </summary>
-		/// <param name="entityId">EntityId</param>
-		/// <param name="dataSource">DataSource to load Entity from</param>
-		private static IEntity GetPipelineEntity(int entityId, IDataSource dataSource)
-		{
-			var entities = dataSource["Default"].List;
 
-			IEntity pipelineEntity;
-			try
-			{
-				pipelineEntity = entities[entityId];
-				if (pipelineEntity.Type.StaticName != "DataPipeline")
-					throw new Exception("id is not an DataPipeline Entity");
-			}
-			catch (Exception)
-			{
-				throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", entityId), "entityId");
-			}
-
-			return pipelineEntity;
-		}
-
-		private static IEnumerable<IEntity> GetPipelineParts(int zoneId, int appId, Guid pipelineEntityGuid)
-		{
-			var metaDataSource = DataSource.GetMetaDataSource(zoneId, appId);
-			return metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntityGuid);
-		}
 
 		/// <summary>
 		/// Get installed DataSources from .NET Runtime
@@ -197,7 +158,7 @@ namespace ToSic.Eav.ManagementUI.API
 			Guid pipelineEntityGuid;
 			if (id.HasValue)
 			{
-				var entity = GetPipelineEntity(id.Value, source);
+				var entity = DataPipeline.GetPipelineEntity(id.Value, source);
 				pipelineEntityGuid = entity.EntityGuid;
 
 				if (((IAttribute<bool?>)entity["AllowEdit"]).TypedContents == false)
@@ -256,7 +217,7 @@ namespace ToSic.Eav.ManagementUI.API
 		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId)
 		{
 			// Get EntityGuids currently stored in EAV
-			var existingEntityGuids = GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
+			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
 
 			// Get EntityGuids from the UI (except Out and unsaved)
 			var newEntityGuids = dataSources.Select(d => (string)((JObject)d).Property("EntityGuid").Value).Where(g => g != "Out" && !g.StartsWith("unsaved")).Select(Guid.Parse).ToList();

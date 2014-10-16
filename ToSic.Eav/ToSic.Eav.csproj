@@ -60,7 +60,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataSources\DataPipelineWiring.cs" />
+    <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
     <Compile Include="DataSources\DataSource.cs" />
     <Compile Include="DataSources\Tokens\PropertyAccess\AssignedEntityAttributePropertyAccess.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
@@ -70,8 +70,8 @@
     <Compile Include="DataSources\Caches\ICache.cs" />
     <Compile Include="DataSources\Caches\QuickCache.cs" />
     <Compile Include="DataSources\ConfigurationProvider.cs" />
-    <Compile Include="DataSources\DataPipeline.cs" />
-    <Compile Include="DataSources\DataPipelineFactory.cs" />
+    <Compile Include="DataSources\Pipeline\DataPipeline.cs" />
+    <Compile Include="DataSources\Pipeline\DataPipelineFactory.cs" />
     <Compile Include="DataSources\DataStream.cs" />
     <Compile Include="DataSources\DataTableDataSource.cs" />
     <Compile Include="DataSources\EntityIdFilter.cs" />

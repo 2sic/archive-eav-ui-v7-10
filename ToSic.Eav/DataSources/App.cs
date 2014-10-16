@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Return all Entities from a specific App
 	/// </summary>
 	public class App : BaseDataSource
 	{
@@ -64,7 +61,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new App DataSource
 		/// </summary>
 		public App()
 		{

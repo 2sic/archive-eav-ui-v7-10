@@ -4,7 +4,7 @@ using ToSic.Eav.DataSources.Caches;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	public class PublishingFilter : BaseDataSource
 	{
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new PublishingFilter
 		/// </summary>
 		public PublishingFilter()
 		{

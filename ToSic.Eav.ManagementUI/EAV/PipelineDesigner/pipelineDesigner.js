@@ -28,13 +28,13 @@ angular.module('pipelineDesinger.filters', []).filter('typename', function () {
 		var globalParts = input.match(/[^,\s]+/g);
 
 		switch (format) {
-			case 'classfqn':
+			case 'classFullName':
 				if (globalParts)
 					return globalParts[0];
 			case 'className':
 				if (globalParts) {
-					var classfqn = globalParts[0].match(/[^\.]+/g);
-					return classfqn[classfqn.length - 1];
+					var classFullName = globalParts[0].match(/[^\.]+/g);
+					return classFullName[classFullName.length - 1];
 				}
 		}
 

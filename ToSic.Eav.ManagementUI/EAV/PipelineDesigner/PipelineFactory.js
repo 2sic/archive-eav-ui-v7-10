@@ -95,7 +95,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 				action: 'GetDataSourceConfigurationUrl',
 				appId: appId,
 				dataSourceEntityGuid: dataSource.EntityGuid,
-				partAssemblyAndType: dataSource.PartAssemblyAndType,
+				dataSourceFullName: $filter('typename')(dataSource.PartAssemblyAndType, 'classFullName'),
 				newItemUrl: eavGlobalConfigurationProvider.newItemUrl + '&PreventRedirect=true',
 				editItemUrl: eavGlobalConfigurationProvider.editItemUrl + '&PreventRedirect=true'
 			}).$promise;
