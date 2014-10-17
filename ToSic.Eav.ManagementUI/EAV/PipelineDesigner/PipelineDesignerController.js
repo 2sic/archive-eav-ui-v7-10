@@ -191,7 +191,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 		// Init a new Pipeline with DataSources and Wirings from Configuration
 		var initNewPipeline = function () {
 			angular.forEach(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.dataSources, function (dataSource) {
-				$scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData);
+				$scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, false);
 			});
 
 			// create wirings when DOM was created
@@ -201,7 +201,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 		}
 
 		// Add new DataSource
-		$scope.addDataSource = function (partAssemblyAndType, visualDesignerData) {
+		$scope.addDataSource = function (partAssemblyAndType, visualDesignerData, autoSave) {
 			if (!partAssemblyAndType) {
 				partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
 				$scope.addDataSourceType = null;
@@ -220,6 +220,9 @@ pipelineDesigner.controller('pipelineDesignerController',
 			newDataSource = angular.extend(newDataSource, pipelineFactory.getNewDataSource($scope.pipelineData, newDataSource));
 
 			$scope.pipelineData.DataSources.push(newDataSource);
+
+			if (autoSave != false)
+				$scope.savePipeline();
 		}
 
 		// Delete a DataSource
