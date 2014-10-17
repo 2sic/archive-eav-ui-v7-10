@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources
 		/// Gets the Out-Stream with specified Name
 		/// </summary>
 		IDataStream this[string outName] { get; }
-		
+
 		/// <summary>
 		/// Get's the default list of Out["Default"]
 		/// This is just a shorthand, because the Default-List is the most commonly used
@@ -77,14 +77,14 @@ namespace ToSic.Eav.DataSources
 		#endregion
 	}
 
-    ///// <summary>
-    ///// Internal interface for building the object
-    ///// </summary>
-    //public interface IDataSourceInternals
-    //{
-    //    #region Configuration -- not implemented yet
-    //    // IEntity ConfigEntity { set; }
-    //    // Dictionary<string, string> ConfigValues { set; }
-    //    #endregion
-    //}
+	///// <summary>
+	///// Internal interface for building the object
+	///// </summary>
+	//public interface IDataSourceInternals
+	//{
+	//    #region Configuration -- not implemented yet
+	//    // IEntity ConfigEntity { set; }
+	//    // Dictionary<string, string> ConfigValues { set; }
+	//    #endregion
+	//}
 }
