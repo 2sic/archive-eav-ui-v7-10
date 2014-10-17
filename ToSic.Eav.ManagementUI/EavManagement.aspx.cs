@@ -19,5 +19,9 @@ namespace ToSic.Eav.ManagementUI.Pages
 		{
 			DataSource.GetCache(EAVManagement1.ZoneId.Value, EAVManagement1.AppId.Value).PurgeCache(EAVManagement1.ZoneId.Value, EAVManagement1.AppId.Value);
 		}
+
+		protected void EAVManagement1_EntityDeleting(EntityDeletingEventArgs e)
+		{
+		}
 	}
 }

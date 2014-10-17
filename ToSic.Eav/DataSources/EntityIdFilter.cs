@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
+	[PipelineDesigner]
 	public class EntityIdFilter : BaseDataSource
 	{
 		#region Configuration-properties

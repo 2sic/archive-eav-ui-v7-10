@@ -3,6 +3,7 @@ using System.Data;
 using System.Collections.Generic;
 using System.Data.Objects.DataClasses;
 using System.Linq;
+using System.Reflection;
 
 namespace ToSic.Eav
 {
@@ -88,5 +89,22 @@ namespace ToSic.Eav
 
 			return clone;
 		}
+
+
+        /// <summary>
+        /// Get Loadable Types from an assembly
+        /// </summary>
+        /// <remarks>Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes </remarks>
+        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                return e.Types.Where(t => t != null);
+            }
+        }
 	}
 }

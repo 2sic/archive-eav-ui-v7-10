@@ -6,6 +6,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Return only entities of a specific type
 	/// </summary>
+	[PipelineDesigner]
 	public class EntityTypeFilter : BaseDataSource
 	{
 		#region Configuration-properties

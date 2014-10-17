@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 
 namespace ToSic.Eav.DataSources
 {
@@ -7,7 +6,7 @@ namespace ToSic.Eav.DataSources
 	/// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
 	/// also maintains default User-May-Do-Edit/Sort etc. values
 	/// </summary>
-	public abstract class BaseDataSource : IDataSource, IDataSourceInternals, IDataTarget
+	public abstract class BaseDataSource : IDataSource, IDataTarget //, IDataSourceInternals
 	{
 		/// <summary>
 		/// Constructor
@@ -74,18 +73,18 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-        public void Attach(string streamName, IDataSource dataSource)
-        {
-            Attach(streamName, dataSource["Default"]);
-        }
+		public void Attach(string streamName, IDataSource dataSource)
+		{
+			Attach(streamName, dataSource["Default"]);
+		}
 
-        public void Attach(string streamName, IDataStream dataStream)
-        {
-            if (In.ContainsKey(streamName))
-                In.Remove(streamName);
+		public void Attach(string streamName, IDataStream dataStream)
+		{
+			if (In.ContainsKey(streamName))
+				In.Remove(streamName);
 
-            In.Add(streamName, dataStream);
-        }
+			In.Add(streamName, dataStream);
+		}
 
 		#region User Interface - not implemented yet
 		//public virtual bool AllowUserEdit
@@ -124,5 +123,5 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 
-    }
+	}
 }

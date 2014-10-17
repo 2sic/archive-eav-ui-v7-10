@@ -18,8 +18,8 @@
     <form id="form1" runat="server">
 	<asp:ScriptManager runat="server" ID="ScriptManager1" />
 	<%-- Optional use the BaseUrl-Property to specify a URL that this Wrapper Module will use --%>
-	<Eav:EavManagement ID="EAVManagement1" runat="server" Scope="" DefaultCultureDimension="2" ZoneId="1" AppId="1" />
-    <asp:Button ID="btnClearCache" runat="server" Text="Clear Cache" OnClick="btnClearCache_Click" style="position: absolute; bottom: 0; right: 0" />
+	<Eav:EavManagement ID="EAVManagement1" runat="server" Scope="" DefaultCultureDimension="2" ZoneId="1" AppId="1" OnEntityDeleting="EAVManagement1_EntityDeleting" />
+    <asp:Button ID="btnClearCache" runat="server" Text="Clear Cache" OnClick="btnClearCache_Click" style="position: fixed; bottom: 0; right: 0" />
     </form>
 </body>
 </html>

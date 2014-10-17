@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Return all Entities from a specific App
 	/// </summary>
+	[PipelineDesigner]
 	public class App : BaseDataSource
 	{
 		#region Configuration-properties
@@ -46,7 +44,8 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
-		public override IDictionary<string, IDataStream> Out {
+		public override IDictionary<string, IDataStream> Out
+		{
 			get
 			{
 				if (_requiresRebuildOfOut)
@@ -64,7 +63,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new App DataSource
 		/// </summary>
 		public App()
 		{
@@ -101,10 +100,10 @@ namespace ToSic.Eav.DataSources
 			var upstream = In[DataSource.DefaultStreamName].Source;
 			_Out.Clear();
 			_Out.Add(DataSource.DefaultStreamName, upstream.Out[DataSource.DefaultStreamName]);
-			
+
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-			var cache = (BaseCache) DataSource.GetCache(zoneId: ZoneId, appId: AppId);
+			var cache = (BaseCache)DataSource.GetCache(zoneId: ZoneId, appId: AppId);
 			var listOfTypes = cache.GetContentTypes();
 			foreach (var contentType in listOfTypes)
 			{
