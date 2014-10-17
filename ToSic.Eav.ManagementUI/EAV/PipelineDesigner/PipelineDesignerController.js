@@ -1,7 +1,7 @@
 // AngularJS Controller for the Pipeline Designer
 pipelineDesigner.controller('pipelineDesignerController',
-			['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService', '$log',
-	function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification, eavDialogService, $log) {
+			['$scope', 'pipelineFactory', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService', '$log', 'eavGlobalConfigurationProvider',
+	function ($scope, pipelineFactory, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider) {
 		'use strict';
 
 		// Init
@@ -27,12 +27,9 @@ pipelineDesigner.controller('pipelineDesignerController',
 			$scope.readOnly = !success.Pipeline.AllowEdit;
 			uiNotification.note('Ready', $scope.readOnly ? 'This pipeline is read only' : 'You can now desing the Pipeline', true);
 
-			// If a new Pipeline is made, add some Default-DataSources
-			if (!pipelineEntityId) {
-				$timeout(function () {
-					$scope.addDataSource('ToSic.Eav.DataSources.App, ToSic.Eav', { Top: 400, Left: 450 });
-				});
-			}
+			// If a new Pipeline is made, init new Pipeline
+			if (!pipelineEntityId)
+				$timeout(initNewPipeline);
 		}, function (reason) {
 			uiNotification.error('Loading Pipeline failed', reason);
 		});
@@ -167,26 +164,41 @@ pipelineDesigner.controller('pipelineDesignerController',
 
 			// suspend drawing and initialise
 			$scope.jsPlumbInstance.doWhileSuspended(function () {
-				angular.forEach($scope.pipelineData.Pipeline.StreamWiring, function (wire) {
-					// read connections from Pipeline
-					var sourceElementId = $scope.dataSourceIdPrefix + wire.From;
-					var fromUuid = sourceElementId + '_out_' + wire.Out;
-					var targetElementId = $scope.dataSourceIdPrefix + wire.To;
-					var toUuid = targetElementId + '_in_' + wire.In;
-
-					// Ensure In- and Out-Endpoint exist
-					if (!$scope.jsPlumbInstance.getEndpoint(fromUuid))
-						addEndpoint(jsPlumb.getSelector('#' + sourceElementId), wire.Out, false);
-					if (!$scope.jsPlumbInstance.getEndpoint(toUuid))
-						addEndpoint(jsPlumb.getSelector('#' + targetElementId), wire.In, true);
-
-					$scope.jsPlumbInstance.connect({ uuids: [fromUuid, toUuid] });
-				});
+				initWirings($scope.pipelineData.Pipeline.StreamWiring);
 			});
-			$scope.repaint();	// repaint to continuous connections are aligned correctly
+			$scope.repaint();	// repaint so continuous connections are aligned correctly
 
 			$scope.connectionsInitialized = true;
 		});
+		var initWirings = function (streamWiring) {
+			angular.forEach(streamWiring, function (wire) {
+				// read connections from Pipeline
+				var sourceElementId = $scope.dataSourceIdPrefix + wire.From;
+				var fromUuid = sourceElementId + '_out_' + wire.Out;
+				var targetElementId = $scope.dataSourceIdPrefix + wire.To;
+				var toUuid = targetElementId + '_in_' + wire.In;
+
+				// Ensure In- and Out-Endpoint exist
+				if (!$scope.jsPlumbInstance.getEndpoint(fromUuid))
+					addEndpoint(jsPlumb.getSelector('#' + sourceElementId), wire.Out, false);
+				if (!$scope.jsPlumbInstance.getEndpoint(toUuid))
+					addEndpoint(jsPlumb.getSelector('#' + targetElementId), wire.In, true);
+
+				$scope.jsPlumbInstance.connect({ uuids: [fromUuid, toUuid] });
+			});
+		}
+
+		// Init a new Pipeline with DataSources and Wirings from Configuration
+		var initNewPipeline = function () {
+			angular.forEach(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.dataSources, function (dataSource) {
+				$scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData);
+			});
+
+			// create wirings when DOM was created
+			$timeout(function () {
+				initWirings(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.streamWiring);
+			});
+		}
 
 		// Add new DataSource
 		$scope.addDataSource = function (partAssemblyAndType, visualDesignerData) {
@@ -347,7 +359,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 		}
 
 		// Query the Pipeline
-		$scope.queryPipeline = function() {
+		$scope.queryPipeline = function () {
 			// Ensure the Pipeline is saved
 			if (!pipelineEntityId) {
 				$scope.savePipeline();
@@ -357,13 +369,15 @@ pipelineDesigner.controller('pipelineDesignerController',
 			// Query pipelineFactory for the result...
 			uiNotification.wait('Running Query ...');
 
-			pipelineFactory.queryPipeline(appId, pipelineEntityId).then(function(success) {
+			pipelineFactory.queryPipeline(appId, pipelineEntityId).then(function (success) {
 				// Show Result in a UI-Dialog
 				uiNotification.clear();
-				eavDialogService.open({ title: 'Query result', content: '<div>The following Result was also logged to the Browser Console.<pre id="pipelineQueryResult">' +$filter('json') (success) + '</pre></div>'
+				eavDialogService.open({
+					title: 'Query result',
+					content: '<div>The following Result was also logged to the Browser Console.<pre id="pipelineQueryResult">' + $filter('json')(success) + '</pre></div>'
 				});
 				$log.info(success);
-			}, function(reason) {
+			}, function (reason) {
 				uiNotification.error('Query failed', reason);
 			});
 		}

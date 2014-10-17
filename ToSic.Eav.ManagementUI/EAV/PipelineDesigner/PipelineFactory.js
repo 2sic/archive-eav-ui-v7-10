@@ -14,11 +14,11 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 	var postProcessDataSources = function (model) {
 		// Append Out-DataSource for the UI
 		model.DataSources.push({
-			Name: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.Name,
-			Description: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.Description,
+			Name: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.name,
+			Description: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.description,
 			EntityGuid: 'Out',
-			PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
-			VisualDesignerData: { Top: 50, Left: 410 },
+			PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+			VisualDesignerData: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.visualDesignerData,
 			ReadOnly: true
 		});
 
@@ -51,9 +51,9 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 
 				// Add Out-DataSource for the UI
 				model.InstalledDataSources.push({
-					PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
-					ClassName: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.ClassName,
-					In: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.In,
+					PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+					ClassName: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+					In: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.in,
 					Out: null,
 					allowNew: false
 				});

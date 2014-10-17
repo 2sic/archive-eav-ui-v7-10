@@ -13,13 +13,26 @@ angular.module('eavGlobalConfigurationProvider', [])
 			},
 			pipelineDesigner: {
 				outDataSource: {
-					ClassName: 'SexyContentTemplate',
-					In: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
-					Name: '2SexyContent Module',
-					Description: 'The module/template which will show this data'
+					className: 'SexyContentTemplate',
+					in: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
+					name: '2SexyContent Module',
+					description: 'The module/template which will show this data',
+					visualDesignerData: { Top: 50, Left: 410 }
 				},
-
+				defaultPipeline: {
+					dataSources: [
+						{
+							partAssemblyAndType: 'ToSic.Eav.DataSources.App, ToSic.Eav',
+							visualDesignerData: { Top: 400, Left: 450 }
+						}
+					],
+					streamWiring: [
+						{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'Content' },
+						{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'ListContent' },
+						{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'Presentation' },
+						{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'ListPresentation' }
+					]
+				}
 			}
-		};
-
+		}
 	});
