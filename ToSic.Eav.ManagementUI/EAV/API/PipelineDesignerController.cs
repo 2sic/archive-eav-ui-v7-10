@@ -15,6 +15,7 @@ namespace ToSic.Eav.ManagementUI.API
 	public class PipelineDesignerController : ApiController
 	{
 		private EavContext _context;
+		private const string DefaultUserName = "EAV Pipeline Designer";
 
 		public PipelineDesignerController()
 		{
@@ -66,7 +67,7 @@ namespace ToSic.Eav.ManagementUI.API
 
 				#region Deserialize some Entity-Values
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-				pipelineJson["StreamWiring"] = DataPipelineWiring.Deserialize((string)pipelineJson["StreamWiring"]);
+				pipelineJson[DataPipeline.StreamWiringAttributeName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataPipeline.StreamWiringAttributeName]);
 
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
@@ -136,8 +137,7 @@ namespace ToSic.Eav.ManagementUI.API
 		[HttpPost]
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			const string userName = "EAV Pipeline Designer";
-			return SavePipeline(data, appId, id, userName);
+			return SavePipeline(data, appId, id, DefaultUserName);
 		}
 
 		/// <summary>
@@ -147,7 +147,7 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <param name="appId">AppId this Pipeline belogs to</param>
 		/// <param name="id">PipelineEntityId</param>
 		/// <param name="userName">Username performing this Save-Action</param>
-		protected Dictionary<string, object> SavePipeline(dynamic data, int appId, int? id = null, string userName = null)
+		protected Dictionary<string, object> SavePipeline(dynamic data, int appId, int? id = null, string userName = DefaultUserName)
 		{
 			_context = EavContext.Instance(appId: appId);
 			_context.UserName = userName;
@@ -280,7 +280,7 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
 		[HttpGet]
-		public object QueryPipeline(int appId, int id)
+		public Dictionary<string, IEnumerable<IEntity>> QueryPipeline(int appId, int id)
 		{
 			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
 
@@ -326,10 +326,20 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <summary>
 		/// Query the Result of a Pipline
 		/// </summary>
-		protected object QueryPipeline(int appId, int id, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
+		protected Dictionary<string, IEnumerable<IEntity>> QueryPipeline(int appId, int id, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
 		{
 			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;
 			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
+		}
+
+		/// <summary>
+		/// Clone a Pipeline with all DataSources and their configurations
+		/// </summary>
+		[HttpGet]
+		public object ClonePipeline(int appId, int id, string userName = DefaultUserName)
+		{
+			var clonePipelineEntity = DataPipeline.CopyDataPipeline(appId, id, userName);
+			return new { EntityId = clonePipelineEntity.EntityID };
 		}
 	}
 }

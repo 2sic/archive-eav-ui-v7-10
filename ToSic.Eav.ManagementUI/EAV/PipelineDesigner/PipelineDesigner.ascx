@@ -28,6 +28,7 @@
 				<button class="btn btn-default btn-sm" ng-click="repaint()">Repaint</button>
 				<button class="btn btn-default btn-sm" ng-click="toogleDebug()">{{debug ? 'Hide' : 'Show'}} Debug Info</button>
 				<button class="btn btn-default btn-sm" ng-click="queryPipeline()">Query this Pipeline</button>
+				<button class="btn btn-default btn-sm" ng-click="clonePipeline()">Clone this Pipeline</button>
 			</div>
 		</div>
 		<toaster-container></toaster-container>

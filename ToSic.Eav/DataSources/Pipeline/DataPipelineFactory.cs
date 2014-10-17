@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
 			#endregion
 
 			#region Loop and create all Stream Wirings
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline["StreamWiring"][0]);
+			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataPipeline.StreamWiringAttributeName][0]);
 			foreach (var wire in wirings)
 			{
 				var sourceDsrc = pipeline[wire.From];

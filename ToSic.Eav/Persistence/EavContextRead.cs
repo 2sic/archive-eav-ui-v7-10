@@ -43,6 +43,31 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
 		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, Guid keyGuid)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, null, keyGuid);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		[Obsolete("Use GetEntities() with only 2 Parameters")]
 		public List<Entity> GetEntities(int assignmentObjectTypeId, int? keyNumber, Guid? keyGuid, string keyString)
 		{
 			return GetEntitiesInternal(assignmentObjectTypeId, keyNumber, keyGuid, keyString).ToList();

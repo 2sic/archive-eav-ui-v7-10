@@ -3,7 +3,7 @@ pipelineDesigner.factory('uiNotification', ['toaster', function (toaster) {
 	'use strict';
 
 	var showNote = function (type, title, body, autoHide) {
-		// wrap teaster in ready-Event because notes would't be show if teaster is used before
+		// wrap toaster in ready-Event because notes would't be show if teaster is used before
 		angular.element(document).ready(function () {
 			toaster.clear();
 			toaster.pop(type, title, body, autoHide ? null : 0);

@@ -90,6 +90,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 
 			return pipelineResource.save({ action: 'SavePipeline', appId: appId, Id: pipeline.EntityId }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
 		},
+		// clone a whole Pipeline
+		clonePipeline: function (appId, pipelineEntityId) {
+			return pipelineResource.get({ action: 'ClonePipeline', appId: appId, Id: pipelineEntityId }).$promise;
+		},
 		// Get the URL
 		getDataSourceConfigurationUrl: function (appId, dataSource) {
 			return pipelineResource.get({
@@ -102,7 +106,7 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 			}).$promise;
 		},
 		// Query the Data of a Pipeline
-		queryPipeline: function(appId, id) {
+		queryPipeline: function (appId, id) {
 			return pipelineResource.get({ action: 'QueryPipeline', appId: appId, id: id }).$promise;
 		}
 	}

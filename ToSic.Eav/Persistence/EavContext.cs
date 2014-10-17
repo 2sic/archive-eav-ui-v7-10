@@ -114,31 +114,31 @@ namespace ToSic.Eav
 		/// </summary>
 		public void InitZoneApp(int? zoneId = null, int? appId = null)
 		{
-            if (zoneId.HasValue)
+			if (zoneId.HasValue)
 				_zoneId = zoneId.Value;
 			else
 			{
 				if (appId.HasValue)
 				{
 					var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
-                    if (!zoneIdOfApp.HasValue)
-                        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+					if (!zoneIdOfApp.HasValue)
+						throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
 					_zoneId = zoneIdOfApp.Value;
 				}
 				else
 					_zoneId = DataSource.DefaultZoneId;
 			}
 
-            if (appId.HasValue)
-            {
-                // Set AppId and validate AppId exists with specified ZoneId
-                var foundAppId = Apps.Where(a => a.AppID == appId.Value && a.ZoneID == _zoneId).Select(a => (int?)a.AppID).SingleOrDefault();
-                if(!foundAppId.HasValue)
-                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-                _appId = foundAppId.Value;
-            }
-            else
-                _appId = Apps.Where(a => a.Name == DefaultAppName && a.ZoneID == _zoneId).Select(a => a.AppID).Single();
+			if (appId.HasValue)
+			{
+				// Set AppId and validate AppId exists with specified ZoneId
+				var foundAppId = Apps.Where(a => a.AppID == appId.Value && a.ZoneID == _zoneId).Select(a => (int?)a.AppID).SingleOrDefault();
+				if (!foundAppId.HasValue)
+					throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+				_appId = foundAppId.Value;
+			}
+			else
+				_appId = Apps.Where(a => a.Name == DefaultAppName && a.ZoneID == _zoneId).Select(a => a.AppID).Single();
 
 		}
 
@@ -221,13 +221,16 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Clone an Entity with all Values
 		/// </summary>
-		private Entity CloneEntity(Entity sourceEntity)
+		internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
 		{
 			var clone = sourceEntity.CopyEntity(this);
 
 			AddToEntities(clone);
 
 			CloneEntityValues(sourceEntity, clone);
+
+			if (assignNewEntityGuid)
+				clone.EntityGUID = Guid.NewGuid();
 
 			return clone;
 		}
