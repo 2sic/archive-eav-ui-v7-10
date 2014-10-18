@@ -24,11 +24,11 @@
 				<select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
 					<option value="">-- Add DataSource --</option>
 				</select>
-				<button class="btn btn-default btn-sm" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
-				<button class="btn btn-default btn-sm" ng-click="repaint()">Repaint</button>
-				<button class="btn btn-default btn-sm" ng-click="toogleDebug()">{{debug ? 'Hide' : 'Show'}} Debug Info</button>
-				<button class="btn btn-default btn-sm" ng-click="queryPipeline()">Query this Pipeline</button>
-				<button class="btn btn-default btn-sm" ng-click="clonePipeline()">Clone this Pipeline</button>
+				<button class="btn btn-default btn-sm" title="Query the Data of this Pipeline" ng-click="queryPipeline()">Query</button>
+				<button class="btn btn-default btn-sm" title="Clone this Pipeline with all DataSources and Configurations" ng-click="clonePipeline()" ng-disabled="!PipelineEntityId">Clone</button>
+				<button class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()">{{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
+				<button class="btn btn-info btn-xs" ng-click="repaint()">Repaint</button>
+				<button class="btn btn-info btn-xs" ng-click="toogleDebug()">{{debug ? 'Hide' : 'Show'}} Debug Info</button>
 			</div>
 		</div>
 		<toaster-container></toaster-container>

@@ -69,6 +69,10 @@ pipelineDesigner.factory('pipelineFactory', ['$resource', '$q', '$filter', 'eavG
 		},
 		// Ensure Model has all DataSources and they're linked to their Definition-Object
 		postProcessDataSources: function (model) {
+			// stop Post-Process if the model already contains the Out-DataSource
+			if ($filter('filter')(model.DataSources, function (d) { return d.EntityGuid == 'Out'; })[0])
+				return;
+
 			postProcessDataSources(model);
 		},
 		// Get a JSON for a DataSource with Definition-Property

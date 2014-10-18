@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
 				throw new ArgumentException("Entity is not an DataPipeline Entity", "pipelineEntityId");
 			var pipelineEntityClone = ctx.CloneEntity(sourcePipelineEntity, true);
 
-			// Copy Pipeline Parts, assign KeyGuid of the new Pipeline Entity
+			// Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
 			var pipelineParts = ctx.GetEntities(DataSource.AssignmentObjectTypeIdDataPipeline, sourcePipelineEntity.EntityGUID);
 			var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
 			foreach (var pipelinePart in pipelineParts)
@@ -37,9 +37,17 @@ namespace ToSic.Eav.DataSources
 				var pipelinePartClone = ctx.CloneEntity(pipelinePart, true);
 				pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGUID;
 				pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
+
+				// Copy Configuration Entity, assign KeyGuid of the Clone
+				var configurationEntity = ctx.GetEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelinePart.EntityGUID).SingleOrDefault();
+				if (configurationEntity != null)
+				{
+					var configurationClone = ctx.CloneEntity(configurationEntity, true);
+					configurationClone.KeyGuid = pipelinePartClone.EntityGUID;
+				}
 			}
 
-			// Update Stream-Wirings
+			#region Update Stream-Wirings
 			var streamWiring = pipelineEntityClone.Values.Single(v => v.Attribute.StaticName == StreamWiringAttributeName);
 			var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
 			var wiringsClone = new List<WireInfo>();
@@ -55,10 +63,7 @@ namespace ToSic.Eav.DataSources
 			}
 
 			streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
-
-			// Copy configurations
-
-
+			#endregion
 
 			ctx.SaveChanges();
 
