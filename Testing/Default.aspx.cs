@@ -96,7 +96,7 @@ public partial class Default : Page
 				ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
 				break;
 			case "datapipelinefactory":
-				var source = DataPipelineFactory.GetDataSource(1, 347, null);
+				var source = DataPipelineFactory.GetDataSource(1, 347, null, new PassThrough());
 				ShowDataSource(source, "DataPipelineFactory");
 				break;
 			case "appds":

@@ -328,7 +328,7 @@ namespace ToSic.Eav.ManagementUI.API
 		/// </summary>
 		protected Dictionary<string, IEnumerable<IEntity>> QueryPipeline(int appId, int id, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
 		{
-			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;
+			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses, new PassThrough()).Out;
 			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
 

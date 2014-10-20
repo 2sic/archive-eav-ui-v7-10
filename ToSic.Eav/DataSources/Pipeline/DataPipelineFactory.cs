@@ -14,8 +14,9 @@ namespace ToSic.Eav.DataSources
 		/// <param name="appId">AppId to use</param>
 		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
 		/// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
+		/// <param name="outSource">DataSource to attach the Out-Streams</param>
 		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
+		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IPropertyAccess> configurationPropertyAccesses, IDataSource outSource)
 		{
 			var source = DataSource.GetInitialDataSource(appId: appId);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);	// ToDo: Validate change/extension with zoneId and appId Parameter
@@ -45,7 +46,6 @@ namespace ToSic.Eav.DataSources
 
 				pipeline.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
 			}
-			var outSource = new PassThrough();
 			pipeline.Add("Out", outSource);
 			#endregion
 
