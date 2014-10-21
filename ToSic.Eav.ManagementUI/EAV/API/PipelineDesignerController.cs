@@ -12,16 +12,34 @@ using ToSic.Eav.DataSources.Tokens;
 
 namespace ToSic.Eav.ManagementUI.API
 {
+	/// <summary>
+	/// Web API Controller for the Pipeline Designer UI
+	/// </summary>
 	public class PipelineDesignerController : ApiController
 	{
 		private EavContext _context;
-		private const string DefaultUserName = "EAV Pipeline Designer";
+		private readonly string _userName;
 
-		public PipelineDesignerController()
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public PipelineDesignerController() : this("EAV Pipeline Designer") { }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="userName">current UserName</param>
+		/// <param name="eavConnectionString">optional EAV Connection String</param>
+		public PipelineDesignerController(string userName, string eavConnectionString = null)
 		{
 			// Preserving circular reference
 			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
 			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+
+			_userName = userName;
+
+			if (eavConnectionString != null)
+				Eav.Configuration.SetConnectionString(eavConnectionString);
 		}
 
 		/// <summary>
@@ -134,23 +152,10 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="appId">AppId this Pipeline belogs to</param>
 		/// <param name="id">PipelineEntityId</param>
-		[HttpPost]
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			return SavePipeline(data, appId, id, DefaultUserName);
-		}
-
-		/// <summary>
-		/// Save Pipeline
-		/// </summary>
-		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
-		/// <param name="appId">AppId this Pipeline belogs to</param>
-		/// <param name="id">PipelineEntityId</param>
-		/// <param name="userName">Username performing this Save-Action</param>
-		protected Dictionary<string, object> SavePipeline(dynamic data, int appId, int? id = null, string userName = DefaultUserName)
-		{
 			_context = EavContext.Instance(appId: appId);
-			_context.UserName = userName;
+			_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
 			// Get/Save Pipeline EntityGuid. Its required to assign Pipeline Parts to it.
@@ -284,7 +289,8 @@ namespace ToSic.Eav.ManagementUI.API
 		{
 			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
 
-			return QueryPipeline(appId, id, configurationPropertyAccesses);
+			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses, new PassThrough()).Out;
+			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
 
 		/// <summary>
@@ -324,21 +330,12 @@ namespace ToSic.Eav.ManagementUI.API
 		}
 
 		/// <summary>
-		/// Query the Result of a Pipline
-		/// </summary>
-		protected Dictionary<string, IEnumerable<IEntity>> QueryPipeline(int appId, int id, IEnumerable<IPropertyAccess> configurationPropertyAccesses)
-		{
-			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses, new PassThrough()).Out;
-			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
-		}
-
-		/// <summary>
 		/// Clone a Pipeline with all DataSources and their configurations
 		/// </summary>
 		[HttpGet]
-		public object ClonePipeline(int appId, int id, string userName = DefaultUserName)
+		public object ClonePipeline(int appId, int id)
 		{
-			var clonePipelineEntity = DataPipeline.CopyDataPipeline(appId, id, userName);
+			var clonePipelineEntity = DataPipeline.CopyDataPipeline(appId, id, _userName);
 			return new { EntityId = clonePipelineEntity.EntityID };
 		}
 	}

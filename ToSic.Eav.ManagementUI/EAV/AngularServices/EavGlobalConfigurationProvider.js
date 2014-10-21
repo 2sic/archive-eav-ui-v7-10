@@ -4,8 +4,11 @@ angular.module('eavGlobalConfigurationProvider', [])
 	.factory('eavGlobalConfigurationProvider', function () {
 
 		return {
-			apiBaseUrl: "/api",
-			defaultApiParams: {},
+			api: {
+				baseUrl: "/api",
+				additionalHeaders: {}
+			},
+			//defaultApiParams: {},
 			dialogClass: "eavDialog",
 			itemForm: {
 				newItemUrl: "/EAVManagement.aspx?ManagementMode=NewItem&AttributeSetId=[AttributeSetId]&CultureDimension=[CultureDimension]&KeyNumber=[KeyNumber]&KeyGuid=[KeyGuid]&AssignmentObjectTypeId=[AssignmentObjectTypeId]",
