@@ -317,7 +317,7 @@ namespace ToSic.Eav
 			{
 				// Load from DB
 				var contentTypes = from set in AttributeSets
-								   where set.AppID == appId
+								   where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
 								   select new
 								   {
 									   set.AttributeSetID,
