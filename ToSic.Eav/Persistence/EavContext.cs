@@ -1344,7 +1344,7 @@ namespace ToSic.Eav
 			foreach (var sharedSet in sharedAttributeSets)
 			{
 				// Skip if attributeSet with StaticName already exists
-				if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName))
+				if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
 					continue;
 
 				// create new AttributeSet
