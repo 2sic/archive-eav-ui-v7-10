@@ -90,9 +90,9 @@ namespace ToSic.Eav
 
 		#region Constructor and Init
 		/// <summary>
-		/// Returns a new instace of the Eav Context. InitZoneApp should be called afterward. If not, default ZoneId and default AppId is used.
+		/// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
 		/// </summary>
-		public static EavContext Instance()
+		private static EavContext Instance()
 		{
 			var connectionString = Configuration.GetConnectionString();
 			return new EavContext(connectionString);
@@ -1001,6 +1001,9 @@ namespace ToSic.Eav
 		/// </summary>
 		public override int SaveChanges(System.Data.Objects.SaveOptions options)
 		{
+			if (_appId == 0)
+				throw new Exception("SaveChanges with AppId 0 not allowed.");
+
 			// enure changelog exists and is set to SQL CONTEXT_INFO variable
 			if (_mainChangeLogId == 0)
 				GetChangeLogId(UserName);
@@ -1332,7 +1335,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
 		/// </summary>
-		private void EnsureSharedAttributeSets(App app)
+		private void EnsureSharedAttributeSets(App app, bool autoSave = true)
 		{
 			if (app.AppID == 0)
 				throw new Exception("App must have a valid AppID");
@@ -1350,6 +1353,18 @@ namespace ToSic.Eav
 			}
 
 			// Ensure new AttributeSets are created and cache is refreshed
+			if (autoSave)
+				SaveChanges();
+		}
+
+		/// <summary>
+		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
+		/// </summary>
+		internal void EnsureSharedAttributeSets()
+		{
+			foreach (var app in Apps)
+				EnsureSharedAttributeSets(app, false);
+
 			SaveChanges();
 		}
 

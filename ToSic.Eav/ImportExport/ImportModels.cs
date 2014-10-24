@@ -14,6 +14,25 @@ namespace ToSic.Eav.Import
 		public string Scope { get; set; }
 		public List<Attribute> Attributes { get; set; }	// The List<> class does guarantee ordering
 		public Attribute TitleAttribute { get; set; }
+
+		public AttributeSet() { }
+
+		public AttributeSet(string name, string staticName, string description, string scope, List<Attribute> attributes)
+		{
+			Name = name;
+			StaticName = staticName;
+			Description = description;
+			Scope = scope;
+			Attributes = attributes;
+		}
+
+		/// <summary>
+		/// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
+		/// </summary>
+		public static AttributeSet SystemAttributeSet(string staticName, string description, List<Attribute> attributes)
+		{
+			return new AttributeSet(staticName, staticName, description, "System", attributes);
+		}
 	}
 
 	public class Attribute
@@ -21,6 +40,38 @@ namespace ToSic.Eav.Import
 		public string StaticName { get; set; }
 		public string Type { get; set; }
 		public List<Entity> AttributeMetaData { get; set; }
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public Attribute() { }
+
+		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		public Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi)
+		{
+			StaticName = staticName;
+			Type = type.ToString();
+			AttributeMetaData = new List<Entity> { GetAttributeMetaData(name, notes, visibleInEditUi) };
+		}
+
+		/// <summary>
+		/// Shortcut to get an @All Entity Describing an Attribute
+		/// </summary>
+		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi)
+		{
+			var allEntity = new Entity { AttributeSetStaticName = "@All" };
+			allEntity.Values = new Dictionary<string, List<IValueImportModel>>();
+			if (!string.IsNullOrEmpty(name))
+				allEntity.Values.Add("Name", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = name } });
+			if (!string.IsNullOrEmpty(notes))
+				allEntity.Values.Add("Notes", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = notes } });
+			if (visibleInEditUi.HasValue)
+				allEntity.Values.Add("VisibleInEditUI", new List<IValueImportModel> { new ValueImportModel<bool?>(allEntity) { Value = visibleInEditUi } });
+
+			return allEntity;
+		}
 	}
 
 	public class Entity
