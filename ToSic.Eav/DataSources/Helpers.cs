@@ -13,9 +13,9 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Get Entity Values in a Dictionary
 		/// </summary>
-		public static Dictionary<string, object> GetEntityValues(IEntity entity, int dimensionId = 0, bool addEntityId = true, bool addEntityGuid = true)
+		public static Dictionary<string, object> GetEntityValues(IEntity entity, int dimensionId = 0, string cultureCode = null, bool addEntityId = true, bool addEntityGuid = true)
 		{
-			var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => v.Value[dimensionId]);
+			var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => (cultureCode == null ? v.Value[dimensionId] : v.Value[cultureCode]));
 			if (addEntityId)
 				attributes.Add("EntityId", entity.EntityId);
 			if (addEntityGuid)

@@ -93,6 +93,8 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
+    <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
+    <Content Include="EAV\PipelineDesigner\PipelineManagementController.js" />
     <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
@@ -138,6 +140,7 @@
     <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\PipelineDesigner.aspx" />
+    <Content Include="Pages\PipelineManagement.aspx" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-resource.js" />
@@ -210,6 +213,14 @@
     <Compile Include="Common\Forms.cs" />
     <Compile Include="Common\Serialization.cs" />
     <Compile Include="Common\EventHandlers.cs" />
+    <Compile Include="EAV\API\EntitiesController.cs" />
+    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
+      <DependentUpon>PipelineManagement.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.designer.cs">
+      <DependentUpon>PipelineManagement.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ContentTypes.aspx.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -389,6 +400,13 @@
     </Compile>
     <Compile Include="Pages\PipelineDesigner.aspx.designer.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PipelineManagement.aspx.cs">
+      <DependentUpon>PipelineManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\PipelineManagement.aspx.designer.cs">
+      <DependentUpon>PipelineManagement.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.master.cs">
