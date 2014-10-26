@@ -137,6 +137,7 @@
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
     <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
     <Content Include="Global.asax" />
+    <Content Include="Items.aspx" />
     <Content Include="PipelineDesigner.aspx" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -382,6 +383,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Items.aspx.cs">
+      <DependentUpon>Items.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Items.aspx.designer.cs">
+      <DependentUpon>Items.aspx</DependentUpon>
     </Compile>
     <Compile Include="PipelineDesigner.aspx.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>

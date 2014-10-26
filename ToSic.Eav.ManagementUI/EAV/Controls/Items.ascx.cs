@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.UI.WebControls;
 using System.Web.UI;
 
@@ -15,9 +16,13 @@ namespace ToSic.Eav.ManagementUI
 		}
 		private const int ColIndexEdit = 0;
 		private const int ColIndexDelete = 1;
+		private const int ColIndexEntityId = 2;
+		private const int ColIndexRepositoryId = 3;
+		private const int ColIndexEntityTitle = 4;
 		private const int ColIndexIsPublished = 5;
 		private const int ColIndexPublishedRepositoryId = 6;
 		private const int ColIndexDraftRepositoryId = 7;
+		private string[] _columnNamesArray;
 		#endregion
 
 		#region Properties
@@ -28,6 +33,7 @@ namespace ToSic.Eav.ManagementUI
 		public string NewItemUrl { get; set; }
 		public int? DefaultCultureDimension { get; set; }
 		public int? AppId { get; set; }
+		public string ColumnNames { get; set; }
 		#endregion
 
 		#region Events
@@ -47,6 +53,13 @@ namespace ToSic.Eav.ManagementUI
 
 		#region Grid Event Handlers
 
+		protected void grdItems_DataBinding(object sender, EventArgs e)
+		{
+			// init columnNamesArray if ColumnNames is set
+			if (!string.IsNullOrEmpty(ColumnNames))
+				_columnNamesArray = ColumnNames.Split(',');
+		}
+
 		protected void grdItems_RowDataBound(object sender, GridViewRowEventArgs e)
 		{
 			if (e.Row.RowType == DataControlRowType.EmptyDataRow || e.Row.RowType == DataControlRowType.Pager)
@@ -55,6 +68,23 @@ namespace ToSic.Eav.ManagementUI
 			// Hide some Auto-Generated Columns
 			e.Row.Cells[ColIndexPublishedRepositoryId].Visible = false;
 			e.Row.Cells[ColIndexDraftRepositoryId].Visible = false;
+
+			// hide some columns if columnNamesArray is set
+			if (_columnNamesArray != null)
+			{
+				if (!_columnNamesArray.Contains("Edit"))
+					e.Row.Cells[ColIndexEdit].Visible = false;
+				if (!_columnNamesArray.Contains("Delete"))
+					e.Row.Cells[ColIndexDelete].Visible = false;
+				if (!_columnNamesArray.Contains("EntityId"))
+					e.Row.Cells[ColIndexEntityId].Visible = false;
+				if (!_columnNamesArray.Contains("RepositoryId"))
+					e.Row.Cells[ColIndexRepositoryId].Visible = false;
+				if (!_columnNamesArray.Contains("EntityTitle"))
+					e.Row.Cells[ColIndexEntityTitle].Visible = false;
+				if (!_columnNamesArray.Contains("IsPublished"))
+					e.Row.Cells[ColIndexIsPublished].Visible = false;
+			}
 
 			if (e.Row.RowType != DataControlRowType.DataRow)
 				return;
@@ -111,6 +141,7 @@ namespace ToSic.Eav.ManagementUI
 		{
 			e.InputParameters["AttributeSetId"] = AttributeSetId;
 			e.InputParameters["DimensionIds"] = DimensionIds;
+			e.InputParameters["ColumnNames"] = ColumnNames;
 		}
 
 		protected void dsrcItems_Deleting(object sender, ObjectDataSourceMethodEventArgs e)
