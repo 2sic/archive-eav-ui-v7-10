@@ -7,27 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ToSic.Eav.ManagementUI {
+namespace ToSic.Eav.ManagementUI.Pages {
     
     
-    public partial class Items1 {
+    public partial class PipelineDesigner {
         
         /// <summary>
-        /// form1 control.
+        /// PipelineDesigner1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-        
-        /// <summary>
-        /// Items control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::ToSic.Eav.ManagementUI.Items Items;
+        protected global::ToSic.Eav.ManagementUI.EAV.PipelineDesigner.PipelineDesigner PipelineDesigner1;
     }
 }

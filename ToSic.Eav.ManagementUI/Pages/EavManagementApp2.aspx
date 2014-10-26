@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="True" Inherits="ToSic.Eav.ManagementUI.Pages.EavManagementApp2" StylesheetTheme="Dialog" Codebehind="EavManagementApp2.aspx.cs" %>
 
-<%@ Register src="Eav/Controls/EavManagement.ascx" tagname="EavManagement" tagprefix="Eav" %>
+<%@ Register src="~/EAV/Controls/EavManagement.ascx" tagname="EavManagement" tagprefix="Eav" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 

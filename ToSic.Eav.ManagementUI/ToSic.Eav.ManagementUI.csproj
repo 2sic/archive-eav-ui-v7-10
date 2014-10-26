@@ -93,11 +93,11 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
-    <Content Include="ContentTypes.aspx" />
+    <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
-    <Content Include="EavManagementApp2.aspx" />
-    <Content Include="EavManagement.aspx" />
+    <Content Include="Pages\EavManagementApp2.aspx" />
+    <Content Include="Pages\EavManagement.aspx" />
     <Content Include="EAV\Controls\ContentTypeEdit.ascx" />
     <Content Include="EAV\Controls\ContentTypeFields.ascx" />
     <Content Include="EAV\Controls\ContentTypesList.ascx" />
@@ -137,8 +137,7 @@
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
     <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
     <Content Include="Global.asax" />
-    <Content Include="Items.aspx" />
-    <Content Include="PipelineDesigner.aspx" />
+    <Content Include="Pages\PipelineDesigner.aspx" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-resource.js" />
@@ -211,25 +210,25 @@
     <Compile Include="Common\Forms.cs" />
     <Compile Include="Common\Serialization.cs" />
     <Compile Include="Common\EventHandlers.cs" />
-    <Compile Include="ContentTypes.aspx.cs">
+    <Compile Include="Pages\ContentTypes.aspx.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ContentTypes.aspx.designer.cs">
+    <Compile Include="Pages\ContentTypes.aspx.designer.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EavManagement.aspx.designer.cs">
+    <Compile Include="Pages\EavManagement.aspx.designer.cs">
       <DependentUpon>EavManagement.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EavManagementApp2.aspx.cs">
+    <Compile Include="Pages\EavManagementApp2.aspx.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EavManagement.aspx.cs">
+    <Compile Include="Pages\EavManagement.aspx.cs">
       <DependentUpon>EavManagement.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EavManagementApp2.aspx.designer.cs">
+    <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\API\PipelineDesignerController.cs" />
@@ -384,18 +383,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Items.aspx.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Items.aspx.designer.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PipelineDesigner.aspx.cs">
+    <Compile Include="Pages\PipelineDesigner.aspx.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PipelineDesigner.aspx.designer.cs">
+    <Compile Include="Pages\PipelineDesigner.aspx.designer.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
