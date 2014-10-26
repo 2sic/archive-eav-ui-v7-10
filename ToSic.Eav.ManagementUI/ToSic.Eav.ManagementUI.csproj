@@ -94,7 +94,7 @@
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
-    <Content Include="EAV\PipelineDesigner\PipelineManagementController.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
     <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />

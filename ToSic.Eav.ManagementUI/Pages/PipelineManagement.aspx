@@ -16,7 +16,7 @@
 		<script src="../Scripts/jquery-1.9.1.min.js"></script>
 		<script src="../Scripts/angular.js"></script>
 		<script src="../Scripts/angular-resource.min.js"></script>
-		<script src="../EAV/PipelineDesigner/PipelineManagementController.js"></script>
+		<script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
 		<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 	</form>
 </body>
