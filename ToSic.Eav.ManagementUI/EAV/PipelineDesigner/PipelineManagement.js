@@ -28,11 +28,16 @@ angular.module('pipelineManagementFactory', ['ngResource', 'eavGlobalConfigurati
 		// Add additional Headers to each http-Request
 		angular.extend($http.defaults.headers.common, eavGlobalConfigurationProvider.api.additionalHeaders);
 
+		var dataPipelineAttributeSetId;
 		var appId;
 
 		return {
+			// set AppId and init some dynamic configurations
 			setAppId: function (newAppId) {
 				appId = newAppId;
+				entitiesResource.get({ action: 'GetContentType', appId: appId, name: 'DataPipeline' }, function (success) {
+					dataPipelineAttributeSetId = success.AttributeSetId;
+				});
 			},
 			getPipelines: function () {
 				return entitiesResource.query({ action: 'GetEntities', appId: appId, typeName: 'DataPipeline' });
@@ -40,7 +45,7 @@ angular.module('pipelineManagementFactory', ['ngResource', 'eavGlobalConfigurati
 			getPipelineUrl: function (mode, pipeline) {
 				switch (mode) {
 					case 'new':
-						return eavGlobalConfigurationProvider.itemForm.getUrl('New', { AttributeSetId: 49, AssignmentObjectTypeId: 4 });
+						return eavGlobalConfigurationProvider.itemForm.getUrl('New', { AttributeSetId: dataPipelineAttributeSetId, AssignmentObjectTypeId: 4 });
 					case 'edit':
 						return eavGlobalConfigurationProvider.itemForm.getUrl('Edit', { EntityId: pipeline.EntityId });
 					case 'design':

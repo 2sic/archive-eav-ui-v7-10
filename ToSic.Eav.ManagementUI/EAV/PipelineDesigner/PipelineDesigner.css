@@ -4,6 +4,10 @@
 	right: 0;
 }
 
+	.actions * {
+		margin: 4px 0 4px 0;
+	}
+
 .dataSource {
 	height: 100px;
 	transition: box-shadow 0.15s ease-in 0s;

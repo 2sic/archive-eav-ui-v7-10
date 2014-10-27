@@ -11,7 +11,7 @@ namespace ToSic.Eav.ManagementUI.API
 	public class EntitiesController : ApiController
 	{
 		/// <summary>
-		/// Get all Entities with specified Type
+		/// Get all Entities of specified Type
 		/// </summary>
 		public IEnumerable<Dictionary<string, object>> GetEntities(int appId, string typeName, string cultureCode = null)
 		{
@@ -20,6 +20,16 @@ namespace ToSic.Eav.ManagementUI.API
 			typeFilter.TypeName = typeName;
 
 			return typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
+		}
+
+		/// <summary>
+		/// Get a ContentType by Name
+		/// </summary>
+		public IContentType GetContentType(int appId, string name)
+		{
+			var source = DataSource.GetInitialDataSource(appId: appId);
+			var cache = DataSource.GetCache(source.ZoneId, appId);
+			return cache.GetContentType(name);
 		}
 	}
 }

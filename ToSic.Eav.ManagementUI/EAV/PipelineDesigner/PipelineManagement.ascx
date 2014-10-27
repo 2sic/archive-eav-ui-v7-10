@@ -5,7 +5,7 @@
 			<span class="glyphicon glyphicon-plus"></span> New
 		</a>
 		<button type="button" class="btn btn-default" ng-click="refresh()">
-			<span class="glyphicon glyphicon-refresh"></span> refresh
+			<span class="glyphicon glyphicon-repeat"></span> Refresh
 		</button>
 		<table class="table table-striped table-hover">
 			<thead>
@@ -16,15 +16,15 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="pipeline in pipelines">
+				<tr ng-repeat="pipeline in pipelines | orderBy:'Name'">
 					<td>{{pipeline.Name}}</td>
 					<td>{{pipeline.Description}}</td>
 					<td>
-						<a class="btn btn-xs btn-default" ng-if="pipeline.AllowEdit" target="_self" ng-href="{{getPipelineUrl('edit', pipeline)}}">
-							<span class="glyphicon glyphicon-pencil"></span> Edit
-						</a>
 						<a class="btn btn-xs btn-default" target="_blank" ng-href="{{getPipelineUrl('design', pipeline)}}">
 							<span class="glyphicon glyphicon-random"></span> Open Designer
+						</a>
+						<a class="btn btn-xs btn-default" ng-if="pipeline.AllowEdit" target="_self" ng-href="{{getPipelineUrl('edit', pipeline)}}">
+							<span class="glyphicon glyphicon-pencil"></span> Edit
 						</a>
 					</td>
 				</tr>
