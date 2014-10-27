@@ -5,6 +5,9 @@ angular.module('pipelineManagement', ['pipelineManagementFactory']).
 	}).
 	controller('pipelineManagementController', function ($rootScope, $scope, $location, $window, pipelineManagementFactory) {
 		$scope.AppId = $location.search().AppId;
+		if (!$scope.AppId)
+			throw 'Please specify an AppId';
+
 		pipelineManagementFactory.setAppId($scope.AppId);
 		$scope.getPipelineUrl = pipelineManagementFactory.getPipelineUrl;
 

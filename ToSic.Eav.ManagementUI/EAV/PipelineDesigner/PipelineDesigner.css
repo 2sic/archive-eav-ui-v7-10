@@ -1,5 +1,5 @@
 .actions {
-	width: 210px;
+	width: 215px;
 	position: fixed;
 	right: 0;
 }
@@ -126,8 +126,3 @@
 	.ep:hover {
 		box-shadow: 0 0 6px black;
 	}
-
-
-.ng-cloak {
-	display: none !important;
-}

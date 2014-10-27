@@ -12,10 +12,6 @@
 	<link rel="stylesheet" href="../CSS/bootstrap.min.css" />
 	<link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
 	<link rel="stylesheet" href="../Scripts/jquery-ui-1.10.3.css" />
-</head>
-<body>
-	<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
-
 	<script src="../Scripts/jquery-1.9.1.min.js"></script>
 	<script src="../Scripts/jquery-ui-1.10.2.min.js"></script>
 	<script src="../Scripts/angular.js"></script>
@@ -29,5 +25,8 @@
 	<script src="../EAV/AngularServices/NotificationService.js"></script>
 	<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 	<script src='../EAV/AngularServices/EavDialogService.js'></script>
+</head>
+<body>
+	<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
 </body>
 </html>

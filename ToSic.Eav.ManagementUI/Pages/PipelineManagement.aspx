@@ -9,15 +9,15 @@
 	<title>Pipeline Management</title>
 	<link rel="stylesheet" href="../CSS/bootstrap.min.css" />
 	<link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
+	<script src="../Scripts/jquery-1.9.1.min.js"></script>
+	<script src="../Scripts/angular.js"></script>
+	<script src="../Scripts/angular-resource.min.js"></script>
+	<script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
+	<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 </head>
 <body>
 	<form id="form1" runat="server">
 		<eav:PipelineManagement runat="server" ID="PipelineManagement1" />
-		<script src="../Scripts/jquery-1.9.1.min.js"></script>
-		<script src="../Scripts/angular.js"></script>
-		<script src="../Scripts/angular-resource.min.js"></script>
-		<script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
-		<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 	</form>
 </body>
 </html>
