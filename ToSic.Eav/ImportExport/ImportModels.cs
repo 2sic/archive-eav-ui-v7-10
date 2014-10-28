@@ -57,12 +57,25 @@ namespace ToSic.Eav.Import
 		}
 
 		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null)
+		{
+			var attribute = new Attribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi);
+			attribute.AttributeMetaData.Add(GetStringAttributeMetaData(inputType, rowCount));
+			return attribute;
+		}
+
+		/// <summary>
 		/// Shortcut to get an @All Entity Describing an Attribute
 		/// </summary>
 		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi)
 		{
-			var allEntity = new Entity { AttributeSetStaticName = "@All" };
-			allEntity.Values = new Dictionary<string, List<IValueImportModel>>();
+			var allEntity = new Entity
+			{
+				AttributeSetStaticName = "@All",
+				Values = new Dictionary<string, List<IValueImportModel>>()
+			};
 			if (!string.IsNullOrEmpty(name))
 				allEntity.Values.Add("Name", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = name } });
 			if (!string.IsNullOrEmpty(notes))
@@ -71,6 +84,21 @@ namespace ToSic.Eav.Import
 				allEntity.Values.Add("VisibleInEditUI", new List<IValueImportModel> { new ValueImportModel<bool?>(allEntity) { Value = visibleInEditUi } });
 
 			return allEntity;
+		}
+
+		private static Entity GetStringAttributeMetaData(string inputType, int? rowCount)
+		{
+			var stringEntity = new Entity
+			{
+				AttributeSetStaticName = "@String",
+				Values = new Dictionary<string, List<IValueImportModel>>()
+			};
+			if (!string.IsNullOrEmpty(inputType))
+				stringEntity.Values.Add("InputType", new List<IValueImportModel> { new ValueImportModel<string>(stringEntity) { Value = inputType } });
+			if (rowCount.HasValue)
+				stringEntity.Values.Add("RowCount", new List<IValueImportModel> { new ValueImportModel<decimal?>(stringEntity) { Value = rowCount } });
+
+			return stringEntity;
 		}
 	}
 

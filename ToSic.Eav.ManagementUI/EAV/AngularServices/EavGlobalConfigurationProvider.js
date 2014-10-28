@@ -9,9 +9,9 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 	return {
 		api: {
 			baseUrl: "/api",
-			additionalHeaders: {}
+			additionalHeaders: {},
+			defaultParams: {}
 		},
-		//defaultApiParams: {},
 		dialogClass: "eavDialog",
 		itemForm: {
 			newItemUrl: newItemUrl,
