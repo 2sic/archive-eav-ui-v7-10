@@ -4,17 +4,23 @@ angular.module('pipelineManagement', ['pipelineManagementFactory']).
 		$locationProvider.html5Mode(true);
 	}).
 	controller('pipelineManagementController', function ($rootScope, $scope, $location, $window, pipelineManagementFactory) {
+		// Init
 		$scope.AppId = $location.search().AppId;
 		if (!$scope.AppId)
 			throw 'Please specify an AppId';
-
 		pipelineManagementFactory.setAppId($scope.AppId);
+		// Make URL-Provider available to the scope
 		$scope.getPipelineUrl = pipelineManagementFactory.getPipelineUrl;
 
+		// Refresh List of Pipelines
 		$scope.refresh = function () {
 			$scope.pipelines = pipelineManagementFactory.getPipelines($scope.AppId);
 		};
 		$scope.refresh();
+
+		// Set Return URL
+		if ($location.search().ReturnUrl)
+			$scope.returnUrl = decodeURIComponent($location.search().ReturnUrl);
 	});
 
 
