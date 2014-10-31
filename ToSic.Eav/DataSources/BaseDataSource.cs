@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
 
 		public IDictionary<int, IEntity> List
 		{
-			get { return Out["Default"].List; }
+			get { return Out[DataSource.DefaultStreamName].List; }
 		}
 		public IConfigurationProvider ConfigurationProvider { get; internal set; }
 		public IDictionary<string, string> Configuration { get; internal set; }
@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
 
 		public void Attach(string streamName, IDataSource dataSource)
 		{
-			Attach(streamName, dataSource["Default"]);
+			Attach(streamName, dataSource[DataSource.DefaultStreamName]);
 		}
 
 		public void Attach(string streamName, IDataStream dataStream)

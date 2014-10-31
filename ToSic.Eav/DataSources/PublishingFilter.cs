@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
 		public PublishingFilter()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts]");
+			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()

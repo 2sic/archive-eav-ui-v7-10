@@ -32,13 +32,14 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 				in: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],
 				name: '2SexyContent Module',
 				description: 'The module/template which will show this data',
-				visualDesignerData: { Top: 50, Left: 410 }
+				visualDesignerData: { Top: 40, Left: 400 }
 			},
 			defaultPipeline: {
 				dataSources: [
 					{
+						entityGuid: 'unsaved1',
 						partAssemblyAndType: 'ToSic.Eav.DataSources.App, ToSic.Eav',
-						visualDesignerData: { Top: 400, Left: 450 }
+						visualDesignerData: { Top: 300, Left: 440 }
 					}
 				],
 				streamWiring: [

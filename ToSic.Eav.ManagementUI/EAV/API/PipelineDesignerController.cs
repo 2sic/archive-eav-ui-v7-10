@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Tokens;
+using Microsoft.Practices.Unity;
 
 namespace ToSic.Eav.ManagementUI.API
 {
@@ -128,9 +129,13 @@ namespace ToSic.Eav.ManagementUI.API
 						outStreamNames = null;
 					}
 				}
-				else if (dataSource.IsInterface && dataSource == typeof(ICache))
+				// Handle Interfaces (currently only ICache) with Unity
+				else if (dataSource.IsInterface)
 				{
-					inStreamNames = null;
+					var dataSourceInstance = (IDataSource)Factory.Container.Resolve(dataSource);
+					outStreamNames = dataSourceInstance.Out.Keys;
+					if (dataSourceInstance is ICache)
+						inStreamNames = null;
 				}
 				#endregion
 
@@ -306,7 +311,7 @@ namespace ToSic.Eav.ManagementUI.API
 			var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
 			if (testParameters == null)
 				return null;
-			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\]):(?<Value>[^\r]*)");
+			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
 
 			// Create a list of static Property Accessors
 			var result = new List<IPropertyAccess>();
