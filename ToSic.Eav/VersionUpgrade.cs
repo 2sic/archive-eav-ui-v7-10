@@ -29,7 +29,7 @@ namespace ToSic.Eav
 				{
 					Import.Attribute.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
 					Import.Attribute.StringAttribute("Description", "Description", "Short info about this pipeline, what it's for", true),
-					new Import.Attribute("AllowEdit", "Allow Edit", AttributeTypeEnum.Boolean, "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true),
+					Import.Attribute.BooleanAttribute("AllowEdit", "Allow Edit", "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true, true),
 					Import.Attribute.StringAttribute("StreamsOut", "Streams Out", "Comma separated list of streams this pipeline offers to the target. Like 'Content, Presentation, ListContent, ListPresentation'", false),
 					Import.Attribute.StringAttribute("StreamWiring", "Stream Wiring", "List of connections between the parts of this pipeline, each connection on one line, like 6730:Default>6732:Default", false, rowCount: 10),
 					Import.Attribute.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)

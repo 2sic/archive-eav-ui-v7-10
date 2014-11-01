@@ -206,7 +206,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 			// Wait until all DataSources were created
 			var initWiringsListener = $scope.$on('ngRepeatFinished', function () {
 				initWirings(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.streamWiring);
-				
+
 				initWiringsListener(); // unbind the Listener
 			});
 		}
@@ -347,6 +347,7 @@ pipelineDesigner.controller('pipelineDesignerController',
 
 			pipelineFactory.savePipeline($scope.AppId, $scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(successHandler, function (reason) {
 				uiNotification.error('Save Pipeline failed', reason);
+				$scope.readOnly = false;
 				deferred.reject();
 			}).then(function () {
 				deferred.resolve();

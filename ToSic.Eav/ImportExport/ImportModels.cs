@@ -49,27 +49,36 @@ namespace ToSic.Eav.Import
 		/// <summary>
 		/// Get an Import-Attribute
 		/// </summary>
-		public Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi)
+		private Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
 		{
 			StaticName = staticName;
 			Type = type.ToString();
-			AttributeMetaData = new List<Entity> { GetAttributeMetaData(name, notes, visibleInEditUi) };
+			AttributeMetaData = new List<Entity> { GetAttributeMetaData(name, notes, visibleInEditUi, EavContext.SerializeValue(defaultValue)) };
 		}
 
 		/// <summary>
 		/// Get an Import-Attribute
 		/// </summary>
-		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null)
+		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
 		{
-			var attribute = new Attribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi);
+			var attribute = new Attribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
 			attribute.AttributeMetaData.Add(GetStringAttributeMetaData(inputType, rowCount));
+			return attribute;
+		}
+
+		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		public static Attribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
+		{
+			var attribute = new Attribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
 			return attribute;
 		}
 
 		/// <summary>
 		/// Shortcut to get an @All Entity Describing an Attribute
 		/// </summary>
-		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi)
+		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
 		{
 			var allEntity = new Entity
 			{
@@ -82,6 +91,8 @@ namespace ToSic.Eav.Import
 				allEntity.Values.Add("Notes", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = notes } });
 			if (visibleInEditUi.HasValue)
 				allEntity.Values.Add("VisibleInEditUI", new List<IValueImportModel> { new ValueImportModel<bool?>(allEntity) { Value = visibleInEditUi } });
+			if (defaultValue != null)
+				allEntity.Values.Add("DefaultValue", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = defaultValue } });
 
 			return allEntity;
 		}

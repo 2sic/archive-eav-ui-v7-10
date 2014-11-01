@@ -249,7 +249,7 @@ namespace ToSic.Eav.ManagementUI.API
 			dynamic pipelineClone = pipeline.DeepClone();
 
 			// Update Wirings of Entities just added
-			var wirings = pipeline.StreamWiring.ToObject<IEnumerable<WireInfo>>();
+			IEnumerable<WireInfo> wirings = pipeline.StreamWiring.ToObject<IEnumerable<WireInfo>>();
 			if (newDataSources != null)
 			{
 				var wiringsNew = new List<WireInfo>();
@@ -266,6 +266,10 @@ namespace ToSic.Eav.ManagementUI.API
 				wirings = wiringsNew;
 			}
 			pipelineClone.StreamWiring = DataPipelineWiring.Serialize(wirings);
+
+			// Validate Stream Wirings
+			foreach (var wireInfo in wirings.Where(wireInfo => wirings.Count(w => w.To == wireInfo.To && w.In == wireInfo.In) > 1))
+				throw new Exception(string.Format("DataSource \"{0}\" has multiple In-Streams with Name \"{1}\". Each In-Stream must have an unique Name and can have only one connection.", wireInfo.To, wireInfo.In));
 
 			// Add/Update Entity
 			var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
