@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
@@ -20,6 +21,22 @@ namespace ToSic.Eav.ManagementUI.API
 			typeFilter.TypeName = typeName;
 
 			return typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
+		}
+
+		/// <summary>
+		/// Get Entities with specified AssignmentObjectTypeId and Key
+		/// </summary>
+		public IEnumerable<IEntity> GetAssignedEntities(int appId, int assignmentObjectTypeId, Guid keyGuid, string contentTypeName)
+		{
+			return DataSource.GetMetaDataSource(appId: appId).GetAssignedEntities(assignmentObjectTypeId, keyGuid, contentTypeName);
+		}
+
+		/// <summary>
+		/// Get Entities with specified AssignmentObjectTypeId and Key
+		/// </summary>
+		public IEnumerable<IEntity> GetAssignedEntities(int appId, int assignmentObjectTypeId, string keyString, string contentTypeName)
+		{
+			return DataSource.GetMetaDataSource(appId: appId).GetAssignedEntities(assignmentObjectTypeId, keyString, contentTypeName);
 		}
 
 		/// <summary>

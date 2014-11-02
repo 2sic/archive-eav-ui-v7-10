@@ -43,30 +43,6 @@ namespace ToSic.Eav.ManagementUI.API
 				Eav.Configuration.SetConnectionString(eavConnectionString);
 		}
 
-		/// <summary>
-		/// Get URL to configure a DataSource
-		/// </summary>
-		/// <param name="appId">AppId of the Pipeline/DataSource</param>
-		/// <param name="dataSourceEntityGuid">EntityGuid of the DataSource</param>
-		/// <param name="dataSourceFullName">FullName of the DataSource Type</param>
-		/// <param name="newItemUrl">URL Schema to NewItem-Form</param>
-		/// <param name="editItemUrl">URL Schema to EditItem-Form</param>
-		[HttpGet]
-		public object GetDataSourceConfigurationUrl(int appId, Guid dataSourceEntityGuid, string dataSourceFullName, string newItemUrl, string editItemUrl)
-		{
-			_context = EavContext.Instance(appId: appId);
-			var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
-
-			var attributeSetName = "|Config " + dataSourceFullName;
-			var contentType = cache.GetContentType(attributeSetName);
-			if (contentType == null)
-				throw new ArgumentException("No Configuration found for Name " + attributeSetName, "dataSourceFullName");
-			var attributeSetId = contentType.AttributeSetId;
-
-			var url = Forms.GetItemFormUrl(dataSourceEntityGuid, attributeSetId, DataSource.AssignmentObjectTypeIdDataPipeline, newItemUrl, editItemUrl);
-
-			return new { Url = url };
-		}
 
 		/// <summary>
 		/// Get a Pipeline with DataSources

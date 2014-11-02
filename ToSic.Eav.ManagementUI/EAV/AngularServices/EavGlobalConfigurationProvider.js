@@ -2,9 +2,14 @@
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
 angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigurationProvider', function ($location) {
 
-	var itemFormBaseUrl = "/Pages/EAVManagement.aspx?";
-	var newItemUrl = itemFormBaseUrl + "ManagementMode=NewItem&AttributeSetId=[AttributeSetId]&CultureDimension=[CultureDimension]&KeyNumber=[KeyNumber]&KeyGuid=[KeyGuid]&AssignmentObjectTypeId=[AssignmentObjectTypeId]";
-	var editItemUrl = itemFormBaseUrl + "ManagementMode=EditItem&EntityId=[EntityId]&CultureDimension=[CultureDimension]";
+	var getItemFormUrl = function (mode, params, preventRedirect) {
+		params.ManagementMode = mode + 'Item';
+		if (!params.ReturnUrl)
+			params.ReturnUrl = $location.url();
+		if (preventRedirect)
+			params.PreventRedirect = true;
+		return "/Pages/EAVManagement.aspx?" + $.param(params);
+	};
 
 	return {
 		api: {
@@ -14,13 +19,11 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 		},
 		dialogClass: "eavDialog",
 		itemForm: {
-			newItemUrl: newItemUrl,
-			editItemUrl: editItemUrl,
-			getUrl: function (mode, params) {
-				angular.extend(params, { ManagementMode: mode + 'Item' });
-				if (!params.ReturnUrl)
-					params.ReturnUrl = $location.url();
-				return itemFormBaseUrl + $.param(params);
+			getNewItemUrl: function (attributeSetId, assignmentObjectTypeId, params, preventRedirect) {
+				return getItemFormUrl('New', angular.extend({ AttributeSetId: attributeSetId, AssignmentObjectTypeId: assignmentObjectTypeId }, params), preventRedirect);
+			},
+			getEditItemUrl: function (entityId, params, preventRedirect) {
+				return getItemFormUrl('Edit', angular.extend({ EntityId: entityId }, params), preventRedirect);
 			}
 		},
 		pipelineDesigner: {
