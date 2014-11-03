@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources.Tokens;
 
 namespace ToSic.Eav.DataSources
@@ -8,6 +10,19 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataPipelineFactory
 	{
+		/// <summary>
+		/// Creates a DataSource from a PipelineEntity for specified Zone and App
+		/// </summary>
+		/// <param name="appId">AppId to use</param>
+		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
+		/// <param name="configuration">ConfigurationProvider Provider for configurable DataSources</param>
+		/// <param name="outSource">DataSource to attach the Out-Streams</param>
+		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
+		public static IDataSource GetDataSource(int appId, int pipelineEntityId, ConfigurationProvider configuration, IDataSource outSource)
+		{
+			return GetDataSource(appId, pipelineEntityId, configuration.Sources.Select(s => s.Value), outSource);
+		}
+
 		/// <summary>
 		/// Creates a DataSource from a PipelineEntity for specified Zone and App
 		/// </summary>
@@ -38,7 +53,12 @@ namespace ToSic.Eav.DataSources
 				// attach all propertyProviders
 				if (configurationPropertyAccesses != null)
 					foreach (var propertyProvider in configurationPropertyAccesses)
+					{
+						if (propertyProvider.Name == null)
+							throw new NullReferenceException("PropertyProvider must have a Name");
 						configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
+					}
+
 				#endregion
 
 				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, configurationProvider: configurationProvider);

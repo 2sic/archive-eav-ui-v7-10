@@ -72,7 +72,7 @@
     <Compile Include="DataSources\Caches\CacheItem.cs" />
     <Compile Include="DataSources\Caches\ICache.cs" />
     <Compile Include="DataSources\Caches\QuickCache.cs" />
-    <Compile Include="DataSources\ConfigurationProvider.cs" />
+    <Compile Include="DataSources\Pipeline\ConfigurationProvider.cs" />
     <Compile Include="DataSources\Pipeline\DataPipeline.cs" />
     <Compile Include="DataSources\Pipeline\DataPipelineFactory.cs" />
     <Compile Include="DataSources\DataStream.cs" />
