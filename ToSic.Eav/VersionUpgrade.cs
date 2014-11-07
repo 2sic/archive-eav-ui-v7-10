@@ -67,18 +67,25 @@ namespace ToSic.Eav
 					Import.Attribute.StringAttribute("TypeName", "TypeName", null, true),
 				});
 
-			var dsrcValueFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure an ValueFilter DataSource",
+			var dsrcValueFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
 				new List<Import.Attribute>
 				{
 					Import.Attribute.StringAttribute("Attribute", "Attribute", null, true),
 					Import.Attribute.StringAttribute("Value", "Value", null, true)
 				});
 
-			var dsrcValueSort = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure an ValueSort DataSource",
+			var dsrcValueSort = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
 				new List<Import.Attribute>
 				{
 					Import.Attribute.StringAttribute("Attributes", "Attributes", null, true),
 					Import.Attribute.StringAttribute("Directions", "Directions", null, true),
+				});
+
+			var dsrcRelationshipFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configur a RelationshipFilter DataSource",
+				new List<Import.Attribute>
+				{
+					Import.Attribute.StringAttribute("Relationship", "Relationship", null, true),
+					Import.Attribute.StringAttribute("Filter", "Filter", null, true),
 				});
 
 			#endregion
@@ -93,7 +100,8 @@ namespace ToSic.Eav
 				dsrcEntityIdFilter,
 				dsrcEntityTypeFilter,
 				dsrcValueFilter,
-				dsrcValueSort
+				dsrcValueSort,
+				dsrcRelationshipFilter
 			};
 			var import = new Import.Import(DataSource.DefaultZoneId, DataSource.MetaDataAppId, _userName);
 			import.RunImport(attributeSets, null);

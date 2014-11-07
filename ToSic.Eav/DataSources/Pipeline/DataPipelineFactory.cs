@@ -80,5 +80,28 @@ namespace ToSic.Eav.DataSources
 
 			return outSource;
 		}
+
+		/// <summary>
+		/// Find a DataSource of a specific Type in a DataPipeline
+		/// </summary>
+		/// <typeparam name="T">Type of the DataSource to find</typeparam>
+		/// <param name="rootDataSource">DataSource to look for In-Connections</param>
+		/// <returns>DataSource of specified Type or null</returns>
+		public static T FindDataSource<T>(IDataTarget rootDataSource) where T : IDataSource
+		{
+			foreach (var stream in rootDataSource.In)
+			{
+				// If type matches, return this DataSource
+				if (stream.Value.Source.GetType() == typeof(T))
+					return (T)stream.Value.Source;
+
+				// Find recursive in In-Streams of this DataSource (if any)
+				var dataTarget = stream.Value.Source as IDataTarget;
+				if (dataTarget != null)
+					return FindDataSource<T>(dataTarget);
+			}
+
+			return default(T);
+		}
 	}
 }
