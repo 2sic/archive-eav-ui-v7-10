@@ -29,7 +29,13 @@ namespace ToSic.Eav.Import
 		public int? KeyNumber { get; set; }
 		public int AssignmentObjectTypeId { get; set; }
 		public Guid? EntityGuid { get; set; }
+        public bool IsPublished { get; set; }
 		public Dictionary<string, List<IValueImportModel>> Values { get; set; }
+
+        public Entity()
+        {
+            IsPublished = true;
+        }
 	}
 
 	public class ValueImportModel<T> : IValueImportModel
