@@ -131,7 +131,7 @@ namespace ToSic.Eav
 			}
 
             // ToDo: Review with 2bg: Eliminated usage of Apps directly to decrease DB calls (2rm)
-		    var zone = ((ToSic.Eav.DataSources.Caches.BaseCache) DataSource.GetCache(zoneId.Value, null)).ZoneApps[zoneId.Value];
+		    var zone = ((ToSic.Eav.DataSources.Caches.BaseCache) DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
 
             if (appId.HasValue)
             {
