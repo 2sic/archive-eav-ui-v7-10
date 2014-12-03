@@ -387,6 +387,7 @@ namespace ToSic.Eav
 		public string StaticName { get; set; }
 	    public int AttributeSetId { get; private set; }
         public string Scope { get; private set; }
+        public int? UsesConfigurationOfAttributeSet { get; private set; }
 
 	    /// <summary>
 		/// Dictionary with all Attribute Definitions
@@ -396,12 +397,13 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Initializes a new instance of the ContentType class.
 		/// </summary>
-		public ContentType(string name, string staticName, int attributeSetId, string scope)
+        public ContentType(string name, string staticName, int attributeSetId, string scope, int? usesConfigurationOfAttributeSet)
 		{
 			Name = name;
 			StaticName = staticName;
 		    AttributeSetId = attributeSetId;
 		    Scope = scope;
+		    UsesConfigurationOfAttributeSet = usesConfigurationOfAttributeSet;
 		}
 
         /// <summary>

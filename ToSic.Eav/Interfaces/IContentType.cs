@@ -21,5 +21,9 @@
         /// Get the scope of the Content Type
         /// </summary>
         string Scope { get; }
+        /// <summary>
+        /// Get the id of the source Content Type if configuration is used from another
+        /// </summary>
+        int? UsesConfigurationOfAttributeSet { get; }
 	}
 }
