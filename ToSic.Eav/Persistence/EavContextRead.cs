@@ -298,6 +298,7 @@ namespace ToSic.Eav
 									   set.AttributeSetID,
 									   set.Name,
 									   set.StaticName,
+                                       set.Scope,
 									   Attributes = (from a in set.AttributesInSets
 													 select new
 													 {
@@ -318,7 +319,7 @@ namespace ToSic.Eav
 														   })
 								   };
 				// Convert to ContentType-Model
-				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID)
+				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope)
 				{
 					AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
 							? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeID))

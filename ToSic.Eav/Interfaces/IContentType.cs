@@ -17,5 +17,9 @@
         /// Get the id of the Content Type (AttributeSet)
         /// </summary>
         int AttributeSetId { get; }
+        /// <summary>
+        /// Get the scope of the Content Type
+        /// </summary>
+        string Scope { get; }
 	}
 }
