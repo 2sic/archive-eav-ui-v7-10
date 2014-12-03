@@ -126,7 +126,11 @@ namespace ToSic.Eav
 					_zoneId = zoneIdOfApp.Value;
 				}
 				else
+				{
 					_zoneId = DataSource.DefaultZoneId;
+					_appId = DataSource.MetaDataAppId;
+					return;
+				}
 			}
 
 		    var zone = ((DataSources.Caches.BaseCache) DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
