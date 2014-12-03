@@ -17,5 +17,13 @@
         /// Get the id of the Content Type (AttributeSet)
         /// </summary>
         int AttributeSetId { get; }
+        /// <summary>
+        /// Get the scope of the Content Type
+        /// </summary>
+        string Scope { get; }
+        /// <summary>
+        /// Get the id of the source Content Type if configuration is used from another
+        /// </summary>
+        int? UsesConfigurationOfAttributeSet { get; }
 	}
 }
