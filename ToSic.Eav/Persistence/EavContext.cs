@@ -119,18 +119,21 @@ namespace ToSic.Eav
 				_zoneId = zoneId.Value;
 			else
 			{
-				if (appId.HasValue)
-				{
-					var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
-                    if (!zoneIdOfApp.HasValue)
-                        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-					_zoneId = zoneIdOfApp.Value;
-				}
-				else
-					_zoneId = DataSource.DefaultZoneId;
+			    if (appId.HasValue)
+			    {
+			        var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?) a.ZoneID).SingleOrDefault();
+			        if (!zoneIdOfApp.HasValue)
+			            throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+			        _zoneId = zoneIdOfApp.Value;
+			    }
+			    else
+			    {
+			        _zoneId = DataSource.DefaultZoneId;
+			        _appId = DataSource.MetaDataAppId;
+			        return;
+			    }
 			}
 
-            // ToDo: Review with 2bg: Eliminated usage of Apps directly to decrease DB calls (2rm)
 		    var zone = ((ToSic.Eav.DataSources.Caches.BaseCache) DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
 
             if (appId.HasValue)
@@ -143,17 +146,6 @@ namespace ToSic.Eav
             }
             else
                 _appId = zone.Apps.Where(a => a.Value == DefaultAppName).Select(a => a.Key).Single();
-
-            //if (appId.HasValue)
-            //{
-            //    // Set AppId and validate AppId exists with specified ZoneId
-            //    var foundAppId = Apps.Where(a => a.AppID == appId.Value && a.ZoneID == _zoneId).Select(a => (int?)a.AppID).SingleOrDefault();
-            //    if (!foundAppId.HasValue)
-            //        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-            //    _appId = foundAppId.Value;
-            //}
-            //else
-            //    _appId = Apps.Where(a => a.Name == DefaultAppName && a.ZoneID == _zoneId).Select(a => a.AppID).Single();
 
 		}
 
