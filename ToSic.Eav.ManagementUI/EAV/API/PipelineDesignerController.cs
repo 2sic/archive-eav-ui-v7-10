@@ -327,7 +327,7 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		[HttpDelete]
+		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
 			if (_context == null)

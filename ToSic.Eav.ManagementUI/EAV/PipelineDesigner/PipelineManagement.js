@@ -24,6 +24,9 @@ angular.module('pipelineManagement', ['pipelineManagementFactory']).
 
 		// Delete a Pipeline
 		$scope.delete = function (pipeline) {
+			if (!confirm('Delete Pipeline "' + pipeline.Name + ' (' + pipeline.EntityId + ')"?'))
+				return;
+
 			pipelineManagementFactory.deletePipeline(pipeline.EntityId).then(function () {
 				$scope.refresh();
 			}, function (reason) {
@@ -72,7 +75,7 @@ angular.module('pipelineManagementFactory', ['ngResource', 'eavGlobalConfigurati
 				}
 			},
 			deletePipeline: function (id) {
-				return pipelineResource.delete({ action: 'DeletePipeline', appId: appId, id: id }).$promise;
+				return pipelineResource.get({ action: 'DeletePipeline', appId: appId, id: id }).$promise;
 			}
 		}
 	});

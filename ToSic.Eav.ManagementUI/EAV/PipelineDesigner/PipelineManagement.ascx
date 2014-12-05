@@ -31,7 +31,7 @@
 						<a class="btn btn-xs btn-default" target="_self" ng-href="{{getPipelineUrl('edit', pipeline)}}">
 							<span class="glyphicon glyphicon-pencil"></span> Edit
 						</a>
-						<button type="button" class="btn btn-xs btn-default" ng-click="delete(pipeline)">
+						<button type="button" class="btn btn-xs btn-danger" ng-click="delete(pipeline)">
 							<span class="glyphicon glyphicon-remove"></span> Delete
 						</button>
 					</td>
