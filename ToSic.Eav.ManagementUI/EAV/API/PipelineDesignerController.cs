@@ -323,5 +323,42 @@ namespace ToSic.Eav.ManagementUI.API
 			var clonePipelineEntity = DataPipeline.CopyDataPipeline(appId, id, _userName);
 			return new { EntityId = clonePipelineEntity.EntityID };
 		}
+
+		/// <summary>
+		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
+		/// </summary>
+		[HttpDelete]
+		public object DeletePipeline(int appId, int id)
+		{
+			if (_context == null)
+				_context = EavContext.Instance(appId: appId);
+
+			var canDeleteResult = _context.CanDeleteEntity(id);
+			if (!canDeleteResult.Item1)
+				throw new Exception(canDeleteResult.Item2);
+
+
+			// Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
+			var source = DataSource.GetInitialDataSource(appId: appId);
+			var pipelineEntity = DataPipeline.GetPipelineEntity(id, source);
+			var dataSources = DataPipeline.GetPipelineParts(source.ZoneId, source.AppId, pipelineEntity.EntityGuid);
+			var metaDataSource = DataSource.GetMetaDataSource(appId: appId);
+
+			// Delete Pipeline Parts
+			foreach (var dataSource in dataSources)
+			{
+				// Delete Configuration Entities (if any)
+				var dataSourceConfig = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, dataSource.EntityGuid).FirstOrDefault();
+				if (dataSourceConfig != null)
+					_context.DeleteEntity(dataSourceConfig.EntityId);
+
+				_context.DeleteEntity(dataSource.EntityId);
+			}
+
+			// Delete Pipeline
+			_context.DeleteEntity(id);
+
+			return new { Result = "Success" };
+		}
 	}
 }

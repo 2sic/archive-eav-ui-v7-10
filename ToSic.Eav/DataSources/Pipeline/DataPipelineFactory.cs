@@ -33,11 +33,22 @@ namespace ToSic.Eav.DataSources
 		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
 		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IPropertyAccess> configurationPropertyAccesses, IDataSource outSource)
 		{
+			#region Load Pipeline Entity and Pipeline Parts
 			var source = DataSource.GetInitialDataSource(appId: appId);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);	// ToDo: Validate change/extension with zoneId and appId Parameter
 
-			var dataPipeline = source[DataSource.DefaultStreamName].List[pipelineEntityId];
+			var appEntities = source[DataSource.DefaultStreamName].List;
+			IEntity dataPipeline;
+			try
+			{
+				dataPipeline = appEntities[pipelineEntityId];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
+			}
 			var dataPipelineParts = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, dataPipeline.EntityGuid);
+			#endregion
 
 			var pipelineSettingsProvider = new AssignedEntityAttributePropertyAccess("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
 			#region init all DataPipelineParts
