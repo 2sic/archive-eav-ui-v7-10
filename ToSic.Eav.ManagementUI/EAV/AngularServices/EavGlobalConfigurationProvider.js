@@ -19,7 +19,9 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 		},
 		dialogClass: "eavDialog",
 		itemForm: {
-			getNewItemUrl: function (attributeSetId, assignmentObjectTypeId, params, preventRedirect) {
+			getNewItemUrl: function (attributeSetId, assignmentObjectTypeId, params, preventRedirect, prefill) {
+				if (prefill)
+					params.prefill = JSON.stringify(prefill);
 				return getItemFormUrl('New', angular.extend({ AttributeSetId: attributeSetId, AssignmentObjectTypeId: assignmentObjectTypeId }, params), preventRedirect);
 			},
 			getEditItemUrl: function (entityId, params, preventRedirect) {
@@ -51,7 +53,9 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 					{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'Presentation' },
 					{ From: 'unsaved1', Out: 'Default', To: 'Out', In: 'ListPresentation' }
 				]
-			}
-		}
+			},
+			testParameters: null
+		},
+		assignmentObjectTypeIdDataPipeline: 4
 	}
 });
