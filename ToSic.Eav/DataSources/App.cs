@@ -97,9 +97,19 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-			var upstream = In[DataSource.DefaultStreamName].Source;
+			IDataStream upstream;
+			try
+			{
+				upstream = In[DataSource.DefaultStreamName];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new Exception("App DataSource must have a Default In-Stream with name " + DataSource.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
+			}
+
+			var upstreamDataSource = upstream.Source;
 			_Out.Clear();
-			_Out.Add(DataSource.DefaultStreamName, upstream.Out[DataSource.DefaultStreamName]);
+			_Out.Add(DataSource.DefaultStreamName, upstreamDataSource.Out[DataSource.DefaultStreamName]);
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
@@ -107,7 +117,7 @@ namespace ToSic.Eav.DataSources
 			var listOfTypes = cache.GetContentTypes();
 			foreach (var contentType in listOfTypes)
 			{
-				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstream);
+				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource);
 				var typeName = contentType.Value.Name;
 				if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@"))
 				{

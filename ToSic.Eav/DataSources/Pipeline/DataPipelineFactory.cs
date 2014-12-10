@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
 
 			var pipelineSettingsProvider = new AssignedEntityAttributePropertyAccess("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
 			#region init all DataPipelineParts
-			var pipeline = new Dictionary<string, IDataSource>();
+			var dataSources = new Dictionary<string, IDataSource>();
 			foreach (var dataPipelinePart in dataPipelineParts)
 			{
 				#region Init Configuration Provider
@@ -75,21 +75,69 @@ namespace ToSic.Eav.DataSources
 				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, configurationProvider: configurationProvider);
 				//configurationProvider.configList = dataSource.Configuration;
 
-				pipeline.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+				dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
 			}
-			pipeline.Add("Out", outSource);
+			dataSources.Add("Out", outSource);
 			#endregion
 
-			#region Loop and create all Stream Wirings
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataPipeline.StreamWiringAttributeName][0]);
-			foreach (var wire in wirings)
-			{
-				var sourceDsrc = pipeline[wire.From];
-				((IDataTarget)pipeline[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
-			}
-			#endregion
+			InitWirings(dataPipeline, dataSources);
 
 			return outSource;
+		}
+
+		/// <summary>
+		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
+		/// </summary>
+		private static void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
+		{
+			// Init
+			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataPipeline.StreamWiringAttributeName][0]);
+			var initializedWirings = new List<WireInfo>();
+
+			// 1. wire Out-Streams of DataSources with no In-Streams
+			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
+			ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
+
+			// 2. init DataSources with In-Streams of DataSources which are already wired
+			// repeat until all are connected or no one matches this rule
+			while (true)
+			{
+				// ToDo: Prevent endless init of the same Wiring
+				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
+				ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+
+				break;	// ToDo: Set correct Break
+			}
+
+
+			//foreach (var wire in wirings)
+			//{
+			//	var sourceDsrc = dataSources[wire.From];
+			//	((IDataTarget)dataSources[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
+			//}
+		}
+
+		/// <summary>
+		/// Wire all Out-Wirings on specified DataSources
+		/// </summary>
+		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IEnumerable<WireInfo> allWirings, List<WireInfo> initializedWirings)
+		{
+			var wiringsCreated = false;
+
+			foreach (var dataSource in dataSourcesToInit)
+			{
+				foreach (var wire in allWirings.Where(w => w.From == dataSource.Key))
+				{
+					var sourceDsrc = allDataSources[wire.From];
+					((IDataTarget)allDataSources[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
+
+					initializedWirings.Add(wire);
+
+					wiringsCreated = true;
+				}
+			}
+
+			return wiringsCreated;
 		}
 
 		/// <summary>
