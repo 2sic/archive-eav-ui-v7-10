@@ -49,17 +49,20 @@ namespace ToSic.Eav.DataSources
 
 			#region Update Stream-Wirings
 			var streamWiring = pipelineEntityClone.Values.Single(v => v.Attribute.StaticName == StreamWiringAttributeName);
-			var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
 			var wiringsClone = new List<WireInfo>();
-			foreach (var wireInfo in wiringsSource)
+			var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
+			if (wiringsSource != null)
 			{
-				var wireInfoClone = wireInfo; // creates a clone of the Struct
-				if (pipelinePartClones.ContainsKey(wireInfo.From))
-					wireInfoClone.From = pipelinePartClones[wireInfo.From].ToString();
-				if (pipelinePartClones.ContainsKey(wireInfo.To))
-					wireInfoClone.To = pipelinePartClones[wireInfo.To].ToString();
+				foreach (var wireInfo in wiringsSource)
+				{
+					var wireInfoClone = wireInfo; // creates a clone of the Struct
+					if (pipelinePartClones.ContainsKey(wireInfo.From))
+						wireInfoClone.From = pipelinePartClones[wireInfo.From].ToString();
+					if (pipelinePartClones.ContainsKey(wireInfo.To))
+						wireInfoClone.To = pipelinePartClones[wireInfo.To].ToString();
 
-				wiringsClone.Add(wireInfoClone);
+					wiringsClone.Add(wireInfoClone);
+				}
 			}
 
 			streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
