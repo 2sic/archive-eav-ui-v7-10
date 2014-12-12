@@ -7,6 +7,7 @@ using System.Text;
 using System.Web.UI;
 using ToSic.Eav;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Tokens;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 public partial class Default : Page
@@ -96,7 +97,8 @@ public partial class Default : Page
 				ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
 				break;
 			case "datapipelinefactory":
-				var source = DataPipelineFactory.GetDataSource(1, 347, null, new PassThrough());
+				IEnumerable<IPropertyAccess> config = null;
+				var source = DataPipelineFactory.GetDataSource(1, 347, config, new PassThrough());
 				ShowDataSource(source, "DataPipelineFactory");
 				break;
 			case "appds":
