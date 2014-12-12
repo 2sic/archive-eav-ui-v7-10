@@ -99,22 +99,23 @@ namespace ToSic.Eav.DataSources
 			ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
 
 			// 2. init DataSources with In-Streams of DataSources which are already wired
-			// repeat until all are connected or no one matches this rule
+			// repeat until all are connected
 			while (true)
 			{
-				// ToDo: Prevent endless init of the same Wiring
 				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
-				ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
 
-				break;	// ToDo: Set correct Break
+				if (!connectionsCreated)
+					break;
 			}
 
-
-			//foreach (var wire in wirings)
-			//{
-			//	var sourceDsrc = dataSources[wire.From];
-			//	((IDataTarget)dataSources[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
-			//}
+			// 3. Test all Wirings were created
+			if (wirings.Count() != initializedWirings.Count)
+			{
+				var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
+				var error = string.Join(", ", notInitialized);
+				throw new Exception("Some Stream-Wirings were not created: " + error);
+			}
 		}
 
 		/// <summary>
@@ -126,7 +127,8 @@ namespace ToSic.Eav.DataSources
 
 			foreach (var dataSource in dataSourcesToInit)
 			{
-				foreach (var wire in allWirings.Where(w => w.From == dataSource.Key))
+				// loop all wirings from this DataSource (except already initialized)
+				foreach (var wire in allWirings.Where(w => w.From == dataSource.Key && !initializedWirings.Any(i => w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In)))
 				{
 					var sourceDsrc = allDataSources[wire.From];
 					((IDataTarget)allDataSources[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
