@@ -43,6 +43,31 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
 		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, Guid keyGuid)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, null, keyGuid);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString)
+		{
+			return GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
+		}
+
+		/// <summary>
+		/// Get a List of Entities with specified assignmentObjectTypeId and Key.
+		/// </summary>
+		[Obsolete("Use GetEntities() with only 2 Parameters")]
 		public List<Entity> GetEntities(int assignmentObjectTypeId, int? keyNumber, Guid? keyGuid, string keyString)
 		{
 			return GetEntitiesInternal(assignmentObjectTypeId, keyNumber, keyGuid, keyString).ToList();
@@ -73,10 +98,10 @@ namespace ToSic.Eav
 		/// </summary>
 		/// <param name="attributeSetId">AttributeSetId</param>
 		/// <param name="dimensionIds">List of Dimensions/Languages to show</param>
-		/// <param name="source">DataSource to get child entities</param>
 		/// <param name="maxValueLength">Shorten Values longer than n Characters</param>
+		/// <param name="columnNames">Comma separated List of Column Names to show. If not set, all columns are shown</param>
 		/// <returns>A DataTable with all Columns defined in the AttributeSet</returns>
-		public DataTable GetItemsTable(int attributeSetId, int[] dimensionIds = null, IDataSource source = null, int? maxValueLength = null)
+		public DataTable GetItemsTable(int attributeSetId, int[] dimensionIds = null, int? maxValueLength = null, string columnNames = null)
 		{
 			var entityIds = Entities.Where(e => e.AttributeSetID == attributeSetId && e.ChangeLogIDDeleted == null).Select(e => e.EntityID).ToArray();
 			if (!entityIds.Any())
@@ -85,9 +110,14 @@ namespace ToSic.Eav
 			var draftEntities = DataSource.GetInitialDataSource(_zoneId, _appId, true).List.Where(e => entityIds.Contains(e.Key));
 			var entitiesModel = publishedEntities.Union(draftEntities);
 
-			var columnNames = GetAttributes(attributeSetId).Select(a => a.StaticName);
+			var columnNamesArray = GetAttributes(attributeSetId).Select(a => a.StaticName);
+			if (columnNames != null)
+			{
+				var columNamesFilter = columnNames.Split(',');
+				columnNamesArray = columnNamesArray.Where(n => columNamesFilter.Contains(n));
+			}
 
-			return entitiesModel.Select(v => v.Value).OrderBy(e => e.EntityId).ToDataTable(columnNames, dimensionIds, maxValueLength);
+			return entitiesModel.Select(v => v.Value).OrderBy(e => e.EntityId).ToDataTable(columnNamesArray, dimensionIds, maxValueLength);
 		}
 
 		/// <summary>
@@ -292,7 +322,7 @@ namespace ToSic.Eav
 			{
 				// Load from DB
 				var contentTypes = from set in AttributeSets
-								   where set.AppID == appId
+								   where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
 								   select new
 								   {
 									   set.AttributeSetID,

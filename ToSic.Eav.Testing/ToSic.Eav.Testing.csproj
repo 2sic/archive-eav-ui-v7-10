@@ -67,6 +67,7 @@
     <Compile Include="ExportImportTest.cs" />
     <Compile Include="ImportTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VersionUpgrade.cs" />
     <Compile Include="VersioningTest.cs" />
   </ItemGroup>
   <ItemGroup>

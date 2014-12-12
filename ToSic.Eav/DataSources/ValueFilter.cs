@@ -5,8 +5,9 @@ using System.Linq;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Return only Entities having a specific value in an Attribute
 	/// </summary>
+	[PipelineDesigner]
 	public class ValueFilter : BaseDataSource
 	{
 		#region Configuration-properties
@@ -43,7 +44,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new ValueFilter
 		/// </summary>
 		public ValueFilter()
 		{

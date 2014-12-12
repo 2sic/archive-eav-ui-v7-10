@@ -4,8 +4,9 @@ using ToSic.Eav.DataSources.Caches;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
+	[PipelineDesigner]
 	public class PublishingFilter : BaseDataSource
 	{
 		#region Configuration-properties
@@ -22,12 +23,12 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <summary>
-		/// Constructs a new EntityTypeFilter
+		/// Constructs a new PublishingFilter
 		/// </summary>
 		public PublishingFilter()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts]");
+			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()

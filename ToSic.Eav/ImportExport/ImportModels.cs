@@ -14,6 +14,25 @@ namespace ToSic.Eav.Import
 		public string Scope { get; set; }
 		public List<Attribute> Attributes { get; set; }	// The List<> class does guarantee ordering
 		public Attribute TitleAttribute { get; set; }
+
+		public AttributeSet() { }
+
+		public AttributeSet(string name, string staticName, string description, string scope, List<Attribute> attributes)
+		{
+			Name = name;
+			StaticName = staticName;
+			Description = description;
+			Scope = scope;
+			Attributes = attributes;
+		}
+
+		/// <summary>
+		/// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
+		/// </summary>
+		public static AttributeSet SystemAttributeSet(string staticName, string description, List<Attribute> attributes)
+		{
+			return new AttributeSet(staticName, staticName, description, "System", attributes);
+		}
 	}
 
 	public class Attribute
@@ -21,6 +40,77 @@ namespace ToSic.Eav.Import
 		public string StaticName { get; set; }
 		public string Type { get; set; }
 		public List<Entity> AttributeMetaData { get; set; }
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public Attribute() { }
+
+		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		private Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
+		{
+			StaticName = staticName;
+			Type = type.ToString();
+			AttributeMetaData = new List<Entity> { GetAttributeMetaData(name, notes, visibleInEditUi, EavContext.SerializeValue(defaultValue)) };
+		}
+
+		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
+		{
+			var attribute = new Attribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
+			attribute.AttributeMetaData.Add(GetStringAttributeMetaData(inputType, rowCount));
+			return attribute;
+		}
+
+		/// <summary>
+		/// Get an Import-Attribute
+		/// </summary>
+		public static Attribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
+		{
+			var attribute = new Attribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
+			return attribute;
+		}
+
+		/// <summary>
+		/// Shortcut to get an @All Entity Describing an Attribute
+		/// </summary>
+		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
+		{
+			var allEntity = new Entity
+			{
+				AttributeSetStaticName = "@All",
+				Values = new Dictionary<string, List<IValueImportModel>>()
+			};
+			if (!string.IsNullOrEmpty(name))
+				allEntity.Values.Add("Name", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = name } });
+			if (!string.IsNullOrEmpty(notes))
+				allEntity.Values.Add("Notes", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = notes } });
+			if (visibleInEditUi.HasValue)
+				allEntity.Values.Add("VisibleInEditUI", new List<IValueImportModel> { new ValueImportModel<bool?>(allEntity) { Value = visibleInEditUi } });
+			if (defaultValue != null)
+				allEntity.Values.Add("DefaultValue", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = defaultValue } });
+
+			return allEntity;
+		}
+
+		private static Entity GetStringAttributeMetaData(string inputType, int? rowCount)
+		{
+			var stringEntity = new Entity
+			{
+				AttributeSetStaticName = "@String",
+				Values = new Dictionary<string, List<IValueImportModel>>()
+			};
+			if (!string.IsNullOrEmpty(inputType))
+				stringEntity.Values.Add("InputType", new List<IValueImportModel> { new ValueImportModel<string>(stringEntity) { Value = inputType } });
+			if (rowCount.HasValue)
+				stringEntity.Values.Add("RowCount", new List<IValueImportModel> { new ValueImportModel<decimal?>(stringEntity) { Value = rowCount } });
+
+			return stringEntity;
+		}
 	}
 
 	public class Entity

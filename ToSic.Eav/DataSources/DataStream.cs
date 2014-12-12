@@ -33,8 +33,15 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-				var getList = new GetListDelegate(_listDelegate);
-				return getList();
+				try
+				{
+					var getList = new GetListDelegate(_listDelegate);
+					return getList();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
+				}
 			}
 		}
 

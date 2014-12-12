@@ -14,7 +14,7 @@ namespace ToSic.Eav.ImportExport
 		/// <summary>
 		/// Initializes a new instance of the XmlExport class.
 		/// </summary>
-		public XmlExport(EavContext ctx = null)
+		public XmlExport(EavContext ctx)
 		{
 			_ctx = ctx;
 		}

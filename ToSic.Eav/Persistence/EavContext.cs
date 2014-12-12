@@ -90,9 +90,9 @@ namespace ToSic.Eav
 
 		#region Constructor and Init
 		/// <summary>
-		/// Returns a new instace of the Eav Context. InitZoneApp should be called afterward. If not, default ZoneId and default AppId is used.
+		/// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
 		/// </summary>
-		public static EavContext Instance()
+		private static EavContext Instance()
 		{
 			var connectionString = Configuration.GetConnectionString();
 			return new EavContext(connectionString);
@@ -114,33 +114,32 @@ namespace ToSic.Eav
 		/// </summary>
 		public void InitZoneApp(int? zoneId = null, int? appId = null)
 		{
-
             if (zoneId.HasValue)
 				_zoneId = zoneId.Value;
 			else
 			{
-			    if (appId.HasValue)
-			    {
+				if (appId.HasValue)
+				{
 			        var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?) a.ZoneID).SingleOrDefault();
-			        if (!zoneIdOfApp.HasValue)
-			            throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-			        _zoneId = zoneIdOfApp.Value;
-			    }
-			    else
-			    {
-			        _zoneId = DataSource.DefaultZoneId;
-			        _appId = DataSource.MetaDataAppId;
-			        return;
-			    }
+                    if (!zoneIdOfApp.HasValue)
+                        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+					_zoneId = zoneIdOfApp.Value;
+				}
+				else
+				{
+					_zoneId = DataSource.DefaultZoneId;
+					_appId = DataSource.MetaDataAppId;
+					return;
+			}
 			}
 
-		    var zone = ((ToSic.Eav.DataSources.Caches.BaseCache) DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
+		    var zone = ((DataSources.Caches.BaseCache) DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
 
             if (appId.HasValue)
             {
                 // Set AppId and validate AppId exists with specified ZoneId
                 var foundAppId = zone.Apps.Where(a => a.Key == appId.Value).Select(a => (int?)a.Key).SingleOrDefault();
-                if(!foundAppId.HasValue)
+                if (!foundAppId.HasValue)
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
                 _appId = foundAppId.Value;
             }
@@ -228,13 +227,16 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Clone an Entity with all Values
 		/// </summary>
-		private Entity CloneEntity(Entity sourceEntity)
+		internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
 		{
 			var clone = sourceEntity.CopyEntity(this);
 
 			AddToEntities(clone);
 
 			CloneEntityValues(sourceEntity, clone);
+
+			if (assignNewEntityGuid)
+				clone.EntityGUID = Guid.NewGuid();
 
 			return clone;
 		}
@@ -1005,6 +1007,9 @@ namespace ToSic.Eav
 		/// </summary>
 		public override int SaveChanges(System.Data.Objects.SaveOptions options)
 		{
+			if (_appId == 0)
+				throw new Exception("SaveChanges with AppId 0 not allowed.");
+
 			// enure changelog exists and is set to SQL CONTEXT_INFO variable
 			if (_mainChangeLogId == 0)
 				GetChangeLogId(UserName);
@@ -1336,7 +1341,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
 		/// </summary>
-		private void EnsureSharedAttributeSets(App app)
+		private void EnsureSharedAttributeSets(App app, bool autoSave = true)
 		{
 			if (app.AppID == 0)
 				throw new Exception("App must have a valid AppID");
@@ -1345,7 +1350,7 @@ namespace ToSic.Eav
 			foreach (var sharedSet in sharedAttributeSets)
 			{
 				// Skip if attributeSet with StaticName already exists
-				if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName))
+				if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
 					continue;
 
 				// create new AttributeSet
@@ -1354,6 +1359,18 @@ namespace ToSic.Eav
 			}
 
 			// Ensure new AttributeSets are created and cache is refreshed
+			if (autoSave)
+				SaveChanges();
+		}
+
+		/// <summary>
+		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
+		/// </summary>
+		internal void EnsureSharedAttributeSets()
+		{
+			foreach (var app in Apps)
+				EnsureSharedAttributeSets(app, false);
+
 			SaveChanges();
 		}
 

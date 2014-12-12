@@ -51,6 +51,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -61,6 +74,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll</HintPath>
     </Reference>
@@ -91,9 +105,13 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
-    <Content Include="ContentTypes.aspx" />
-    <Content Include="EavManagementApp2.aspx" />
-    <Content Include="EavManagement.aspx" />
+    <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
+    <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
+    <Content Include="Pages\ContentTypes.aspx" />
+    <Content Include="CSS\bootstrap-theme.min.css" />
+    <Content Include="CSS\bootstrap.min.css" />
+    <Content Include="Pages\EavManagementApp2.aspx" />
+    <Content Include="Pages\EavManagement.aspx" />
     <Content Include="EAV\Controls\ContentTypeEdit.ascx" />
     <Content Include="EAV\Controls\ContentTypeFields.ascx" />
     <Content Include="EAV\Controls\ContentTypesList.ascx" />
@@ -124,19 +142,42 @@
     <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
-    <Content Include="EAV\PipelineDesigner\demo-new.css" />
-    <Content Include="EAV\PipelineDesigner\flowchartDemo.css" />
+    <Content Include="EAV\AngularServices\NotificationService.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesignerController.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
+    <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.6.4-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
+    <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
     <Content Include="Global.asax" />
-    <Content Include="PipelineDesigner.aspx" />
+    <Content Include="Pages\PipelineDesigner.aspx" />
+    <Content Include="Pages\PipelineManagement.aspx" />
+    <Content Include="Scripts\angular-animate.js" />
+    <Content Include="Scripts\angular-animate.min.js" />
+    <Content Include="Scripts\angular-resource.js" />
+    <Content Include="Scripts\angular-resource.min.js" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
     <Content Include="Scripts\angular-ui-tree.min.js" />
+    <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\pipelineDesigner.js" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Scripts\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Scripts\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Scripts\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Scripts\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Scripts\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Scripts\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Scripts\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Scripts\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Scripts\images\ui-icons_222222_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_454545_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_888888_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.2.min.js" />
-    <Content Include="Scripts\jquery.jsPlumb-1.4.1-all-min.js" />
     <Content Include="Scripts\fancybox\blank.gif" />
     <Content Include="Scripts\fancybox\fancybox-x.png" />
     <Content Include="Scripts\fancybox\fancybox-y.png" />
@@ -162,7 +203,10 @@
     <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.js" />
     <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.pack.js" />
     <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
-    <Content Include="PipelineDesignerServices.asmx" />
+    <Content Include="Scripts\jquery-ui-1.10.3.css" />
+    <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
+    <Content Include="Scripts\toaster.css" />
+    <Content Include="Scripts\toaster.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -170,38 +214,50 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\jquery.min.map" />
+    <Content Include="Scripts\angular-resource.min.js.map" />
+    <Content Include="Scripts\angular-animate.min.js.map" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Common\Forms.cs" />
-    <Compile Include="Common\PipelineDesignerServicesBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Common\Serialization.cs" />
     <Compile Include="Common\EventHandlers.cs" />
-    <Compile Include="ContentTypes.aspx.cs">
+    <Compile Include="EAV\API\EntitiesController.cs" />
+    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
+      <DependentUpon>PipelineManagement.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.designer.cs">
+      <DependentUpon>PipelineManagement.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ContentTypes.aspx.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ContentTypes.aspx.designer.cs">
+    <Compile Include="Pages\ContentTypes.aspx.designer.cs">
       <DependentUpon>ContentTypes.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EavManagement.aspx.designer.cs">
+    <Compile Include="Pages\EavManagement.aspx.designer.cs">
       <DependentUpon>EavManagement.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EavManagementApp2.aspx.cs">
+    <Compile Include="Pages\EavManagementApp2.aspx.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EavManagement.aspx.cs">
+    <Compile Include="Pages\EavManagement.aspx.cs">
       <DependentUpon>EavManagement.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EavManagementApp2.aspx.designer.cs">
+    <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
     </Compile>
+    <Compile Include="EAV\API\PipelineDesignerController.cs" />
     <Compile Include="EAV\API\EntityPickerController.cs" />
     <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
       <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
@@ -353,12 +409,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="PipelineDesigner.aspx.cs">
+    <Compile Include="Pages\PipelineDesigner.aspx.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PipelineDesigner.aspx.designer.cs">
+    <Compile Include="Pages\PipelineDesigner.aspx.designer.cs">
       <DependentUpon>PipelineDesigner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PipelineManagement.aspx.cs">
+      <DependentUpon>PipelineManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\PipelineManagement.aspx.designer.cs">
+      <DependentUpon>PipelineManagement.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.master.cs">

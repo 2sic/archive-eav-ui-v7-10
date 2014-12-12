@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.ManagementUI
 		/// <summary>
 		/// Create a URL to the New or Edit Item Form, depending whether the item already exists
 		/// </summary>
-		/// <param name="keyNumber"></param>
+		/// <param name="key">KeyNumber or KeyGuid</param>
 		/// <param name="attributeSetId"></param>
 		/// <param name="assignmentObjectTypeId"></param>
 		/// <param name="newItemUrl">URL Schema, like NewItem.aspx?AttributeSetId=[AttributeSetId]</param>
@@ -29,24 +30,32 @@ namespace ToSic.Eav.ManagementUI
 		/// <param name="returnUrl"></param>
 		/// <param name="isDialog"></param>
 		/// <param name="cultureDimension"></param>
-		public static string GetItemFormUrl(int keyNumber, int attributeSetId, int assignmentObjectTypeId, string newItemUrl, string editItemUrl, string returnUrl = null, bool isDialog = false, int? cultureDimension = null)
+		public static string GetItemFormUrl(object key, int attributeSetId, int assignmentObjectTypeId, string newItemUrl, string editItemUrl, string returnUrl = null, bool isDialog = false, int? cultureDimension = null)
 		{
+			var keyNumber = key as int?;
+			var keyGuid = key as Guid?;
+
 			var db = EavContext.Instance();
 
-			var existingEntity = db.Entities.FirstOrDefault(en => en.AssignmentObjectTypeID == assignmentObjectTypeId && en.KeyNumber == keyNumber && en.AttributeSetID == attributeSetId);
+			var existingEntity = db.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == assignmentObjectTypeId && ((keyNumber.HasValue && e.KeyNumber == keyNumber) || (keyGuid.HasValue && e.KeyGuid == keyGuid)) && e.AttributeSetID == attributeSetId);
 
 			string result;
 			// NewItem URL
 			if (existingEntity == null)
 			{
-				var dialogUrl = "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]&KeyNumber=[KeyNumber]&AssignmentObjectTypeId=[AssignmentObjectTypeId]";
+				var dialogUrl = "~/Eav/Dialogs/NewItem.aspx?AttributeSetId=[AttributeSetId]&AssignmentObjectTypeId=[AssignmentObjectTypeId]";
+				if (keyNumber.HasValue)
+					dialogUrl += "&KeyNumber=[KeyNumber]";
+				else if (keyGuid.HasValue)
+					dialogUrl += "&KeyGuid=[KeyGuid]";
+
 				if (cultureDimension.HasValue)
 					dialogUrl += "&CultureDimension=[CultureDimension]";
 				if (!string.IsNullOrEmpty(returnUrl))
 					dialogUrl += "&ReturnUrl=[ReturnUrl]";
 
 
-				result = (isDialog ? dialogUrl : newItemUrl).Replace("[AttributeSetId]", attributeSetId.ToString()).Replace("[KeyNumber]", keyNumber.ToString()).Replace("[AssignmentObjectTypeId]", assignmentObjectTypeId.ToString()).Replace("[CultureDimension]", cultureDimension.ToString());
+				result = (isDialog ? dialogUrl : newItemUrl).Replace("[AttributeSetId]", attributeSetId.ToString()).Replace("[AssignmentObjectTypeId]", assignmentObjectTypeId.ToString()).Replace("[CultureDimension]", cultureDimension.ToString()).Replace("[KeyNumber]", keyNumber.ToString()).Replace("[KeyGuid]", keyGuid.ToString());
 			}
 			// EditItem URL
 			else
@@ -70,13 +79,13 @@ namespace ToSic.Eav.ManagementUI
 		{
 			parent.Page.Header.Controls.Add(new LiteralControl
 			{
-                // ToDo: Convert to array of JavaScript-Paths and CSS-Paths (relative)
+				// ToDo: Convert to array of JavaScript-Paths and CSS-Paths (relative)
 				Text = "<script src='" + parent.ResolveClientUrl("ItemForm.js") + "' type='text/javascript'></script>" +
 					"<script src='" + parent.ResolveClientUrl("ItemFormEntityModelCreator.js") + "' type='text/javascript'></script>" +
 					"<link rel='stylesheet' href='" + parent.ResolveClientUrl("ItemForm.css") + "'/>" +
-                    "<script type='text/javascript' src='/EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>" +
-                    "<script type='text/javascript' src='/EAV/AngularServices/EavApiService.js'></script>" +
-                    "<script type='text/javascript' src='/EAV/AngularServices/EavDialogService.js'></script>"
+					"<script type='text/javascript' src='/EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>" +
+					"<script type='text/javascript' src='/EAV/AngularServices/EavApiService.js'></script>" +
+					"<script type='text/javascript' src='/EAV/AngularServices/EavDialogService.js'></script>"
 			});
 		}
 

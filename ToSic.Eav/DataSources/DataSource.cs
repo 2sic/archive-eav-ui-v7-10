@@ -31,6 +31,10 @@ namespace ToSic.Eav
 		/// <summary>
 		/// StaticName of the DataPipeline AttributeSet
 		/// </summary>
+		public readonly static string DataPipelineStaticName = "DataPipeline";
+		/// <summary>
+		/// StaticName of the DataPipelinePart AttributeSet
+		/// </summary>
 		public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
 		/// <summary>
 		/// Default In-/Out-Stream Name
@@ -165,9 +169,24 @@ namespace ToSic.Eav
 		/// Get DataSource having common MetaData, like Field MetaData
 		/// </summary>
 		/// <returns>IMetaDataSource (from ICache)</returns>
-		public static IMetaDataSource GetMetaDataSource(int zoneId, int appId)
+		public static IMetaDataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
 		{
-			return (IMetaDataSource)GetCache(zoneId, appId);
+			var zoneAppId = GetZoneAppId(zoneId, appId);
+			return (IMetaDataSource)GetCache(zoneAppId.Item1, zoneAppId.Item2);
+		}
+
+		/// <summary>
+		/// Get all Installed DataSources
+		/// </summary>
+		/// <remarks>Objects that implement IDataSource</remarks>
+		public static IEnumerable<Type> GetInstalledDataSources()
+		{
+			var type = typeof(IDataSource);
+			var types = AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(a => a.GetLoadableTypes())
+				.Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
+
+			return types;
 		}
 	}
 }

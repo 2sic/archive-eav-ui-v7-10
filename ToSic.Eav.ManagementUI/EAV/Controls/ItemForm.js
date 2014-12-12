@@ -14,7 +14,7 @@
 				Eav.Dimensions[dimension.DimensionId] = dimension;
 			});
 
-			// Loop through each Eav form wrapper
+			// Loop through each Eav Form Wrapper
 			$(".eav-form").each(function (i, form) {
 				Eav.AttachFormController(form);
 			});
@@ -24,6 +24,8 @@
 			while ((fn = Eav.InitializeFormsReadyList[i++])) {
 				fn.call(document, $);
 			}
+
+			Eav.PrefillForm();
 
 			// Initialization done, set Initialized to true and show save button again
 			Eav.FormsInitialized = true;
@@ -36,6 +38,26 @@
 		ButtonDisabledClass: "disabled",
 		MenuWrapper: "eav-dimensionmenu-wrapper",
 		SaveButtonClass: "eav-save"
+	},
+
+	PrefillForm: function() {
+		// Prefill values based on QueryString parameter (but only if entity id is not set / new item is created)
+		if (!($(".eav-form:first").attr("data-entityid"))) {
+			var match = RegExp('[?&]' + "prefill" + '=([^&]*)', 'i').exec(window.location.search);
+			var prefillString = match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+
+			if (prefillString) {
+				var prefill = $.parseJSON(prefillString);
+				for (prefillKey in prefill) {
+					var fields = $(".eav-field[data-staticname='" + prefillKey + "']");
+					if (fields.length == 1) {
+						var fieldController = fields[0].Controller;
+						if (fieldController && fieldController.SetFieldValue && prefill[prefillKey])
+							fieldController.SetFieldValue(prefill[prefillKey]);
+					}
+				}
+			}
+		}
 	},
 
 	AttachFormController: function (form) {
@@ -127,10 +149,10 @@
 			Eav.AttachFieldController($(field), $(form));
 		});
 
-        // Close parent window if last action is set
+		// Close parent window if last action is set
 		var lastAction = $("input[type=hidden][id$='_hfLastAction']", form).val();
-	    if (lastAction != "" && window.top.EavEditDialogs != null)
-	        window.top.jQuery("#" + window.top.jQuery(window.top.EavEditDialogs[window.top.EavEditDialogs.length - 1]).attr("id")).dialog("close");
+		if (lastAction != "" && window.top.EavEditDialogs != null)
+			window.top.jQuery("#" + window.top.jQuery(window.top.EavEditDialogs[window.top.EavEditDialogs.length - 1]).attr("id")).dialog("close");
 
 	},
 
@@ -548,52 +570,6 @@
 
 		$(target).html(message).attr("title", toolTip);
 	},
-	/*InitEntityMultiSelector: function (wrapper, reinit) {
-		var multiValuesWrapper = wrapper.find(".MultiValuesWrapper");
-		var baseDropDown = wrapper.find("select");
-		if (reinit) {
-			alert("Reinit Entity-Multi-Selector is untested!");
-			multiValuesWrapper.find(".MultiValueItem .MultiValueItem").remove();
-			baseDropDown.val("");
-		} else {
-			wrapper.find("a.AddValue").click(function () {
-				Eav.AddEntityMultiSelector(wrapper, multiValuesWrapper, baseDropDown);
-			});
-			baseDropDown.change(function () { Eav.SyncSelectedEntities(wrapper); });
-		}
-
-		var entityIds = wrapper.find("input[type=hidden][id$='_hfEntityIds']").val().split(",");
-		$.each(entityIds, function (i, entityId) {
-			if (i == 0)
-				baseDropDown.val(entityId);
-			else
-				Eav.AddEntityMultiSelector(wrapper, multiValuesWrapper, baseDropDown, i, entityId);
-		});
-	},
-	AddEntityMultiSelector: function (wrapper, multiValuesWrapper, baseDropDown, i, selectedValue) {
-		if (i == undefined)
-			i = multiValuesWrapper.find(".MultiValueItem").length + 1;
-		var elementId = multiValuesWrapper.attr("id").replace("_pnlMultiValues", "_item" + i);
-		multiValuesWrapper.append($('<div class="MultiValueItem" id="' + elementId + '"><a class="eav-entityrelationship-remove" href="javascript:void(0)" onclick="javascript:Eav.RemoveEntityMultiSelect(this)">remove</a></div>').prepend(baseDropDown.clone().attr("id", elementId + "_DropDown").removeAttr("name")));
-		var dropDown = multiValuesWrapper.find("#" + elementId + "_DropDown");
-		dropDown.val(selectedValue);
-		dropDown.change(function () { Eav.SyncSelectedEntities(wrapper); });
-	},
-	SyncSelectedEntities: function (wrapper) {
-		var entityIds = [];
-		$.each(wrapper.find("select"), function (i, ddl) {
-			var value = $(ddl).val();
-			if (value != "")
-				entityIds.push(value);
-		});
-		wrapper.find("input[type=hidden][id$='_hfEntityIds']").val(entityIds.join(","));
-	},
-	RemoveEntityMultiSelect: function (hyperlink) {
-		var fieldWrapper = $(hyperlink).closest(".eav-field");
-		$(hyperlink).closest(".MultiValueItem").remove();
-		Eav.SyncSelectedEntities(fieldWrapper);
-	},*/
-
 	Gps: {
 		_mapsApiInitDone: false,
 		FindOnMap: function (latitudeStaticName, skipMap) {	// skipMap = true will only return LatLng of Address but doesn't act with the map
@@ -703,7 +679,7 @@
 			} else
 				Eav.Gps._initMap(latitudeStaticName);
 		}
-	},
+	}
 };
 
 function pageLoad(sender, e) {
@@ -798,7 +774,7 @@ Eav.FieldControllerManager = {
 				var latitudeStaticName = objWrapper.attr("data-staticname");
 				var longitude = objWrapper.next();
 				if (longitude.attr("data-fieldtype") != "Number" || longitude.attr("data-fieldsubtype") != "")
-					alert("GPS Number Field \"" + latitudeStaticName + "\" isn't configured correctly.\nThe field below/next to Latitude must be Longitude. Both must be Number fields but only Latitude must be of Typ \"GPS\".");
+					alert("GPS Number Field \"" + latitudeStaticName + "\" isn't configured correctly.\nThe field below/next to Latitude must be Longitude. Both must be Number fields but only Latitude must be of type \"GPS\".");
 
 				objWrapper.find(".eav-field-control").append('<div class="eav-gps-map-actions"><input class="eav-gps-map-showhide" type="button" value="Show Map" onclick="Eav.Gps.ShowMap(\'' + latitudeStaticName + '\')" /><input type="button" value="Find on Map" onclick="Eav.Gps.FindOnMap(\'' + latitudeStaticName + '\')"/></div>');
 				objWrapper.before('<div id="eav-gps-map-' + latitudeStaticName + '" class="eav-gps-map-canvas" style="height: 400px; display: none"></div>');
@@ -830,7 +806,7 @@ Eav.FieldControllerManager = {
 				Eav.InitEntityMultiSelector(objWrapper, true);
 			} else
 				field.val(value);*/
-		    alert("Set-value is untested!");
+			alert("Set-value is untested!");
 		};
 		Controller.GetValue = function () {
 			if (objWrapper.attr("data-allowmultivalue") == "true")
@@ -875,5 +851,5 @@ $.ajaxTransport(function (options, originalOptions, jqXHR) {
 
 // Contstruct angular module for EAV
 (function () {
-    angular.module('2sic-EAV', ['ui.tree']);
+	angular.module('2sic-EAV', ['ui.tree', 'eavGlobalConfigurationProvider', 'eavDialogService']);
 })();

@@ -1,1 +1,0 @@
-﻿<%@ WebService Language="C#" Class="ToSic.Eav.ManagementUI.PipelineDesignerServicesBase" %>
