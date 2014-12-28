@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources
 		private readonly string[] _childOrParentPossibleValues = { "child" };//, "parent"};
 		private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
+		private const string PassThroughtOnEmptyFilterKey = "PassThroughtOnEmptyFilter";
 
 		//private const string LangKey = "Language";
 		/// <summary>
@@ -39,6 +40,7 @@ namespace ToSic.Eav.DataSources
 			get { return Configuration[FilterKey]; }
 			set { Configuration[FilterKey] = value; }
 		}
+
 		public string CompareAttribute
 		{
 			get { return Configuration[CompareAttributeKey]; }
@@ -69,6 +71,7 @@ namespace ToSic.Eav.DataSources
 
 			}
 		}
+
 		public string ChildOrParent
 		{
 			get { return Configuration[ChildOrParentKey]; }
@@ -80,6 +83,7 @@ namespace ToSic.Eav.DataSources
 					throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
 			}
 		}
+
 		/// <summary>
 		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
 		/// </summary>
@@ -88,6 +92,15 @@ namespace ToSic.Eav.DataSources
 		//	get { return Configuration[LangKey]; }
 		//	set { Configuration[LangKey] = value; }
 		//}
+
+		/// <summary>
+		/// Pass throught all Entities if Filter is empty
+		/// </summary>
+		public bool PassThroughtOnEmptyFilter
+		{
+			get { return bool.Parse(Configuration[PassThroughtOnEmptyFilterKey]); }
+			set { Configuration[PassThroughtOnEmptyFilterKey] = value.ToString(); }
+		}
 		#endregion
 
 		/// <summary>
@@ -102,6 +115,7 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(CompareModeKey, "default");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
+			Configuration.Add(PassThroughtOnEmptyFilterKey, "[Settings:PassThroughtOnEmptyFilter||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
@@ -126,12 +140,17 @@ namespace ToSic.Eav.DataSources
 
 			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == "entitytitle" ? 't' : 'x';
 
+			var originals = In[DataSource.DefaultStreamName].List;
+
+			if (string.IsNullOrWhiteSpace(_filter) && PassThroughtOnEmptyFilter)
+				return originals;
+
 			// only get those, having a relationship on this name
 			var results = // (ChildOrParent == "child") ?
-				(from e in In[DataSource.DefaultStreamName].List
+				(from e in originals
 				 where e.Value.Relationships.Children[relationship].Any()
 				 select e);
-			//: (from e in In[DataSource.DefaultStreamName].List
+			//: (from e in originals
 			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
 			//	select e);
 
@@ -165,7 +184,5 @@ namespace ToSic.Eav.DataSources
 					"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn't exist. Was trying to compare the attribute '" + a + "'"));
 			}
 		}
-
-
 	}
 }

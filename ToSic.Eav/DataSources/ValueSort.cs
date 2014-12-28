@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
 			EnsureConfigurationIsLoaded();
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
-			var descendingCodes = "desc,d,0,>".Split(',');
+			var descendingCodes = new[] { "desc","d","0",">" };
 
 			#region Languages check - not fully implemented yet, only supports "default"
 			var lang = Languages.ToLower();
