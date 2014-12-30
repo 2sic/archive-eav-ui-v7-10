@@ -157,7 +157,7 @@ namespace ToSic.Eav
 		/// </summary>
 		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, null, null, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
+			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, entity.KeyGuid, entity.KeyString, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity

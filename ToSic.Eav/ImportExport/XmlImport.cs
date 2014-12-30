@@ -27,14 +27,18 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="sourceDefaultDimensionId">Default Dimension ID of the Surce-App/Zone</param>
 		/// <param name="defaultLanguage">Default Language of the Target-App/Zone</param>
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
-		public static Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null)
+		/// <param name="keyGuid">KeyGuid of the Entity</param>
+		/// <param name="keyString">KeyString of the Entity</param>
+		public static Import.Entity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
 			var targetEntity = new Import.Entity
 			{
 				AssignmentObjectTypeId = assignmentObjectTypeId,
 				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,
 				EntityGuid = Guid.Parse(xEntity.Attribute("EntityGUID").Value),
-				KeyNumber = keyNumber
+				KeyNumber = keyNumber,
+				KeyGuid = keyGuid,
+				KeyString = keyString
 			};
 
 			var targetValues = new Dictionary<string, List<IValueImportModel>>();

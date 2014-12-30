@@ -117,15 +117,17 @@ namespace ToSic.Eav.Import
 	{
 		public string AttributeSetStaticName { get; set; }
 		public int? KeyNumber { get; set; }
+		public Guid? KeyGuid { get; set; }
+		public string KeyString { get; set; }
 		public int AssignmentObjectTypeId { get; set; }
 		public Guid? EntityGuid { get; set; }
-        public bool IsPublished { get; set; }
+		public bool IsPublished { get; set; }
 		public Dictionary<string, List<IValueImportModel>> Values { get; set; }
 
-        public Entity()
-        {
-            IsPublished = true;
-        }
+		public Entity()
+		{
+			IsPublished = true;
+		}
 	}
 
 	public class ValueImportModel<T> : IValueImportModel
