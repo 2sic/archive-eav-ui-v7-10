@@ -117,7 +117,7 @@ namespace ToSic.Eav.DataSources
 			var listOfTypes = cache.GetContentTypes();
 			foreach (var contentType in listOfTypes)
 			{
-				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource);
+				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
 				var typeName = contentType.Value.Name;
 				if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@"))
 				{
