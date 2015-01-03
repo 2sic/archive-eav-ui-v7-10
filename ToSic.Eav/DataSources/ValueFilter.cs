@@ -64,6 +64,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
+			Configuration.Add(PassThroughtOnEmptyValueKey, "[Settings:PassThroughtOnEmptyValue]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 		}
 
