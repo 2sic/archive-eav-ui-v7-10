@@ -72,7 +72,8 @@ namespace ToSic.Eav
 				new List<Import.Attribute>
 				{
 					Import.Attribute.StringAttribute("Attribute", "Attribute", null, true),
-					Import.Attribute.StringAttribute("Value", "Value", null, true)
+					Import.Attribute.StringAttribute("Value", "Value", null, true),
+					Import.Attribute.BooleanAttribute("PassThroughtOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});
 
 			var dsrcValueSort = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",

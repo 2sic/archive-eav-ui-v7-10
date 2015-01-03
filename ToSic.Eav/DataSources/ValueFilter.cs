@@ -15,6 +15,9 @@ namespace ToSic.Eav.DataSources
 		private const string AttrKey = "Attribute";
 		private const string FilterKey = "Value";
 		private const string LangKey = "Language";
+		private const string PassThroughtOnEmptyValueKey = "PassThroughtOnEmptyValue";
+
+
 		/// <summary>
 		/// The attribute whoose value will be filtered
 		/// </summary>
@@ -32,6 +35,16 @@ namespace ToSic.Eav.DataSources
 			get { return Configuration[FilterKey]; }
 			set { Configuration[FilterKey] = value; }
 		}
+
+		/// <summary>
+		/// Pass throught all Entities if Value is empty
+		/// </summary>
+		public bool PassThroughtOnEmptyValue
+		{
+			get { return bool.Parse(Configuration[PassThroughtOnEmptyValueKey]); }
+			set { Configuration[PassThroughtOnEmptyValueKey] = value.ToString(); }
+		}
+
 
 		/// <summary>
 		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
@@ -65,7 +78,12 @@ namespace ToSic.Eav.DataSources
 			if(lang != "default")
 				throw  new Exception("Can't filter for languages other than 'default'");
 
-			var results = (from e in In[DataSource.DefaultStreamName].List
+			var originals = In[DataSource.DefaultStreamName].List;
+
+			if (string.IsNullOrEmpty(Value) && PassThroughtOnEmptyValue)
+				return originals;
+
+			var results = (from e in originals
 				where e.Value.Attributes.ContainsKey(attr)
 				select e);
 
