@@ -105,6 +105,7 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
+    <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
     <Content Include="Pages\ContentTypes.aspx" />
@@ -145,7 +146,6 @@
     <Content Include="EAV\AngularServices\NotificationService.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesignerController.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
-    <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.6.4-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
     <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />

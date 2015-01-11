@@ -18,7 +18,7 @@
 	<script src="../Scripts/angular-resource.min.js"></script>
 	<script src="../Scripts/angular-animate.min.js"></script>
 	<script src="../Scripts/toaster.js"></script>
-	<script src="../EAV/PipelineDesigner/assets/jquery.jsPlumb-1.6.4-min.js"></script>
+	<script src="../EAV/PipelineDesigner/assets/jquery.jsPlumb-1.7.2-min.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineDesigner.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineDesignerController.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineFactory.js"></script>
