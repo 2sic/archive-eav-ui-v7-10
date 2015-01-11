@@ -133,6 +133,7 @@
     <Content Include="EAV\Dialogs\EditItem.aspx" />
     <Content Include="EAV\Dialogs\Items.aspx" />
     <Content Include="EAV\Dialogs\NewItem.aspx" />
+    <Content Include="EAV\API\WebAPI-ClassDiagram.cd" />
     <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
     <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
     <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
@@ -207,7 +208,9 @@
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
     <Content Include="Scripts\toaster.css" />
     <Content Include="Scripts\toaster.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -435,7 +438,9 @@
   <ItemGroup>
     <Content Include="Site.master" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ClassDiagrams\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}</Project>
