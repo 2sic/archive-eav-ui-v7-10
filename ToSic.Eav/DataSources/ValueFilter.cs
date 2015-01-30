@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 		private const string AttrKey = "Attribute";
 		private const string FilterKey = "Value";
 		private const string LangKey = "Language";
-		private const string PassThroughtOnEmptyValueKey = "PassThroughtOnEmptyValue";
+		private const string PassThroughOnEmptyValueKey = "PassThroughOnEmptyValue";
 
 
 		/// <summary>
@@ -39,10 +39,10 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Pass throught all Entities if Value is empty
 		/// </summary>
-		public bool PassThroughtOnEmptyValue
+		public bool PassThroughOnEmptyValue
 		{
-			get { return bool.Parse(Configuration[PassThroughtOnEmptyValueKey]); }
-			set { Configuration[PassThroughtOnEmptyValueKey] = value.ToString(); }
+			get { return bool.Parse(Configuration[PassThroughOnEmptyValueKey]); }
+			set { Configuration[PassThroughOnEmptyValueKey] = value.ToString(); }
 		}
 
 
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
-			Configuration.Add(PassThroughtOnEmptyValueKey, "[Settings:PassThroughtOnEmptyValue]");
+			Configuration.Add(PassThroughOnEmptyValueKey, "[Settings:PassThroughOnEmptyValue]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 		}
 
@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSources
 
 			var originals = In[DataSource.DefaultStreamName].List;
 
-			if (string.IsNullOrEmpty(Value) && PassThroughtOnEmptyValue)
+			if (string.IsNullOrEmpty(Value) && PassThroughOnEmptyValue)
 				return originals;
 
 			var results = (from e in originals

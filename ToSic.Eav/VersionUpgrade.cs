@@ -59,7 +59,7 @@ namespace ToSic.Eav
 				new List<Import.Attribute>
 				{
 					Import.Attribute.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
-					Import.Attribute.BooleanAttribute("PassThroughtOnEmptyEntityIds", "Pass-Throught on empty EntityIds", "If this is true and EntityIds results to an empty list, all entities are passed through.", true, false),
+					Import.Attribute.BooleanAttribute("PassThroughOnEmptyEntityIds", "Pass-Throught on empty EntityIds", "If this is true and EntityIds results to an empty list, all entities are passed through.", true, false),
 				});
 
 			var dsrcEntityTypeFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
@@ -73,7 +73,7 @@ namespace ToSic.Eav
 				{
 					Import.Attribute.StringAttribute("Attribute", "Attribute", null, true),
 					Import.Attribute.StringAttribute("Value", "Value", null, true),
-					Import.Attribute.BooleanAttribute("PassThroughtOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
+					Import.Attribute.BooleanAttribute("PassThroughOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});
 
 			var dsrcValueSort = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
@@ -88,7 +88,7 @@ namespace ToSic.Eav
 				{
 					Import.Attribute.StringAttribute("Relationship", "Relationship", null, true),
 					Import.Attribute.StringAttribute("Filter", "Filter", null, true),
-					Import.Attribute.BooleanAttribute("PassThroughtOnEmptyFilter", "Pass-Throught on empty Filter", "If this is true and Filter results to an empty string, all entities are passed through.", true, false),
+					Import.Attribute.BooleanAttribute("PassThroughOnEmptyFilter", "Pass-Throught on empty Filter", "If this is true and Filter results to an empty string, all entities are passed through.", true, false),
 				});
 
 			#endregion

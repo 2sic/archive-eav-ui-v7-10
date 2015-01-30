@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	{
 		#region Configuration-properties
 		private const string EntityIdKey = "EntityIds";
-		private const string PassThroughtOnEmptyEntityIdsKey = "PassThroughtOnEmptyEntityIds";
+		private const string PassThroughOnEmptyEntityIdsKey = "PassThroughOnEmptyEntityIds";
 
 		/// <summary>
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
@@ -26,10 +26,10 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Pass throught all Entities if EntityIds is empty
 		/// </summary>
-		public bool PassThroughtOnEmptyEntityIds
+		public bool PassThroughOnEmptyEntityIds
 		{
-			get { return bool.Parse(Configuration[PassThroughtOnEmptyEntityIdsKey]); }
-			set { Configuration[PassThroughtOnEmptyEntityIdsKey] = value.ToString(); }
+			get { return bool.Parse(Configuration[PassThroughOnEmptyEntityIdsKey]); }
+			set { Configuration[PassThroughOnEmptyEntityIdsKey] = value.ToString(); }
 		}
 
 		#endregion
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
-			Configuration.Add(PassThroughtOnEmptyEntityIdsKey, "[Settings:PassThroughtOnEmptyEntityIds||false]");
+			Configuration.Add(PassThroughOnEmptyEntityIdsKey, "[Settings:PassThroughOnEmptyEntityIds||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources
 
 			var originals = In[DataSource.DefaultStreamName].List;
 
-			if (entityIds.Length == 0 && PassThroughtOnEmptyEntityIds)
+			if (entityIds.Length == 0 && PassThroughOnEmptyEntityIds)
 				return originals;
 
 			var result = entityIds.Distinct().Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
