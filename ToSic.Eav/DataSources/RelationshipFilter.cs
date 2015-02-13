@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 		private readonly string[] _childOrParentPossibleValues = { "child" };//, "parent"};
 		private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
-		private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
+		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
 
 		//private const string LangKey = "Language";
 		/// <summary>
@@ -93,14 +93,14 @@ namespace ToSic.Eav.DataSources
 		//	set { Configuration[LangKey] = value; }
 		//}
 
-		/// <summary>
-		/// Pass throught all Entities if Filter is empty
-		/// </summary>
-		public bool PassThroughOnEmptyFilter
-		{
-			get { return bool.Parse(Configuration[PassThroughOnEmptyFilterKey]); }
-			set { Configuration[PassThroughOnEmptyFilterKey] = value.ToString(); }
-		}
+		///// <summary>
+		///// Pass throught all Entities if Filter is empty
+		///// </summary>
+		//public bool PassThroughOnEmptyFilter
+		//{
+		//	get { return bool.Parse(Configuration[PassThroughOnEmptyFilterKey]); }
+		//	set { Configuration[PassThroughOnEmptyFilterKey] = value.ToString(); }
+		//}
 		#endregion
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(CompareModeKey, "default");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
-			Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
+			//Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
@@ -142,8 +142,8 @@ namespace ToSic.Eav.DataSources
 
 			var originals = In[DataSource.DefaultStreamName].List;
 
-			if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
-				return originals;
+			//if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
+			//	return originals;
 
 			// only get those, having a relationship on this name
 			var results = // (ChildOrParent == "child") ?
