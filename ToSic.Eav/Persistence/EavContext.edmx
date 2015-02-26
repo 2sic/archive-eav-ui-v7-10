@@ -59,8 +59,8 @@
             <PropertyRef Name="AttributeSetID" />
           </Key>
           <Property Name="AttributeSetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="StaticName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StaticName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="Scope" Type="nvarchar" MaxLength="50" />
           <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ChangeLogCreated" Type="int" Nullable="false" />
@@ -137,7 +137,7 @@
           <Property Name="ChangeLogDeleted" Type="int" />
           <Property Name="IsPublished" Type="bit" Nullable="false" />
           <Property Name="PublishedEntityId" Type="int" />
-          <Property Name="ChangeLogModified" Type="int" />
+          <Property Name="ChangeLogModified" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ToSIC_EAV_EntityRelationships">
           <Key>
@@ -397,7 +397,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
-          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="0..1" />
+          <End Role="ToSIC_EAV_ChangeLog" Type="Self.ToSIC_EAV_ChangeLog" Multiplicity="1" />
           <End Role="ToSIC_EAV_Entities" Type="Self.ToSIC_EAV_Entities" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ToSIC_EAV_ChangeLog">
@@ -937,12 +937,12 @@
             <PropertyRef Name="AttributeSetID" />
           </Key>
           <Property Type="Int32" Name="AttributeSetID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Name" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Type="String" Name="Description" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Groups" Relationship="ToSic.Eav.FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets" FromRole="ToSIC_EAV_AttributeSets" ToRole="ToSIC_EAV_AttributeGroups" />
           <NavigationProperty Name="AttributesInSets" Relationship="ToSic.Eav.FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets" FromRole="ToSIC_EAV_AttributeSets" ToRole="ToSIC_EAV_AttributesInSets" />
           <NavigationProperty Name="Entities" Relationship="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets" FromRole="ToSIC_EAV_AttributeSets" ToRole="ToSIC_EAV_Entities" />
-          <Property Type="String" Name="StaticName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="StaticName" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Type="Int32" Name="ChangeLogIDCreated" Nullable="false" />
           <Property Type="Int32" Name="ChangeLogIDDeleted" />
           <NavigationProperty Name="ChangeLogCreated" Relationship="ToSic.Eav.FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated" FromRole="AttributeSet" ToRole="ToSIC_EAV_ChangeLog" />
@@ -994,7 +994,7 @@
           <NavigationProperty Name="EntityParentRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <Property Name="IsPublished" Type="Boolean" Nullable="false" />
           <Property Name="PublishedEntityId" Type="Int32" />
-          <Property Name="ChangeLogIDModified" Type="Int32" />
+          <Property Name="ChangeLogIDModified" Type="Int32" Nullable="false" />
           <NavigationProperty Name="ChangeLogModified" Relationship="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" FromRole="Entity" ToRole="ChangeLog" />
         </EntityType>
         <EntityType Name="EavValue">
@@ -1491,7 +1491,7 @@
           <Property Name="NewData" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified">
-          <End Type="ToSic.Eav.ChangeLog" Role="ChangeLog" Multiplicity="0..1" />
+          <End Type="ToSic.Eav.ChangeLog" Role="ChangeLog" Multiplicity="1" />
           <End Type="ToSic.Eav.Entity" Role="Entity" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ChangeLog">

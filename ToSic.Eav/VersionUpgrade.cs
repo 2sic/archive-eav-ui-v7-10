@@ -83,7 +83,7 @@ namespace ToSic.Eav
 					Import.Attribute.StringAttribute("Directions", "Directions", null, true),
 				});
 
-			var dsrcRelationshipFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configur a RelationshipFilter DataSource",
+			var dsrcRelationshipFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
 				new List<Import.Attribute>
 				{
 					Import.Attribute.StringAttribute("Relationship", "Relationship", null, true),

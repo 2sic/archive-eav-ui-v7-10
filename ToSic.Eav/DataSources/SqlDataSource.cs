@@ -13,13 +13,13 @@ namespace ToSic.Eav.DataSources
 		private IDictionary<int, IEntity> _entities;
 
 		#region Configuration-properties
-		private const string TitleFieldKey = "TitleField";
-		private const string EntityIdFieldKey = "EntityIdField";
-		private const string ContentTypeKey = "ContentType";
-		private const string SelectCommandKey = "SelectCommand";
-		private const string ConnectionStringKey = "ConnectionString";
-		private const string ConnectionStringNameKey = "ConnectionStringName";
-		private const string ConnectionStringDefault = "[Settings:ConnectionString]";
+		protected const string TitleFieldKey = "TitleField";
+		protected const string EntityIdFieldKey = "EntityIdField";
+		protected const string ContentTypeKey = "ContentType";
+		protected const string SelectCommandKey = "SelectCommand";
+		protected const string ConnectionStringKey = "ConnectionString";
+		protected const string ConnectionStringNameKey = "ConnectionStringName";
+		protected const string ConnectionStringDefault = "[Settings:ConnectionString]";
 
 		/// <summary>
 		/// Default Name of the EntityId Column

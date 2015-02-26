@@ -50,7 +50,7 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets", "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.AttributeSet), "AttributeSet1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified", "ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
 
 #endregion
 
@@ -4071,7 +4071,8 @@ namespace ToSic.Eav
         /// <param name="entityGUID">Initial value of the EntityGUID property.</param>
         /// <param name="changeLogIDCreated">Initial value of the ChangeLogIDCreated property.</param>
         /// <param name="isPublished">Initial value of the IsPublished property.</param>
-        public static Entity CreateEntity(global::System.Int32 entityID, global::System.Int32 attributeSetID, global::System.Int32 assignmentObjectTypeID, global::System.Int32 sortOrder, global::System.Guid entityGUID, global::System.Int32 changeLogIDCreated, global::System.Boolean isPublished)
+        /// <param name="changeLogIDModified">Initial value of the ChangeLogIDModified property.</param>
+        public static Entity CreateEntity(global::System.Int32 entityID, global::System.Int32 attributeSetID, global::System.Int32 assignmentObjectTypeID, global::System.Int32 sortOrder, global::System.Guid entityGUID, global::System.Int32 changeLogIDCreated, global::System.Boolean isPublished, global::System.Int32 changeLogIDModified)
         {
             Entity entity = new Entity();
             entity.EntityID = entityID;
@@ -4081,6 +4082,7 @@ namespace ToSic.Eav
             entity.EntityGUID = entityGUID;
             entity.ChangeLogIDCreated = changeLogIDCreated;
             entity.IsPublished = isPublished;
+            entity.ChangeLogIDModified = changeLogIDModified;
             return entity;
         }
 
@@ -4406,9 +4408,9 @@ namespace ToSic.Eav
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> ChangeLogIDModified
+        public global::System.Int32 ChangeLogIDModified
         {
             get
             {
@@ -4423,8 +4425,8 @@ namespace ToSic.Eav
                 OnChangeLogIDModifiedChanged();
             }
         }
-        private Nullable<global::System.Int32> _ChangeLogIDModified;
-        partial void OnChangeLogIDModifiedChanging(Nullable<global::System.Int32> value);
+        private global::System.Int32 _ChangeLogIDModified;
+        partial void OnChangeLogIDModifiedChanging(global::System.Int32 value);
         partial void OnChangeLogIDModifiedChanged();
 
         #endregion
