@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources
 {
@@ -115,7 +116,7 @@ namespace ToSic.Eav.DataSources
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-				var entity = new EntityModel(entityId, contentType, values, titleField);
+				var entity = new Data.Entity(entityId, contentType, values, titleField);
 				result.Add(entity.EntityId, entity);
 			}
 			return result;

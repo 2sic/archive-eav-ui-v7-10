@@ -64,8 +64,6 @@
     <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
     <Compile Include="DataSources\DataSource.cs" />
     <Compile Include="DataSources\Pipeline\PipelineDesignerAttribute.cs" />
-    <Compile Include="DataSources\Tokens\PropertyAccess\StaticPropertyAccess.cs" />
-    <Compile Include="DataSources\Tokens\PropertyAccess\AssignedEntityAttributePropertyAccess.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="DataSources\BaseDataSource.cs" />
     <Compile Include="DataSources\Caches\BaseCache.cs" />
@@ -91,16 +89,13 @@
     <Compile Include="DataSources\IDataSource.cs" />
     <Compile Include="DataSources\IDataStream.cs" />
     <Compile Include="DataSources\IMetaDataSource.cs" />
-    <Compile Include="DataSources\Tokens\BaseCustomTokenReplace.cs" />
-    <Compile Include="DataSources\Tokens\BaseTokenReplace.cs" />
-    <Compile Include="DataSources\Tokens\PropertyAccess\IPropertyAccess.cs" />
     <Compile Include="DataSources\PassThrough.cs" />
     <Compile Include="DataSources\RootSources\IRootSource.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
-    <Compile Include="DataSources\Tokens\TokenReplace.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="ImportExport\XmlExport.cs" />
     <Compile Include="ImportExport\XmlImport.cs" />
+    <Compile Include="Data\Entity.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">
@@ -120,9 +115,18 @@
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Persistence\EavContextDimensions.cs" />
     <Compile Include="Persistence\EavContextRead.cs" />
+    <Compile Include="PropertyAccess\AssignedEntityPropertyAccess.cs" />
+    <Compile Include="PropertyAccess\BasePropertyAccess.cs" />
+    <Compile Include="PropertyAccess\EntityPropertyAccess.cs" />
+    <Compile Include="PropertyAccess\IPropertyAccess.cs" />
+    <Compile Include="PropertyAccess\DataTargetPropertyAccess.cs" />
+    <Compile Include="PropertyAccess\StaticPropertyAccess.cs" />
     <Compile Include="RelationshipManager.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tokens\BaseCustomTokenReplace.cs" />
+    <Compile Include="Tokens\BaseTokenReplace.cs" />
+    <Compile Include="Tokens\TokenReplace.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
@@ -136,6 +140,9 @@
     </EntityDeploy>
     <None Include="DataSources\DataSourcesOverview.cd" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Notes for EAV on 2sxc 7.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

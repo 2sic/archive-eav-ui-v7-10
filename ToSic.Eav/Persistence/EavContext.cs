@@ -509,7 +509,7 @@ namespace ToSic.Eav
 
 			entity.ChangeLogIDModified = GetChangeLogId();
 
-			SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
+			SaveChanges();	// must save now to generate Entity afterward for DataTimeline
 
 			SaveEntityToDataTimeline(entity);
 

@@ -11,93 +11,93 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Represents an Entity
 	/// </summary>
-	public class EntityModel : IEntity
-	{
-		public int EntityId { get; internal set; }
-		public int RepositoryId { get; internal set; }
-		public Guid EntityGuid { get; internal set; }
-		public IAttribute Title { get; internal set; }
-		public Dictionary<string, IAttribute> Attributes { get; internal set; }
-		public IContentType Type { get; internal set; }
-		public DateTime Modified { get; internal set; }
-		[ScriptIgnore]
-		public RelationshipManager Relationships { get; internal set; }
-		public bool IsPublished { get; internal set; }
-		public int AssignmentObjectTypeId { get; internal set; }
-		internal IEntity DraftEntity { get; set; }
-		internal IEntity PublishedEntity { get; set; }
+    //public class Entity : IEntity
+    //{
+    //    public int EntityId { get; internal set; }
+    //    public int RepositoryId { get; internal set; }
+    //    public Guid EntityGuid { get; internal set; }
+    //    public IAttribute Title { get; internal set; }
+    //    public Dictionary<string, IAttribute> Attributes { get; internal set; }
+    //    public IContentType Type { get; internal set; }
+    //    public DateTime Modified { get; internal set; }
+    //    [ScriptIgnore]
+    //    public RelationshipManager Relationships { get; internal set; }
+    //    public bool IsPublished { get; internal set; }
+    //    public int AssignmentObjectTypeId { get; internal set; }
+    //    internal IEntity DraftEntity { get; set; }
+    //    internal IEntity PublishedEntity { get; set; }
 
-		public IAttribute this[string attributeName]
-		{
-			get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
-		}
+    //    public IAttribute this[string attributeName]
+    //    {
+    //        get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
+    //    }
 
-		/// <summary>
-		/// Create a new EntityModel. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
-		/// </summary>
-		public EntityModel(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute)
-		{
-			EntityId = entityId;
-			Type = new ContentType(contentTypeName);
-			Attributes = AttributeModel.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
-			try
-			{
-				Title = Attributes[titleAttribute];
-			}
-			catch (KeyNotFoundException)
-			{
-				throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
-			}
-			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
-			IsPublished = true;
-			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
-		}
+    //    /// <summary>
+    //    /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
+    //    /// </summary>
+    //    public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute)
+    //    {
+    //        EntityId = entityId;
+    //        Type = new ContentType(contentTypeName);
+    //        Attributes = AttributeModel.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
+    //        try
+    //        {
+    //            Title = Attributes[titleAttribute];
+    //        }
+    //        catch (KeyNotFoundException)
+    //        {
+    //            throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
+    //        }
+    //        AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
+    //        IsPublished = true;
+    //        Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
+    //    }
 
-		/// <summary>
-		/// Create a new EntityModel
-		/// </summary>
-		internal EntityModel(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
-		{
-			EntityId = entityId;
-			EntityGuid = entityGuid;
-			AssignmentObjectTypeId = assignmentObjectTypeId;
-			Attributes = new Dictionary<string, IAttribute>();
-			Type = type;
-			IsPublished = isPublished;
-			RepositoryId = repositoryId;
-			Modified = modified;
+    //    /// <summary>
+    //    /// Create a new Entity
+    //    /// </summary>
+    //    internal Entity(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
+    //    {
+    //        EntityId = entityId;
+    //        EntityGuid = entityGuid;
+    //        AssignmentObjectTypeId = assignmentObjectTypeId;
+    //        Attributes = new Dictionary<string, IAttribute>();
+    //        Type = type;
+    //        IsPublished = isPublished;
+    //        RepositoryId = repositoryId;
+    //        Modified = modified;
 
-			if (allRelationships == null)
-				allRelationships = new List<EntityRelationshipItem>();
-			Relationships = new RelationshipManager(this, allRelationships);
-		}
+    //        if (allRelationships == null)
+    //            allRelationships = new List<EntityRelationshipItem>();
+    //        Relationships = new RelationshipManager(this, allRelationships);
+    //    }
 
-		/// <summary>
-		/// Create a new EntityModel based on an Entity and Attributes
-		/// </summary>
-		internal EntityModel(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
-		{
-			EntityId = entity.EntityId;
-			EntityGuid = entity.EntityGuid;
-			AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
-			Type = entity.Type;
-			Title = entity.Title;
-			IsPublished = entity.IsPublished;
-			Attributes = attributes;
-			RepositoryId = entity.RepositoryId;
-			Relationships = new RelationshipManager(this, allRelationships);
-		}
+    //    /// <summary>
+    //    /// Create a new Entity based on an Entity and Attributes
+    //    /// </summary>
+    //    internal Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
+    //    {
+    //        EntityId = entity.EntityId;
+    //        EntityGuid = entity.EntityGuid;
+    //        AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
+    //        Type = entity.Type;
+    //        Title = entity.Title;
+    //        IsPublished = entity.IsPublished;
+    //        Attributes = attributes;
+    //        RepositoryId = entity.RepositoryId;
+    //        Relationships = new RelationshipManager(this, allRelationships);
+    //    }
 
-		public IEntity GetDraft()
-		{
-			return DraftEntity;
-		}
+    //    public IEntity GetDraft()
+    //    {
+    //        return DraftEntity;
+    //    }
 
-		public IEntity GetPublished()
-		{
-			return PublishedEntity;
-		}
-	}
+    //    public IEntity GetPublished()
+    //    {
+    //        return PublishedEntity;
+    //    }
+    //}
 
 	/// <summary>
 	/// Represents an Attribute with Values of a Generic Type

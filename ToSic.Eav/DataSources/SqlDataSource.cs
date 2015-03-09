@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using ToSic.Eav.Data;
+using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.DataSources
 {
@@ -87,7 +92,14 @@ namespace ToSic.Eav.DataSources
 
 		#endregion
 
-		/// <summary>
+        #region Special SQL specific properties to prevent SQL Injection
+
+	    private string originalUnsafeSql;
+        //private Dictionary<string, string> sqlParams = new Dictionary<string, string>();
+
+        #endregion
+
+        /// <summary>
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		public SqlDataSource()
@@ -114,7 +126,47 @@ namespace ToSic.Eav.DataSources
 			TitleField = titleField ?? EntityTitleDefaultColumnName;
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
+
+	    protected override void EnsureConfigurationIsLoaded()
+	    {
+	        if (_configurationIsLoaded)
+	            return;
+
+            throw new Exception("this code is not tested yet! must test before we publish 2dm 2015-03-09");
+
+            // todo: ensure that we can protect ourselves against SQL injection
+	        var tokenizer = Tokens.BaseTokenReplace.Tokenizer;
+	        originalUnsafeSql = SelectCommand;
+	        var matches = tokenizer.Matches(SelectCommand);
+            var cleanedSql = new StringBuilder();
+	        int ParamNumber = 0;
+
+            // Try to extract all tokens, and replace them with Param-syntax
+            foreach (Match currentMatch in matches)
+            {
+                string strObjectName = currentMatch.Result("${object}");
+                if (!String.IsNullOrEmpty(strObjectName))
+                {
+                    var paramName = "@AutoExtractedParam" + (ParamNumber++).ToString();
+                    cleanedSql.Append(paramName);
+                    Configuration.Add(paramName, currentMatch.ToString());
+                }
+                else
+                {
+                    cleanedSql.Append(currentMatch.Result("${text}"));
+                }
+            }
+            SelectCommand = cleanedSql.ToString();
+
+            // Process the additional parameters - not necessary, because it's automatically in Configuration
+            // var instancePAs = new Dictionary<string, IPropertyAccess>() { { "In", new DataTargetPropertyAccess(this) } };
+            // ConfigurationProvider.LoadConfiguration(sqlParams, instancePAs);
+
+
+	        base.EnsureConfigurationIsLoaded();
+	    }
+
+	    private IDictionary<int, IEntity> GetEntities()
 		{
 			if (_entities != null)
 				return _entities;
@@ -130,7 +182,9 @@ namespace ToSic.Eav.DataSources
 			using (var connection = new SqlConnection(ConnectionString))
 			{
 				var command = new SqlCommand(SelectCommand, connection);
-				foreach (var sqlParameter in Configuration.Where(k => k.Key.StartsWith("@")))
+
+                // Add all items in Configuration starting with an @, as this should be an SQL parameter
+				foreach (var sqlParameter in Configuration.Where(k => k.Key.StartsWith("@"))) 
 					command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
 
 				connection.Open();
@@ -144,9 +198,9 @@ namespace ToSic.Eav.DataSources
 						columNames[i] = reader.GetName(i);
 
 					if (!columNames.Contains(EntityIdField))
-						throw new Exception(string.Format("SQL Result doesn't contain an EntityId Column with Name \"{0}\"", EntityIdField));
+						throw new Exception(string.Format("SQL Result doesn't contain an EntityId Column with Name \"{0}\". Ideally use something like Select ID As EntityId...", EntityIdField));
 					if (!columNames.Contains(TitleField))
-						throw new Exception(string.Format("SQL Result doesn't contain an EntityTitle Column with Name \"{0}\"", TitleField));
+                        throw new Exception(string.Format("SQL Result doesn't contain an EntityTitle Column with Name \"{0}\". Ideally use something like Select FullName As EntityTitle...", TitleField));
 					#endregion
 
 					#region Read all Rows from SQL Server
@@ -154,7 +208,7 @@ namespace ToSic.Eav.DataSources
 					{
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
-						var entity = new EntityModel(entityId, ContentType, values, TitleField);
+						var entity = new Data.Entity(entityId, ContentType, values, TitleField);
 						_entities.Add(entityId, entity);
 					}
 					#endregion

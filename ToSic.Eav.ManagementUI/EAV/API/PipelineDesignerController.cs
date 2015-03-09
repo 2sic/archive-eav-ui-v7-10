@@ -8,8 +8,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.Tokens;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.PropertyAccess;
 
 namespace ToSic.Eav.ManagementUI.API
 {
@@ -291,6 +291,7 @@ namespace ToSic.Eav.ManagementUI.API
 			var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
 			if (testParameters == null)
 				return null;
+            // todo: dangerous: seems like another token-replace mechanism!
 			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
 
 			// Create a list of static Property Accessors

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources
 {
@@ -44,7 +45,7 @@ namespace ToSic.Eav.DataSources
 
 			foreach (var entity in In[DataSource.DefaultStreamName].List)
 			{
-				var entityModel = new EntityModel(entity.Value, entity.Value.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value), entity.Value.Relationships.AllRelationships);
+				var entityModel = new Data.Entity(entity.Value, entity.Value.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value), entity.Value.Relationships.AllRelationships);
 
 				result.Add(entity.Key, entityModel);
 			}

@@ -61,5 +61,14 @@ namespace ToSic.Eav
 		/// Get Published Entity of this Entity
 		/// </summary>
 		IEntity GetPublished();
+        
+        /// <summary>
+        /// Helper method to retrieve the most applicable value based on criteria like current language etc.
+        /// </summary>
+        /// <param name="attributeName"></param>
+        /// <param name="propertyNotFound"></param>
+        /// <returns>A string, int or even a EntityRelationshipModel</returns>
+        object GetBestValue(string attributeName, out bool propertyNotFound);
+	    object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
 	}
 }

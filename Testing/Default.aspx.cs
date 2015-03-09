@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using ToSic.Eav;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Tokens;
+using ToSic.Eav.PropertyAccess;
+using Entity = ToSic.Eav.Data.Entity;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 public partial class Default : Page
@@ -286,7 +288,7 @@ public partial class Default : Page
 			{"Demo4", 123.12},
 			{"Date", DateTime.Now}
 		};
-		var entityModel = new EntityModel(100001, "SampleContentType", values, "Title");
+		var entityModel = new Entity(100001, "SampleContentType", values, "Title");
 
 		return entityModel;
 	}

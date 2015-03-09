@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources.Tokens;
+using ToSic.Eav.PropertyAccess;
 
 namespace ToSic.Eav.DataSources
 {
@@ -14,9 +14,9 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		Dictionary<string, IPropertyAccess> Sources { get; }
 
-		/// <summary>
-		/// Replaces all Tokens in the ConfigList with actual values provided by the Sources-Provider
-		/// </summary>
-		void LoadConfiguration(IDictionary<string, string> configList);
+	    /// <summary>
+	    /// Replaces all Tokens in the ConfigList with actual values provided by the Sources-Provider
+	    /// </summary>
+	    void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IPropertyAccess> instanceSpecificPropertyAccesses = null);
 	}
 }

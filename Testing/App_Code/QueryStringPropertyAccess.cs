@@ -1,5 +1,5 @@
 ﻿using System.Web;
-using ToSic.Eav.DataSources.Tokens;
+using ToSic.Eav.PropertyAccess;
 
 public class QueryStringPropertyAccess : IPropertyAccess
 {
@@ -18,7 +18,7 @@ public class QueryStringPropertyAccess : IPropertyAccess
 
 	public string Name { get { return "querystring"; } }
 
-	public string GetProperty(string propertyName, string strFormat, ref bool propertyNotFound)
+	public string GetProperty(string propertyName, string format, ref bool propertyNotFound)
 	{
 		return GetProperty(propertyName, ref propertyNotFound);
 	}

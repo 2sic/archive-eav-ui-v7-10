@@ -16,7 +16,7 @@ namespace ToSic.Eav.ManagementUI.Serialization
 		#endregion
 
 		/// <summary>
-		/// Get EntityModel without circular references in Attribute-Values for JSON Serialization with JavaScriptSerializer
+		/// Get Entity without circular references in Attribute-Values for JSON Serialization with JavaScriptSerializer
 		/// </summary>
 		public EntityJavaScriptModel(IEntity entity)
 		{

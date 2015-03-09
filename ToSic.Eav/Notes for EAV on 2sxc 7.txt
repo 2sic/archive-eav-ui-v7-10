@@ -1,0 +1,31 @@
+﻿
+Notes 2dm for the next version of the EAV
+Background is that we can probably introduce breaking changes and clean up a bit, since compatibility is not the top priority. 
+
+
+
+Todos
+
+Probably rename all the *Model classes to something more like "Entity"
+> probably to Data\Entity etc.
+> also put all in an own class
+Probably remove all dependencies to EntityFramework, as we probably don't need them since we basically need a data-dump from the DB and re-create everything in RAM
+Either move interfaces to /Data (without/with folder) or move other interfaces to interfaces
+
+PipelineDesignerControl seems to have another own token-replace. if yes, this is dangerous, must use default
+
+
+What I did 2015-03-09
+* Moved entitymodel
+* extended it with GetBestValue(*)
+* extended interface with that too
+* Created BasePropertyAccess with helper format method
+* Created folder PropertyAccess and moved stuff there...
+* Created basepropertyaccess
+* Created EntityPropertyAccess
+* Created /Tokens and moved stuff
+* Modified BaseTokenReplace to allow instance-specific data sources
+* Modified Base-Data-Source to use the instance-specific configuration provider "In"
+
+* adeded (untested) mechanism to extract sql parameters from SQL, auto-parse and add to sql-command (SqlDataSource)
+* reviewing (untested) multiline, commented reg-ex also not touching non-tokens - this would be easy to add automated testing...

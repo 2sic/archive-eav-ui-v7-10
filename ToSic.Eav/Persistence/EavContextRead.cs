@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 
@@ -459,7 +460,7 @@ namespace ToSic.Eav
 			foreach (var e in entitiesValues)
 			{
 				var contentType = (ContentType)contentTypes[e.AttributeSetID];
-				var entityModel = new EntityModel(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships, e.Modified);
+				var entityModel = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships, e.Modified);
 
 				var entityAttributes = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
 
@@ -476,7 +477,7 @@ namespace ToSic.Eav
 				{
 					// Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
 					entityModel.PublishedEntity = entities[e.PublishedEntityId.Value];
-					((EntityModel)entityModel.PublishedEntity).DraftEntity = entityModel;
+					((Data.Entity)entityModel.PublishedEntity).DraftEntity = entityModel;
 					entityModel.EntityId = e.PublishedEntityId.Value;
 				}
 
@@ -581,7 +582,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Get EntityModel for specified EntityId
+		/// Get Entity for specified EntityId
 		/// </summary>
 		/// <returns>A single IEntity or throws InvalidOperationException</returns>
 		public IEntity GetEntityModel(int entityId, IDataSource source = null)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Tokens;
+using ToSic.Eav.PropertyAccess;
 
 namespace ToSic.Eav.DataSources
 {
@@ -50,14 +50,14 @@ namespace ToSic.Eav.DataSources
 			var dataPipelineParts = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, dataPipeline.EntityGuid);
 			#endregion
 
-			var pipelineSettingsProvider = new AssignedEntityAttributePropertyAccess("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
+			var pipelineSettingsProvider = new AssignedEntityPropertyAccess("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
 			#region init all DataPipelineParts
 			var dataSources = new Dictionary<string, IDataSource>();
 			foreach (var dataPipelinePart in dataPipelineParts)
 			{
 				#region Init Configuration Provider
 				var configurationProvider = new ConfigurationProvider();
-				var settingsPropertySource = new AssignedEntityAttributePropertyAccess("settings", dataPipelinePart.EntityGuid, metaDataSource);
+				var settingsPropertySource = new AssignedEntityPropertyAccess("settings", dataPipelinePart.EntityGuid, metaDataSource);
 				configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
 				configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
 

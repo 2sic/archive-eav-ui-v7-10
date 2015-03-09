@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Tokens
+﻿namespace ToSic.Eav.PropertyAccess
 {
 	public interface IPropertyAccess
 	{
@@ -9,6 +9,6 @@
 		/// <summary>
 		/// Gets a Property by Name
 		/// </summary>
-		string GetProperty(string propertyName, string strFormat, ref bool propertyNotFound);
+		string GetProperty(string propertyName, string format, ref bool propertyNotFound);
 	}
 }
