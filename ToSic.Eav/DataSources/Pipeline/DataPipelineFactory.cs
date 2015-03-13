@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
@@ -15,12 +15,12 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		/// <param name="appId">AppId to use</param>
 		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
-		/// <param name="configuration">ConfigurationProvider Provider for configurable DataSources</param>
+		/// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
 		/// <param name="outSource">DataSource to attach the Out-Streams</param>
 		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, ConfigurationProvider configuration, IDataSource outSource)
+		public static IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource)
 		{
-			return GetDataSource(appId, pipelineEntityId, configuration.Sources.Select(s => s.Value), outSource);
+			return GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource);
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources
 		/// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
 		/// <param name="outSource">DataSource to attach the Out-Streams</param>
 		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IPropertyAccess> configurationPropertyAccesses, IDataSource outSource)
+		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource)
 		{
 			#region Load Pipeline Entity and Pipeline Parts
 			var source = DataSource.GetInitialDataSource(appId: appId);
@@ -50,14 +50,14 @@ namespace ToSic.Eav.DataSources
 			var dataPipelineParts = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, dataPipeline.EntityGuid);
 			#endregion
 
-			var pipelineSettingsProvider = new AssignedEntityPropertyAccess("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
+			var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
 			#region init all DataPipelineParts
 			var dataSources = new Dictionary<string, IDataSource>();
 			foreach (var dataPipelinePart in dataPipelineParts)
 			{
 				#region Init Configuration Provider
-				var configurationProvider = new ConfigurationProvider();
-				var settingsPropertySource = new AssignedEntityPropertyAccess("settings", dataPipelinePart.EntityGuid, metaDataSource);
+				var configurationProvider = new ValueCollectionProvider();
+				var settingsPropertySource = new AssignedEntityValueProvider("settings", dataPipelinePart.EntityGuid, metaDataSource);
 				configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
 				configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
 
@@ -72,8 +72,8 @@ namespace ToSic.Eav.DataSources
 
 				#endregion
 
-				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, configurationProvider: configurationProvider);
-				//configurationProvider.configList = dataSource.Configuration;
+				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
+				//ConfigurationProvider.configList = dataSource.Configuration;
 
 				dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
 			}

@@ -12,34 +12,74 @@ namespace ToSic.Eav.Data
 	/// Represents an Entity
 	/// </summary>
 	public class Entity : IEntity
-	{
+    {
+        #region Basic properties like EntityId, Guid, IsPublished etc.
+        /// <summary>
+        /// Id as an int
+        /// </summary>
 		public int EntityId { get; internal set; }
+        /// <summary>
+        /// Id of this item inside the repository. Can be different than the real Id, because it may be a temporary version of this content-item
+        /// </summary>
 		public int RepositoryId { get; internal set; }
+        /// <summary>
+        /// Id as GUID
+        /// </summary>
 		public Guid EntityGuid { get; internal set; }
+        /// <summary>
+        /// Offical title of this content-item
+        /// </summary>
 		public IAttribute Title { get; internal set; }
+        /// <summary>
+        /// List of all attributes
+        /// </summary>
 		public Dictionary<string, IAttribute> Attributes { get; internal set; }
+        /// <summary>
+        /// Type-definition of this content-item
+        /// </summary>
 		public IContentType Type { get; internal set; }
+        /// <summary>
+        /// Modified date/time
+        /// </summary>
 		public DateTime Modified { get; internal set; }
+        /// <summary>
+        /// Relationship-helper object, important to navigate to children and parents
+        /// </summary>
 		[ScriptIgnore]
 		public RelationshipManager Relationships { get; internal set; }
+        /// <summary>
+        /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
+        /// </summary>
 		public bool IsPublished { get; internal set; }
 		public int AssignmentObjectTypeId { get; internal set; }
+        /// <summary>
+        /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
+        /// </summary>
 		internal IEntity DraftEntity { get; set; }
-		internal IEntity PublishedEntity { get; set; }
+        /// <summary>
+        /// If this entity is draft and there is a published edition, then it can be navigated through PublishedEntity
+        /// </summary>
+        internal IEntity PublishedEntity { get; set; }
 
+        /// <summary>
+        /// Shorhand accessor to retrieve an attribute
+        /// </summary>
+        /// <param name="attributeName"></param>
+        /// <returns></returns>
 		public IAttribute this[string attributeName]
 		{
 			get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
 		}
+        #endregion
 
-		/// <summary>
+        /// <summary>
 		/// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
 		/// </summary>
 		public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute)
 		{
 			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
-			Attributes = AttributeModel.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
+			Attributes = Attribute.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
 			try
 			{
 				Title = Attributes[titleAttribute];
@@ -88,16 +128,29 @@ namespace ToSic.Eav.Data
 			Relationships = new RelationshipManager(this, allRelationships);
 		}
 
-		public IEntity GetDraft()
+        /// <summary>
+        /// The draft entity fitting this published entity
+        /// </summary>
+        /// <returns></returns>
+        public IEntity GetDraft()
 		{
 			return DraftEntity;
 		}
 
-		public IEntity GetPublished()
+        /// <summary>
+        /// The published entity of this draft entity
+        /// </summary>
+        /// <returns></returns>
+        public IEntity GetPublished()
 		{
 			return PublishedEntity;
 		}
 
+	    public object GetBestValue(string attributeName)
+	    {
+	        var x = false;
+	        return GetBestValue(attributeName, new string[0], out x);
+	    }
 	    public object GetBestValue(string attributeName, out bool propertyNotFound)
 	    {
 	        return GetBestValue(attributeName, new string[] {""}, out propertyNotFound);
@@ -122,10 +175,10 @@ namespace ToSic.Eav.Data
 
 
                 // todo 2sxc or just return the entity-list, so 2sxc can dynamic it if desired...
-                //    if (attribute.Type == "Entity" && result is EntityRelationshipModel)
+                //    if (attribute.Type == "Entity" && result is EntityRelationship)
                 //{
                 //    // Convert related entities to Dynamics
-                //    result = ((ToSic.Eav.EntityRelationshipModel)result).Select(
+                //    result = ((ToSic.Eav.EntityRelationship)result).Select(
                 //        p => new DynamicEntity(p, dimensions, this.SexyContext)
                 //        ).ToList();
                 //}
@@ -135,10 +188,16 @@ namespace ToSic.Eav.Data
                 switch (attributeName)
                 {
                     case "EntityTitle":
-                        result = Title;
+                        result = Title[dimensions];
                         break;
                     case "EntityId":
                         result = EntityId;
+                        break;
+                    case "EntityGuid":
+                        result = EntityGuid;
+                        break;
+                    case "EntityType":
+                        result = Type.Name;
                         break;
                         // todo in 2sxc
                     //case "Toolbar":

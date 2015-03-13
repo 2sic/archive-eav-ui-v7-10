@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -7,14 +8,14 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	public class QuickCache : BaseCache
 	{
-		private static Dictionary<int, ZoneModel> _zoneApps;
+		private static Dictionary<int, Data.Zone> _zoneApps;
 
 		public QuickCache()
 		{
 			Cache = this;
 		}
 
-		public override Dictionary<int, ZoneModel> ZoneApps
+		public override Dictionary<int, Data.Zone> ZoneApps
 		{
 			get { return _zoneApps; }
 			protected set { _zoneApps = value; }

@@ -8,8 +8,9 @@ using System.Web.UI;
 using ToSic.Eav;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 using Entity = ToSic.Eav.Data.Entity;
+using EntityRelationship = ToSic.Eav.Data.EntityRelationship;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 public partial class Default : Page
@@ -99,7 +100,7 @@ public partial class Default : Page
 				ShowDataSource(ApplyRelationshipFilter(), "Relationship filter", true);
 				break;
 			case "datapipelinefactory":
-				IEnumerable<IPropertyAccess> config = null;
+				IEnumerable<IValueProvider> config = null;
 				var source = DataPipelineFactory.GetDataSource(1, 347, config, new PassThrough());
 				ShowDataSource(source, "DataPipelineFactory");
 				break;
@@ -141,8 +142,8 @@ public partial class Default : Page
 
 	private void RunTokenTest()
 	{
-		var configurationProvider = new ConfigurationProvider();
-		var queryStringSource = new QueryStringPropertyAccess();
+		var configurationProvider = new ValueCollectionProvider();
+		var queryStringSource = new QueryStringValueProvider();
 		var configList = new Dictionary<string, string> { { "Name", "[QueryString:Name|Format|Alternate]" } };
 
 		ShowConfigurationList("Before load", configList);
@@ -638,7 +639,7 @@ public partial class Default : Page
 			var value = attribute.Value[0];
 			output.AppendFormat("<li><b>{0}</b> (Type: {1}): {2}</li>", attribute.Key, value != null ? value.GetType().ToString() : "(null)", value);
 
-			var relationship = attribute.Value as AttributeModel<EntityRelationshipModel>;
+			var relationship = attribute.Value as Attribute<EntityRelationship>;
 			if (relationship != null && relationship.TypedContents != null)
 			{
 				output.Append("<ul>");

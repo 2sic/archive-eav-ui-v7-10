@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.ManagementUI.Serialization
 {
@@ -29,12 +30,12 @@ namespace ToSic.Eav.ManagementUI.Serialization
 			var result = _entity.Attributes.Where(a => a.Value.Type != "Entity").ToDictionary(k => k.Key, v => (object)v.Value);
 
 			// Append Entity-Attributes
-			var originalAttributeModels = _entity.Attributes.Where(a => a.Value.Type == "Entity").Select(a => (AttributeModel<EntityRelationshipModel>)a.Value);
+			var originalAttributeModels = _entity.Attributes.Where(a => a.Value.Type == "Entity").Select(a => (Attribute<Data.EntityRelationship>)a.Value);
 			foreach (var originalAttributeModel in originalAttributeModels)
 			{
 				object values = null;
 				if (originalAttributeModel.Values != null)
-					values = from ValueModel<EntityRelationshipModel> originalValueTyped in originalAttributeModel.Values
+					values = from Value<Data.EntityRelationship> originalValueTyped in originalAttributeModel.Values
 							 select new
 							 {
 								 originalValueTyped.ValueId,
@@ -44,7 +45,7 @@ namespace ToSic.Eav.ManagementUI.Serialization
 							 };
 				IEnumerable<int> defaultValue = null;
 				if (originalAttributeModel.DefaultValue != null)
-					defaultValue = ((ValueModel<EntityRelationshipModel>)originalAttributeModel.DefaultValue).TypedContents.EntityIds;
+					defaultValue = ((Value<Data.EntityRelationship>)originalAttributeModel.DefaultValue).TypedContents.EntityIds;
 
 				IEnumerable<int> typedContents = null;
 				if (originalAttributeModel.TypedContents != null)

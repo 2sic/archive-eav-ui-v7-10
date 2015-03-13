@@ -353,8 +353,8 @@ namespace ToSic.Eav
 				_contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.UsesConfigurationOfAttributeSet)
 				{
 					AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
-							? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
-							: set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
+							? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
+							: set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
 				});
 			}
 
@@ -443,7 +443,7 @@ namespace ToSic.Eav
 																	   v2.ValueID,
 																	   v2.Value,
 																	   Languages = from l in v2.ValuesDimensions
-																				   select new DimensionModel
+																				   select new Data.Dimension
 																				   {
 																					   DimensionId = l.DimensionID,
 																					   ReadOnly = l.ReadOnly,
@@ -467,7 +467,7 @@ namespace ToSic.Eav
 				// Add all Attributes from that Content-Type
 				foreach (var definition in contentType.AttributeDefinitions.Values)
 				{
-					var attributeModel = AttributeModel.GetAttributeManagementModel(definition);
+					var attributeModel = Data.Attribute.GetAttributeManagementModel(definition);
 					entityModel.Attributes.Add(((IAttributeBase)attributeModel).Name, attributeModel);
 					entityAttributes.Add(definition.AttributeId, attributeModel);
 				}
@@ -523,7 +523,7 @@ namespace ToSic.Eav
 				foreach (var r in e.RelatedEntities)
 				{
 					var attributeModel = entityAttributes[r.AttributeID];
-					var valueModel = ValueModel.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
+					var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
 					var valuesModelList = new List<IValue> { valueModel };
 					attributeModel.Values = valuesModelList;
 					attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
@@ -549,7 +549,7 @@ namespace ToSic.Eav
 					#region Add all Values
 					foreach (var v in a.Values)
 					{
-						var valueModel = ValueModel.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueID, v.ChangeLogIDCreated);
+						var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueID, v.ChangeLogIDCreated);
 						valuesModelList.Add(valueModel);
 					}
 					#endregion

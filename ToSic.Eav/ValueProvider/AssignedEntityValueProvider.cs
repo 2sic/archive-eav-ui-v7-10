@@ -2,12 +2,12 @@
 using System.Linq;
 using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.PropertyAccess
+namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
-	public class AssignedEntityPropertyAccess : EntityPropertyAccess // IPropertyAccess
+	public class AssignedEntityValueProvider : EntityValueProvider // IValueProvider
 	{
 		private readonly string _name;
 		private readonly IMetaDataSource _metaDataSource;
@@ -25,7 +25,7 @@ namespace ToSic.Eav.PropertyAccess
 		/// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
 		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-		public AssignedEntityPropertyAccess(string name, Guid objectId, IMetaDataSource metaDataSource)
+		public AssignedEntityValueProvider(string name, Guid objectId, IMetaDataSource metaDataSource)
 		{
 			_name = name;
 			_objectToProvideSettingsTo = objectId;
@@ -33,7 +33,7 @@ namespace ToSic.Eav.PropertyAccess
 		}
 
         /// <summary>
-        /// For late-loading the entity. Will be called automatically by the GetProperty if not loaded yet. 
+        /// For late-loading the entity. Will be called automatically by the Get if not loaded yet. 
         /// </summary>
 		protected void LoadEntity()
 		{
@@ -45,18 +45,18 @@ namespace ToSic.Eav.PropertyAccess
         /// <summary>
         /// Get Property of AssignedEntity
         /// </summary>
-        /// <param name="propertyName">Name of the Property</param>
+        /// <param name="property">Name of the Property</param>
         /// <param name="format">Format String</param>
         /// <param name="propertyNotFound">referenced Bool to set if Property was not found on AssignedEntity</param>
-        public override string GetProperty(string propertyName, string format, ref bool propertyNotFound)
+        public override string Get(string property, string format, ref bool propertyNotFound)
         {
             if (!_entityLoaded)
                 LoadEntity();
 
-            return base.GetProperty(propertyName, format, ref propertyNotFound);
+            return base.Get(property, format, ref propertyNotFound);
             //try
             //{
-            //    return _assignedEntity[propertyName][0].ToString();
+            //    return _assignedEntity[property][0].ToString();
             //}
             //catch
             //{

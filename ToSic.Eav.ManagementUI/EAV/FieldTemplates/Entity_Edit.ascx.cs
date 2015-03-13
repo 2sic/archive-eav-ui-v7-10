@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class Entity_Edit : FieldTemplateUserControl
 	{
-		private EntityRelationshipModel RelatedEntities
+		private Data.EntityRelationship RelatedEntities
 		{
-			get { return (EntityRelationshipModel)FieldValue; }
+			get { return (Data.EntityRelationship)FieldValue; }
 		}
 		private bool AllowMultiValue
 		{

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.PropertyAccess
+namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class StaticPropertyAccess : BasePropertyAccess// IPropertyAccess
+	public class StaticValueProvider : BaseValueProvider// IValueProvider
 	{
 		/// <summary>
 		/// List with static properties and Test-Values
@@ -15,7 +15,7 @@ namespace ToSic.Eav.PropertyAccess
 		/// <summary>
 		/// The class constructor
 		/// </summary>
-		public StaticPropertyAccess(string name)
+		public StaticValueProvider(string name)
 		{
 			Properties = new Dictionary<string, string>();
 			Name = name;
@@ -23,11 +23,11 @@ namespace ToSic.Eav.PropertyAccess
 
 		//public string Name { get; private set; }
 
-		public override string GetProperty(string propertyName, string format, ref bool propertyNotFound)
+		public override string Get(string property, string format, ref bool propertyNotFound)
 		{
 			try
 			{
-				return Properties[propertyName];
+				return Properties[property];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -35,5 +35,10 @@ namespace ToSic.Eav.PropertyAccess
 				return null;
 			}
 		}
+
+        public override bool Has(string property)
+        {
+            return Properties.ContainsKey(property);
+        }
 	}
 }

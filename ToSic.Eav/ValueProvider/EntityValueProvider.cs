@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
+using ToSic.Eav.Data;
 
-namespace ToSic.Eav.PropertyAccess
+namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
-	public class EntityPropertyAccess : BasePropertyAccess
+	public class EntityValueProvider : BaseValueProvider
     {
-        #region for internal regex etc.
-        //private static readonly Regex SubProperties = new Regex("([a-z]+):([a-z]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        #endregion
-
         private IEntity _entity;
 	    private string[] dimensions = new string[] {""};
 
-	    public EntityPropertyAccess()
+	    public EntityValueProvider()
 	    {
 	        
 	    }
@@ -27,14 +23,14 @@ namespace ToSic.Eav.PropertyAccess
 		/// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
 		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-        public EntityPropertyAccess(IEntity source, string name = "entity source without name")
+        public EntityValueProvider(IEntity source, string name = "entity source without name")
 		{
             _entity = source;
 		    Name = name;
 		}
 
         // todo: might need to clarify what language/culture the property is taken from in an entity
-        public string GetProperty(string propertyName, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
+        public string Get(string property, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
         {
             // Return empty string if Entity is null
             if (_entity == null)
@@ -43,7 +39,7 @@ namespace ToSic.Eav.PropertyAccess
             string outputFormat = format == string.Empty ? "g" : format;
 
             //bool propertyNotFound;
-            object valueObject = _entity.GetBestValue(propertyName, dimensions, out propertyNotFound);
+            object valueObject = _entity.GetBestValue(property, dimensions, out propertyNotFound);
 
             if (!propertyNotFound && valueObject != null)
             {
@@ -67,24 +63,24 @@ namespace ToSic.Eav.PropertyAccess
             else
             {
                 #region Check for Navigation-Property (e.g. Manager:Name)
-                if (propertyName.Contains(':'))
+                if (property.Contains(':'))
                 {
-                    //var propertyMatch = Regex.Match(propertyName, "([a-z]+):([a-z]+)", RegexOptions.IgnoreCase);
-                    var propertyMatch = SubProperties.Match(propertyName);
+                    //var propertyMatch = Regex.Match(property, "([a-z]+):([a-z]+)", RegexOptions.IgnoreCase);
+                    var propertyMatch = SubProperties.Match(property);
                     if (propertyMatch.Success)
                     {
                         valueObject = _entity.GetBestValue(propertyMatch.Groups[1].Value, dimensions, out propertyNotFound);
                         if (!propertyNotFound && valueObject != null)
                         {
                             #region Handle child-Entity-Field (sorted list of related entities)
-                            var relationshipList = valueObject as EntityRelationshipModel;
+                            var relationshipList = valueObject as Data.EntityRelationship;
                             if (relationshipList != null)
                             {
                                 if (!relationshipList.Any())
                                     return string.Empty;
                                 else
-                                    return new EntityPropertyAccess(relationshipList.First())
-                                        .GetProperty(propertyMatch.Groups[2].Value, format, formatProvider, ref propertyNotFound);
+                                    return new EntityValueProvider(relationshipList.First())
+                                        .Get(propertyMatch.Groups[2].Value, format, formatProvider, ref propertyNotFound);
                             }
                             #endregion
                         }
@@ -98,10 +94,19 @@ namespace ToSic.Eav.PropertyAccess
         }
 
 
-        public override string GetProperty(string propertyName, string format, ref bool PropertyNotFound)
+        public override string Get(string property, string format, ref bool PropertyNotFound)
         {
-            return GetProperty(propertyName, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref PropertyNotFound);
+            return Get(property, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref PropertyNotFound);
         }
 
-	}
+	    public override bool Has(string property)
+	    {
+	        var notFound = !_entity.Attributes.ContainsKey(property);
+            // if it's not a standard attribute, check for dynamically provided values like EntityId
+            if (notFound)
+	            Get(property, "", ref notFound);
+	        return !notFound;
+
+	    }
+    }
 }

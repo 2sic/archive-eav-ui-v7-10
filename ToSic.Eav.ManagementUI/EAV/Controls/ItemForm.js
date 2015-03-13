@@ -374,10 +374,10 @@
 		controller.FieldController = Eav.FieldControllerManager[field.get(0).Controller.FieldType.toLowerCase()](field);
 
 		if (controller.FieldIsEnabled) {
-			// Attach AttributeModel for this field
+			// Attach Attribute for this field
 			if (form.get(0).Controller.EntityModel != null)
 				controller.AttributeModel = form.get(0).Controller.EntityModel.Attributes[controller.StaticName];
-			// Append Controller to AttributeModel
+			// Append Controller to Attribute
 			if (controller.AttributeModel != null)
 				controller.AttributeModel.Controller = controller;
 

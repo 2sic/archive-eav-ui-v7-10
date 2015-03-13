@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
-using ToSic.Eav.PropertyAccess;
 using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.DataSources
@@ -159,7 +158,7 @@ namespace ToSic.Eav.DataSources
             SelectCommand = cleanedSql.ToString();
 
             // Process the additional parameters - not necessary, because it's automatically in Configuration
-            // var instancePAs = new Dictionary<string, IPropertyAccess>() { { "In", new DataTargetPropertyAccess(this) } };
+            // var instancePAs = new Dictionary<string, IValueProvider>() { { "In", new DataTargetValueProvider(this) } };
             // ConfigurationProvider.LoadConfiguration(sqlParams, instancePAs);
 
 

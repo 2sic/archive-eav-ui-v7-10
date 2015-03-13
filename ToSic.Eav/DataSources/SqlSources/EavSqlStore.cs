@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources.SqlSources
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 			return _context.GetDataForCache(null, AppId, cache);
 		}
 
-		public Dictionary<int, ZoneModel> GetAllZones()
+		public Dictionary<int, Data.Zone> GetAllZones()
 		{
 			return _context.GetAllZones();
 		}

@@ -30,8 +30,11 @@
 
 //namespace DotNetNuke.Services.Tokens
 using System;
+using System.Collections.Generic;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Tokens
 {
@@ -42,16 +45,10 @@ namespace ToSic.Eav.Tokens
 	/// </summary>
 	/// <remarks></remarks>
 	public abstract class BaseTokenReplace
-	{
-		//private const string ExpressionDefault = "(?:\\[(?:(?<object>[^\\]\\[:]+):(?<property>[^\\]\\[\\|]+))(?:\\|(?:(?<format>[^\\]\\[]+)\\|(?<ifEmpty>[^\\]\\[]+))|\\|(?:(?<format>[^\\|\\]\\[]+)))?\\])|(?<text>\\[[^\\]\\[]+\\])|(?<text>[^\\]\\[]+)";
-		private const string ExpressionDefault = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<format>[^\]\[]*)\|(?:(?<ifEmpty>[^\[\}]+)|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))|\|(?:(?<format>[^\|\]\[]+)))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)";
-
-        //2dm 2015-03-09 testing...
-        private const string maybeBetter = @"(?:\[(?:(?<object>[^\]\[:]+):(?<property>[^\]\[\|]+))(?:\|(?:(?<format>[^\]\[]*)\|(?:(?<ifEmpty>[^\[\}]+)|(?:(?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))))|\|(?:(?<format>[^\|\]\[]+)))?\])|(?<text>\[[^\]\[]+\])|(?<text>[^\]\[]+)|(?<text>.*)";
-        private const string evenBetterRequiringOptionIgnoreWhitespace = @"
-
-
-
+    {
+        #region RegEx - the core formula
+        // 2dm 2015-03-09 new, commented version not capturing non-tokens
+        private const string regExFindAllTokens = @"
 # start by defining a group, but don't give it an own capture-name
 (?:
 # Every token must start with a square bracket
@@ -77,20 +74,20 @@ namespace ToSic.Eav.Tokens
 # and of course such a token must end with a ]
 \])
 
-# DISABLED THIS as it seems to cause more trouble than anything else
-# try to detect anything else because we need captures to keep the parts in between
-# give all the 3 versions the name <text>
-# don't clearly understand why they are needed, but at least 2 and 3 are necessary
-#|(?<text>\[[^\]\[]+\])
-#|(?<text1>[^\]\[]+)
-#|(?<text2>[\s\S]+)
 ";
+        #endregion
 
-        private const string TestStringForExpresso = @"Select * From Users Where UserId = [QueryString:UserName||[AppSettings:DefaultUserName||0]] or UserId = [AppSettings:RootUserId] or UserId = [Parameters:TestKey:Subkey||27]
+        #region constructor
+        protected Dictionary<string, IValueProvider> ValueSources;
+	    public BaseTokenReplace(Dictionary<string, IValueProvider> valueSources)
+	    {
+	        ValueSources = valueSources;
+	    }
+        #endregion
 
-some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either";
 
-        private static readonly Regex _tokenizer = new Regex(evenBetterRequiringOptionIgnoreWhitespace, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
+
+        private static readonly Regex _tokenizer = new Regex(regExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 		/// <summary>
 		/// Gets the Regular expression for the token to be replaced
 		/// </summary>
@@ -103,7 +100,28 @@ some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] sho
 			}
 		}
 
-        //protected virtual string ReplaceTokens(string sourceText)
+        /// <summary>
+        /// Checks for present [Object:Property] tokens
+        /// </summary>
+        /// <param name="sourceText">String with [Object:Property] tokens</param>
+        /// <returns></returns>
+        public static bool ContainsTokens(string sourceText)
+        {
+            if (!string.IsNullOrEmpty(sourceText))
+            {
+                foreach (Match currentMatch in Tokenizer.Matches(sourceText))
+                    if (currentMatch.Result("${object}").Length > 0)
+                        return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Replace all tokens in a string. 
+        /// </summary>
+        /// <param name="sourceText"></param>
+        /// <param name="repeat"></param>
+        /// <returns></returns>
         public virtual string ReplaceTokens(string sourceText, int repeat = 0)
         {
             if (string.IsNullOrEmpty(sourceText))
@@ -123,13 +141,14 @@ some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] sho
                         charProgress = curMatch.Index + curMatch.Length;
                     }
 
+                    // get the infos we need to retrieve the value, get it. 
                     string strObjectName = curMatch.Result("${object}");
                     if (!String.IsNullOrEmpty(strObjectName))
                     {
                         string strPropertyName = curMatch.Result("${property}");
                         string strFormat = curMatch.Result("${format}");
                         string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
-                        string strConversion = replacedTokenValue(strObjectName, strPropertyName, strFormat);
+                        string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
                         if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
                             strConversion = strIfEmptyReplacment;
                         Result.Append(strConversion);
@@ -150,41 +169,22 @@ some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] sho
             return sourceText;
         }
 
-		//protected virtual string ReplaceTokens(string sourceText)
-	    public virtual string PreviousReplaceTokens(string strSourceText)
-	    {
-	        if (strSourceText == null)
-	        {
-	            return string.Empty;
-	        }
-	        var Result = new StringBuilder();
-	        foreach (Match currentMatch in Tokenizer.Matches(strSourceText))
-	        {
-	            string strObjectName = currentMatch.Result("${object}");
-	            if (!String.IsNullOrEmpty(strObjectName))
-	            {
-	                //if (strObjectName == "[")
-	                //{
-	                //	strObjectName = ObjectLessToken;
-	                //}
-	                string strPropertyName = currentMatch.Result("${property}");
-	                string strFormat = currentMatch.Result("${format}");
-	                string strIfEmptyReplacment = currentMatch.Result("${ifEmpty}");
-	                string strConversion = replacedTokenValue(strObjectName, strPropertyName, strFormat);
-	                if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
-	                {
-	                    strConversion = strIfEmptyReplacment;
-	                }
-	                Result.Append(strConversion);
-	            }
-	            else
-	            {
-	                Result.Append(currentMatch.Result("${text}"));
-	            }
-	        }
-	        return Result.ToString();
-	    }
-
-	    protected abstract string replacedTokenValue(string strObjectName, string strPropertyName, string strFormat);
-	}
+        /// <summary>
+        /// Get a token value by checking all attached libraries of values and getting the right one
+        /// </summary>
+        /// <param name="sourceName"></param>
+        /// <param name="key"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        protected string RetrieveTokenValue(string sourceName, string key, string format)
+        {
+            var result = string.Empty;
+            var propertyNotFound = false;
+            if (ValueSources.ContainsKey(sourceName.ToLower()))
+            {
+                result = ValueSources[sourceName.ToLower()].Get(key, format, ref propertyNotFound);
+            }
+            return result;
+        }
+    }
 }

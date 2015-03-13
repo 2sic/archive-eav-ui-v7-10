@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 		{
 			get { return Out[DataSource.DefaultStreamName].List; }
 		}
-		public IConfigurationProvider ConfigurationProvider { get; internal set; }
+		public IValueCollectionProvider ConfigurationProvider { get; internal set; }
 		public IDictionary<string, string> Configuration { get; internal set; }
 		internal bool _configurationIsLoaded;
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources
 				return;
 
             // construct a property access for in, use it in the config provider
-		    var instancePAs = new Dictionary<string, IPropertyAccess>() {{"In", new DataTargetPropertyAccess(this)}};
+		    var instancePAs = new Dictionary<string, IValueProvider>() {{"In", new DataTargetValueProvider(this)}};
 			ConfigurationProvider.LoadConfiguration(Configuration, instancePAs);
 			_configurationIsLoaded = true;
 		}

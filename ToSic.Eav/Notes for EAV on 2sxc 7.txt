@@ -29,3 +29,9 @@ What I did 2015-03-09
 
 * adeded (untested) mechanism to extract sql parameters from SQL, auto-parse and add to sql-command (SqlDataSource)
 * reviewing (untested) multiline, commented reg-ex also not touching non-tokens - this would be easy to add automated testing...
+
+What I did 2015-03-13
+* created test code - and by writing that found about 10+ bugs and fixed them
+* moved ContentType to \Data
+* moved everything in models.cs to \Data and split into parts
+* moved 2 enums from models.cs to \Enums

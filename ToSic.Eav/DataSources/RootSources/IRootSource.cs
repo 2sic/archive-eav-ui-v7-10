@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources.RootSources
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSources.RootSources
 		/// <summary>
 		/// Get a Dictionary of all Zones and Apps
 		/// </summary>
-		Dictionary<int, ZoneModel> GetAllZones();
+		Dictionary<int, Data.Zone> GetAllZones();
 		/// <summary>
 		/// Get a Dictionary of all AssignmentObjectTypes
 		/// </summary>

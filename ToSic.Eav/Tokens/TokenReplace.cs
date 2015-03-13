@@ -38,7 +38,7 @@
 
 //namespace DotNetNuke.Services.Tokens
 using System.Collections.Generic;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Tokens
 {
@@ -50,15 +50,8 @@ namespace ToSic.Eav.Tokens
 	/// Supported Token Sources: User, Host, Portal, Tab, Module, Membership, Profile,
 	///                          Row, Date, Ticks, ArrayList (Custom), IDictionary
 	/// </summary>
-	public class TokenReplace : BaseCustomTokenReplace
+	public class TokenReplace : BaseTokenReplace
 	{
-		/// <summary>
-		/// Constructs a new TokenReplace
-		/// </summary>
-		/// <param name="propertySource"></param>
-		public TokenReplace(Dictionary<string, IPropertyAccess> propertySource)
-		{
-			PropertySource = propertySource;
-		}
+        public TokenReplace(Dictionary<string, IValueProvider> valueSources) : base(valueSources) { }
 	}
 }

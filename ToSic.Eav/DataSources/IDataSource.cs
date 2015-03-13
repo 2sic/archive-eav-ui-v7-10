@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
@@ -37,7 +38,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
-		IConfigurationProvider ConfigurationProvider { get; }
+		IValueCollectionProvider ConfigurationProvider { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]

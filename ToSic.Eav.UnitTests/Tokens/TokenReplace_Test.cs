@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.PropertyAccess;
 using ToSic.Eav.Tokens;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.UnitTests
 {
@@ -86,15 +86,16 @@ but this should [token:key] again"
             {"Value", "Whatever"},
             {"View", "Details"}
         };
-        private StaticPropertyAccess QueryString = new StaticPropertyAccess("QueryString");
-        private StaticPropertyAccess Source = new StaticPropertyAccess("Source");
-        private Dictionary<string, IPropertyAccess> AllSources = new Dictionary<string, IPropertyAccess>(); 
+        private StaticValueProvider QueryString = new StaticValueProvider("QueryString");
+        private StaticValueProvider Source = new StaticValueProvider("Source");
+        private Dictionary<string, IValueProvider> AllSources = new Dictionary<string, IValueProvider>(); 
 
         #endregion
 
         #region General test objects and initializer/constructor
 
         private Regex tokenRegEx = BaseTokenReplace.Tokenizer;
+         
 
         public TokenReplace_Test()
         {
@@ -109,7 +110,31 @@ but this should [token:key] again"
 
         #endregion
 
+        #region ContainsToken tests
+        [TestMethod]
+        public void TestContainsToken()
+        {
+            foreach (var validPureToken in ValidPureTokens)
+                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validPureToken));
+
+            foreach (var validMixedSingleToken in ValidMixedSingleTokens)
+                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validMixedSingleToken));
+
+            foreach (var validMixedMultiToken in ValidMixedMultiTokens)
+                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validMixedMultiToken));
+        }
+
+        [TestMethod]
+        public void TestDoesntContainToken()
+        {
+            foreach (var invalidToken in InvalidTokens)
+                Assert.IsFalse(Tokens.TokenReplace.ContainsTokens(invalidToken));
+        }
+
+        #endregion
+
         #region Test Simple Token Detection
+
         [TestMethod]
         public void TestValidPureTokens()
         {
@@ -207,17 +232,17 @@ some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] sho
 
 and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should What a Token! again";
-            var qs = new StaticPropertyAccess("QueryString");
+            var qs = new StaticValueProvider("QueryString");
             qs.Properties.Add("UserName", "Daniel");
             //qs.Properties.Add("Id", "7");
-            var mod = new StaticPropertyAccess("Module");
+            var mod = new StaticValueProvider("Module");
             mod.Properties.Add("SubId", "4567");
-            var appS = new StaticPropertyAccess("AppSettings");
+            var appS = new StaticValueProvider("AppSettings");
             appS.Properties.Add("DefaultUserName", "Name Unknown");
             appS.Properties.Add("RootUserId", "-1");
-            var tok = new StaticPropertyAccess("token");
+            var tok = new StaticValueProvider("token");
             tok.Properties.Add("key", "What a Token!");
-            var sources = new Dictionary<string, IPropertyAccess>();
+            var sources = new Dictionary<string, IValueProvider>();
             sources.Add(qs.Name.ToLower(),qs);
             sources.Add(mod.Name.ToLower(), mod);
             sources.Add(appS.Name.ToLower(), appS);

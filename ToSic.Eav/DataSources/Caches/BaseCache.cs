@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
 
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets or sets the Dictionary of all Zones an Apps
 		/// </summary>
-		public abstract Dictionary<int, ZoneModel> ZoneApps { get; protected set; }
+		public abstract Dictionary<int, Data.Zone> ZoneApps { get; protected set; }
 		/// <summary>
 		/// Gets or sets the Dictionary of all AssignmentObjectTypes
 		/// </summary>

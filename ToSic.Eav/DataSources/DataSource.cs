@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav
 {
@@ -66,19 +67,19 @@ namespace ToSic.Eav
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
 		/// <param name="upstream">In-Connection</param>
-		/// <param name="configurationProvider">Provides configuration values if needed</param>
+		/// <param name="valueCollectionProvider">Provides configuration values if needed</param>
 		/// <returns>A single DataSource</returns>
-		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IConfigurationProvider configurationProvider = null)
+		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null)
 		{
 			// 2014-03-23 2dm new - didn't work, fails when using the iCache from the specific DLL
 			//var ds = typeof(DataSource)
-			//	.GetMethod("GetDataSource", new[] { typeof(int?), typeof(int?), typeof(IDataSource), typeof(IConfigurationProvider) })
+			//	.GetMethod("GetDataSource", new[] { typeof(int?), typeof(int?), typeof(IDataSource), typeof(IValueCollectionProvider) })
 			//	.MakeGenericMethod(Type.GetType(sourceName))
-			//	.Invoke(null, new object[] { zoneId, appId, upstream, configurationProvider });
+			//	.Invoke(null, new object[] { zoneId, appId, upstream, ConfigurationProvider });
 			//return (IDataSource) ds;
 
 			var newDs = (BaseDataSource)Factory.Container.Resolve(Type.GetType(sourceName));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configurationProvider);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
 			return newDs;
 		}
 
@@ -89,13 +90,13 @@ namespace ToSic.Eav
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
 		/// <param name="upstream">In-Connection</param>
-		/// <param name="configurationProvider">Provides configuration values if needed</param>
+		/// <param name="valueCollectionProvider">Provides configuration values if needed</param>
 		/// <returns>A single DataSource</returns>
 		public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			IConfigurationProvider configurationProvider = null)
+			IValueCollectionProvider valueCollectionProvider = null)
 		{
 			var newDs = (BaseDataSource)Factory.Container.Resolve(typeof(T));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configurationProvider);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
@@ -106,18 +107,18 @@ namespace ToSic.Eav
 		/// <param name="zoneId">optional Zone #</param>
 		/// <param name="appId">optional app #</param>
 		/// <param name="upstream">upstream data source - for auto-attaching</param>
-		/// <param name="configurationProvider">optional configuration provider - for auto-attaching</param>
+		/// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
 		private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
-			IConfigurationProvider configurationProvider = null)
+			IValueCollectionProvider valueCollectionProvider = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
 			newDs.AppId = zoneAppId.Item2;
 			if (upstream != null)
 				((IDataTarget)newDs).Attach(upstream);
-			if (configurationProvider != null)
-				newDs.ConfigurationProvider = configurationProvider;
+			if (valueCollectionProvider != null)
+				newDs.ConfigurationProvider = valueCollectionProvider;
 		}
 
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav" };

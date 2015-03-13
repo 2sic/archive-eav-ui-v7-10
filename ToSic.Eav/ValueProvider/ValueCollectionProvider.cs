@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls.Expressions;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Tokens;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
 	/// Provides Configuration for a configurable DataSource
 	/// </summary>
-	public class ConfigurationProvider : IConfigurationProvider
+	public class ValueCollectionProvider : IValueCollectionProvider
 	{
 		//public string DataSourceType { get; internal set; }
-		public Dictionary<string, IPropertyAccess> Sources { get; private set; }
+		public Dictionary<string, IValueProvider> Sources { get; private set; }
 		/// <summary>
 		/// List of all Configurations for this DataSource
 		/// </summary>
@@ -22,9 +21,9 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new Configuration Provider
 		/// </summary>
-		public ConfigurationProvider()
+		public ValueCollectionProvider()
 		{
-			Sources = new Dictionary<string, IPropertyAccess>();
+			Sources = new Dictionary<string, IValueProvider>();
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
 
@@ -34,7 +33,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="configList">Dictionary of configuration strings</param>
         /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
-		public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IPropertyAccess> instanceSpecificPropertyAccesses = null)
+		public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null)
 		{
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
@@ -50,7 +49,7 @@ namespace ToSic.Eav.DataSources
             foreach (var o in configList.ToList())
 			{
                 // check if the string contains a token or not
-                if (!instanceTokenReplace.ContainsTokens(o.Value))
+                if (!Tokens.TokenReplace.ContainsTokens(o.Value))
 					continue;
                 configList[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, 2); // with 2 further recurrances
 

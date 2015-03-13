@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using Microsoft.Practices.Unity;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.ManagementUI.API
 {
@@ -281,7 +281,7 @@ namespace ToSic.Eav.ManagementUI.API
 		/// <summary>
 		/// Get Test Parameters for a Pipeline from the Pipeline-Entity
 		/// </summary>
-		private static IEnumerable<IPropertyAccess> GetPipelineTestParameters(int appId, int pipelineEntityId)
+		private static IEnumerable<IValueProvider> GetPipelineTestParameters(int appId, int pipelineEntityId)
 		{
 			// Get the Entity describing the Pipeline
 			var source = DataSource.GetInitialDataSource(appId: appId);
@@ -295,16 +295,16 @@ namespace ToSic.Eav.ManagementUI.API
 			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
 
 			// Create a list of static Property Accessors
-			var result = new List<IPropertyAccess>();
+			var result = new List<IValueProvider>();
 			foreach (Match testParam in paramMatches)
 			{
 				var token = testParam.Groups["Token"].Value.ToLower();
 
 				// Ensure a PropertyAccess exists
-				var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticPropertyAccess;
+				var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticValueProvider;
 				if (propertyAccess == null)
 				{
-					propertyAccess = new StaticPropertyAccess(token);
+					propertyAccess = new StaticValueProvider(token);
 					result.Add(propertyAccess);
 				}
 

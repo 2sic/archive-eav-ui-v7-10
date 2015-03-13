@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.PropertyAccess
+namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class DataTargetPropertyAccess : BasePropertyAccess// IPropertyAccess
+	public class DataTargetValueProvider : BaseValueProvider// IPropertyAccess
 	{
 	    public IDataTarget _dataTarget;
 
@@ -18,7 +17,7 @@ namespace ToSic.Eav.PropertyAccess
 		/// <summary>
 		/// The class constructor
 		/// </summary>
-		public DataTargetPropertyAccess(IDataTarget dataTarget)
+		public DataTargetValueProvider(IDataTarget dataTarget)
 		{
 		    _dataTarget = dataTarget;
 			Name = "In";
@@ -28,14 +27,14 @@ namespace ToSic.Eav.PropertyAccess
         /// Will check if any streams in In matches the requested next key-part and will retrieve the first entity in that stream
         /// to deliver the required sub-key (or even sub-sub-key)
         /// </summary>
-        /// <param name="propertyName"></param>
+        /// <param name="property"></param>
         /// <param name="format"></param>
         /// <param name="propertyNotFound"></param>
         /// <returns></returns>
-		public override string GetProperty(string propertyName, string format, ref bool propertyNotFound)
+		public override string Get(string property, string format, ref bool propertyNotFound)
 		{
             // Check if it has sub-keys to see if it's trying to match a inbound stream
-            var propertyMatch = SubProperties.Match(propertyName);
+            var propertyMatch = SubProperties.Match(property);
 		    if (!propertyMatch.Success)
 		    {
 		        propertyNotFound = true;
@@ -58,10 +57,15 @@ namespace ToSic.Eav.PropertyAccess
                 return string.Empty;
             }
 
-            // Create an EntityPropertyAccess based on the first item, return its GetProperty
+            // Create an EntityValueProvider based on the first item, return its Get
 		    var first = entityStream.List.First().Value;
-		    return new EntityPropertyAccess(first).GetProperty(propertyName, format, ref propertyNotFound);
+		    return new EntityValueProvider(first).Get(property, format, ref propertyNotFound);
 
 		}
+
+	    public override bool Has(string property)
+	    {
+	        throw new System.NotImplementedException();
+	    }
 	}
 }

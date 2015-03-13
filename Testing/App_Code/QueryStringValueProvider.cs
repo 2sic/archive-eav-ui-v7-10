@@ -1,7 +1,7 @@
 ﻿using System.Web;
-using ToSic.Eav.PropertyAccess;
+using ToSic.Eav.ValueProvider;
 
-public class QueryStringPropertyAccess : IPropertyAccess
+public class QueryStringValueProvider : IValueProvider
 {
 	public string GetProperty(string propertyName, ref bool propertyNotFound)
 	{
@@ -18,8 +18,8 @@ public class QueryStringPropertyAccess : IPropertyAccess
 
 	public string Name { get { return "querystring"; } }
 
-	public string GetProperty(string propertyName, string format, ref bool propertyNotFound)
+	public string Get(string property, string format, ref bool propertyNotFound)
 	{
-		return GetProperty(propertyName, ref propertyNotFound);
+		return GetProperty(property, ref propertyNotFound);
 	}
 }

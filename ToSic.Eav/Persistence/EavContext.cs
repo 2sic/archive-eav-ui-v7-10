@@ -7,6 +7,7 @@ using System.Linq;
 using System.Data;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
@@ -897,11 +898,11 @@ namespace ToSic.Eav
 		/// </summary>
 		internal string SerializeValue(IValue value)
 		{
-			var stringValue = value as ValueModel<string>;
+			var stringValue = value as Value<string>;
 			if (stringValue != null)
 				return stringValue.TypedContents;
 
-			var relationshipValue = value as ValueModel<EntityRelationshipModel>;
+			var relationshipValue = value as Value<Data.EntityRelationship>;
 			if (relationshipValue != null)
 			{
 				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => GetEntity(entityId).EntityGUID);
@@ -909,15 +910,15 @@ namespace ToSic.Eav
 				return string.Join(",", entityGuids);
 			}
 
-			var boolValue = value as ValueModel<bool?>;
+			var boolValue = value as Value<bool?>;
 			if (boolValue != null)
 				return boolValue.TypedContents.ToString();
 
-			var dateTimeValue = value as ValueModel<DateTime?>;
+			var dateTimeValue = value as Value<DateTime?>;
 			if (dateTimeValue != null)
 				return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
 
-			var decimalValue = value as ValueModel<decimal?>;
+			var decimalValue = value as Value<decimal?>;
 			if (decimalValue != null)
 				return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
 
@@ -1209,8 +1210,8 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Get all Zones
 		/// </summary>
-		/// <returns>Dictionary with ZoneId as Key and ZoneModel</returns>
-		public Dictionary<int, ZoneModel> GetAllZones()
+		/// <returns>Dictionary with ZoneId as Key and Zone</returns>
+		public Dictionary<int, Data.Zone> GetAllZones()
 		{
 			var zones = (from z in Zones
 						 select
@@ -1221,7 +1222,7 @@ namespace ToSic.Eav
 								 Apps = from a in z.Apps select new { a.AppID, a.Name }
 							 }).ToDictionary(z => z.ZoneId,
 												 z =>
-												 new ZoneModel
+												 new Data.Zone
 												 {
 													 ZoneId = z.ZoneId,
 													 Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),

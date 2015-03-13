@@ -31,7 +31,7 @@
 				<li><a href="?Test=SqlDataSourceSimple">SQL DataSource (simple)</a></li>
 				<li><a href="?Test=SqlDataSourceSimple2">SQL DataSource (simple 2)</a></li>
 				<li><a href="?Test=sqldatasourcecomplex">SQL DataSource (complex)</a></li>
-				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with configuration)</a></li>
+				<li><a href="?Test=SqlDataSourceWithConfiguration">SQL DataSource (with valueCollection)</a></li>
 				<li><a href="?Test=ClearCache&AppId=1">Clear Cache</a></li>
 				<li><a href="?Test=RelationshipFilter">RelationshipFilter</a></li>
 				<li><a href="?Test=DataPipelineFactory">DataPipelineFactory</a></li>

@@ -60,6 +60,22 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\Attribute.cs" />
+    <Compile Include="Data\AttributeWithMetaInfo.cs" />
+    <Compile Include="Data\Attribute_ofT.cs" />
+    <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Data\Dimension.cs" />
+    <Compile Include="Data\EntityRelationship.cs" />
+    <Compile Include="Data\EntityRelationshipItem.cs" />
+    <Compile Include="Data\Models.cs" />
+    <Compile Include="Data\RelationshipManager.cs" />
+    <Compile Include="Data\TypedValue_ofT.cs" />
+    <Compile Include="Data\Value.cs" />
+    <Compile Include="Data\Value_ofT.cs" />
+    <Compile Include="Data\Zone.cs" />
+    <Compile Include="Enums\AttributeMoveDirection.cs" />
+    <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
     <Compile Include="DataSources\DataSource.cs" />
@@ -70,7 +86,6 @@
     <Compile Include="DataSources\Caches\CacheItem.cs" />
     <Compile Include="DataSources\Caches\ICache.cs" />
     <Compile Include="DataSources\Caches\QuickCache.cs" />
-    <Compile Include="DataSources\Pipeline\ConfigurationProvider.cs" />
     <Compile Include="DataSources\Pipeline\DataPipeline.cs" />
     <Compile Include="DataSources\Pipeline\DataPipelineFactory.cs" />
     <Compile Include="DataSources\DataStream.cs" />
@@ -84,7 +99,6 @@
     <Compile Include="DataSources\ValueFilter.cs" />
     <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="DataSources\Helpers.cs" />
-    <Compile Include="DataSources\IConfigurationProvider.cs" />
     <Compile Include="DataSources\IDataTarget.cs" />
     <Compile Include="DataSources\IDataSource.cs" />
     <Compile Include="DataSources\IDataStream.cs" />
@@ -104,7 +118,6 @@
       <DependentUpon>EavContext.edmx</DependentUpon>
     </Compile>
     <Compile Include="Persistence\EavContextCaching.cs" />
-    <Compile Include="EntityRelationshipItem.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="ImportExport\Import.cs" />
     <Compile Include="ImportExport\ImportModels.cs" />
@@ -115,19 +128,18 @@
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Persistence\EavContextDimensions.cs" />
     <Compile Include="Persistence\EavContextRead.cs" />
-    <Compile Include="PropertyAccess\AssignedEntityPropertyAccess.cs" />
-    <Compile Include="PropertyAccess\BasePropertyAccess.cs" />
-    <Compile Include="PropertyAccess\EntityPropertyAccess.cs" />
-    <Compile Include="PropertyAccess\IPropertyAccess.cs" />
-    <Compile Include="PropertyAccess\DataTargetPropertyAccess.cs" />
-    <Compile Include="PropertyAccess\StaticPropertyAccess.cs" />
-    <Compile Include="RelationshipManager.cs" />
-    <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tokens\BaseCustomTokenReplace.cs" />
     <Compile Include="Tokens\BaseTokenReplace.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
+    <Compile Include="ValueProvider\BaseValueProvider.cs" />
+    <Compile Include="ValueProvider\ValueCollectionProvider.cs" />
+    <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
+    <Compile Include="ValueProvider\EntityValueProvider.cs" />
+    <Compile Include="ValueProvider\IValueCollectionProvider.cs" />
+    <Compile Include="ValueProvider\IValueProvider.cs" />
+    <Compile Include="ValueProvider\StaticValueProvider.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +156,7 @@
   <ItemGroup>
     <Content Include="Notes for EAV on 2sxc 7.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
