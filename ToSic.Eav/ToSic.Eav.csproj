@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\AttributeBase.cs" />
-    <Compile Include="Data\Attribute.cs" />
+    <Compile Include="Data\AttributeHelperTools.cs" />
     <Compile Include="Data\AttributeWithMetaInfo.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\ContentType.cs" />

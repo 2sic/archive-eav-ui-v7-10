@@ -26,18 +26,18 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets", "ToSIC_EAV_AttributeSets", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.AttributeSet), "ToSIC_EAV_AttributesInSets", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeInSet), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets", "ToSIC_EAV_AttributeSets", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.AttributeSet), "ToSIC_EAV_Entities", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities", "ToSIC_EAV_Entities", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.Entity), "ToSIC_EAV_Entities1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "ToSIC_EAV_AttributeTypes", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.AttributeType), "Attribute", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "ToSIC_EAV_AttributeTypes", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.AttributeType), "AttributeHelperTools", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "Attachment", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attachment), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attachments_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "Attachment", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attachment), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "Attribute", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "Attribute", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "AttributeHelperTools", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "AttributeHelperTools", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Attribute), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.Entity), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.ChangeLog), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted", "ToSIC_EAV_ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Attribute), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Attribute), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_Entities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones", "ToSIC_EAV_Zones", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Zone), "ToSIC_EAV_Apps", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.App), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps", "ToSIC_EAV_Apps", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.App), "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
@@ -46,7 +46,7 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions", "Dimension", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Dimension), "ToSIC_EAV_ValuesDimensions", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.ValueDimension), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values", "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.EavValue), "ToSIC_EAV_ValuesDimensions", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.ValueDimension), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified", "ChangeLog", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.ChangeLog), "EavValue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EavValue), true)]
-[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Attribute), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
+[assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Attribute), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities", "Entity", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ToSic.Eav.Entity), "ToSIC_EAV_EntityRelationships", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.EntityRelationship), true)]
 [assembly: EdmRelationshipAttribute("ToSic.Eav", "FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets", "AttributeSet", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ToSic.Eav.AttributeSet), "AttributeSet1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ToSic.Eav.AttributeSet), true)]
@@ -1232,7 +1232,7 @@ namespace ToSic.Eav
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
-    [EdmEntityTypeAttribute(NamespaceName="ToSic.Eav", Name="Attribute")]
+    [EdmEntityTypeAttribute(NamespaceName="ToSic.Eav", Name="AttributeHelperTools")]
     [Serializable()]
     [DataContractAttribute(IsReference=true)]
     public partial class Attribute : EntityObject
@@ -1240,7 +1240,7 @@ namespace ToSic.Eav
         #region Factory Method
     
         /// <summary>
-        /// Create a new Attribute object.
+        /// Create a new AttributeHelperTools object.
         /// </summary>
         /// <param name="attributeID">Initial value of the AttributeID property.</param>
         /// <param name="type">Initial value of the Type property.</param>
@@ -2645,18 +2645,18 @@ namespace ToSic.Eav
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "Attribute")]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "AttributeHelperTools")]
         public EntityCollection<Attribute> Attributes
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "Attribute");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "AttributeHelperTools");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "Attribute", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types1", "AttributeHelperTools", value);
                 }
             }
         }
@@ -2822,18 +2822,18 @@ namespace ToSic.Eav
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "Attribute")]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "AttributeHelperTools")]
         public EntityCollection<Attribute> AttributesCreated
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "Attribute");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "AttributeHelperTools");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "Attribute", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated", "AttributeHelperTools", value);
                 }
             }
         }
@@ -2844,18 +2844,18 @@ namespace ToSic.Eav
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "Attribute")]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "AttributeHelperTools")]
         public EntityCollection<Attribute> AttributesDeleted
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "Attribute");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "AttributeHelperTools");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "Attribute", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted", "AttributeHelperTools", value);
                 }
             }
         }
@@ -3917,16 +3917,16 @@ namespace ToSic.Eav
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute")]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools")]
         public Attribute Attribute
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute").Value;
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools").Value;
             }
             set
             {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute").Value = value;
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools").Value = value;
             }
         }
         /// <summary>
@@ -3938,13 +3938,13 @@ namespace ToSic.Eav
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "Attribute", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes", "AttributeHelperTools", value);
                 }
             }
         }
@@ -4863,16 +4863,16 @@ namespace ToSic.Eav
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute")]
+        [EdmRelationshipNavigationPropertyAttribute("ToSic.Eav", "FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools")]
         public Attribute Attribute
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute").Value;
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools").Value;
             }
             set
             {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute").Value = value;
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools").Value = value;
             }
         }
         /// <summary>
@@ -4884,13 +4884,13 @@ namespace ToSic.Eav
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "Attribute", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Attribute>("ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes", "AttributeHelperTools", value);
                 }
             }
         }

@@ -3,27 +3,27 @@
 namespace ToSic.Eav
 {
 	/// <summary>
-	/// Represents an Attribute
+	/// Represents an AttributeHelperTools
 	/// </summary>
 	public interface IAttributeBase
 	{
 		/// <summary>
-		/// Name of the Attribute
+		/// Name of the AttributeHelperTools
 		/// </summary>
 		string Name { get; }
 		/// <summary>
-		/// Type of the Attribute
+		/// Type of the AttributeHelperTools
 		/// </summary>
 		string Type { get; }
 	}
 
 	/// <summary>
-	/// Represents an Attribute with Values
+	/// Represents an AttributeHelperTools with Values
 	/// </summary>
 	public interface IAttribute : IAttributeBase
 	{
 		/// <summary>
-		/// Gets a IEnumerable of all Values of this Entity's Attribute
+		/// Gets a IEnumerable of all Values of this Entity's AttributeHelperTools
 		/// </summary>
 		IEnumerable<IValue> Values { get; }
 		/// <summary>
@@ -45,7 +45,7 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an Attribute of a Generic Type
+	/// Represents an AttributeHelperTools of a Generic Type
 	/// </summary>
 	/// <typeparam name="T">Type of the Value</typeparam>
 	public interface IAttribute<T> : IAttribute
@@ -85,24 +85,24 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an Attribute for management purposes
+	/// Represents an AttributeHelperTools for management purposes
 	/// </summary>
 	public interface IAttributeManagement : IAttribute
 	{
 		/// <summary>
-		/// Gets or sets whether the Attribute is the Title Attribute in the Attribute Set
+		/// Gets or sets whether the AttributeHelperTools is the Title AttributeHelperTools in the AttributeHelperTools Set
 		/// </summary>
 		bool IsTitle { get; set; }
 		/// <summary>
-		/// Sets the Name of the Attribute
+		/// Sets the Name of the AttributeHelperTools
 		/// </summary>
 		new string Name { set; }
 		/// <summary>
-		/// Sets the Type of the Attribute
+		/// Sets the Type of the AttributeHelperTools
 		/// </summary>
 		new string Type { set; }
 		/// <summary>
-		/// Sets the Values of this Attribute
+		/// Sets the Values of this AttributeHelperTools
 		/// </summary>
 		new IEnumerable<IValue> Values { set; }
 		/// <summary>

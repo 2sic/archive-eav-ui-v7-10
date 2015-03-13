@@ -301,21 +301,21 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Append a new Attribute to an AttributeSet
+		/// Append a new AttributeHelperTools to an AttributeSet
 		/// </summary>
 		public Attribute AppendAttribute(AttributeSet attributeSet, string staticName, string type, bool isTitle = false, bool autoSave = true)
 		{
 			return AppendAttribute(attributeSet, 0, staticName, type, isTitle, autoSave);
 		}
 		/// <summary>
-		/// Append a new Attribute to an AttributeSet
+		/// Append a new AttributeHelperTools to an AttributeSet
 		/// </summary>
 		public Attribute AppendAttribute(int attributeSetId, string staticName, string type, bool isTitle = false)
 		{
 			return AppendAttribute(null, attributeSetId, staticName, type, isTitle, true);
 		}
 		/// <summary>
-		/// Append a new Attribute to an AttributeSet
+		/// Append a new AttributeHelperTools to an AttributeSet
 		/// </summary>
 		private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, bool isTitle, bool autoSave)
 		{
@@ -329,7 +329,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Append a new Attribute to an AttributeSet
+		/// Append a new AttributeHelperTools to an AttributeSet
 		/// </summary>
 		public Attribute AddAttribute(int attributeSetId, string staticName, string type, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
 		{
@@ -337,7 +337,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Append a new Attribute to an AttributeSet
+		/// Append a new AttributeHelperTools to an AttributeSet
 		/// </summary>
 		private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
 		{
@@ -347,11 +347,11 @@ namespace ToSic.Eav
 				throw new Exception("Can only set attributeSet or attributeSetId");
 
 			if (!System.Text.RegularExpressions.Regex.IsMatch(staticName, AttributeStaticNameRegEx, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-				throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + AttributeStaticNameRegExNotes);
+				throw new Exception("AttributeHelperTools static name \"" + staticName + "\" is invalid. " + AttributeStaticNameRegExNotes);
 
 			// Prevent Duplicate Name
 			if (AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == _appId))
-				throw new ArgumentException("An Attribute with static name " + staticName + " already exists", "staticName");
+				throw new ArgumentException("An AttributeHelperTools with static name " + staticName + " already exists", "staticName");
 
 			var newAttribute = new Attribute
 			{
@@ -370,7 +370,7 @@ namespace ToSic.Eav
 			AddToAttributes(newAttribute);
 			AddToAttributesInSets(setAssignment);
 
-			// Set Attribute as Title if there's no title field in this set
+			// Set AttributeHelperTools as Title if there's no title field in this set
 			if (!attributeSet.AttributesInSets.Any(a => a.IsTitle))
 				setAssignment.IsTitle = true;
 
@@ -440,7 +440,7 @@ namespace ToSic.Eav
 		/// <param name="dimensionIds">DimensionIds for all Values</param>
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
-		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+		/// <param name="preserveUndefinedValues">Preserve Values if AttributeHelperTools is not specifeied in NewValues</param>
 		/// <returns>the updated Entity</returns>
 		public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
 		{
@@ -457,7 +457,7 @@ namespace ToSic.Eav
 		/// <param name="dimensionIds">DimensionIds for all Values</param>
 		/// <param name="masterRecord">Is this the Master Record/Language</param>
 		/// <param name="updateLog">Update/Import Log List</param>
-		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+		/// <param name="preserveUndefinedValues">Preserve Values if AttributeHelperTools is not specifeied in NewValues</param>
 		/// <param name="isPublished">Is this Entity Published or a draft</param>
 		/// <returns>the updated Entity</returns>
 		public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
@@ -490,7 +490,7 @@ namespace ToSic.Eav
 
 			// Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
 			var attributes = GetAttributes(entity.AttributeSetID).ToList();
-			var currentValues = entity.EntityID != 0 ? Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
+			var currentValues = entity.EntityID != 0 ? Values.Include("AttributeHelperTools").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
 			// Update Values from Import Model
 			var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
@@ -576,10 +576,10 @@ namespace ToSic.Eav
 			foreach (var newValue in newValuesImport)
 			{
 				var attribute = attributes.SingleOrDefault(a => a.StaticName == newValue.Key);
-				if (attribute == null) // Attribute not found
+				if (attribute == null) // AttributeHelperTools not found
 				{
 					// Log Warning for all Values
-					updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value")
+					updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "AttributeHelperTools not found for Value")
 								{
 									Attribute = new Import.Attribute { StaticName = newValue.Key },
 									Value = v,
@@ -676,7 +676,7 @@ namespace ToSic.Eav
 					if (newValue is ValueImportModel<List<Guid>> && attribute.Type == "Entity")
 						UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value, currentEntity.EntityGUID);
 					else
-						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
+						throw new NotSupportedException("UpdateValue() for AttributeHelperTools " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
 
 					return null;
 				// Handle simple values in Values-Table
@@ -690,8 +690,8 @@ namespace ToSic.Eav
 		/// Get typed value from ValueImportModel
 		/// </summary>
 		/// <param name="value">Value to convert</param>
-		/// <param name="attributeType">Attribute Type</param>
-		/// <param name="attributeStaticName">Attribute StaticName</param>
+		/// <param name="attributeType">AttributeHelperTools Type</param>
+		/// <param name="attributeStaticName">AttributeHelperTools StaticName</param>
 		/// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
 		private object GetTypedValue(IValueImportModel value, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
 		{
@@ -710,7 +710,7 @@ namespace ToSic.Eav
 				typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
 			}
 			else
-				throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, value.GetType()));
+				throw new NotSupportedException(string.Format("GetTypedValue() for AttributeHelperTools {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, value.GetType()));
 			return typedValue;
 		}
 
@@ -767,7 +767,7 @@ namespace ToSic.Eav
 					// ToDo: 2bg Log Error but continue
 					var dimensionId = GetDimensionId(null, valueDimension.DimensionExternalKey);
 					if (dimensionId == 0)
-						throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
+						throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " AttributeHelperTools-StaticName: " + attribute.StaticName);
 
 					var existingValueDimension = value.ValuesDimensions.SingleOrDefault(v => v.DimensionID == dimensionId);
 					if (existingValueDimension == null)
@@ -805,7 +805,7 @@ namespace ToSic.Eav
 				// Remove current Dimension(s) from other Values
 				if (!masterRecord)
 				{
-					// Get other Values for current Attribute having all Current Dimensions assigned
+					// Get other Values for current AttributeHelperTools having all Current Dimensions assigned
 					var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeID == attribute.AttributeID && v.ValueID != value.ValueID && dimensionIds.All(d => v.ValuesDimensions.Select(vd => vd.DimensionID).Contains(d)));
 					foreach (var otherValue in otherValuesWithCurrentDimensions)
 					{
@@ -845,7 +845,7 @@ namespace ToSic.Eav
 				// If Master, ensure ValueID is from Master!
 				var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
 				if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
-					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
+					throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. AttributeHelperTools-StaticName: " + attribute.StaticName);
 			}
 			// Find Value (if not specified) or create new one
 			else
@@ -1041,7 +1041,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Set an Attribute as Title on an AttributeSet
+		/// Set an AttributeHelperTools as Title on an AttributeSet
 		/// </summary>
 		public void SetTitleAttribute(int attributeId, int attributeSetId)
 		{
@@ -1056,14 +1056,14 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Update an Attribute
+		/// Update an AttributeHelperTools
 		/// </summary>
 		public Attribute UpdateAttribute(int attributeId, string staticName)
 		{
 			return UpdateAttribute(attributeId, staticName, null);
 		}
 		/// <summary>
-		/// Update an Attribute
+		/// Update an AttributeHelperTools
 		/// </summary>
 		public Attribute UpdateAttribute(int attributeId, string staticName, int? attributeSetId = null, bool isTitle = false)
 		{
@@ -1097,7 +1097,7 @@ namespace ToSic.Eav
 		#region Delete
 
 		/// <summary>
-		/// Remove an Attribute from an AttributeSet and delete values
+		/// Remove an AttributeHelperTools from an AttributeSet and delete values
 		/// </summary>
 		public void RemoveAttributeInSet(int attributeId, int attributeSetId)
 		{

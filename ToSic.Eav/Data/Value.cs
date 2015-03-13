@@ -31,7 +31,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
-        /// Creates a Typed Value Model for an Entity-Attribute
+        /// Creates a Typed Value Model for an Entity-AttributeHelperTools
         /// </summary>
         internal static IValue GetValueModel(string attributeType, IEnumerable<int> entityIds, IDataSource source)
         {

@@ -1,7 +1,7 @@
 namespace ToSic.Eav
 {
     /// <summary>
-    /// Attribute move direction (Up/Down)
+    /// AttributeHelperTools move direction (Up/Down)
     /// </summary>
     public enum AttributeMoveDirection
     {

@@ -47,7 +47,7 @@ namespace ToSic.Eav.Import
 		public Attribute() { }
 
 		/// <summary>
-		/// Get an Import-Attribute
+		/// Get an Import-AttributeHelperTools
 		/// </summary>
 		private Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
 		{
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Import
 		}
 
 		/// <summary>
-		/// Get an Import-Attribute
+		/// Get an Import-AttributeHelperTools
 		/// </summary>
 		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
 		{
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Import
 		}
 
 		/// <summary>
-		/// Get an Import-Attribute
+		/// Get an Import-AttributeHelperTools
 		/// </summary>
 		public static Attribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
 		{
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Import
 		}
 
 		/// <summary>
-		/// Shortcut to get an @All Entity Describing an Attribute
+		/// Shortcut to get an @All Entity Describing an AttributeHelperTools
 		/// </summary>
 		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
 		{

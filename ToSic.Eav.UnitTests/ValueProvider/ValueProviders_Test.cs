@@ -34,7 +34,7 @@ namespace ToSic.Eav.UnitTests
         [TestMethod]
         public void TestEntityValueProvider()
         {
-            IValueProvider valProv = new EntityValueProvider(GenerateSimpleTestEntity());
+            IValueProvider valProv = new EntityValueProvider(new Entity_Test().TestEntityDaniel());
             bool found = false;
 
             Assert.IsTrue(valProv.Has("FirstName"), "Has first name");
@@ -55,32 +55,32 @@ namespace ToSic.Eav.UnitTests
             // todo
         }
 
-        private IEntity GenerateSimpleTestEntity()
-        {
-            var valDaniel = new Dictionary<string, object>()
-            {
-                {"FirstName", "Daniel"},
-                {"LastName", "Mettler"},
-                {"Phone", "+41 81 750 67 70"},
-                {"Age", 37}
-            };
-            var valLeonie = new Dictionary<string, object>()
-            {
-                {"FirstName", "Leonie"},
-                {"LastName", "Mettler"},
-                {"Phone", "+41 81 xxx yy zz"},
-                {"Age", 6}
-            };
+        //private IEntity GenerateSimpleTestEntity()
+        //{
+        //    var valDaniel = new Dictionary<string, object>()
+        //    {
+        //        {"FirstName", "Daniel"},
+        //        {"LastName", "Mettler"},
+        //        {"Phone", "+41 81 750 67 70"},
+        //        {"Age", 37}
+        //    };
+        //    var valLeonie = new Dictionary<string, object>()
+        //    {
+        //        {"FirstName", "Leonie"},
+        //        {"LastName", "Mettler"},
+        //        {"Phone", "+41 81 xxx yy zz"},
+        //        {"Age", 6}
+        //    };
 
-            var entDaniel = new Data.Entity(1, "TestType", valDaniel, "FirstName");
-            //var entLeonie = new Data.Entity(2, "TestType", valLeonie, "FirstName");
-            //var eri = new EntityRelationshipItem(entDaniel, entLeonie);
-            //var Relationships = new ToSic.Eav.RelationshipManager(entDaniel, new EntityRelationshipItem[0]);
+        //    var entDaniel = new Data.Entity(1, "TestType", valDaniel, "FirstName");
+        //    //var entLeonie = new Data.Entity(2, "TestType", valLeonie, "FirstName");
+        //    //var eri = new EntityRelationshipItem(entDaniel, entLeonie);
+        //    //var Relationships = new ToSic.Eav.RelationshipManager(entDaniel, new EntityRelationshipItem[0]);
             
 
 
-            return entDaniel;
+        //    return entDaniel;
 
-        }
+        //}
     }
 }

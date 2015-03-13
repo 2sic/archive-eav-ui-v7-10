@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	{
 		private const string PipelineAttributeSetStaticName = "DataPipeline";
 		/// <summary>
-		/// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
+		/// AttributeHelperTools Name on the Pipeline-Entity describing the Stream-Wiring
 		/// </summary>
 		public const string StreamWiringAttributeName = "StreamWiring";
 

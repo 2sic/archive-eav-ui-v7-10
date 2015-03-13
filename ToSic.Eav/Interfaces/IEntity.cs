@@ -34,7 +34,7 @@ namespace ToSic.Eav
 		/// </summary>
 		IContentType Type { get; }
 		/// <summary>
-		/// Gets the Title-Attribute
+		/// Gets the Title-AttributeHelperTools
 		/// </summary>
 		IAttribute Title { get; }
 		/// <summary>
@@ -42,9 +42,9 @@ namespace ToSic.Eav
 		/// </summary>
 		DateTime Modified { get; }
 		/// <summary>
-		/// Gets an Attribute by its StaticName
+		/// Gets an AttributeHelperTools by its StaticName
 		/// </summary>
-		/// <param name="attributeName">StaticName of the Attribute</param>
+		/// <param name="attributeName">StaticName of the AttributeHelperTools</param>
 		IAttribute this[string attributeName] { get; }
 		/// <summary>
 		/// Get Related entities

@@ -35,3 +35,4 @@ What I did 2015-03-13
 * moved ContentType to \Data
 * moved everything in models.cs to \Data and split into parts
 * moved 2 enums from models.cs to \Enums
+* Merged a class AttributeDefinition which didn't seem to do much with AttributeBase

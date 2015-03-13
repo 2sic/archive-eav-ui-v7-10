@@ -5,7 +5,7 @@ using System.Linq;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute with Values of a Generic Type
+    /// Represents an AttributeHelperTools with Values of a Generic Type
     /// </summary>
     /// <typeparam name="ValueType">Type of the Value</typeparam>
     public class Attribute<ValueType> : AttributeBase, IAttribute<ValueType>, IAttributeManagement

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// MetaData of an Attribute
+    /// MetaData of an AttributeHelperTools
     /// </summary>
     public class AttributeWithMetaInfo : Eav.Attribute
     {
@@ -12,11 +12,11 @@ namespace ToSic.Eav.Data
         /// </summary>
         public bool IsTitle { get; internal set; }
         /// <summary>
-        /// Attribute name
+        /// AttributeHelperTools name
         /// </summary>
         public string Name { get; internal set; }
         /// <summary>
-        /// Attribute Notes
+        /// AttributeHelperTools Notes
         /// </summary>
         public string Notes { get; internal set; }
         /// <summary>
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public bool HasTypeMetaData { get; internal set; }
         /// <summary>
-        /// Dictionary with all MetaData belonging to the Attribute
+        /// Dictionary with all MetaData belonging to the AttributeHelperTools
         /// </summary>
         public IDictionary<string, IAttribute> MetaData { get; internal set; }
     }

@@ -6,7 +6,7 @@ namespace ToSic.Eav
     public enum AttributeScope
     {
         /// <summary>
-        /// System Attribute
+        /// System AttributeHelperTools
         /// </summary>
         System
     }

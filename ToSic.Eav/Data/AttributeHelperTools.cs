@@ -3,7 +3,11 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.Data
 {
-    internal class Attribute
+    /// <summary>
+    /// Note: seems to be a helper class with tools 
+    /// todo: probably refactor to fit into some "normal" object 
+    /// </summary>
+    internal class AttributeHelperTools
     {
         private static readonly Value<EntityRelationship> EntityRelationshipDefaultValue = new Value<EntityRelationship>(new EntityRelationship(null)) { Languages = new Dimension[0] };
 
@@ -49,9 +53,9 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
-        /// Get Attribute for specified Typ
+        /// Get AttributeHelperTools for specified Typ
         /// </summary>
-        /// <returns><see cref="Attribute{ValueType}"/></returns>
+        /// <returns><see cref="AttributeHelperTools{ValueType}"/></returns>
         internal static IAttributeManagement GetAttributeManagementModel(AttributeBase definition)
         {
             switch (definition.Type)
