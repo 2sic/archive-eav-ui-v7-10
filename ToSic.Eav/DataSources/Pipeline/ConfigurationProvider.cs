@@ -52,19 +52,20 @@ namespace ToSic.Eav.DataSources
                 // check if the string contains a token or not
                 if (!instanceTokenReplace.ContainsTokens(o.Value))
 					continue;
+                configList[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, 2); // with 2 further recurrances
 
-                var newValue = instanceTokenReplace.ReplaceTokens(o.Value);
+                //var newValue = instanceTokenReplace.ReplaceTokens(o.Value);
 
-				// do recursion 3 times, so if result had another token, replace that too
-				for (var i = 0; i < 3; i++)
-				{
-                    if (instanceTokenReplace.ContainsTokens(newValue))
-                        newValue = instanceTokenReplace.ReplaceTokens(newValue);
-					else
-						break;
-				}
+                //// do recursion 3 times, so if result had another token, replace that too
+                //for (var i = 0; i < 3; i++)
+                //{
+                //    if (instanceTokenReplace.ContainsTokens(newValue))
+                //        newValue = instanceTokenReplace.ReplaceTokens(newValue);
+                //    else
+                //        break;
+                //}
 
-				configList[o.Key] = newValue;
+                //configList[o.Key] = newValue;
             }
             #endregion
         }

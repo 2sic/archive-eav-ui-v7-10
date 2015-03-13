@@ -68,7 +68,7 @@ namespace ToSic.Eav.Tokens
 		{
 			if (!string.IsNullOrEmpty(strSourceText))
 			{
-				foreach (Match currentMatch in TokenizerRegex.Matches(strSourceText))
+				foreach (Match currentMatch in Tokenizer.Matches(strSourceText))
 					if (currentMatch.Result("${object}").Length > 0)
 						return true;
 			}
