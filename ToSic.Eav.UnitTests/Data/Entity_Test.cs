@@ -11,7 +11,7 @@ namespace ToSic.Eav.UnitTests
     public class Entity_Test
     {
         [TestMethod]
-        public void CreateSimpleUnpersistedEntity()
+        public void Entity_CreateSimpleUnpersistedEntity()
         {
             var entDaniel = TestEntityDaniel();
             var notFound = false;
@@ -24,7 +24,7 @@ namespace ToSic.Eav.UnitTests
         }
 
         [TestMethod]
-        public void TestEntityRelationship()
+        public void Entity_EntityRelationship()
         {
             var dan = TestEntityDaniel();
             var relDtoL = new EntityRelationshipItem(dan, TestEntityLeonie());

@@ -9,7 +9,7 @@ namespace ToSic.Eav.UnitTests
     public class ContentType_Test
     {
         [TestMethod]
-        public void TestContentType()
+        public void ContentType_GeneralTest()
         {
             var x = new ContentType("SomeName");
             Assert.AreEqual("SomeName", x.Name);

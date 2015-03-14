@@ -33,3 +33,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("3.0.4.0")]
 [assembly: AssemblyFileVersion("3.0.4.0")]
+
+// This is needed for unit testing
+[assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]

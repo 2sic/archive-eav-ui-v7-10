@@ -112,7 +112,7 @@ but this should [token:key] again"
 
         #region ContainsToken tests
         [TestMethod]
-        public void TestContainsToken()
+        public void TokenReplace_ContainsToken()
         {
             foreach (var validPureToken in ValidPureTokens)
                 Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validPureToken));
@@ -125,7 +125,7 @@ but this should [token:key] again"
         }
 
         [TestMethod]
-        public void TestDoesntContainToken()
+        public void TokenReplace_DoesntContainToken()
         {
             foreach (var invalidToken in InvalidTokens)
                 Assert.IsFalse(Tokens.TokenReplace.ContainsTokens(invalidToken));
@@ -136,7 +136,7 @@ but this should [token:key] again"
         #region Test Simple Token Detection
 
         [TestMethod]
-        public void TestValidPureTokens()
+        public void TokenReplace_ValidPureTokens()
         {
             foreach (var testToken in ValidPureTokens)
             {
@@ -148,7 +148,7 @@ but this should [token:key] again"
         }
 
         [TestMethod]
-        public void TestValidMixedSingleTokens()
+        public void TokenReplace_ValidMixedSingleTokens()
         {
             foreach (var testToken in ValidMixedSingleTokens)
             {
@@ -163,7 +163,7 @@ but this should [token:key] again"
         }
 
         [TestMethod]
-        public void TestValidMixedMultiTokens()
+        public void TokenReplace_ValidMixedMultiTokens()
         {
             foreach (var testToken in ValidMixedMultiTokens)
             {
@@ -178,7 +178,7 @@ but this should [token:key] again"
         }
 
         [TestMethod]
-        public void TestInvalidTokens()
+        public void TokenReplace_InvalidTokens()
         {
             foreach (var testToken in InvalidTokens)
             {
@@ -193,7 +193,7 @@ but this should [token:key] again"
 
         #region Simple Replace Tests
         [TestMethod]
-        public void TestSimpleReplaceOnValidPureTokens()
+        public void TokenReplace_SimpleReplaceOnValidPureTokens()
         {
             // since the test string contains only the token, it should leave only this token as a result
             foreach (var token in ValidPureTokens)
@@ -207,7 +207,7 @@ but this should [token:key] again"
         #region Complex Replace Tests with 0 or 2 recurrances
 
         [TestMethod]
-        public void TestComplexReplace()
+        public void TokenReplace_ComplexReplace()
         {
             var original =
                 @"Select * From Users Where UserId = [QueryString:UserName||[AppSettings:DefaultUserName||0]] or UserId = [AppSettings:RootUserId] or UserId = [Parameters:TestKey:Subkey||27]

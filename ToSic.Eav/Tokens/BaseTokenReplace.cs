@@ -132,14 +132,12 @@ namespace ToSic.Eav.Tokens
             var matches = Tokenizer.Matches(sourceText);
             if (matches.Count > 0)
             {
-                foreach (Match curMatch in Tokenizer.Matches(sourceText))
+                foreach (Match curMatch in matches)
                 {
                     // Get characters before the first match
                     if (curMatch.Index > charProgress)
-                    {
                         Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
-                        charProgress = curMatch.Index + curMatch.Length;
-                    }
+                    charProgress = curMatch.Index + curMatch.Length;
 
                     // get the infos we need to retrieve the value, get it. 
                     string strObjectName = curMatch.Result("${object}");

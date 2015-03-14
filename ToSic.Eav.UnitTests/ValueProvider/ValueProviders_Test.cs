@@ -12,7 +12,7 @@ namespace ToSic.Eav.UnitTests
     public class ValueProviders_Test
     {
         [TestMethod]
-        public void TestStaticValueProvider()
+        public void ValueProvider_StaticValueProvider()
         {
             var sv = new StaticValueProvider("Demo");
             sv.Properties.Add("Alpha", "found");
@@ -32,7 +32,7 @@ namespace ToSic.Eav.UnitTests
         }
 
         [TestMethod]
-        public void TestEntityValueProvider()
+        public void ValueProvider_EntityValueProvider()
         {
             IValueProvider valProv = new EntityValueProvider(new Entity_Test().TestEntityDaniel());
             bool found = false;
@@ -50,7 +50,7 @@ namespace ToSic.Eav.UnitTests
         }
 
         [TestMethod]
-        public void TestEntityValueProvider_SubProperty()
+        public void ValueProvider_EntityValueProvider_SubProperty_TODO()
         {
             // todo
         }
