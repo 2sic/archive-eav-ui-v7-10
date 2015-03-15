@@ -40,6 +40,8 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
@@ -56,6 +58,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DataSources\DataTableDataSource_Test.cs" />
+    <Compile Include="DataSources\EntityIdFilter_Test.cs" />
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Tokens\TokenReplace_Test.cs" />

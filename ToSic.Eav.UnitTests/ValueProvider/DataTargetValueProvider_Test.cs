@@ -12,33 +12,35 @@ namespace ToSic.Eav.UnitTests.ValueProvider
         [TestMethod]
         public void DataTargetValueProvider_()
         {
-            var pt = new EntityIdFilter();
+            var testSource = new EntityIdFilter();
+            testSource.EntityIds = "1001";  // needed to ensure 
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
             var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
-            var ds2 = new EntityIdFilter();
-            ds2.Attach(ds);
-            ds2.EntityIds = ItemToFilter;
+            var myConfDs = new EntityIdFilter();
+            myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
+            myConfDs.Attach(ds);
+            myConfDs.EntityIds = ItemToFilter;
 
-            pt.Configuration.Add("SomethingSimple", "Something");
-            pt.Configuration.Add("Token1", new ValueCollectionProvider_Test().OriginalSettingDefaultCat);
-            pt.Configuration.Add("InTestTitle", "[In:Default:EntityTitle]");
-            pt.Configuration.Add("InTestFirstName", "[In:Default:FirstName]");
-            pt.Configuration.Add("InTestBadStream", "[In:InvalidStream:Field]");
-            pt.Configuration.Add("InTestNoKey", "[In:Default]");
-            pt.Configuration.Add("InTestBadKey", "[In:Default:SomeFieldWhichDoesntExist]");
-            pt.Configuration.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
-            pt.Attach(ds);
-            pt.Attach("MyConf", ds);
-            pt.ConfigurationProvider = ds.ConfigurationProvider;
-            var x = pt["Default"].List;
+            testSource.Configuration.Add("SomethingSimple", "Something");
+            testSource.Configuration.Add("Token1", new ValueCollectionProvider_Test().OriginalSettingDefaultCat);
+            testSource.Configuration.Add("InTestTitle", "[In:Default:EntityTitle]");
+            testSource.Configuration.Add("InTestFirstName", "[In:Default:FirstName]");
+            testSource.Configuration.Add("InTestBadStream", "[In:InvalidStream:Field]");
+            testSource.Configuration.Add("InTestNoKey", "[In:Default]");
+            testSource.Configuration.Add("InTestBadKey", "[In:Default:SomeFieldWhichDoesntExist]");
+            testSource.Configuration.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
+            testSource.Attach(ds);
+            testSource.Attach("MyConf", myConfDs);
+            testSource.ConfigurationProvider = ds.ConfigurationProvider;
+            var y = testSource.List; // must access something to provoke configuration resolving
 
-            Assert.AreEqual("First Name 1001", pt.Configuration["InTestFirstName"], "Tested in:Default:EntityTitle");
-            Assert.AreEqual("", pt.Configuration["InTestBadStream"], "Testing in-token with invalid stream");
-            Assert.AreEqual("", pt.Configuration["InTestNoKey"], "Testing in-token with missing field");
-            Assert.AreEqual("First Name 27", pt.Configuration["TestMyConfFirstName"], "MyConf stream First Name");
-            Assert.AreEqual("", pt.Configuration["InTestBadKey"], "Testing in-token with incorrect field name");
+            Assert.AreEqual("First Name 1001", testSource.Configuration["InTestFirstName"], "Tested in:Default:EntityTitle");
+            Assert.AreEqual("", testSource.Configuration["InTestBadStream"], "Testing in-token with invalid stream");
+            Assert.AreEqual("", testSource.Configuration["InTestNoKey"], "Testing in-token with missing field");
+            Assert.AreEqual("First Name " + ItemToFilter, testSource.Configuration["TestMyConfFirstName"], "MyConf stream First Name");
+            Assert.AreEqual("", testSource.Configuration["InTestBadKey"], "Testing in-token with incorrect field name");
             // var ent = new Entity_Test().TestEntityDaniel();
         }
     }

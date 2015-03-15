@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -58,6 +59,10 @@ namespace ToSic.Eav.DataSources
 		{
 			if (_configurationIsLoaded)
 				return;
+
+            // Ensure that we have a configuration-provider (not always the case, but required)
+            if(ConfigurationProvider == null)
+                throw new Exception("No ConfigurationProvider configured on this data-source. Cannot EnsureConfigurationIsLoadedr");
 
             // construct a property access for in, use it in the config provider
 		    var instancePAs = new Dictionary<string, IValueProvider>() {{"In".ToLower(), new DataTargetValueProvider(this)}};
