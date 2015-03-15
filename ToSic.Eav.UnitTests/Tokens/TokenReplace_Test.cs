@@ -21,6 +21,13 @@ namespace ToSic.Eav.UnitTests
             "[QueryString:Something||[Module:ModuleId]]",
         };
 
+        private string[] ValidTokensWithSubTokens = new[]
+        {
+            "[AppSettings:Owner:Name]",
+            "[AppSettings:Owner:Name||Nobody]",
+            "[AppSettings:Owner:Name||[AppSettings:DefaultOwner:Name||Nobody]]"
+        };
+
         private string[] ValidMixedSingleTokens = new[]
         {
             "The param was [QueryString:Id]",
@@ -125,6 +132,13 @@ but this should [token:key] again"
         }
 
         [TestMethod]
+        public void TokenReplace_ContainsTokenWithSubtoken()
+        {
+            foreach (var token in ValidTokensWithSubTokens)
+                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(token));            
+        }
+
+        [TestMethod]
         public void TokenReplace_DoesntContainToken()
         {
             foreach (var invalidToken in InvalidTokens)
@@ -218,7 +232,7 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should [token:key] again";
             
             var expectedNoRecurrance =
-                @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = [Parameters:TestKey:Subkey||27]
+                @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
 and a token with sub-token for fallback [Module:SubId]
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
 
@@ -226,7 +240,7 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should What a Token! again";
 
             var expectedRecurrance =
-                @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = [Parameters:TestKey:Subkey||27]
+                @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
 and a token with sub-token for fallback 4567
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
 

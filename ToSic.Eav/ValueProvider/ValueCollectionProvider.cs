@@ -41,7 +41,7 @@ namespace ToSic.Eav.ValueProvider
 		    if (useAdditionalPA)
 		        foreach (var pa in Sources)
 		            if (!instanceSpecificPropertyAccesses.ContainsKey(pa.Key))
-		                instanceSpecificPropertyAccesses.Add(pa.Key, pa.Value);
+		                instanceSpecificPropertyAccesses.Add(pa.Key.ToLower(), pa.Value);
 		    var instanceTokenReplace = useAdditionalPA ? new TokenReplace(instanceSpecificPropertyAccesses) : _reusableTokenReplace;
             #endregion
 

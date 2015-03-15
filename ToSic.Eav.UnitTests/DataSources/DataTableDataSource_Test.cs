@@ -26,7 +26,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(defaultOut.List.Count == ItemsToGenerate);
         }
 
-        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10)
+        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001)
         {
             var dataTable = new DataTable();
             dataTable.Columns.AddRange(new[]
@@ -39,7 +39,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 new DataColumn("Male", typeof (bool)),
                 new DataColumn("Birthdate", typeof (DateTime))
             });
-            AddSemirandomPersons(dataTable, itemsToGenerate);
+            AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
             var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName");
             source.ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection();
@@ -49,12 +49,12 @@ namespace ToSic.Eav.UnitTests.DataSources
 
         private static void AddSemirandomPersons(DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
         {
-            for (var i = 1; i <= itemsToGenerate; i++)
+            for (var i = firstId; i < firstId + itemsToGenerate; i++)
             {
                 var firstName = "First Name " + i;
                 var lastName = "Last Name " + i;
                 var fullName = firstName + " " + lastName;
-                dataTable.Rows.Add(i + firstId, fullName, firstName, lastName, "City " + i, i % 3 == 0, DateTime.Now.AddYears(-27));
+                dataTable.Rows.Add(i, fullName, firstName, lastName, "City " + i, i % 3 == 0, DateTime.Now.AddYears(-27));
             }
         }
 

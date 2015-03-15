@@ -42,15 +42,16 @@ namespace ToSic.Eav.ValueProvider
 		    }
 
             // check if this stream exists
-		    var Subgroup = propertyMatch.Groups[1].Value;
-		    if (!_dataTarget.In.ContainsKey(Subgroup))
+		    var streamName = propertyMatch.Groups[1].Value;
+            var subProperty = propertyMatch.Groups[2].Value;
+		    if (!_dataTarget.In.ContainsKey(streamName))
 		    {
                 propertyNotFound = true;
                 return string.Empty;
             }
 
             // check if any entities exist in this specific in-stream
-            var entityStream = _dataTarget.In[Subgroup];
+            var entityStream = _dataTarget.In[streamName];
             if (!entityStream.List.Any())
 		    {
                 propertyNotFound = true;
@@ -59,7 +60,7 @@ namespace ToSic.Eav.ValueProvider
 
             // Create an EntityValueProvider based on the first item, return its Get
 		    var first = entityStream.List.First().Value;
-		    return new EntityValueProvider(first).Get(property, format, ref propertyNotFound);
+		    return new EntityValueProvider(first).Get(subProperty, format, ref propertyNotFound);
 
 		}
 

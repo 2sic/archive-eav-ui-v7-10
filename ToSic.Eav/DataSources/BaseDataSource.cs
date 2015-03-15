@@ -60,8 +60,8 @@ namespace ToSic.Eav.DataSources
 				return;
 
             // construct a property access for in, use it in the config provider
-		    // var instancePAs = new Dictionary<string, IValueProvider>() {{"In", new DataTargetValueProvider(this)}};
-			ConfigurationProvider.LoadConfiguration(Configuration);//, instancePAs);
+		    var instancePAs = new Dictionary<string, IValueProvider>() {{"In".ToLower(), new DataTargetValueProvider(this)}};
+			ConfigurationProvider.LoadConfiguration(Configuration, instancePAs);
 			_configurationIsLoaded = true;
 		}
 

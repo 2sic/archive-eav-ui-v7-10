@@ -10,7 +10,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
     public class ValueCollectionProvider_Test
     {
         #region Important Values which will be checked when resolved
-        private string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
+        public string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
         private string ResolvedSettingDefaultCat = "All";
         private string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
         private string ResolvedSettingMaxItems = "100";
@@ -28,8 +28,8 @@ namespace ToSic.Eav.UnitTests.ValueProvider
 
             vc.LoadConfiguration(Settings);
 
-            Assert.AreEqual(ResolvedSettingDefaultCat, Settings["DefaultCategory"]);
-            Assert.AreEqual(ResolvedSettingMaxItems, Settings["MaxItems"]);
+            Assert.AreEqual(ResolvedSettingDefaultCat, Settings["DefaultCategory"], "Default should be all");
+            Assert.AreEqual(ResolvedSettingMaxItems, Settings["MaxItems"], "Max should be 100");
         }
 
         public IValueCollectionProvider ValueCollection()
