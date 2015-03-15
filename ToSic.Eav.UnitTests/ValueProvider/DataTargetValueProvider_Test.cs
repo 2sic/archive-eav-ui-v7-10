@@ -10,7 +10,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
     public class DataTargetValueProvider_Test
     {
         [TestMethod]
-        public void DataTargetValueProvider_()
+        public void DataTargetValueProvider_General()
         {
             var testSource = new EntityIdFilter();
             testSource.EntityIds = "1001";  // needed to ensure 
@@ -41,7 +41,6 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             Assert.AreEqual("", testSource.Configuration["InTestNoKey"], "Testing in-token with missing field");
             Assert.AreEqual("First Name " + ItemToFilter, testSource.Configuration["TestMyConfFirstName"], "MyConf stream First Name");
             Assert.AreEqual("", testSource.Configuration["InTestBadKey"], "Testing in-token with incorrect field name");
-            // var ent = new Entity_Test().TestEntityDaniel();
         }
     }
 }

@@ -95,6 +95,7 @@ namespace ToSic.Eav.DataSources
 
 	    private string originalUnsafeSql;
         //private Dictionary<string, string> sqlParams = new Dictionary<string, string>();
+	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
         #endregion
 
@@ -126,36 +127,75 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    protected override void EnsureConfigurationIsLoaded()
+	    internal override void EnsureConfigurationIsLoaded()
 	    {
 	        if (_configurationIsLoaded)
 	            return;
 
-            throw new Exception("this code is not tested yet! must test before we publish 2dm 2015-03-09");
+            //throw new Exception("this code is not tested yet! must test before we publish 2dm 2015-03-09");
+            var Tokenizer = Tokens.BaseTokenReplace.Tokenizer;
+	        var sourceText = SelectCommand;
+            var ParamNumber = 1;
+            var Result = new StringBuilder();
+            var charProgress = 0;
+            var matches = Tokenizer.Matches(sourceText);
+            if (matches.Count > 0)
+            {
+                foreach (Match curMatch in matches)
+                {
+                    // Get characters before the first match
+                    if (curMatch.Index > charProgress)
+                        Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+                    charProgress = curMatch.Index + curMatch.Length;
+
+                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++).ToString();
+                    Result.Append(paramName);
+                    Configuration.Add(paramName, curMatch.ToString());
+                }
+                //// get the infos we need to retrieve the value, get it. 
+                    //string strObjectName = curMatch.Result("${object}");
+                    //if (!String.IsNullOrEmpty(strObjectName))
+                    //{
+                    //    string strPropertyName = curMatch.Result("${property}");
+                    //    string strFormat = curMatch.Result("${format}");
+                    //    string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
+                    //    string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+                    //    if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
+                    //        strConversion = strIfEmptyReplacment;
+                    //    Result.Append(strConversion);
+                    //}
+                //}
+
+                // attach the rest of the text (after the last match)
+                Result.Append(sourceText.Substring(charProgress));
+
+                // Ready to finish, but first, ensure repeating if desired
+                SelectCommand = Result.ToString();
+            }
 
             // todo: ensure that we can protect ourselves against SQL injection
-	        var tokenizer = Tokens.BaseTokenReplace.Tokenizer;
-	        originalUnsafeSql = SelectCommand;
-	        var matches = tokenizer.Matches(SelectCommand);
-            var cleanedSql = new StringBuilder();
-	        int ParamNumber = 0;
+            //var tokenizer = Tokens.BaseTokenReplace.Tokenizer;
+            //originalUnsafeSql = SelectCommand;
+            //var matches = tokenizer.Matches(SelectCommand);
+            //var cleanedSql = new StringBuilder();
+            //int ParamNumber = 0;
 
-            // Try to extract all tokens, and replace them with Param-syntax
-            foreach (Match currentMatch in matches)
-            {
-                string strObjectName = currentMatch.Result("${object}");
-                if (!String.IsNullOrEmpty(strObjectName))
-                {
-                    var paramName = "@AutoExtractedParam" + (ParamNumber++).ToString();
-                    cleanedSql.Append(paramName);
-                    Configuration.Add(paramName, currentMatch.ToString());
-                }
-                else
-                {
-                    cleanedSql.Append(currentMatch.Result("${text}"));
-                }
-            }
-            SelectCommand = cleanedSql.ToString();
+            //// Try to extract all tokens, and replace them with Param-syntax
+            //foreach (Match currentMatch in matches)
+            //{
+            //    string strObjectName = currentMatch.Result("${object}");
+            //    if (!String.IsNullOrEmpty(strObjectName))
+            //    {
+            //        var paramName = "@AutoExtractedParam" + (ParamNumber++).ToString();
+            //        cleanedSql.Append(paramName);
+            //        Configuration.Add(paramName, currentMatch.ToString());
+            //    }
+            //    else
+            //    {
+            //        cleanedSql.Append(currentMatch.Result("${text}"));
+            //    }
+            //}
+            //SelectCommand = cleanedSql.ToString();
 
             // Process the additional parameters - not necessary, because it's automatically in Configuration
             // var instancePAs = new Dictionary<string, IValueProvider>() { { "In", new DataTargetValueProvider(this) } };

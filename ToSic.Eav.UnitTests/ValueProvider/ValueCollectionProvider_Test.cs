@@ -13,7 +13,9 @@ namespace ToSic.Eav.UnitTests.ValueProvider
         public string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
         private string ResolvedSettingDefaultCat = "All";
         private string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
-        private string ResolvedSettingMaxItems = "100";
+        public static string ResolvedSettingMaxItems = "100";
+        public static string MaxPictures = "21";
+        public static string DefaultCategory = "All";
         #endregion
 
         [TestMethod]
@@ -66,8 +68,8 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             var vals = new Dictionary<string, object>()
             {
                 {"Title", "App Settings"},
-                {"DefaultCategoryName", "All"},
-                {"MaxPictures", "21"},
+                {"DefaultCategoryName", DefaultCategory},
+                {"MaxPictures", MaxPictures},
                 {"PicsPerRow", "3"}
             };
 
