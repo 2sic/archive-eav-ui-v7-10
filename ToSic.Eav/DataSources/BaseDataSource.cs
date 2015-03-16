@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
         /// Make sure that configuration-parameters have been parsed (tokens resolved)
         /// but do it only once (for performance reasons)
         /// </summary>
-		internal virtual void EnsureConfigurationIsLoaded()
+		protected internal virtual void EnsureConfigurationIsLoaded()
 		{
 			if (_configurationIsLoaded)
 				return;

@@ -38,6 +38,11 @@ namespace ToSic.Eav.DataSources
 					var getList = new GetListDelegate(_listDelegate);
 					return getList();
 				}
+                catch(System.InvalidOperationException ex)
+                {
+                    // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+                    throw ex;
+                }
 				catch (Exception ex)
 				{
 					throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);

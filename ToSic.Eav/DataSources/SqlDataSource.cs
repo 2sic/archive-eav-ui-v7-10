@@ -16,6 +16,9 @@ namespace ToSic.Eav.DataSources
 	{
 		private IDictionary<int, IEntity> _entities;
 
+        // Note: of the standard SQL-terms, I will only allow exec|execute|select
+        // Everything else shouldn't be allowed
+        public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase);
 		#region Configuration-properties
 		protected const string TitleFieldKey = "TitleField";
 		protected const string EntityIdFieldKey = "EntityIdField";
@@ -127,12 +130,14 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    internal override void EnsureConfigurationIsLoaded()
+	    protected internal override void EnsureConfigurationIsLoaded()
 	    {
 	        if (_configurationIsLoaded)
 	            return;
 
-            //throw new Exception("this code is not tested yet! must test before we publish 2dm 2015-03-09");
+            // Protect ourselves against SQL injection:
+            // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
+            // and adding these @params to the collection of configurations
             var Tokenizer = Tokens.BaseTokenReplace.Tokenizer;
 	        var sourceText = SelectCommand;
             var ParamNumber = 1;
@@ -152,19 +157,6 @@ namespace ToSic.Eav.DataSources
                     Result.Append(paramName);
                     Configuration.Add(paramName, curMatch.ToString());
                 }
-                //// get the infos we need to retrieve the value, get it. 
-                    //string strObjectName = curMatch.Result("${object}");
-                    //if (!String.IsNullOrEmpty(strObjectName))
-                    //{
-                    //    string strPropertyName = curMatch.Result("${property}");
-                    //    string strFormat = curMatch.Result("${format}");
-                    //    string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
-                    //    string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
-                    //    if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
-                    //        strConversion = strIfEmptyReplacment;
-                    //    Result.Append(strConversion);
-                    //}
-                //}
 
                 // attach the rest of the text (after the last match)
                 Result.Append(sourceText.Substring(charProgress));
@@ -172,35 +164,6 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = Result.ToString();
             }
-
-            // todo: ensure that we can protect ourselves against SQL injection
-            //var tokenizer = Tokens.BaseTokenReplace.Tokenizer;
-            //originalUnsafeSql = SelectCommand;
-            //var matches = tokenizer.Matches(SelectCommand);
-            //var cleanedSql = new StringBuilder();
-            //int ParamNumber = 0;
-
-            //// Try to extract all tokens, and replace them with Param-syntax
-            //foreach (Match currentMatch in matches)
-            //{
-            //    string strObjectName = currentMatch.Result("${object}");
-            //    if (!String.IsNullOrEmpty(strObjectName))
-            //    {
-            //        var paramName = "@AutoExtractedParam" + (ParamNumber++).ToString();
-            //        cleanedSql.Append(paramName);
-            //        Configuration.Add(paramName, currentMatch.ToString());
-            //    }
-            //    else
-            //    {
-            //        cleanedSql.Append(currentMatch.Result("${text}"));
-            //    }
-            //}
-            //SelectCommand = cleanedSql.ToString();
-
-            // Process the additional parameters - not necessary, because it's automatically in Configuration
-            // var instancePAs = new Dictionary<string, IValueProvider>() { { "In", new DataTargetValueProvider(this) } };
-            // ConfigurationProvider.LoadConfiguration(sqlParams, instancePAs);
-
 
 	        base.EnsureConfigurationIsLoaded();
 	    }
@@ -211,6 +174,10 @@ namespace ToSic.Eav.DataSources
 				return _entities;
 
 			EnsureConfigurationIsLoaded();
+
+            // Check if SQL contains forbidden terms
+            if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
+                throw new System.InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
 
 			_entities = new Dictionary<int, IEntity>();
 

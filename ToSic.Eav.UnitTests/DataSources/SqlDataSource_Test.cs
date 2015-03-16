@@ -13,7 +13,15 @@ namespace ToSic.Eav.UnitTests
     {
         private const string Connection = "";
         private const string ContentTypeName = "SqlData";
-        
+
+        private string[] IllegalSql = new[]
+        {
+            "Insert something into something",
+            "Select * from table; Insert something",
+            " Insert something into something",
+            "Drop tablename",
+            "Select * from Products; Drop tablename"
+        };
 
         [TestMethod]
         public void SqlDataSource_NoConfigChangesIfNotNecessary()
@@ -63,6 +71,33 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
             Assert.AreEqual(ValueProvider.ValueCollectionProvider_Test.DefaultCategory, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "2"]);
             Assert.AreEqual("CorrectlyDefaulted", sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "3"]);
         }
+
+        [TestMethod]
+        public void TestInvalidSqls()
+        {
+            for (var c = 0; c < IllegalSql.Length; c++)
+
+                try
+                {
+                    var sql = GenerateSqlDataSource(Connection, IllegalSql[c], ContentTypeName);
+                    var x = sql.List; // try to access list, should raise error      
+                    // If it doesn't raise an error, raise one
+                    Assert.Fail("Invalid SQL not detected, should have raised an error: '" + IllegalSql[c] + "'");
+                }
+                catch (InvalidOperationException)
+                {
+                    // all ok
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+        }
+
+     
+        
+        
+        
 
         public static SqlDataSource GenerateSqlDataSource(string connection, string query, string typeName)
         {
