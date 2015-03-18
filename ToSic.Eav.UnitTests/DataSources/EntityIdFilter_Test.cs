@@ -20,6 +20,16 @@ namespace ToSic.Eav.UnitTests.DataSources
 
 
         [TestMethod]
+        public void EntityIdFilter_NoItems()
+        {
+            const string ItemToFilter = "";
+            var filtered = CreateFilterForTesting(100, ItemToFilter);
+            var list = filtered.List;
+
+            Assert.AreEqual(0, list.Count, "Should return 0 items");
+        }
+
+        [TestMethod]
         public void EntityIdFilter_MultipleItems()
         {
             const string ItemToFilter = "1011,1023,1050,1003";

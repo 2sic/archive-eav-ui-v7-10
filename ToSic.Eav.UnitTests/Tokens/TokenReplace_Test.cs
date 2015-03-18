@@ -135,7 +135,7 @@ but this should [token:key] again"
         public void TokenReplace_ContainsTokenWithSubtoken()
         {
             foreach (var token in ValidTokensWithSubTokens)
-                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(token));            
+                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(token));   
         }
 
         [TestMethod]
