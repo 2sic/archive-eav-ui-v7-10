@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
@@ -96,8 +97,10 @@ namespace ToSic.Eav
 		public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
 			IValueCollectionProvider valueCollectionProvider = null)
 		{
+            if(upstream == null && valueCollectionProvider == null)
+                    throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 			var newDs = (BaseDataSource)Factory.Container.Resolve(typeof(T));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
