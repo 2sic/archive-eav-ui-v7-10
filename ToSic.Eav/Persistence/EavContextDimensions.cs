@@ -41,7 +41,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Test whehter Value exists on specified Entity and AttributeHelperTools with specified DimensionIds 
+		/// Test whehter Value exists on specified Entity and Attribute with specified DimensionIds 
 		/// </summary>
 		public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId)
 		{
@@ -49,7 +49,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Get Dimensions to use for specified Entity and AttributeHelperTools if unknown
+		/// Get Dimensions to use for specified Entity and Attribute if unknown
 		/// </summary>
 		public IQueryable<Dimension> GetFallbackDimensions(int entityId, int attributeId)
 		{

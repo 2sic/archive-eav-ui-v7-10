@@ -252,7 +252,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Get Title AttributeHelperTools for specified AttributeSetId
+		/// Get Title Attribute for specified AttributeSetId
 		/// </summary>
 		public Attribute GetTitleAttribute(int attributeSetId)
 		{
@@ -260,18 +260,18 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Get Entities describing the AttributeHelperTools (e.g. General and @String)
+		/// Get Entities describing the Attribute (e.g. General and @String)
 		/// </summary>
 		public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId, IDataSource source = null)
 		{
 			return GetAttributeMetaData(attributeId, _zoneId, _appId, source);
 		}
 		/// <summary>
-		/// Get Entities describing the AttributeHelperTools (e.g. General and @String)
+		/// Get Entities describing the Attribute (e.g. General and @String)
 		/// </summary>
 		public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId, int zoneId, int appId, IDataSource source = null)
 		{
-			// Get all EntityIds describing the AttributeHelperTools (e.g. General and @String)
+			// Get all EntityIds describing the Attribute (e.g. General and @String)
 			var entities = DataSource.GetMetaDataSource(zoneId, appId).GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, attributeId);
 			// Return all Attributes of all Entities with Value
 			return entities.SelectMany(e => e.Attributes).ToDictionary(a => a.Key, a => a.Value);
@@ -329,7 +329,7 @@ namespace ToSic.Eav
 									   set.AttributeSetID,
 									   set.Name,
 									   set.StaticName,
-                                       set.Scope,
+									   set.Scope,
 									   Attributes = (from a in set.AttributesInSets
 													 select new
 													 {
@@ -395,7 +395,7 @@ namespace ToSic.Eav
 											select e.PublishedEntityId.Value).ToArray();
 			#endregion
 
-			#region Get Entities with AttributeHelperTools-Values from Database
+			#region Get Entities with Attribute-Values from Database
 
 			var entitiesValues = from e in Entities
 								 where
@@ -582,7 +582,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Get Entity for specified EntityId
+		/// Get EntityModel for specified EntityId
 		/// </summary>
 		/// <returns>A single IEntity or throws InvalidOperationException</returns>
 		public IEntity GetEntityModel(int entityId, IDataSource source = null)

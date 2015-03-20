@@ -48,13 +48,14 @@ namespace ToSic.Eav
 		/// <param name="chain">Array of Full Qualified Names of DataSources</param>
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
+		/// <param name="valueCollectionProvider">Configuration Provider used for all DataSources</param>
 		/// <returns>A single DataSource that has attached </returns>
-		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId)
+		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, ValueCollectionProvider valueCollectionProvider)
 		{
-			var newSource = GetDataSource(chain[0], zoneId, appId);
+			var newSource = GetDataSource(chain[0], zoneId, appId, valueCollectionProvider: valueCollectionProvider);
 			if (chain.Count > 1)
 			{
-				var source = AssembleDataSourceReverse(chain.Skip(1).ToArray(), zoneId, appId);
+				var source = AssembleDataSourceReverse(chain.Skip(1).ToArray(), zoneId, appId, valueCollectionProvider);
 				((IDataTarget)newSource).Attach(source);
 			}
 			return newSource;
@@ -133,9 +134,10 @@ namespace ToSic.Eav
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 
-			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2);
+			var valueCollectionProvider = new ValueCollectionProvider();
+			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, valueCollectionProvider);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource);
+			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, valueCollectionProvider);
 			publishingFilter.ShowDrafts = showDrafts;
 
 			return publishingFilter;
