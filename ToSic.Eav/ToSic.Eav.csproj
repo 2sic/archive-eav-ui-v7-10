@@ -60,6 +60,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSources\Exceptions\DataSourceException.cs" />
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\AttributeHelperTools.cs" />
     <Compile Include="Data\AttributeWithMetaInfo.cs" />

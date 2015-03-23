@@ -38,8 +38,9 @@ namespace ToSic.Eav.ValueProvider
 
             string outputFormat = format == string.Empty ? "g" : format;
 
-            //bool propertyNotFound;
-            object valueObject = _entity.GetBestValue(property, dimensions, out propertyNotFound);
+            // bool propertyNotFound;
+            object valueObject = _entity.GetBestValue(property, dimensions);//, out propertyNotFound);
+            propertyNotFound = (valueObject == null);
 
             if (!propertyNotFound && valueObject != null)
             {
@@ -69,7 +70,9 @@ namespace ToSic.Eav.ValueProvider
                     var propertyMatch = SubProperties.Match(property);
                     if (propertyMatch.Success)
                     {
-                        valueObject = _entity.GetBestValue(propertyMatch.Groups[1].Value, dimensions, out propertyNotFound);
+                        valueObject = _entity.GetBestValue(propertyMatch.Groups[1].Value, dimensions);
+                        propertyNotFound = (valueObject == null);
+
                         if (!propertyNotFound && valueObject != null)
                         {
                             #region Handle child-Entity-Field (sorted list of related entities)

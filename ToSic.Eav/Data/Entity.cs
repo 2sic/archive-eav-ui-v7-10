@@ -148,16 +148,24 @@ namespace ToSic.Eav.Data
 
 	    public object GetBestValue(string attributeName)
 	    {
-	        var x = false;
-	        return GetBestValue(attributeName, new string[0], out x);
+	        return GetBestValue(attributeName, new string[0]);
 	    }
-	    public object GetBestValue(string attributeName, out bool propertyNotFound)
-	    {
-	        return GetBestValue(attributeName, new string[] {""}, out propertyNotFound);
-	    }
-        public object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound)
+        //public object GetBestValue(string attributeName, out bool propertyNotFound)
+        //{
+        //    return GetBestValue(attributeName, new string[] {""}, out propertyNotFound);
+        //}
+
+        //public object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound)
+        //{
+        //    var res = GetBestValue(attributeName, dimensions);
+        //    propertyNotFound = (res == null);
+        //    return res;
+        //}
+
+
+        public object GetBestValue(string attributeName, string[] dimensions) //, out bool propertyNotFound)
         {
-            propertyNotFound = false;
+            // propertyNotFound = false;
             object result = null;
 
 
@@ -217,7 +225,7 @@ namespace ToSic.Eav.Data
                     //    break;
                     default:
                         result = null;
-                        propertyNotFound = true;
+                        //propertyNotFound = true;
                         break;
                 }
             }

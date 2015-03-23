@@ -1,6 +1,9 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using ToSic.Eav.DataSources.Exceptions;
 
 namespace ToSic.Eav.DataSources
 {
@@ -68,8 +71,11 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 		}
 
+	    private IDictionary<int, IEntity> _results;
 		private IDictionary<int, IEntity> GetEntities()
 		{
+		    if (_results != null)
+		        return _results;
 			// todo: maybe do something about languages?
 
 			EnsureConfigurationIsLoaded();
@@ -84,23 +90,58 @@ namespace ToSic.Eav.DataSources
 			//if (string.IsNullOrEmpty(Value) && PassThroughOnEmptyValue)
 			//	return originals;
 
-			var results = (from e in originals
-				where e.Value.Attributes.ContainsKey(attr)
-				select e);
 
 			if (lang == "default") lang = ""; // no language is automatically the default language
 
 			if (lang == "any")
 				throw new NotImplementedException("language 'any' not implemented yet");
 
-			results = (from e in results
-				where e.Value[attr][lang].ToString() == filter
-				select e);
+            _results = GetFilteredWithLinq(originals, attr, lang, filter);
+            //_results = GetFilteredWithLoop(originals, attr, lang, filter);
 
-			return results.ToDictionary(x => x.Key, y => y.Value); 
+		    return _results;
 		}
 
+	    private Dictionary<int, IEntity> GetFilteredWithLinq(IDictionary<int, IEntity> originals, string attr, string lang, string filter)
+	    {
+	        var langArr = new string[] {lang};
+	        string nullError = "{error: not found}";
+            try
+	        {
+	            var results = (from e in originals
+	                where (e.Value.GetBestValue(attr, langArr) ?? nullError).ToString() == filter
+	                select e);
+	            return results.ToDictionary(x => x.Key, y => y.Value);
+	        }
+	        catch (Exception ex)
+	        {
+	            throw new DataSourceException(
+	                "Experienced error in ValueFilter while executing the filter LINQ. Probably something with type-missmatch or the same field using different types or null.",
+	                ex);
+	        }
+	    }
 
+	    /// <summary>
+        /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed
+        /// </summary>
+        /// <param name="inList"></param>
+        /// <param name="attr"></param>
+        /// <param name="lang"></param>
+        /// <returns></returns>
+	    private IDictionary<int, IEntity> GetFilteredWithLoop(IDictionary<int, IEntity> inList, string attr, string lang, string filter)
+	    {
+            var result = new Dictionary<int, IEntity>();
+            var langArr = new string[] { lang };
+            foreach (var res in inList)
+                //try
+                //{
+                    //if (res.Value[attr][lang].ToString() == filter)
+                    if ((res.Value.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+                        result.Add(res.Key, res.Value);
+                //}
+                //catch { }
+	        return result;
+	    }
 		
 	}
 }

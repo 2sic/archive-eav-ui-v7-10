@@ -8,6 +8,11 @@ namespace ToSic.Eav.UnitTests.DataSources
     [TestClass]
     public class DataTableDataSource_Test
     {
+        public static string[] TestCities = new string[] { "Buchs", "Grabs", "Sevelen", "Zürich" };
+        public static int MinHeight = 150;
+        public static int HeightVar = 55;
+        public static int IsMaleForEveryX = 3;
+
         [TestMethod]
         public void DataSource_Create_GeneralTest()
         {
@@ -36,8 +41,10 @@ namespace ToSic.Eav.UnitTests.DataSources
                 new DataColumn("FirstName"),
                 new DataColumn("LastName"),
                 new DataColumn("City"),
-                new DataColumn("Male", typeof (bool)),
-                new DataColumn("Birthdate", typeof (DateTime))
+                new DataColumn("IsMale", typeof (bool)),
+                new DataColumn("Birthdate", typeof (DateTime)),
+                new DataColumn("Height", typeof (int)),
+                new DataColumn("CityMaybeNull", typeof(string)), 
             });
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
@@ -54,7 +61,18 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var firstName = "First Name " + i;
                 var lastName = "Last Name " + i;
                 var fullName = firstName + " " + lastName;
-                dataTable.Rows.Add(i, fullName, firstName, lastName, "City " + i, i % 3 == 0, DateTime.Now.AddYears(-27));
+                var city = TestCities[i%TestCities.Length];
+                var cityMaybeNull = i % 2 == 0 ? null : city;
+                dataTable.Rows.Add(i, 
+                    fullName, 
+                    firstName, 
+                    lastName, 
+                    city,
+                    i % IsMaleForEveryX == 0, 
+                    DateTime.Now.AddYears(-27), 
+                    MinHeight + i % HeightVar,
+                    cityMaybeNull
+                    );
             }
         }
 

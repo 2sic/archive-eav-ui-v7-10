@@ -70,7 +70,7 @@ namespace ToSic.Eav
 	    /// <param name="propertyNotFound"></param>
 	    /// <returns>A string, int or even a EntityRelationship</returns>
 	    object GetBestValue(string attributeName);
-        object GetBestValue(string attributeName, out bool propertyNotFound);
-	    object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
+        object GetBestValue(string attributeName, string[] dimensions);
+	    //object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
 	}
 }

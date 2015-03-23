@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Exceptions;
 
 namespace ToSic.Eav.DataSources
 {
@@ -33,16 +34,20 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-				try
-				{
-					var getList = new GetListDelegate(_listDelegate);
-					return getList();
-				}
-                catch(System.InvalidOperationException ex)
-                {
-                    // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
-                    throw ex;
-                }
+			    try
+			    {
+			        var getList = new GetListDelegate(_listDelegate);
+			        return getList();
+			    }
+			    catch (System.InvalidOperationException ex)
+			    {
+			        // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+			        throw ex;
+			    }
+                //catch (DataSourceException ex)
+                //{
+                //    throw ex;
+                //}
 				catch (Exception ex)
 				{
 					throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
