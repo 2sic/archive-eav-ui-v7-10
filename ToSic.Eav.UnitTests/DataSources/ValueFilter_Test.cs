@@ -6,6 +6,9 @@ using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.UnitTests
 {
+    // Todo
+    // Create tests with language-parameters as well, as these tests ignore the language and always use default
+
     [TestClass]
     public class ValueFilter_Test
     {
@@ -69,10 +72,6 @@ namespace ToSic.Eav.UnitTests
         {
             var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
             var filtered = DataSource.GetDataSource<ValueFilter>(1, 1, ds);
-            // var filtered = new ValueFilter();
-            // filtered.ConfigurationProvider = ds.ConfigurationProvider;
-            // filtered.Attach(ds);
-            // filtered.EntityIds = entityIdsValue;
             return filtered;
         }
     }
