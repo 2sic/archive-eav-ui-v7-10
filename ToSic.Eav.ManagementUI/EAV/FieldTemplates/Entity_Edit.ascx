@@ -12,8 +12,8 @@
     <input style="display:none;" type="text" runat="server" id="hfEntityIds" ng-value="entityIds()" />
 
     <div ui-tree="options" data-empty-place-holder-enabled="false">
-        <ol ui-tree-nodes ng-model="valueCollection.SelectedEntities">
-            <li ng-repeat="item in valueCollection.SelectedEntities" ui-tree-node class="eav-entityselect-item">
+        <ol ui-tree-nodes ng-model="configuration.SelectedEntities">
+            <li ng-repeat="item in configuration.SelectedEntities" ui-tree-node class="eav-entityselect-item">
                 <div ui-tree-handle>
                     <span title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
                     <a data-nodrag title="Remove this item" ng-click="remove(this)" class="eav-entityselect-item-remove">[remove]</a>
@@ -22,10 +22,10 @@
         </ol>
     </div>
         
-    <select class="eav-entityselect-selector" ng-model="selectedEntity" ng-change="AddEntity()" ng-show="valueCollection.AllowMultiValue || valueCollection.SelectedEntities.length < 1">
+    <select class="eav-entityselect-selector" ng-model="selectedEntity" ng-change="AddEntity()" ng-show="configuration.AllowMultiValue || configuration.SelectedEntities.length < 1">
         <option value="">-- choose --</option>
         <option value="new" ng-if="CreateEntityAllowed()">-- new --</option>
-        <option ng-repeat="item in valueCollection.Entities" ng-disabled="valueCollection.SelectedEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
+        <option ng-repeat="item in configuration.Entities" ng-disabled="configuration.SelectedEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
     </select>
 
 </div>
