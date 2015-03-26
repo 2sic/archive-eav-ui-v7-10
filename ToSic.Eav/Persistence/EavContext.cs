@@ -735,7 +735,7 @@ namespace ToSic.Eav
 			{
 				// Handle Entity Relationships - they're stored in own tables
 				case "Entity":
-					UpdateEntityRelationships(attribute.AttributeID, (int[])newValue.Value, currentEntity);
+					UpdateEntityRelationships(attribute.AttributeID, (int?[])newValue.Value, currentEntity);
 					break;
 				// Handle simple values in Values-Table
 				default:
@@ -905,7 +905,7 @@ namespace ToSic.Eav
 			var relationshipValue = value as Value<Data.EntityRelationship>;
 			if (relationshipValue != null)
 			{
-				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => GetEntity(entityId).EntityGUID);
+				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? GetEntity(entityId.Value).EntityGUID : Guid.Empty);
 
 				return string.Join(",", entityGuids);
 			}
@@ -928,10 +928,16 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update Relationships of an Entity
 		/// </summary>
-		private void UpdateEntityRelationships(int attributeId, IEnumerable<int> newValue, Entity currentEntity)
+		private void UpdateEntityRelationships(int attributeId, IEnumerable<int?> newValue, Entity currentEntity)
 		{
 			// remove existing Relationships that are not in new list
-			var newEntityIds = newValue.Distinct().ToList();
+			var newEntityIds = newValue.ToList();
+
+			foreach (var relationship in newEntityIds)
+			{
+				
+			}
+
 			// remove duplicates and build List to use FindIndex() later
 			var relationsToDelete = currentEntity.EntityParentRelationships.Where(e => e.AttributeID == attributeId && !newEntityIds.Contains(e.ChildEntityID));
 			foreach (var relationToDelete in relationsToDelete.ToList())
@@ -967,7 +973,7 @@ namespace ToSic.Eav
 			foreach (var relationship in _entityRelationshipsQueue)
 			{
 				var entity = GetEntity(relationship.ParentEntityGuid);
-				var childEntityIds = new List<int>();
+				var childEntityIds = new List<int?>();
 				foreach (var childGuid in relationship.ChildEntityGuids)
 				{
 					try

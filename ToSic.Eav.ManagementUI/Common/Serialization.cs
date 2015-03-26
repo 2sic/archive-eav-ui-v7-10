@@ -43,11 +43,11 @@ namespace ToSic.Eav.ManagementUI.Serialization
 								 originalValueTyped.ChangeLogIdCreated,
 								 TypedContents = originalValueTyped.TypedContents.EntityIds
 							 };
-				IEnumerable<int> defaultValue = null;
+				IEnumerable<int?> defaultValue = null;
 				if (originalAttributeModel.DefaultValue != null)
 					defaultValue = ((Value<Data.EntityRelationship>)originalAttributeModel.DefaultValue).TypedContents.EntityIds;
 
-				IEnumerable<int> typedContents = null;
+				IEnumerable<int?> typedContents = null;
 				if (originalAttributeModel.TypedContents != null)
 					typedContents = originalAttributeModel.TypedContents.EntityIds;
 

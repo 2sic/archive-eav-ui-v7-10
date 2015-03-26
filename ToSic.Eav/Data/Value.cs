@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model for an Entity-AttributeHelperTools
         /// </summary>
-        internal static IValue GetValueModel(string attributeType, IEnumerable<int> entityIds, IDataSource source)
+        internal static IValue GetValueModel(string attributeType, IEnumerable<int?> entityIds, IDataSource source)
         {
             return GetValueModel(attributeType, entityIds, new Dimension[0], -1, -1, source);
         }
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Data
                         typedModel = new Value<decimal?>(string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture));
                         break;
                     case "Entity":
-                        var entityIds = value as IEnumerable<int>;
+                        var entityIds = value as IEnumerable<int?>;
                         typedModel = new Value<EntityRelationship>(new EntityRelationship(source) { EntityIds = entityIds });
                         break;
                     default:

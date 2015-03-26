@@ -11,11 +11,11 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class EntityRelationship : IEnumerable<IEntity>
     {
-        private static readonly int[] EntityIdsEmpty = new int[0];
+        private static readonly int?[] EntityIdsEmpty = new int?[0];
         /// <summary>
         /// List of Child EntityIds
         /// </summary>
-        public IEnumerable<int> EntityIds { get; internal set; }
+        public IEnumerable<int?> EntityIds { get; internal set; }
 
         private readonly IDataSource _source;
         //private EntityEnum _entityEnum;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         {
             if (_entities == null)
                 //_entities = _source == null ? new List<IEntity>() : _source.Out[DataSource.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
-                _entities = _source == null ? new List<IEntity>() : EntityIds.Select(l => _source.Out[DataSource.DefaultStreamName].List[l]).ToList();
+                _entities = _source == null ? new List<IEntity>() : EntityIds.Select(l => l.HasValue ? _source.Out[DataSource.DefaultStreamName].List[l.Value] : null).ToList();
 
             return new EntityEnum(_entities);
         }

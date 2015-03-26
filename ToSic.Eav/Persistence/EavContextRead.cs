@@ -565,14 +565,14 @@ namespace ToSic.Eav
 
 			#region Populate Entity-Relationships (after all EntityModels are created)
 			var relationshipsRaw = from r in EntityRelationships
-								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || entityIds.Contains(r.ChildEntityID) || entityIds.Contains(r.ParentEntityID)))
+								   where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || (!r.ChildEntityID.HasValue || entityIds.Contains(r.ChildEntityID.Value)) || entityIds.Contains(r.ParentEntityID)))
 								   orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
 								   select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
 			foreach (var relationship in relationshipsRaw)
 			{
 				try
 				{
-					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], entities[relationship.ChildEntityID]));
+					relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], relationship.ChildEntityID.HasValue ? entities[relationship.ChildEntityID.Value] : null));
 				}
 				catch (KeyNotFoundException) { } // may occour if not all entities are loaded
 			}
