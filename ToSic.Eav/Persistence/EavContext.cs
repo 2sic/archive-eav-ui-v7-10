@@ -735,7 +735,8 @@ namespace ToSic.Eav
 			{
 				// Handle Entity Relationships - they're stored in own tables
 				case "Entity":
-					UpdateEntityRelationships(attribute.AttributeID, (int?[])newValue.Value, currentEntity);
+					var entityIds = newValue.Value is int?[] ? (int?[]) newValue.Value : ((int[]) newValue.Value).Select(v => (int?) v).ToArray();
+					UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
 					break;
 				// Handle simple values in Values-Table
 				default:
@@ -932,28 +933,17 @@ namespace ToSic.Eav
 		{
 			// remove existing Relationships that are not in new list
 			var newEntityIds = newValue.ToList();
+			var existingRelationships = currentEntity.EntityParentRelationships.Where(e => e.AttributeID == attributeId).ToList();
 
-			foreach (var relationship in newEntityIds)
-			{
-				
-			}
-
-			// remove duplicates and build List to use FindIndex() later
-			var relationsToDelete = currentEntity.EntityParentRelationships.Where(e => e.AttributeID == attributeId && !newEntityIds.Contains(e.ChildEntityID));
-			foreach (var relationToDelete in relationsToDelete.ToList())
+			// Delete all existing relationships
+			foreach (var relationToDelete in existingRelationships)
 				EntityRelationships.DeleteObject(relationToDelete);
 
-
-			// add new Relationships that don't exist yet
-			var relationsToAdd = newEntityIds.Where(e => !currentEntity.EntityParentRelationships.Any(r => r.AttributeID == attributeId && r.ChildEntityID == e));
-			foreach (var childEntityId in relationsToAdd)
-				currentEntity.EntityParentRelationships.Add(new EntityRelationship { AttributeID = attributeId, ChildEntityID = childEntityId });
-
-			// ensure sortorder of all
-			foreach (var relationship in currentEntity.EntityParentRelationships.Where(r => r.AttributeID == attributeId))
+			// Create new relationships
+			for (int i = 0; i < newEntityIds.Count; i++)
 			{
-				var newSortOrder = newEntityIds.FindIndex(i => i == relationship.ChildEntityID);
-				relationship.SortOrder = newSortOrder;
+				var newEntityId = newEntityIds[i];
+				currentEntity.EntityParentRelationships.Add(new EntityRelationship { AttributeID = attributeId, ChildEntityID = newEntityId, SortOrder = i });
 			}
 		}
 
