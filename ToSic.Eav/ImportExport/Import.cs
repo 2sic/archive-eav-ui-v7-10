@@ -64,6 +64,8 @@ namespace ToSic.Eav.Import
 
                 _db.ImportEntityRelationshipsQueue();
 
+				_db.EnsureSharedAttributeSets();
+
                 _db.SaveChanges();
             }
 
@@ -111,6 +113,13 @@ namespace ToSic.Eav.Import
 
                 _importLog.Add(new LogItem(EventLogEntryType.Information, "AttributeSet already exists") { AttributeSet = attributeSet });
             }
+
+	        destinationSet.AlwaysShareConfiguration = attributeSet.AlwaysShareConfiguration;
+	        if (destinationSet.AlwaysShareConfiguration)
+	        {
+		        _db.EnsureSharedAttributeSets();
+	        }
+	        _db.SaveChanges();
 
             // append all Attributes
             foreach (var importAttribute in attributeSet.Attributes)

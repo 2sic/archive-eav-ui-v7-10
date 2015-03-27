@@ -14,24 +14,26 @@ namespace ToSic.Eav.Import
 		public string Scope { get; set; }
 		public List<Attribute> Attributes { get; set; }	// The List<> class does guarantee ordering
 		public Attribute TitleAttribute { get; set; }
+		public bool AlwaysShareConfiguration { get; set; }
 
 		public AttributeSet() { }
 
-		public AttributeSet(string name, string staticName, string description, string scope, List<Attribute> attributes)
+		public AttributeSet(string name, string staticName, string description, string scope, List<Attribute> attributes, bool alwaysShareConfiguration = false)
 		{
 			Name = name;
 			StaticName = staticName;
 			Description = description;
 			Scope = scope;
 			Attributes = attributes;
+			AlwaysShareConfiguration = alwaysShareConfiguration;
 		}
 
 		/// <summary>
 		/// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
 		/// </summary>
-		public static AttributeSet SystemAttributeSet(string staticName, string description, List<Attribute> attributes)
+		public static AttributeSet SystemAttributeSet(string staticName, string description, List<Attribute> attributes, bool alwaysShareConfiguration = false)
 		{
-			return new AttributeSet(staticName, staticName, description, "System", attributes);
+			return new AttributeSet(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
 		}
 	}
 
