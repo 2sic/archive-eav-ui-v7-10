@@ -673,8 +673,10 @@ namespace ToSic.Eav
 			{
 				// Handle Entity Relationships - they're stored in own tables
 				case "Entity":
-					if (newValue is ValueImportModel<List<Guid>> && attribute.Type == "Entity")
-						UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value, currentEntity.EntityGUID);
+					if (newValue is ValueImportModel<List<Guid>>)
+						UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), currentEntity.EntityGUID);
+					if (newValue is ValueImportModel<List<Guid?>>)
+						UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value, currentEntity.EntityGUID);
 					else
 						throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -950,7 +952,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
 		/// </summary>
-		private void UpdateEntityRelationships(int attributeId, List<Guid> newValue, Guid entityGuid)
+		private void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid entityGuid)
 		{
 			_entityRelationshipsQueue.Add(new EntityRelationshipQueueItem { AttributeId = attributeId, ChildEntityGuids = newValue, ParentEntityGuid = entityGuid });
 		}
@@ -968,7 +970,7 @@ namespace ToSic.Eav
 				{
 					try
 					{
-						childEntityIds.Add(GetEntity(childGuid).EntityID);
+						childEntityIds.Add(childGuid.HasValue ? GetEntity(childGuid.Value).EntityID : new int?());
 					}
 					catch (InvalidOperationException) { }	// may occur if the child entity wasn't created successfully
 				}
@@ -1389,7 +1391,7 @@ namespace ToSic.Eav
 		{
 			public int AttributeId { get; set; }
 			public Guid ParentEntityGuid { get; set; }
-			public List<Guid> ChildEntityGuids { get; set; }
+			public List<Guid?> ChildEntityGuids { get; set; }
 		}
 		#endregion
 

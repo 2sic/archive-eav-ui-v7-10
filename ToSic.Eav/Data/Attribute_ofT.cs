@@ -19,6 +19,10 @@ namespace ToSic.Eav.Data
         {
             get
             {
+				// Prevent Exception if Values is null
+	            if (Values == null)
+		            return default(ValueType);
+
                 try
                 {
                     var value = (IValue<ValueType>)Values.FirstOrDefault();
