@@ -25,7 +25,8 @@ namespace ToSic.Eav
 		/// <returns>Entity or throws InvalidOperationException</returns>
 		public Entity GetEntity(Guid entityGuid)
 		{
-			return GetEntitiesByGuid(entityGuid).Single();
+			// GetEntity should never return a draft entity that has a published version
+			return GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
 		}
 
 		internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
