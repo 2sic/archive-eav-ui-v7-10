@@ -168,8 +168,12 @@ namespace ToSic.Eav.Import
 					};
 					break;
 				case "Entity":
-					var entityGuids = !String.IsNullOrEmpty(value) ? value.Split(',').Select(Guid.Parse).ToList() : new List<Guid>(0);
-					valueModel = new ValueImportModel<List<Guid>>(entity) { Value = entityGuids };
+					var entityGuids = !String.IsNullOrEmpty(value) ? value.Split(',').Select(v =>
+					{
+						var guid = Guid.Parse(v);
+						return guid == Guid.Empty ? new Guid?() : guid;
+					}).ToList() : new List<Guid?>(0);
+					valueModel = new ValueImportModel<List<Guid?>>(entity) { Value = entityGuids };
 					break;
 				case "DateTime":
 					DateTime typedDateTime;
