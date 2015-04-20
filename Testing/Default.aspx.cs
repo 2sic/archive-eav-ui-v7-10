@@ -101,7 +101,7 @@ public partial class Default : Page
 				break;
 			case "datapipelinefactory":
 				IEnumerable<IValueProvider> config = null;
-				var source = DataPipelineFactory.GetDataSource(1, 347, config, new PassThrough());
+				var source = DataPipelineFactory.GetDataSource(1, 347, config); //, new PassThrough());
 				ShowDataSource(source, "DataPipelineFactory");
 				break;
 			case "appds":

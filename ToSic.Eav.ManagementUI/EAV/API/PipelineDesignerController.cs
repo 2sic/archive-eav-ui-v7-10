@@ -274,7 +274,7 @@ namespace ToSic.Eav.ManagementUI.API
 		{
 			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
 
-			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses, new PassThrough()).Out;
+			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;//, new PassThrough()).Out;
 			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
 
