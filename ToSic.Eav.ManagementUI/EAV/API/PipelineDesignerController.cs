@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
@@ -270,13 +271,66 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
 		[HttpGet]
-		public Dictionary<string, IEnumerable<IEntity>> QueryPipeline(int appId, int id)
+		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
 		{
 			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
 
-			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses).Out;//, new PassThrough()).Out;
-			return outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
+			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses);//.Out;//, new PassThrough()).Out;
+
+            // Todo: gather some statistics
+		    var stats = new List<StreamInfos>();
+            GetStreamInfosRecursive(outStreams as IDataTarget, ref stats);
+		    var debugResult = new {
+		        Query = outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
+		        Statistics = stats
+		    };
+
+		    return debugResult;// outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
+
+	    public class StreamInfos
+	    {
+	        public string TargetType;
+	        public Guid Target;
+	        public string SourceType;
+	        public Guid Source;
+	        public string StreamOut;
+	        public string StreamIn;
+	        public int Count;
+	        public bool Error;
+	    }
+
+        private void GetStreamInfosRecursive(IDataTarget source, ref List<StreamInfos> statsList)
+        {
+            foreach (var strm in source.In)
+            {
+                // First get all the stats (do this first so they stay together)
+                var infos = new StreamInfos();
+                try
+                {
+                    infos.TargetType = source.GetType().Name;
+                    infos.Target = (source as IDataSource).DataSourceGuid;
+                    infos.SourceType = strm.Value.Source.GetType().Name;
+                    infos.Source = strm.Value.Source.DataSourceGuid;
+                    infos.StreamIn = strm.Key;
+                    infos.StreamOut = strm.Value.Name;
+                    infos.Count = strm.Value.List.Count;
+                    infos.Error = false;
+                }
+                catch
+                {
+                    infos.Error = true;
+                }
+                statsList.Add(infos);
+                // then go to the substreams, try those
+                try
+                {
+                    GetStreamInfosRecursive(strm.Value.Source as IDataTarget, ref statsList);
+                }
+                catch { }
+            }
+        }
+
 
 		/// <summary>
 		/// Get Test Parameters for a Pipeline from the Pipeline-Entity

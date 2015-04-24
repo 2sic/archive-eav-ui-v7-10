@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -18,6 +19,11 @@ namespace ToSic.Eav.DataSources
 		/// Gets the AppId of this DataSource
 		/// </summary>
 		int AppId { get; }
+
+        /// <summary>
+        /// Internal ID usually from persisted configurations
+        /// </summary>
+        Guid DataSourceGuid { get; set; }
 
 		/// <summary>
 		/// Gets the Dictionary of Out-Streams
