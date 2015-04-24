@@ -139,7 +139,16 @@ namespace ToSic.Eav.DataSources
             // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
             // and adding these @params to the collection of configurations
             var Tokenizer = Tokens.BaseTokenReplace.Tokenizer;
-	        var sourceText = SelectCommand;
+	        
+            // Before we process the Select-Command, we must get it (by default it's just a token!)
+	        if (SelectCommand.StartsWith("[Settings"))
+	        {
+                var tempList = new Dictionary<string, string>();
+                tempList.Add("one", SelectCommand);
+                ConfigurationProvider.LoadConfiguration(tempList, null, 0); // load, but make sure no recursions to prevent pre-filling parameters
+	            SelectCommand = tempList["one"];
+	        }
+            var sourceText = SelectCommand;
             var ParamNumber = 1;
             var Result = new StringBuilder();
             var charProgress = 0;

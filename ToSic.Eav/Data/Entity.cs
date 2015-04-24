@@ -101,7 +101,7 @@ namespace ToSic.Eav.Data
 			EntityId = entityId;
 			EntityGuid = entityGuid;
 			AssignmentObjectTypeId = assignmentObjectTypeId;
-			Attributes = new Dictionary<string, IAttribute>();
+			Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase); // 2015-04-24 added, maybe a risk but should help with tokens
 			Type = type;
 			IsPublished = isPublished;
 			RepositoryId = repositoryId;

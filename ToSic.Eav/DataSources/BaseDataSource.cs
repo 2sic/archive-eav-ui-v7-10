@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
 		{
 			In = new Dictionary<string, IDataStream>();
 			Out = new Dictionary<string, IDataStream>();
-			Configuration = new Dictionary<string, string>();
+			Configuration = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -53,6 +53,8 @@ namespace ToSic.Eav.DataSources
 		public IDictionary<string, string> Configuration { get; internal set; }
 		internal bool _configurationIsLoaded;
 
+
+        // protected internal Dictionary<string, IValueProvider> Settings 
         /// <summary>
         /// Make sure that configuration-parameters have been parsed (tokens resolved)
         /// but do it only once (for performance reasons)

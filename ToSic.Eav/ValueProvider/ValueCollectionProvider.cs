@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Tokens;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.ValueProvider
 		/// </summary>
 		public ValueCollectionProvider()
 		{
-			Sources = new Dictionary<string, IValueProvider>();
+			Sources = new Dictionary<string, IValueProvider>(StringComparer.OrdinalIgnoreCase);
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
 
@@ -33,7 +34,7 @@ namespace ToSic.Eav.ValueProvider
         /// </summary>
         /// <param name="configList">Dictionary of configuration strings</param>
         /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
-		public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null)
+		public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null, int repeat = 2)
 		{
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
@@ -51,7 +52,7 @@ namespace ToSic.Eav.ValueProvider
                 // check if the string contains a token or not
                 if (!Tokens.TokenReplace.ContainsTokens(o.Value))
 					continue;
-                configList[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, 2); // with 2 further recurrances
+                configList[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, repeat); // with 2 further recurrances
 
                 //var newValue = instanceTokenReplace.ReplaceTokens(o.Value);
 
@@ -68,5 +69,11 @@ namespace ToSic.Eav.ValueProvider
             }
             #endregion
         }
+
+	    public string Replace(string sourceText)
+	    {
+
+	        return _reusableTokenReplace.ReplaceTokens(sourceText, 0);
+	    }
 	}
 }

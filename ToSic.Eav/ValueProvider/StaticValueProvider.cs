@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ToSic.Eav.ValueProvider
 {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.ValueProvider
 		/// </summary>
 		public StaticValueProvider(string name)
 		{
-			Properties = new Dictionary<string, string>();
+			Properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			Name = name;
 		}
 
