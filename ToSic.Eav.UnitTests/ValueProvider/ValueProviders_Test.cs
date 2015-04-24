@@ -22,7 +22,7 @@ namespace ToSic.Eav.UnitTests
             bool found = false;
 
             Assert.IsTrue(sv.Has("Alpha"));
-            Assert.IsFalse(sv.Has("alpha"));
+            Assert.IsTrue(sv.Has("alpha")); // true now that caps don't matter
             Assert.IsTrue(sv.Has("Bravo"));
             Assert.IsFalse(sv.Has("Charlie"));
             Assert.IsTrue(sv.Get("Alpha", "", ref found) == "found");
