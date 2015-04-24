@@ -60,6 +60,7 @@
     <Compile Include="DataSources\DataTableDataSource_Test.cs" />
     <Compile Include="DataSources\EntityIdFilter_Test.cs" />
     <Compile Include="DataSources\SqlDataSource_Test.cs" />
+    <Compile Include="DataSources\EntityTypeFilter_Test.cs" />
     <Compile Include="DataSources\ValueFilter_Test.cs" />
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\Entity_Test.cs" />

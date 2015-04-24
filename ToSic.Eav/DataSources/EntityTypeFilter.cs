@@ -31,16 +31,34 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(TypeNameKey, "[Settings:TypeName]");
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
-		{
-			EnsureConfigurationIsLoaded();
+	    private IDictionary<int, IEntity> GetEntities()
+	    {
+	        EnsureConfigurationIsLoaded();
 
-			var foundType = DataSource.GetCache(ZoneId, AppId).GetContentType(TypeName);
+            // 2015-04-24 had to deactivate cache-method, because not available during testing
+            //// Try to use real cache-id if it has a cache - probably faster and more precise
+	        try
+	        {
+	            var cache = DataSource.GetCache(ZoneId, AppId);
+	            if (cache != null)
+	            {
+	                var foundType = cache.GetContentType(TypeName);
+	                if (foundType != null) // maybe it doesn't find it!
+	                    return (from e in In[DataSource.DefaultStreamName].List
+	                        where e.Value.Type == foundType
+	                        select e).ToDictionary(x => x.Key, y => y.Value);
+	            }
+	        }
+	        catch 
+	        {
+	        }
 
-			return (from e in In[DataSource.DefaultStreamName].List
-					where e.Value.Type == foundType
-					select e).ToDictionary(x => x.Key, y => y.Value);
-		}
+            // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
+            // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
+	        return (from e in In[DataSource.DefaultStreamName].List
+	            where e.Value.Type.Name == TypeName
+	            select e).ToDictionary(x => x.Key, y => y.Value);
+	    }
 
 	}
 }

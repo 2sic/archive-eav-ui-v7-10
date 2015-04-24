@@ -9,7 +9,7 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class EntityValueProvider : BaseValueProvider
     {
-        private IEntity _entity;
+        protected IEntity _entity;
 	    private string[] dimensions = new string[] {""};
 
 	    public EntityValueProvider()

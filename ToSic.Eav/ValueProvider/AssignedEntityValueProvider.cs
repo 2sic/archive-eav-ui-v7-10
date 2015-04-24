@@ -38,7 +38,7 @@ namespace ToSic.Eav.ValueProvider
 		protected void LoadEntity()
 		{
 			var assignedEntities = _metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, _objectToProvideSettingsTo);
-			_assignedEntity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != DataSource.DataPipelinePartStaticName);
+			_entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != DataSource.DataPipelinePartStaticName);
 			_entityLoaded = true;
 		}
 
@@ -53,6 +53,7 @@ namespace ToSic.Eav.ValueProvider
             if (!_entityLoaded)
                 LoadEntity();
 
+            
             return base.Get(property, format, ref propertyNotFound);
             //try
             //{
