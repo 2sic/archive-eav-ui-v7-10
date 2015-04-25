@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         internal static Dictionary<string, IAttribute> GetTypedDictionaryForSingleLanguage(IDictionary<string, object> attributes, string titleAttributeName)
         {
-            var result = new Dictionary<string, IAttribute>();
+            var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var attribute in attributes)
             {
