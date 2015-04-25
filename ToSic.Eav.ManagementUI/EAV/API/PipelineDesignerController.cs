@@ -267,65 +267,155 @@ namespace ToSic.Eav.ManagementUI.API
 			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key)).ToDictionary(k => k.Key, v => v.Value);
 		}
 
+
 		/// <summary>
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
 		[HttpGet]
 		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
 		{
-			var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
-
-			var outStreams = DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses);//.Out;//, new PassThrough()).Out;
-
-            // Todo: gather some statistics
-		    var stats = new List<StreamInfos>();
-            GetStreamInfosRecursive(outStreams as IDataTarget, ref stats);
-		    var debugResult = new {
+			var outStreams = ConstructPipeline(appId, id);
+		    var debugInfo = PipelineDebugInfo(outStreams);
+		    return new
+		    {
 		        Query = outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
-		        Statistics = stats
+		        Streams = debugInfo.Streams,
+		        Sources = debugInfo.Sources
 		    };
-
-		    return debugResult;// outStreams.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
+		    //return outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value));
 		}
 
-	    public class StreamInfos
+
+        private static IDataSource ConstructPipeline(int appId, int id)
 	    {
-	        public string TargetType;
-	        public Guid Target;
-	        public string SourceType;
-	        public Guid Source;
-	        public string StreamOut;
-	        public string StreamIn;
-	        public int Count;
-	        public bool Error;
+	        var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
+	        return DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses);
 	    }
 
-        private void GetStreamInfosRecursive(IDataTarget source, ref List<StreamInfos> statsList)
+	    [HttpGet]
+	    public dynamic PipelineDebugInfo(int appId, int id)
+	    {
+	        return PipelineDebugInfo(ConstructPipeline(appId, id));
+	    }
+
+        /// <summary>
+        /// Prepare some statistics and infos about the pipeline to aid in debugging
+        /// </summary>
+        /// <param name="outStream"></param>
+        /// <returns></returns>
+        private dynamic PipelineDebugInfo(IDataSource outStream)
+	    {
+            // gather some statistics
+            var streamStats = new List<StreamInfo>();
+            var dsStats = new Dictionary<Guid, DataSourceInfo>();
+            GetStreamInfosRecursive(outStream as IDataTarget, ref streamStats, ref dsStats);
+            return new
+            {
+                Streams = streamStats,
+                Sources = dsStats
+            };
+	    }
+
+	    public class StreamInfo
+	    {
+	        public Guid Target;
+	        public Guid Source;
+	        public string SourceOut;
+	        public string TargetIn;
+	        public int Count;
+	        public bool Error = false;
+
+	        public StreamInfo(IDataStream strm, IDataTarget target, string inName)
+	        {
+                try
+                {
+                    Target = (target as IDataSource).DataSourceGuid;
+                    Source = strm.Source.DataSourceGuid;
+                    TargetIn = inName;
+                    SourceOut = strm.Name;
+                    Count = strm.List.Count;
+                }
+                catch
+                {
+                    Error = true;
+                }   
+	        }
+	    }
+
+	    public class DataSourceInfo
+	    {
+	        public Guid Guid;
+	        public string Type;
+	        public IDictionary<string, string> Configuration;
+	        public bool Error = false;
+
+	        public DataSourceInfo(IDataSource ds)
+	        {
+	            try
+	            {
+                    Guid = ds.DataSourceGuid;
+                    Type = ds.GetType().Name;
+                    Configuration = ds.Configuration;
+	            }
+	            catch (Exception)
+	            {
+	                Error = true;
+	            }
+	        }
+	    }
+
+        /// <summary>
+        /// Provide an array of infos related to a stream and data source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="statsList"></param>
+        private void GetStreamInfosRecursive(IDataTarget source, ref List<StreamInfo> statsList, ref Dictionary<Guid, DataSourceInfo> dsStats)
         {
             foreach (var strm in source.In)
             {
                 // First get all the stats (do this first so they stay together)
-                var infos = new StreamInfos();
+                //var stmInfo = new StreamInfo();
                 try
                 {
-                    infos.TargetType = source.GetType().Name;
-                    infos.Target = (source as IDataSource).DataSourceGuid;
-                    infos.SourceType = strm.Value.Source.GetType().Name;
-                    infos.Source = strm.Value.Source.DataSourceGuid;
-                    infos.StreamIn = strm.Key;
-                    infos.StreamOut = strm.Value.Name;
-                    infos.Count = strm.Value.List.Count;
-                    infos.Error = false;
+                    var stmInfo = new StreamInfo(strm.Value, source, strm.Key);
+                    statsList.Add(stmInfo);
+
+                    //// stmInfo.TargetType = source.GetType().Name;
+                    //stmInfo.Target = (source as IDataSource).DataSourceGuid;
+                    //// stmInfo.SourceType = strm.Value.Source.GetType().Name;
+                    //stmInfo.Source = strm.Value.Source.DataSourceGuid;
+                    //stmInfo.TargetIn = strm.Key;
+                    //stmInfo.SourceOut = strm.Value.Name;
+                    //stmInfo.Count = strm.Value.List.Count;
                 }
                 catch
                 {
-                    infos.Error = true;
+                    //stmInfo.Error = true;
                 }
-                statsList.Add(infos);
+                // statsList.Add(stmInfo);
+
+                // Try to add the target to Data-Source-Stats
+                try
+                {
+                    var di = new DataSourceInfo(source as IDataSource);
+                    if(!dsStats.ContainsKey(di.Guid))
+                        dsStats.Add(di.Guid, di);
+                }
+                catch {}
+
+                // Try to add the source to the data-source-stats
+                try
+                {
+                    var di = new DataSourceInfo(strm.Value.Source);
+                    if (!dsStats.ContainsKey(di.Guid))
+                        dsStats.Add(di.Guid, di);
+                }
+                catch { }
+
                 // then go to the substreams, try those
                 try
                 {
-                    GetStreamInfosRecursive(strm.Value.Source as IDataTarget, ref statsList);
+                    GetStreamInfosRecursive(strm.Value.Source as IDataTarget, ref statsList, ref dsStats);
                 }
                 catch { }
             }
