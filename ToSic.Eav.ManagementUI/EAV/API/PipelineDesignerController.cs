@@ -68,7 +68,7 @@ namespace ToSic.Eav.ManagementUI.API
 
 				#region Deserialize some Entity-Values
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-				pipelineJson[DataPipeline.StreamWiringAttributeName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataPipeline.StreamWiringAttributeName]);
+                pipelineJson[DataSource.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataSource.DataPipelineStreamWiringStaticName]);
 
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{

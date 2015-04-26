@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources
 		private static void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataPipeline.StreamWiringAttributeName][0]);
+			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataSource.DataPipelineStreamWiringStaticName][0]);
 			var initializedWirings = new List<WireInfo>();
 
 			// 1. wire Out-Streams of DataSources with no In-Streams

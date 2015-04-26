@@ -38,6 +38,12 @@ namespace ToSic.Eav
 		/// StaticName of the DataPipelinePart AttributeSet
 		/// </summary>
 		public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
+
+        /// <summary>
+        /// AttributeHelperTools Name on the Pipeline-Entity describing the Stream-Wiring
+        /// </summary>
+        public const string DataPipelineStreamWiringStaticName = "StreamWiring";
+
 		/// <summary>
 		/// Default In-/Out-Stream Name
 		/// </summary>

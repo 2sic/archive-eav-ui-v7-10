@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
@@ -9,11 +10,13 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataPipeline
 	{
-		private const string PipelineAttributeSetStaticName = "DataPipeline";
+        // duplicate, already defined elsewhere
+		// private const string PipelineAttributeSetStaticName = "DataPipeline";
+
 		/// <summary>
 		/// AttributeHelperTools Name on the Pipeline-Entity describing the Stream-Wiring
 		/// </summary>
-		public const string StreamWiringAttributeName = "StreamWiring";
+		// public const string StreamWiringAttributeName = "StreamWiring";
 
 		/// <summary>
 		/// Copy an existing DataPipeline by copying all Entities and uptdate their GUIDs
@@ -25,7 +28,7 @@ namespace ToSic.Eav.DataSources
 
 			// Clone Pipeline Entity with a new new Guid
 			var sourcePipelineEntity = ctx.GetEntity(pipelineEntityId);
-			if (sourcePipelineEntity.Set.StaticName != PipelineAttributeSetStaticName)
+            if (sourcePipelineEntity.Set.StaticName != DataSource.DataPipelineStaticName) //PipelineAttributeSetStaticName)
 				throw new ArgumentException("Entity is not an DataPipeline Entity", "pipelineEntityId");
 			var pipelineEntityClone = ctx.CloneEntity(sourcePipelineEntity, true);
 
@@ -48,7 +51,8 @@ namespace ToSic.Eav.DataSources
 			}
 
 			#region Update Stream-Wirings
-			var streamWiring = pipelineEntityClone.Values.Single(v => v.Attribute.StaticName == StreamWiringAttributeName);
+
+		    var streamWiring = pipelineEntityClone.Values.Single(v => v.Attribute.StaticName == DataSource.DataPipelineStreamWiringStaticName);// StreamWiringAttributeName);
 			var wiringsClone = new List<WireInfo>();
 			var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
 			if (wiringsSource != null)
@@ -87,7 +91,7 @@ namespace ToSic.Eav.DataSources
 			try
 			{
 				pipelineEntity = entities[entityId];
-				if (pipelineEntity.Type.StaticName != PipelineAttributeSetStaticName)
+                if (pipelineEntity.Type.StaticName != DataSource.DataPipelineStaticName)//PipelineAttributeSetStaticName)
 					throw new ArgumentException("Entity is not an DataPipeline Entity", "entityId");
 			}
 			catch (Exception)
@@ -109,5 +113,32 @@ namespace ToSic.Eav.DataSources
 			var metaDataSource = DataSource.GetMetaDataSource(zoneId, appId);
 			return metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntityGuid);
 		}
+
+
+        /// <summary>
+        /// Assembles a list of all queries / pipelines configured for this app. 
+        /// The queries internally are not assembled yet for performance reasons...
+        /// ...but will be auto-assembled the moment they are accessed
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="appId"></param>
+        /// <param name="valuesCollectionProvider"></param>
+        /// <returns></returns>
+	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider)
+	    {
+            var source = DataSource.GetInitialDataSource(appId: appId);
+            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
+            typeFilter.TypeName = DataSource.DataPipelineStaticName;
+
+	        var dict = new Dictionary<string, IDataSource>();
+	        foreach (var entQuery in typeFilter.List)
+	        {
+	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery.Value, valuesCollectionProvider);
+                dict.Add(entQuery.Value.Title[0].ToString(), delayedQuery);
+	        }
+	        return dict;
+	    }
+
+        
 	}
 }
