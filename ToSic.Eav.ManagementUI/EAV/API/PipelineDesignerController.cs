@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
@@ -21,6 +22,7 @@ namespace ToSic.Eav.ManagementUI.API
 	{
 		private EavContext _context;
 		private readonly string _userName;
+        public List<IValueProvider> ValueProviders { get; set; }
 
 		/// <summary>
 		/// Default Constructor
@@ -42,6 +44,9 @@ namespace ToSic.Eav.ManagementUI.API
 
 			if (eavConnectionString != null)
 				Eav.Configuration.SetConnectionString(eavConnectionString);
+
+            // Init empty list of ValueProviders
+            ValueProviders = new List<IValueProvider>();
 		}
 
 

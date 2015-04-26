@@ -21,7 +21,12 @@ namespace ToSic.Eav.DataSources.Debug
                 Target = (target as IDataSource).DataSourceGuid;
                 Source = strm.Source.DataSourceGuid;
                 TargetIn = inName;
-                SourceOut = strm.Name;
+                foreach (var outStm in strm.Source.Out)
+                    if (outStm.Value == strm)
+                        SourceOut = outStm.Key;
+
+                //SourceOut = strm.Source.Out.(strm)
+                // SourceOut = strm.Name;
                 Count = strm.List.Count;
             }
             catch
