@@ -149,7 +149,7 @@
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineFactory.js" />
+    <Content Include="EAV\PipelineDesigner\PipelineService.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\PipelineDesigner.aspx" />
     <Content Include="Pages\PipelineManagement.aspx" />

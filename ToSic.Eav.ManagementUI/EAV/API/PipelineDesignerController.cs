@@ -292,8 +292,8 @@ namespace ToSic.Eav.ManagementUI.API
 
         private static IDataSource ConstructPipeline(int appId, int id)
 	    {
-	        var configurationPropertyAccesses = GetPipelineTestParameters(appId, id);
-	        return DataPipelineFactory.GetDataSource(appId, id, configurationPropertyAccesses);
+            var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
+	        return DataPipelineFactory.GetDataSource(appId, id, testValueProviders);
 	    }
 
 	    [HttpGet]
@@ -304,42 +304,7 @@ namespace ToSic.Eav.ManagementUI.API
 
 
 
-		/// <summary>
-		/// Get Test Parameters for a Pipeline from the Pipeline-Entity
-		/// </summary>
-		private static IEnumerable<IValueProvider> GetPipelineTestParameters(int appId, int pipelineEntityId)
-		{
-			// Get the Entity describing the Pipeline
-			var source = DataSource.GetInitialDataSource(appId: appId);
-			var pipelineEntity = DataPipeline.GetPipelineEntity(pipelineEntityId, source);
 
-			// Parse Test-Parameters in Format [Token:Property]=Value
-			var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
-			if (testParameters == null)
-				return null;
-            // todo: dangerous: seems like another token-replace mechanism!
-			var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
-
-			// Create a list of static Property Accessors
-			var result = new List<IValueProvider>();
-			foreach (Match testParam in paramMatches)
-			{
-				var token = testParam.Groups["Token"].Value.ToLower();
-
-				// Ensure a PropertyAccess exists
-				var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticValueProvider;
-				if (propertyAccess == null)
-				{
-					propertyAccess = new StaticValueProvider(token);
-					result.Add(propertyAccess);
-				}
-
-				// Add the static value
-				propertyAccess.Properties.Add(testParam.Groups["Property"].Value, testParam.Groups["Value"].Value);
-			}
-
-			return result;
-		}
 
 		/// <summary>
 		/// Clone a Pipeline with all DataSources and their configurations

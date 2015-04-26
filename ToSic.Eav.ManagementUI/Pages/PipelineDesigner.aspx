@@ -21,7 +21,7 @@
 	<script src="../EAV/PipelineDesigner/assets/jquery.jsPlumb-1.7.2-min.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineDesigner.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineDesignerController.js"></script>
-	<script src="../EAV/PipelineDesigner/PipelineFactory.js"></script>
+	<script src="../EAV/PipelineDesigner/PipelineService.js"></script>
 	<script src="../EAV/AngularServices/NotificationService.js"></script>
 	<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 	<script src='../EAV/AngularServices/EavDialogService.js'></script>

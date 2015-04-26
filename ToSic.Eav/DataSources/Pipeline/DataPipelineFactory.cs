@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -167,5 +168,46 @@ namespace ToSic.Eav.DataSources
 
 			return default(T);
 		}
+
+        /// <summary>
+        /// Retrieve test values to test a specific pipeline. 
+        /// The specs are found in the pipeline definition, but the must be converted to a source
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="pipelineEntityId"></param>
+        /// <returns></returns>
+        public static IEnumerable<IValueProvider> GetTestValueProviders(int appId, int pipelineEntityId)
+        {
+            // Get the Entity describing the Pipeline
+            var source = DataSource.GetInitialDataSource(appId: appId);
+            var pipelineEntity = DataPipeline.GetPipelineEntity(pipelineEntityId, source);
+
+            // Parse Test-Parameters in Format [Token:Property]=Value
+            var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
+            if (testParameters == null)
+                return null;
+            // todo: dangerous: seems like another token-replace mechanism!
+            var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
+
+            // Create a list of static Property Accessors
+            var result = new List<IValueProvider>();
+            foreach (Match testParam in paramMatches)
+            {
+                var token = testParam.Groups["Token"].Value.ToLower();
+
+                // Ensure a PropertyAccess exists
+                var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticValueProvider;
+                if (propertyAccess == null)
+                {
+                    propertyAccess = new StaticValueProvider(token);
+                    result.Add(propertyAccess);
+                }
+
+                // Add the static value
+                propertyAccess.Properties.Add(testParam.Groups["Property"].Value, testParam.Groups["Value"].Value);
+            }
+
+            return result;
+        }
 	}
 }

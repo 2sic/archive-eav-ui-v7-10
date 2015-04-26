@@ -13,7 +13,7 @@
 	<script src="../Scripts/angular.js"></script>
 	<script src="../Scripts/angular-resource.min.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
-	<script src="../EAV/PipelineDesigner/PipelineFactory.js"></script>
+	<script src="../EAV/PipelineDesigner/PipelineService.js"></script>
 	<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 </head>
 <body>
