@@ -7,7 +7,7 @@ using ToSic.Eav.ValueProvider;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return all Entities from a specific App
+	/// Provides a data-source to a query (pipeline), but won't assemble the pipeline unless accessed
 	/// </summary>
 	public class DeferredPipelineQuery : BaseDataSource
 	{

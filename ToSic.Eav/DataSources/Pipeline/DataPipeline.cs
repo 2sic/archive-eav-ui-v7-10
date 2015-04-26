@@ -10,14 +10,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataPipeline
 	{
-        // duplicate, already defined elsewhere
-		// private const string PipelineAttributeSetStaticName = "DataPipeline";
-
-		/// <summary>
-		/// AttributeHelperTools Name on the Pipeline-Entity describing the Stream-Wiring
-		/// </summary>
-		// public const string StreamWiringAttributeName = "StreamWiring";
-
 		/// <summary>
 		/// Copy an existing DataPipeline by copying all Entities and uptdate their GUIDs
 		/// </summary>
@@ -130,7 +122,7 @@ namespace ToSic.Eav.DataSources
             var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
             typeFilter.TypeName = DataSource.DataPipelineStaticName;
 
-	        var dict = new Dictionary<string, IDataSource>();
+	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in typeFilter.List)
 	        {
 	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery.Value, valuesCollectionProvider);
