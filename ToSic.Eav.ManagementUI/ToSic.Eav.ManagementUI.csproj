@@ -105,6 +105,7 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
+    <Content Include="Default.aspx" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
@@ -153,13 +154,10 @@
     <Content Include="Global.asax" />
     <Content Include="Pages\PipelineDesigner.aspx" />
     <Content Include="Pages\PipelineManagement.aspx" />
-    <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
-    <Content Include="Scripts\angular-resource.js" />
     <Content Include="Scripts\angular-resource.min.js" />
     <Content Include="Scripts\angular-ui-tree.min.css" />
     <Content Include="Scripts\angular-ui-tree.min.js" />
-    <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -178,7 +176,6 @@
     <Content Include="Scripts\images\ui-icons_888888_256x240.png" />
     <Content Include="Scripts\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.10.2.min.js" />
     <Content Include="Scripts\fancybox\blank.gif" />
     <Content Include="Scripts\fancybox\fancybox-x.png" />
     <Content Include="Scripts\fancybox\fancybox-y.png" />
@@ -217,10 +214,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Scripts\angular.min.js.map" />
-    <Content Include="Scripts\jquery.min.map" />
-    <Content Include="Scripts\angular-resource.min.js.map" />
-    <Content Include="Scripts\angular-animate.min.js.map" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>
@@ -231,6 +224,13 @@
     <Compile Include="Common\Forms.cs" />
     <Compile Include="Common\Serialization.cs" />
     <Compile Include="Common\EventHandlers.cs" />
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="EAV\API\EntitiesController.cs" />
     <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
       <DependentUpon>PipelineManagement.ascx</DependentUpon>

@@ -18,7 +18,10 @@
 			</div>
 		</div>
 		<div class="actions panel panel-default">
-			<div class="panel-heading">Actions</div>
+			<div class="panel-heading">
+				<span class="pull-left">Actions</span>
+				<a href="http://2sxc.org/help" class="btn btn-info btn-xs pull-right" target="_blank"><span class="glyphicon glyphicon-question-sign"></span> Help</a>
+			</div>
 			<div class="panel-body">
 				<button type="button" class="btn btn-primary btn-block" ng-disabled="readOnly" ng-click="savePipeline()"><span class="glyphicon glyphicon-floppy-save"></span> Save</button>
 				<select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
