@@ -2,15 +2,16 @@
 
 <%@ Register Src="~/EAV/PipelineDesigner/PipelineManagement.ascx" TagPrefix="eav" TagName="PipelineManagement" %>
 
-<!DOCTYPE html>
+<!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<title>Pipeline Management</title>
+	<base href="/" />
 	<link rel="stylesheet" href="../CSS/bootstrap.min.css" />
 	<link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
 	<script src="../Scripts/jquery-1.9.1.min.js"></script>
-	<script src="../Scripts/angular.js"></script>
+	<script src="../Scripts/angular.min.js"></script>
 	<script src="../Scripts/angular-resource.min.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
 	<script src="../EAV/PipelineDesigner/PipelineService.js"></script>
