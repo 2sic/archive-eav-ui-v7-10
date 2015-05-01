@@ -1,4 +1,4 @@
-﻿// PipelineFactory provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
+﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 angular.module('pipelineService', [])
     .factory('pipelineService', ['$resource', '$q', '$filter', 'eavGlobalConfigurationProvider', '$http', function ($resource, $q, $filter, eavGlobalConfigurationProvider, $http) {
 	'use strict';

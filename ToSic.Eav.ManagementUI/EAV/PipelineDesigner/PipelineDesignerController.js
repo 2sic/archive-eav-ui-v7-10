@@ -22,7 +22,7 @@ pipelineDesigner.controller('PipelineDesignerController',
 		}
 		pipelineService.setAppId($location.search().AppId);
 
-		// Get Data from PipelineFactory (Web API)
+		// Get Data from PipelineService (Web API)
 		pipelineService.getPipeline($scope.PipelineEntityId).then(function (success) {
 			$scope.pipelineData = success;
 			$scope.readOnly = !success.Pipeline.AllowEdit;
@@ -405,7 +405,7 @@ pipelineDesigner.controller('PipelineDesignerController',
 		// Query the Pipeline
 		$scope.queryPipeline = function () {
 			var query = function () {
-				// Query pipelineFactory for the result...
+				// Query pipelineService for the result...
 				uiNotification.wait('Running Query ...');
 
 				pipelineService.queryPipeline($scope.PipelineEntityId).then(function (success) {

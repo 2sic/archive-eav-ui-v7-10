@@ -8,7 +8,6 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Pipeline Designer</title>
-	<base href="/" />
 	<link rel="stylesheet" href="../EAV/PipelineDesigner/PipelineDesigner.css">
 	<link rel="stylesheet" href="../Scripts/toaster.css" />
 	<link rel="stylesheet" href="../CSS/bootstrap.min.css" />
