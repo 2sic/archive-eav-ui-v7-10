@@ -675,7 +675,7 @@
 			if (!Eav.Gps._mapsApiInitDone) {
 				$(".eav-gps-map-actions input[type='button']").prop("disabled", true);	// disable all map-buttons to prevent multiple click while init
 				Eav.Gps._mapsInitCallerStaticName = latitudeStaticName;
-				$.getScript("http://maps.googleapis.com/maps/api/js?sensor=false&callback=Eav.Gps._initMapApiCallback");
+				$.getScript("//maps.googleapis.com/maps/api/js?sensor=false&callback=Eav.Gps._initMapApiCallback");
 			} else
 				Eav.Gps._initMap(latitudeStaticName);
 		}
