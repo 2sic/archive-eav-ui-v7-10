@@ -101,7 +101,7 @@ but this should [token:key] again"
 
         #region General test objects and initializer/constructor
 
-        private Regex tokenRegEx = BaseTokenReplace.Tokenizer;
+        private Regex tokenRegEx = TokenReplace.Tokenizer;
          
 
         public TokenReplace_Test()

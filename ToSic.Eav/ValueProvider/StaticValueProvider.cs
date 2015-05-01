@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 
 namespace ToSic.Eav.ValueProvider
@@ -14,11 +15,11 @@ namespace ToSic.Eav.ValueProvider
 		public Dictionary<string, string> Properties { get; private set; }
 
 		/// <summary>
-		/// The class constructor
+		/// The class constructor, can optionally take a dictionary to reference with, otherwise creates a new one
 		/// </summary>
-		public StaticValueProvider(string name)
+		public StaticValueProvider(string name, Dictionary<string, string> valueList = null)
 		{
-			Properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Properties = valueList ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			Name = name;
 		}
 
