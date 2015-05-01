@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources
             // Protect ourselves against SQL injection:
             // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
             // and adding these @params to the collection of configurations
-            var Tokenizer = Tokens.BaseTokenReplace.Tokenizer;
+            var Tokenizer = Tokens.TokenReplace.Tokenizer;
 	        
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))

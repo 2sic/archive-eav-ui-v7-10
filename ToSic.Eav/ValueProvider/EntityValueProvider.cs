@@ -64,30 +64,27 @@ namespace ToSic.Eav.ValueProvider
             else
             {
                 #region Check for Navigation-Property (e.g. Manager:Name)
-                if (property.Contains(':'))
-                {
-                    //var propertyMatch = Regex.Match(property, "([a-z]+):([a-z]+)", RegexOptions.IgnoreCase);
-                    var propertyMatch = SubProperties.Match(property);
-                    if (propertyMatch.Success)
-                    {
-                        valueObject = _entity.GetBestValue(propertyMatch.Groups[1].Value, dimensions);
-                        propertyNotFound = (valueObject == null);
 
-                        if (!propertyNotFound && valueObject != null)
+                var subTokens = CheckAndGetSubToken(property);
+                if (subTokens.HasSubtoken)
+                {
+                    valueObject = _entity.GetBestValue(subTokens.Source, dimensions);
+
+                    if (valueObject != null)
+                    {
+                        #region Handle child-Entity-Field (sorted list of related entities)
+                        var relationshipList = valueObject as Data.EntityRelationship;
+                        if (relationshipList != null)
                         {
-                            #region Handle child-Entity-Field (sorted list of related entities)
-                            var relationshipList = valueObject as Data.EntityRelationship;
-                            if (relationshipList != null)
-                            {
-                                if (!relationshipList.Any())
-                                    return string.Empty;
-                                else
-                                    return new EntityValueProvider(relationshipList.First())
-                                        .Get(propertyMatch.Groups[2].Value, format, formatProvider, ref propertyNotFound);
-                            }
-                            #endregion
+                            if (!relationshipList.Any())
+                                return string.Empty;
+                            else
+                                return new EntityValueProvider(relationshipList.First())
+                                    .Get(subTokens.Rest, format, formatProvider, ref propertyNotFound);
                         }
+                        #endregion
                     }
+                    
                 }
                 #endregion
 

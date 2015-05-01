@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.Serialization.Formatters;
+using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.ValueProvider
 {
@@ -11,9 +12,36 @@ namespace ToSic.Eav.ValueProvider
         // note: set should be private, but hard to define through an interface
         public string Name { get; set; }
 
+        #region Sub-Token analysis and splitting
         // this is needed by some property accesses which support sub-properties like Content:Publisher:Location:City...
         // todo: should optimize to use named matches, to ensure that reg-ex changes doesn't change numbering...
-        internal static readonly Regex SubProperties = new Regex("([a-z]+):([a-z]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex SubProperties = new Regex("([a-z]+):([a-z]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        /// <summary>
+        /// Check if it has sub-tokens and split up the material for further use
+        /// </summary>
+        /// <param name="original"></param>
+        /// <returns></returns>
+        public SubToken CheckAndGetSubToken(string original)
+        {
+            var result = new SubToken();
+
+            // Do quick-check - without a ":" it doesn't have sub-tokens so stop here
+            if (!original.Contains(":"))
+                return result;
+
+            var match = SubProperties.Match(original);
+            if (match.Success)
+            {
+                result.HasSubtoken = true;
+                result.Source = match.Groups[1].Value;
+                result.Rest = match.Groups[2].Value;
+            }
+            return result;
+        }
+
+        
+        #endregion
+
 
         /// <summary>
         /// Default Get... must be overridden
@@ -63,5 +91,12 @@ namespace ToSic.Eav.ValueProvider
         }
 
         #endregion
+    }
+
+    public class SubToken
+    {
+        public bool HasSubtoken = false;
+        public string Source;
+        public string Rest;
     }
 }

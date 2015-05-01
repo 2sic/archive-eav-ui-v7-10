@@ -34,24 +34,23 @@ namespace ToSic.Eav.ValueProvider
 		public override string Get(string property, string format, ref bool propertyNotFound)
 		{
             // Check if it has sub-keys to see if it's trying to match a inbound stream
-            var propertyMatch = SubProperties.Match(property);
-		    if (!propertyMatch.Success)
+            var subTokens = CheckAndGetSubToken(property);
+            // var propertyMatch = SubProperties.Match(property);
+		    if (!subTokens.HasSubtoken)
 		    {
 		        propertyNotFound = true;
 		        return string.Empty;
 		    }
 
             // check if this stream exists
-		    var streamName = propertyMatch.Groups[1].Value;
-            var subProperty = propertyMatch.Groups[2].Value;
-		    if (!_dataTarget.In.ContainsKey(streamName))
+		    if (!_dataTarget.In.ContainsKey(subTokens.Source))
 		    {
                 propertyNotFound = true;
                 return string.Empty;
             }
 
             // check if any entities exist in this specific in-stream
-            var entityStream = _dataTarget.In[streamName];
+            var entityStream = _dataTarget.In[subTokens.Source];
             if (!entityStream.List.Any())
 		    {
                 propertyNotFound = true;
@@ -60,7 +59,7 @@ namespace ToSic.Eav.ValueProvider
 
             // Create an EntityValueProvider based on the first item, return its Get
 		    var first = entityStream.List.First().Value;
-		    return new EntityValueProvider(first).Get(subProperty, format, ref propertyNotFound);
+		    return new EntityValueProvider(first).Get(subTokens.Rest, format, ref propertyNotFound);
 
 		}
 
