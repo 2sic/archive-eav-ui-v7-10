@@ -542,11 +542,22 @@ namespace ToSic.Eav
 			#region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
 			if (dimensionIds.Count > 0)
 			{
+				var attributeMetadataSource = DataSource.GetMetaDataSource(ZoneId, AppId);
+
 				var keys = newValuesTyped.Keys.ToArray();
 				// Get all Values that are not present in newValues
 				var valuesToPurge = entity.Values.Where(v => !v.ChangeLogIDDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionID)));
 				foreach (var valueToPurge in valuesToPurge)
 				{
+					// Don't touch Value if attribute is not visible in UI
+					var attributeMetadata = attributeMetadataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, valueToPurge.AttributeID, "@All").FirstOrDefault();
+					if (attributeMetadata != null)
+					{
+						var visibleInEditUi = ((Attribute<bool?>)attributeMetadata["VisibleInEditUI"]).TypedContents;
+						if (visibleInEditUi == false)
+							continue;
+					}
+
 					// Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
 					// if yes, delete/invalidate the value
 					if (valueToPurge.ValuesDimensions.Count == 1)
@@ -737,7 +748,7 @@ namespace ToSic.Eav
 			{
 				// Handle Entity Relationships - they're stored in own tables
 				case "Entity":
-					var entityIds = newValue.Value is int?[] ? (int?[]) newValue.Value : ((int[]) newValue.Value).Select(v => (int?) v).ToArray();
+					var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
 					UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
 					break;
 				// Handle simple values in Values-Table

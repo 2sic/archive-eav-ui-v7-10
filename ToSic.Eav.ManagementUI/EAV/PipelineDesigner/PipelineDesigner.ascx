@@ -7,13 +7,16 @@
 				datasource
 				id="dataSource_{{dataSource.EntityGuid}}"
 				class="dataSource"
-				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px"
-				title="Double click to edit the Configuration"
-				ng-dblclick="configureDataSource(dataSource)">
+				ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px">
+				<div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" ng-if="!dataSource.ReadOnly">
+					<span class="glyphicon glyphicon-list-alt"></span>
+				</div>
 				<div class="name" title="Click to edit the Name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br/>
 				<div class="description" title="Click to edit the Description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br/>
 				<div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
-				<div class="ep" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly"></div>
+				<div class="ep" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</div>
 				<div class="delete glyphicon glyphicon-remove" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
 			</div>
 		</div>
@@ -29,13 +32,7 @@
 				</select>
 				<button type="button" class="btn btn-default btn-sm" title="Query the Data of this Pipeline" ng-click="queryPipeline()"><span class="glyphicon glyphicon-play"></span> Query</button>
 				<button type="button" class="btn btn-default btn-sm" title="Clone this Pipeline with all DataSources and Configurations" ng-click="clonePipeline()" ng-disabled="!PipelineEntityId"><span class="glyphicon glyphicon-share-alt"></span> Clone</button>
-
-						<a class="btn btn-xs btn-default" target="_self" ng-href="{{getPipelineUrl('edit', PipelineEntityId)}}">
-							<span class="glyphicon glyphicon-pencil"></span> Test Parameters
-						</a>
-
-
-				<button type="button" class="btn btn-info btn-xs" ng-click="editTestParameters()"><span class="glyphicon glyphicon-info-sign"></span> Test Parameters</button>
+				<button type="button" class="btn btn-default btn-sm" ng-click="editPipelineEntity()"><span class="glyphicon glyphicon-pencil"></span> Test Parameters</button>
 				<button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><span class="glyphicon glyphicon-info-sign"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
 				<button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><span class="glyphicon glyphicon-repeat"></span> Repaint</button>
 				<button type="button" class="btn btn-info btn-xs" ng-click="toogleDebug()"><span class="glyphicon glyphicon-info-sign"></span> {{debug ? 'Hide' : 'Show'}} Debug Info</button>

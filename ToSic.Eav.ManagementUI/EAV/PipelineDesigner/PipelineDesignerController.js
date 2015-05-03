@@ -45,8 +45,6 @@ pipelineDesigner.controller('PipelineDesignerController',
 					outlineWidth: 2,
 					outlineColor: "white"
 				},
-				EndpointHoverStyle: { fillStyle: "#216477", strokeStyle: "#216477" },
-				ConnectionOverlays: [['Arrow', { location: 0.7 }]],
 				PaintStyle: {
 					lineWidth: 4,
 					strokeStyle: '#61B7CF',
@@ -91,7 +89,8 @@ pipelineDesigner.controller('PipelineDesignerController',
 
 		// the definition of source endpoints (the small blue ones)
 		var sourceEndpoint = {
-			paintStyle: { strokeStyle: '#7AB02C', fillStyle: 'transparent', radius: 7, lineWidth: 3 },
+			paintStyle: { fillStyle: 'transparent', radius: 10, lineWidth: 0 },
+			cssClass: "sourceEndpoint",
 			maxConnections: -1,
 			isSource: true,
 			anchor: ['Continuous', { faces: ['top'] }],
@@ -100,7 +99,8 @@ pipelineDesigner.controller('PipelineDesignerController',
 
 		// the definition of target endpoints (will appear when the user drags a connection) 
 		var targetEndpoint = {
-			paintStyle: { fillStyle: '#7AB02C', radius: 11 },
+			paintStyle: { fillStyle: 'transparent', radius: 10, lineWidth: 0 },
+			cssClass: "targetEndpoint",
 			maxConnections: 1,
 			isTarget: true,
 			anchor: ['Continuous', { faces: ['bottom'] }],
@@ -131,7 +131,7 @@ pipelineDesigner.controller('PipelineDesignerController',
 						$scope.jsPlumbInstance.makeTarget(element, targetEndpointUnlimited);
 					}
 
-					$scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: '.ep', });
+					$scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: '.ep .glyphicon', });
 				}
 
 				// make DataSources draggable
@@ -312,22 +312,19 @@ pipelineDesigner.controller('PipelineDesignerController',
 				endpoints.hideOverlays();
 		}
 
-	    // Make URL-Provider available to the scope
-		$scope.getPipelineUrl = pipelineService.getPipelineUrl;
-		
-		$scope.editTestParameters = function editTestParameters() {
-            // todo: save first?
-		    // todo: open dialog
-		    var editUrl = pipelineService.getPipelineUrl('edit', $scope.PipelineEntityId);
-//		    pipelineService.getDataSourceConfigurationUrl(dataSource).then(function (url) {
-		        uiNotification.clear();
-		        eavDialogService.open({ url: editUrl, title: 'Edit Test Values' });
-		    //}, function (error) {
-		    //    uiNotification.error('Open Configuration UI failed', error);
-//		    });
-
-            // todo: relod something?
-        }
+		// Edit Pipeline Entity
+		$scope.editPipelineEntity = function () {
+			// save Pipeline, then open Edit Dialog
+			$scope.savePipeline().then(function () {
+				eavDialogService.open({
+					url: pipelineService.getPipelineUrl('edit', $scope.PipelineEntityId),
+					title: 'Edit Test Values',
+					onClose: function () {
+						pipelineService.getPipeline($scope.PipelineEntityId).then(pipelineSaved);
+					}
+				});
+			});
+		}
 
 		// Sync jsPlumb Connections and StreamsOut to the pipelineData-Object
 		var syncPipelineData = function () {
@@ -413,10 +410,13 @@ pipelineDesigner.controller('PipelineDesignerController',
 					uiNotification.clear();
 					eavDialogService.open({
 						title: 'Query result',
-						content: '<div><div>The Full result was logged to the Browser Console. Further down you\'ll find more debug-infos. </div>' 
+						content: '<div><div>The Full result was logged to the Browser Console. Further down you\'ll find more debug-infos. </div>'
                             + '<h3>Parameters used</h3><div>' + ($scope.pipelineData.Pipeline.TestParameters.length > 5 ? $scope.pipelineData.Pipeline.TestParameters.replace('\n', '<br>') : 'no test params specified') + '</div> '
                             + '<h3>Query result</h3><div> <pre id="pipelineQueryResult">' + $filter('json')(success.Query) + '</pre>' + showConnectionTable(success) + '</div>'
                             + '</div'
+					});
+					$timeout(function () {
+						showEntityCountOnStreams(success);
 					});
 					$log.debug(success);
 				}, function (reason) {
@@ -424,40 +424,64 @@ pipelineDesigner.controller('PipelineDesignerController',
 				});
 			};
 
-            // Create html-table with connection debug-info
+			// Create html-table with connection debug-info
 			var showConnectionTable = function (result) {
-			    var srcTbl = '<h3>Sources</h3>' +
+				var srcTbl = '<h3>Sources</h3>' +
 			        '<table><tr><th>Guid</th><th>Type</th><th>Config</th></tr>';
-			    var src = result.Sources;
-			    for (var s in src) {
-			        if (s[0] != '$') {
-			            srcTbl += "<tr><td><pre>" + s.substring(0, 13) + "...</pre></td><td>" + src[s].Type + "</td><td>";
-			            var cnf = src[s].Configuration;
-			            for (var c in cnf) 
-			                if (c[0] != '$') 
-			                    srcTbl += '<b>' + c + '</b>' + "=" + cnf[c] + '</br>';
-			            srcTbl += "</td></tr>";
-			        }
-			    }
-			    srcTbl += "</table>";
+				var src = result.Sources;
+				for (var s in src) {
+					if (s[0] != '$') {
+						srcTbl += "<tr><td><pre>" + s.substring(0, 13) + "...</pre></td><td>" + src[s].Type + "</td><td>";
+						var cnf = src[s].Configuration;
+						for (var c in cnf)
+							if (c[0] != '$')
+								srcTbl += '<b>' + c + '</b>' + "=" + cnf[c] + '</br>';
+						srcTbl += "</td></tr>";
+					}
+				}
+				srcTbl += "</table>";
 
 
-		        srcTbl += "<h3>Streams</h3>" +
+				srcTbl += "<h3>Streams</h3>" +
 		            "<table><tr><th>Source</th><th>Target</th><th>Items</th><th>Err</th></tr>";
-		        src = result.Streams;
-		        for (var s in src) {
-		            if (s[0] != '$') {
-		                srcTbl += "<tr><td><pre>"
+				src = result.Streams;
+				for (var s in src) {
+					if (s[0] != '$') {
+						srcTbl += "<tr><td><pre>"
                             + src[s].Source.substring(0, 13) + ":" + src[s].SourceOut + "</pre></td><td><pre>"
                             + src[s].Target.substring(0, 13) + ":" + src[s].TargetIn + "</pre></td><td>"
                             + src[s].Count + "</td><td>" +
-                            + src[s].Error + "</td></tr>";
-		            }
-		        }
-		        srcTbl += "</table>";
+                            +src[s].Error + "</td></tr>";
+					}
+				}
+				srcTbl += "</table>";
 
-		        return srcTbl;
-		    };
+				return srcTbl;
+			};
+
+			var showEntityCountOnStreams = function (result) {
+				angular.forEach(result.Streams, function (stream) {
+					// Find jsPlumb Connection for the current Stream
+					var sourceElementId = $scope.dataSourceIdPrefix + stream.Source;
+					var targetElementId = $scope.dataSourceIdPrefix + stream.Target;
+					if (stream.Target === "00000000-0000-0000-0000-000000000000")
+						targetElementId = $scope.dataSourceIdPrefix + "Out";
+
+					var fromUuid = sourceElementId + '_out_' + stream.SourceOut;
+					var toUuid = targetElementId + '_in_' + stream.TargetIn;
+
+					var sourceEndpoint = $scope.jsPlumbInstance.getEndpoint(fromUuid);
+					angular.forEach(sourceEndpoint.connections, function (connection) {
+						if (connection.endpoints[1].getUuid() === toUuid) {
+							// when connection found, update it's label with the Entities-Count
+							connection.setLabel({
+								label: stream.Count.toString(),
+								cssClass: "streamEntitiesCount"
+							});
+						}
+					});
+				});
+			}
 
 			// Ensure the Pipeline is saved
 			$scope.savePipeline().then(query);

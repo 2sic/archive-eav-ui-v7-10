@@ -22,7 +22,7 @@ namespace ToSic.Eav.ManagementUI.API
 	{
 		private EavContext _context;
 		private readonly string _userName;
-        public List<IValueProvider> ValueProviders { get; set; }
+		public List<IValueProvider> ValueProviders { get; set; }
 
 		/// <summary>
 		/// Default Constructor
@@ -45,8 +45,8 @@ namespace ToSic.Eav.ManagementUI.API
 			if (eavConnectionString != null)
 				Eav.Configuration.SetConnectionString(eavConnectionString);
 
-            // Init empty list of ValueProviders
-            ValueProviders = new List<IValueProvider>();
+			// Init empty list of ValueProviders
+			ValueProviders = new List<IValueProvider>();
 		}
 
 
@@ -68,7 +68,7 @@ namespace ToSic.Eav.ManagementUI.API
 
 				#region Deserialize some Entity-Values
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-                pipelineJson[DataSource.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataSource.DataPipelineStreamWiringStaticName]);
+				pipelineJson[DataSource.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataSource.DataPipelineStreamWiringStaticName]);
 
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
@@ -157,9 +157,10 @@ namespace ToSic.Eav.ManagementUI.API
 			}
 			else
 			{
-				Entity entity = SavePipelineEntity(null, data.pipeline);
-				pipelineEntityGuid = entity.EntityGUID;
-				id = entity.EntityID;
+				throw new NotSupportedException();
+				//Entity entity = SavePipelineEntity(null, data.pipeline);
+				//pipelineEntityGuid = entity.EntityGUID;
+				//id = entity.EntityID;
 			}
 
 			var pipelinePartAttributeSetId = _context.GetAttributeSet(DataSource.DataPipelinePartStaticName).AttributeSetID;
@@ -167,7 +168,7 @@ namespace ToSic.Eav.ManagementUI.API
 			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 
 			// Update Pipeline Entity with new Wirings etc.
-			SavePipelineEntity(id.Value, data.pipeline, newDataSources);
+			SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources);
 
 			return GetPipeline(appId, id.Value);
 		}
@@ -222,9 +223,10 @@ namespace ToSic.Eav.ManagementUI.API
 		/// Save a Pipeline Entity to EAV
 		/// </summary>
 		/// <param name="id">EntityId of the Entity describing the Pipeline</param>
+		/// <param name="appId"></param>
 		/// <param name="pipeline">JSON with the new Entity-Values</param>
 		/// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-		private Entity SavePipelineEntity(int? id, dynamic pipeline, IDictionary<string, Guid> newDataSources = null)
+		private Entity SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources = null)
 		{
 			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
 			// A new Pipeline Entity must be saved twice, but some Field-Values are changed before saving it
@@ -254,9 +256,24 @@ namespace ToSic.Eav.ManagementUI.API
 				throw new Exception(string.Format("DataSource \"{0}\" has multiple In-Streams with Name \"{1}\". Each In-Stream must have an unique Name and can have only one connection.", wireInfo.To, wireInfo.In));
 
 			// Add/Update Entity
-			var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
 			IDictionary newValues = GetEntityValues(pipelineClone);
-			return id.HasValue ? _context.UpdateEntity(id.Value, newValues) : _context.AddEntity(attributeSetId, newValues, null, null);
+
+			if (!id.HasValue)
+			{
+				//var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
+				// return _context.AddEntity(attributeSetId, newValues, null, null)
+				throw new NotSupportedException("Saving a new Pipeline directly from the Pipeline-Designer is currently disabled because of Culture/Dimension Issues. Please create a new Pipeline using the Pipeline Management.");
+			}
+
+			// Guess DimensionIDs for the Pipeline-Entity
+			var source = DataSource.GetInitialDataSource(appId: appId);
+			var pipelineEntity = DataPipeline.GetPipelineEntity(id.Value, source);
+			int[] dimensionIds = null;
+
+			if (pipelineEntity.Title.Values.Any())
+				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
+
+			return _context.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
@@ -280,27 +297,27 @@ namespace ToSic.Eav.ManagementUI.API
 		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
 		{
 			var outStreams = ConstructPipeline(appId, id);
-		    var debugInfo = new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
-		    return new
-		    {
-		        Query = outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
-		        debugInfo.Streams,
-		        debugInfo.Sources
-		    };
+			var debugInfo = new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
+			return new
+			{
+				Query = outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
+				debugInfo.Streams,
+				debugInfo.Sources
+			};
 		}
 
 
-        private static IDataSource ConstructPipeline(int appId, int id)
-	    {
-            var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
-	        return DataPipelineFactory.GetDataSource(appId, id, testValueProviders);
-	    }
+		private static IDataSource ConstructPipeline(int appId, int id)
+		{
+			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
+			return DataPipelineFactory.GetDataSource(appId, id, testValueProviders);
+		}
 
-	    [HttpGet]
-	    public dynamic PipelineDebugInfo(int appId, int id)
-	    {
-	        return new Eav.DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
-	    }
+		[HttpGet]
+		public dynamic PipelineDebugInfo(int appId, int id)
+		{
+			return new Eav.DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
+		}
 
 
 
