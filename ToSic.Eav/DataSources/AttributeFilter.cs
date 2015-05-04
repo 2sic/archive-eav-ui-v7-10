@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Security.Cryptography;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources
@@ -35,13 +37,17 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
 		}
 
+	    private IDictionary<int, IEntity> cached; 
 		private IDictionary<int, IEntity> GetEntities()
 		{
+		    if (cached != null)
+		        return cached;
 			EnsureConfigurationIsLoaded();
 
 			var result = new Dictionary<int, IEntity>();
 
 			var attributeNames = AttributeNames.Split(',');
+		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
 			foreach (var entity in In[DataSource.DefaultStreamName].List)
 			{
@@ -49,7 +55,7 @@ namespace ToSic.Eav.DataSources
 
 				result.Add(entity.Key, entityModel);
 			}
-
+		    cached = result;
 			return result;
 		}
 	}
