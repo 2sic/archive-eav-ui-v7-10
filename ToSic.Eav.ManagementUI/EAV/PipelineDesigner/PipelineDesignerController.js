@@ -66,6 +66,41 @@ pipelineDesigner.controller('PipelineDesignerController',
 					}
 				}
 			});
+			// If a new connection is created, ask for a name of the In-Stream
+			$scope.jsPlumbInstance.bind('connection', function (info) {
+				if (!$scope.connectionsInitialized) return;
+
+				// Repeat until a valid Stream-Name is provided by the user
+				var repeatCount = 0;
+				while (true) {
+					repeatCount++;
+
+					var promptMessage = "Please name the Stream";
+					if (repeatCount > 1)
+						promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
+
+					var endpointLabel = info.targetEndpoint.getOverlay('endpointLabel');
+					var labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
+					if (labelPrompt)
+						endpointLabel.setLabel(labelPrompt);
+					else
+						continue;
+
+					// Check if any other Target-Endpoint has the same Stream-Name (Label)
+					var endpoints = $scope.jsPlumbInstance.getEndpoints(info.target.id);
+					var targetEndpointHavingSameLabel = null;
+					angular.forEach(endpoints, function (endpoint) {
+						var label = endpoint.getOverlay('endpointLabel').getLabel();
+						if (label === labelPrompt && info.targetEndpoint.id !== endpoint.id && angular.element(endpoint.canvas).hasClass("targetEndpoint")) {
+							targetEndpointHavingSameLabel = endpoint;
+						}
+					});
+					if (targetEndpointHavingSameLabel)
+						continue;
+
+					break;
+				}
+			});
 		});
 
 		// #region jsPlumb Endpoint Definitions
