@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Web.Script.Serialization;
-using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.Data
 {
@@ -51,6 +47,10 @@ namespace ToSic.Eav.Data
         /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
         /// </summary>
 		public bool IsPublished { get; internal set; }
+
+        /// <summary>
+        /// Internal value - ignore for now
+        /// </summary>
 		public int AssignmentObjectTypeId { get; internal set; }
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
@@ -146,26 +146,27 @@ namespace ToSic.Eav.Data
 			return PublishedEntity;
 		}
 
+        /// <summary>
+        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+        /// Assumes default preferred language
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+        /// <returns></returns>
 	    public object GetBestValue(string attributeName)
 	    {
 	        return GetBestValue(attributeName, new string[0]);
 	    }
-        //public object GetBestValue(string attributeName, out bool propertyNotFound)
-        //{
-        //    return GetBestValue(attributeName, new string[] {""}, out propertyNotFound);
-        //}
-
-        //public object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound)
-        //{
-        //    var res = GetBestValue(attributeName, dimensions);
-        //    propertyNotFound = (res == null);
-        //    return res;
-        //}
 
 
-        public object GetBestValue(string attributeName, string[] dimensions) //, out bool propertyNotFound)
+        /// <summary>
+        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+        /// Automatically resolves the language-variations as well based on the list of preferred languages
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+        /// <param name="dimensions">List of languages</param>
+        /// <returns></returns>
+        public object GetBestValue(string attributeName, string[] dimensions) 
         {
-            // propertyNotFound = false;
             object result = null;
 
 
@@ -173,23 +174,6 @@ namespace ToSic.Eav.Data
             {
                 var attribute = Attributes[attributeName];
                 result = attribute[dimensions];
-
-                // todo in 2sxc
-                //if (attribute.Type == "Hyperlink" && result is string)
-                //{
-                //    result = SexyContent.ResolveHyperlinkValues((string)result, SexyContext == null ? PortalSettings.Current : SexyContext.OwnerPS);
-                //}
-                //else
-
-
-                // todo 2sxc or just return the entity-list, so 2sxc can dynamic it if desired...
-                //    if (attribute.Type == "Entity" && result is EntityRelationship)
-                //{
-                //    // Convert related entities to Dynamics
-                //    result = ((ToSic.Eav.EntityRelationship)result).Select(
-                //        p => new DynamicEntity(p, dimensions, this.SexyContext)
-                //        ).ToList();
-                //}
             }
             else
             {
@@ -207,25 +191,14 @@ namespace ToSic.Eav.Data
                     case "EntityType":
                         result = Type.Name;
                         break;
-                        // todo in 2sxc
-                    //case "Toolbar":
-                    //    result = Toolbar.ToString();
-                    //    break;
                     case "IsPublished":
                         result = IsPublished;
                         break;
                     case "Modified":
                         result = Modified;
                         break;
-                        // todo in 2sxc
-                    //case "Presentation":
-                    //    var inContentGroup = Entity as EntityInContentGroup;
-                    //    if (inContentGroup != null)
-                    //        result = inContentGroup.Presentation;
-                    //    break;
                     default:
                         result = null;
-                        //propertyNotFound = true;
                         break;
                 }
             }
