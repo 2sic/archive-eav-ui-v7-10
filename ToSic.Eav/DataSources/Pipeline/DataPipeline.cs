@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
 			var pipelineEntityClone = ctx.CloneEntity(sourcePipelineEntity, true);
 
 			// Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
-			var pipelineParts = ctx.GetEntities(DataSource.AssignmentObjectTypeIdDataPipeline, sourcePipelineEntity.EntityGUID);
+			var pipelineParts = ctx.GetEntities(DataSource.AssignmentObjectTypeEntity, sourcePipelineEntity.EntityGUID);
 			var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
 			foreach (var pipelinePart in pipelineParts)
 			{
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
 				pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
 
 				// Copy Configuration Entity, assign KeyGuid of the Clone
-				var configurationEntity = ctx.GetEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelinePart.EntityGUID).SingleOrDefault();
+				var configurationEntity = ctx.GetEntities(DataSource.AssignmentObjectTypeEntity, pipelinePart.EntityGUID).SingleOrDefault();
 				if (configurationEntity != null)
 				{
 					var configurationClone = ctx.CloneEntity(configurationEntity, true);
@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
 		public static IEnumerable<IEntity> GetPipelineParts(int zoneId, int appId, Guid pipelineEntityGuid)
 		{
 			var metaDataSource = DataSource.GetMetaDataSource(zoneId, appId);
-			return metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdDataPipeline, pipelineEntityGuid);
+			return metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeEntity, pipelineEntityGuid, DataSource.DataPipelinePartStaticName);
 		}
 
 

@@ -1148,7 +1148,7 @@ namespace ToSic.Eav
 			if (assignedEntitiesFieldProperties.Any())
 				messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
 
-			var assignedEntitiesDataPipeline = GetEntitiesInternal(DataSource.AssignmentObjectTypeIdDataPipeline, entityId).Select(e => e.EntityID).ToList();
+			var assignedEntitiesDataPipeline = GetEntitiesInternal(DataSource.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
 			if (assignedEntitiesDataPipeline.Any())
 				messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
 

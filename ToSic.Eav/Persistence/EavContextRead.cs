@@ -484,6 +484,7 @@ namespace ToSic.Eav
 
 				#region Add assignmentObjectTypes with Key
 
+                // todo: unclear why #1 is handled in a special way - why should this not be cached?
 				if (e.AssignmentObjectTypeID != 1 && !entitiesOnly)
 				{
 					if (e.KeyGuid.HasValue)

@@ -213,7 +213,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 			Dictionary<Guid, IEnumerable<IEntity>> keyGuidDictionary;
 			if (cache.AssignmentObjectTypesGuid.TryGetValue(assignmentObjectTypeId, out keyGuidDictionary))
-			{
+			{ 
 				IEnumerable<IEntity> entities;
 				if (keyGuidDictionary.TryGetValue(key, out entities))
 					return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);

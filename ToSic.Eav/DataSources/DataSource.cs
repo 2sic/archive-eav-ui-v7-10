@@ -29,7 +29,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// AssignmentObjectTypeId for DataPipelines
 		/// </summary>
-		public readonly static int AssignmentObjectTypeIdDataPipeline = 4;
+		public readonly static int AssignmentObjectTypeEntity = 4;
 		/// <summary>
 		/// StaticName of the DataPipeline AttributeSet
 		/// </summary>
