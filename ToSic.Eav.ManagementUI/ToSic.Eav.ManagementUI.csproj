@@ -109,6 +109,7 @@
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
+    <Content Include="EAV\Security\Permissions.html" />
     <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />

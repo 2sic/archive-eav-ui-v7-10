@@ -135,6 +135,7 @@
     <Compile Include="Persistence\EavContextDimensions.cs" />
     <Compile Include="Persistence\EavContextRead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
