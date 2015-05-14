@@ -11,6 +11,15 @@ namespace ToSic.Eav.Serializers
     /// </summary>
     public class Serializer
     {
+        //#region Allow delegation of low-level serialization if necessary
+
+        ///// <summary>
+        ///// Delegate to get Entities when needed
+        ///// </summary>
+        //public delegate void FurtherProcessingOfDictionary(Dictionary<string, object> serialized);
+        //#endregion
+
+        // public FurtherProcessingOfDictionary AfterDefaultSerialization;
         #region Language
 
         private string _Language = "";
@@ -83,25 +92,47 @@ namespace ToSic.Eav.Serializers
         #endregion
 
 
+        //public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity, string language)
+        //{
+        //    var result = DefaultDictionaryFromEntity(entity);
+        //    if (AfterDefaultSerialization != null)
+        //    {
+        //        var afterProcessing = new FurtherProcessingOfDictionary(AfterDefaultSerialization);
+        //        afterProcessing(result);
+        //    }
+        //    return result;
+        //}
+
+        /// <summary>
+        /// Convert an entity into a lightweight dictionary, ready to serialize
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
         public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity, string language)
         {
-            var dynamicEntity = entity;//new DynamicEntity(entity, new[] { language }, Sxc);
-
-            // Convert DynamicEntity to dictionary
+            // Convert Entity to dictionary
+            // If the value is a relationship, then give those too, but only Title and Id
             var dictionary = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-                // bool propertyNotFound;
-                var value = dynamicEntity.GetBestValue(v.Name);// .GetEntityValue(v.Name, out propertyNotFound);
-                if (v.Type == "Entity" && value is ToSic.Eav.Data.EntityRelationship)
-                    return ((Data.EntityRelationship)value).Select(p => new { Id = p.EntityId, p.Title });
+                var value = entity.GetBestValue(v.Name);
+                if (v.Type == "Entity" && value is Data.EntityRelationship)
+                    return ((Data.EntityRelationship) value).Select(p => new {Id = p.EntityId, p.Title});
                 return value;
             }, StringComparer.OrdinalIgnoreCase);
 
-            // If ID is not used by the entity itself as an internal value, give the object a Id property as well since it's nicer to use in JS
-            // Note that for editing purposes or similar, there is always the extended info-object, so this is purely for "normal" working with the data
-            dictionary.Add((dictionary.ContainsKey("Id") ? "EntityId" : "Id"), entity.EntityId);
+            // Add Id and Title
+            // ...only if these are not already existing with this name in the entity itself as an internal value
+            if (dictionary.ContainsKey("Id")) dictionary.Remove("Id");
+            dictionary.Add("Id", entity.EntityId);
             if (!dictionary.ContainsKey("Title"))
-                dictionary.Add("Title", entity.GetBestValue("EntityTitle"));
+                try // there are strange cases where the title is missing, then just ignore this
+                {
+                    dictionary.Add("Title", entity.GetBestValue("EntityTitle"));
+                }
+                catch
+                {
+                }
 
             return dictionary;
         }

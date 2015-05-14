@@ -22,10 +22,10 @@
 			<tbody>
 				<tr ng-repeat="pipeline in pipelines | orderBy:'Name'">
 					<td>{{pipeline.Name}}</td>
-					<td>{{pipeline.EntityId}}</td>
+					<td>{{pipeline.Id}}</td>
 					<td>{{pipeline.Description}}</td>
 					<td>
-						<a class="btn btn-xs btn-default" target="_blank" ng-href="{{getPipelineUrl('design', pipeline.EntityId)}}">
+						<a class="btn btn-xs btn-default" target="_blank" ng-href="{{getPipelineUrl('design', pipeline.Id)}}">
 							<span class="glyphicon glyphicon-random"></span> Open Designer
 						</a>
 						<button type="button" class="btn btn-xs btn-default" ng-click="clone(pipeline)">
