@@ -11,6 +11,8 @@
     <script type="text/javascript" src="/Scripts/jquery-ui-1.10.3.min.js"></script>
     <script type="text/javascript" src="/Scripts/angular.min.js"></script>
     <script type="text/javascript" src="/Scripts/angular-ui-tree.min.js"></script>
+    
+    <script type="text/javascript" src="/EAV/AngularServices/EavGlobalConfigurationProvider.js"></script>
     <link rel="stylesheet" href="/Scripts/angular-ui-tree.min.css" />
     <link rel="stylesheet" href="/Scripts/jquery-ui-1.10.3.css" />
 </head>

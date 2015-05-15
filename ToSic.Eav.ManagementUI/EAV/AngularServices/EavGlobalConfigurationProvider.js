@@ -1,6 +1,18 @@
 ﻿/// <reference path="EavGlobalConfigurationProvider.js" />
 // EavGlobalConfigurationProvider providers default global values for the EAV angular system
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
+
+// the following config-stuff is not in angular, because some settings are needed in dialogs which are not built with angularJS yet.
+// they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
+var $eavUIConfig = {
+    urls: {
+        managePermissions: function (appId, targetId) {
+            return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
+        }
+    }
+};
+
+if(angular) // needs if(angular) because the file is also included in older non-angulare dialogs
 angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigurationProvider', function ($location) {
 
 	var getItemFormUrl = function (mode, params, preventRedirect) {
@@ -29,11 +41,9 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 				return getItemFormUrl('Edit', angular.extend({ EntityId: entityId }, params), preventRedirect);
 			}
 		},
-        adminUrls: {
-            managePermissions: function(appId, targetId) {
-                return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
-            }
-        },
+		adminUrls: {
+		    managePermissions:  $eavUIConfig.urls.managePermissions
+		},
 		pipelineDesigner: {
 			getUrl: function (appId, pipelineId) {
 				return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;
