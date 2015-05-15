@@ -11,15 +11,10 @@ namespace ToSic.Eav.Serializers
     /// </summary>
     public class Serializer
     {
-        //#region Allow delegation of low-level serialization if necessary
+        #region Configuration
+        public bool IncludeGuid { get; set; }
+        #endregion
 
-        ///// <summary>
-        ///// Delegate to get Entities when needed
-        ///// </summary>
-        //public delegate void FurtherProcessingOfDictionary(Dictionary<string, object> serialized);
-        //#endregion
-
-        // public FurtherProcessingOfDictionary AfterDefaultSerialization;
         #region Language
 
         private string _Language = "";
@@ -92,17 +87,6 @@ namespace ToSic.Eav.Serializers
         #endregion
 
 
-        //public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity, string language)
-        //{
-        //    var result = DefaultDictionaryFromEntity(entity);
-        //    if (AfterDefaultSerialization != null)
-        //    {
-        //        var afterProcessing = new FurtherProcessingOfDictionary(AfterDefaultSerialization);
-        //        afterProcessing(result);
-        //    }
-        //    return result;
-        //}
-
         /// <summary>
         /// Convert an entity into a lightweight dictionary, ready to serialize
         /// </summary>
@@ -125,6 +109,12 @@ namespace ToSic.Eav.Serializers
             // ...only if these are not already existing with this name in the entity itself as an internal value
             if (dictionary.ContainsKey("Id")) dictionary.Remove("Id");
             dictionary.Add("Id", entity.EntityId);
+
+            if (IncludeGuid)
+            {
+                if (dictionary.ContainsKey("Guid")) dictionary.Remove("Guid");
+                dictionary.Add("Guid", entity.EntityGuid);
+            }
             if (!dictionary.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {

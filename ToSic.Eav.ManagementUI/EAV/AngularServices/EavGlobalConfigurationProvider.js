@@ -1,4 +1,5 @@
-﻿// EavGlobalConfigurationProvider providers default global values for the EAV angular system
+﻿/// <reference path="EavGlobalConfigurationProvider.js" />
+// EavGlobalConfigurationProvider providers default global values for the EAV angular system
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
 angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigurationProvider', function ($location) {
 
@@ -28,6 +29,11 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 				return getItemFormUrl('Edit', angular.extend({ EntityId: entityId }, params), preventRedirect);
 			}
 		},
+        adminUrls: {
+            managePermissions: function(appId, targetId) {
+                return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
+            }
+        },
 		pipelineDesigner: {
 			getUrl: function (appId, pipelineId) {
 				return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;

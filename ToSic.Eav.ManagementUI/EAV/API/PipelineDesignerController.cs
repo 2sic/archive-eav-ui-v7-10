@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Serializers;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.ManagementUI.API
@@ -19,8 +20,24 @@ namespace ToSic.Eav.ManagementUI.API
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
 	public class PipelineDesignerController : ApiController
-	{
-		private EavContext _context;
+    {
+        #region Helpers
+        // I must keep the serializer so it can be configured from outside if necessary
+        private Serializer _serializer;
+        public Serializer Serializer
+        {
+            get
+            {
+                if (_serializer == null)
+                {
+                    _serializer = Factory.Container.Resolve<Serializer>();
+                }
+                return _serializer;
+            }
+        }
+
+        #endregion
+        private EavContext _context;
 		private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
 
@@ -300,7 +317,7 @@ namespace ToSic.Eav.ManagementUI.API
 			var debugInfo = new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
 			return new
 			{
-				Query = outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
+				Query = Serializer.Prepare(outStreams), // outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
 				debugInfo.Streams,
 				debugInfo.Sources
 			};
