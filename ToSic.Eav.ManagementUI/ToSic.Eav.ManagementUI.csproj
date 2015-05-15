@@ -112,7 +112,7 @@
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
     <Content Include="EAV\AngularServices\eavNgSvcs.js" />
     <Content Include="EAV\Security\Permissions.ascx" />
-    <Content Include="EAV\Security\PermissionsControllers.js" />
+    <Content Include="EAV\Security\PermissionsController.js" />
     <Content Include="EAV\Security\PermissionsServices.js" />
     <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />

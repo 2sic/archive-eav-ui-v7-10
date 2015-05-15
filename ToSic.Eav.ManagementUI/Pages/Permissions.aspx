@@ -23,7 +23,7 @@
     <script src="../EAV/AngularServices/eav4Ng.js"></script>
     <script src="../EAV/AngularServices/eavNgSvcs.js"></script>
     <script src="../EAV/Security/PermissionsServices.js"></script>
-    <script src="../EAV/Security/PermissionsControllers.js"></script>
+    <script src="../EAV/Security/PermissionsController.js"></script>
 
 </head>
 <body>
