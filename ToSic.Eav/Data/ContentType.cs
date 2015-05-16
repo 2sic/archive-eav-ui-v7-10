@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Dictionary with all AttributeHelperTools Definitions
         /// </summary>
-        internal IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
+        public IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
         #endregion
 
         /// <summary>

@@ -54,7 +54,7 @@ namespace ToSic.Eav
 		private readonly List<EntityRelationshipQueueItem> _entityRelationshipsQueue = new List<EntityRelationshipQueueItem>();
 		#endregion
 
-		#region Properties
+		#region Properties like AppId, ZoneId, UserName etc.
 		/// <summary>
 		/// AppId of this whole Context
 		/// </summary>

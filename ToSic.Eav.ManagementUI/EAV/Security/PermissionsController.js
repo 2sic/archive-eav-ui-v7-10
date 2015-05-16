@@ -23,14 +23,14 @@
                 permissionsSvc.delete(entityId)
         };
 
+        vm.refresh = function refresh() {
+            permissionsSvc.getAll();
+        }
+
         vm.create = function create() {
             alert('todo');
         }
 
     };
-
-
-
-
 
 } ());
