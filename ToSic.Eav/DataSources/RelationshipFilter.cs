@@ -125,7 +125,7 @@ namespace ToSic.Eav.DataSources
 			EnsureConfigurationIsLoaded();
 			var relationship = Relationship;
 			var compAttr = CompareAttribute;
-			var _filter = Filter;
+			var filter = Filter.ToLower(); // new: make case insensitive
 			var mode = CompareMode.ToLower();
 			if (mode == "contains") mode = "default";
 			if (mode != "default")
@@ -157,7 +157,7 @@ namespace ToSic.Eav.DataSources
 			if (ChildOrParent == "child")
 			{
 				results = (from e in results
-						   where e.Value.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
+						   where e.Value.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr).ToLower() == filter)
 						   select e);
 			}
 			else

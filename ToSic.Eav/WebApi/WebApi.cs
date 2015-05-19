@@ -174,7 +174,7 @@ namespace ToSic.Eav.WebApi
 		public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyString, string contentType, int? appId = null)
 		{
             if (appId.HasValue)
-                AppId = appId.Value;
+                AppId = appId.Value; 
             var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyString, contentType);
 		    return Serializer.Prepare(entityList);
 		}
