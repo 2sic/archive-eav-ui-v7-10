@@ -119,6 +119,8 @@ namespace ToSic.Eav.ManagementUI
 			set { _addFormClientScriptAndCss = value; }
 		}
 
+		public bool ShowPermissionsLink { get; set; }
+
 		#endregion
 
 		protected override void OnInit(EventArgs e)
@@ -209,6 +211,7 @@ namespace ToSic.Eav.ManagementUI
 					contentTypesListControl.ConfigureContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString(), "AttributeSetId", "[AttributeSetId]");
 					contentTypesListControl.NewContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString());
 					contentTypesListControl.Scope = Scope;
+					contentTypesListControl.ShowPermissionsLink = ShowPermissionsLink;
 					Controls.Add(contentTypesListControl);
 					break;
 			}

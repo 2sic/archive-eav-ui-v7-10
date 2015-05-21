@@ -11,6 +11,7 @@ namespace ToSic.Eav.ManagementUI
 		public string NewContentTypeUrl { get; set; }
 		public string Scope { get; set; }
 		public int? AppId { get; set; }
+		public bool ShowPermissionsLink { get; set; }
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
