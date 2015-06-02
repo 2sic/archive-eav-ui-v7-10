@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class EnumExtensions
+    public static class EnumExtensions
     {
         /// <summary>
         /// Get the description of an enumeration value. For that, the enumeration value must have a 

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class FileInfoExtension
+    public static class FileInfoExtension
     {
         public static void WriteStream(this FileInfo fileInfo, Stream fileContent)
         {
