@@ -59,6 +59,20 @@ namespace ToSic.Eav
 			{
 				throw new Exception("Couldn't load Connection String with name \"" + DefaultConnectionStringName + "\"");
 			}
-		}
-	}
+        }
+
+        #region Common Assignment Object Types
+
+	    private static int _assignmentObjectTypeIdDefault = -1;
+        public static int AssignmentObjectTypeIdDefault
+        {
+            get
+            {
+                if(_assignmentObjectTypeIdDefault == -1)
+                    _assignmentObjectTypeIdDefault = DataSource.GetCache(DataSource.DefaultZoneId, DataSource.MetaDataAppId).GetAssignmentObjectTypeId("Default");
+                return _assignmentObjectTypeIdDefault;
+            }
+        }
+        #endregion
+    }
 }

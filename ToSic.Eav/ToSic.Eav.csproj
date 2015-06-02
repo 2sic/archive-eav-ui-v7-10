@@ -62,6 +62,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Api01\SimpleDataController.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DataSources\DeferredPipelineQuery.cs" />
     <Compile Include="DataSources\Debug\DataSourceInfo.cs" />
     <Compile Include="DataSources\Debug\PipelineInfo.cs" />
@@ -115,6 +118,36 @@
     <Compile Include="DataSources\RootSources\IRootSource.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
+    <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
+    <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\AttributeExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\AttributeSetExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EavValueExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EntityExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EntityImportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EnumExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\FileInfoExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\IEnumerableExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\IValueImportModelExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\StringExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\XElementExtension.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ImportExport\Refactoring\Options\EntityClearImport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\EntityClearImportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageMissingExport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageMissingExportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageReferenceExport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageReferenceExportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageReferenceImport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\LanguageReferenceImportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\RecordExport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\RecordExportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\ResourceReferenceExport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\ResourceReferenceExportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\ResourceReferenceImport.cs" />
+    <Compile Include="ImportExport\Refactoring\Options\ResourceReferenceImportExtension.cs" />
     <Compile Include="ImportExport\XmlExport.cs" />
     <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="Data\Entity.cs" />
@@ -165,9 +198,7 @@
   <ItemGroup>
     <Content Include="Notes for EAV on 2sxc 7.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Api\Api01\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
