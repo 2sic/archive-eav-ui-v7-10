@@ -153,16 +153,22 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 }
 
                 var documentRoot = Document.Element(DocumentNodeNames.Root);
-                
-                var documentTypeAttribute = documentRoot.Attribute(DocumentNodeNames.RootTypeAttribute);
+
+                DocumentElements = documentRoot.Elements(DocumentNodeNames.Entity);
+                if (DocumentElements.Count() == 0)
+                {
+                    ErrorProtocol.AppendError(ImportErrorCode.InvalidDocument);
+                    return;
+                }
+
+                // Check the content type of the document (it can be found on each element in the Type attribute)
+                var documentTypeAttribute = DocumentElements.First().Attribute(DocumentNodeNames.EntityTypeAttribute);
                 if (documentTypeAttribute == null || documentTypeAttribute.Value == null || documentTypeAttribute.Value != contentType.Name.RemoveSpecialCharacters())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidRoot);
                     return;
                 }
 
-            
-                DocumentElements = documentRoot.Elements(DocumentNodeNames.Entity);
                 var documentElementNumber = 0;
 
                 // Assure that each element has a GUID and language child element

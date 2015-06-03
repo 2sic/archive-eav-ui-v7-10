@@ -22,9 +22,9 @@ namespace ToSic.Eav.ImportExport.Refactoring
             if (contentType == null) 
                 return null;
 
-            var documentElement1 = GetDocumentEntityElement("", "");
-            var documentElement2 = GetDocumentEntityElement("", "");
-            var documentRoot = GetDocumentRoot(contentType.Name, documentElement1, documentElement2);
+            var documentElement1 = GetDocumentEntityElement("", "", contentType.Name);
+            var documentElement2 = GetDocumentEntityElement("", "", contentType.Name);
+            var documentRoot = GetDocumentRoot(documentElement1, documentElement2);
             var document = GetDocument(documentRoot);
 
             var attributes = contentType.GetAttributes();
@@ -78,15 +78,15 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 languages.Add(string.Empty);
             }
 
-            var documentRoot = GetDocumentRoot(contentType.Name, null);
+            var documentRoot = GetDocumentRoot(null);
             var document = GetDocument(documentRoot);
 
             var entities = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null);
             foreach (var entity in entities)
             {
                 foreach (var language in languages)
-                {  
-                    var documentElement = GetDocumentEntityElement(entity.EntityGUID, language);
+                {
+                    var documentElement = GetDocumentEntityElement(entity.EntityGUID, language, contentType.Name);
                     documentRoot.Add(documentElement);
                     
                     var attributes = contentType.GetAttributes();
@@ -124,16 +124,17 @@ namespace ToSic.Eav.ImportExport.Refactoring
             return new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
         }
 
-        private static XElement GetDocumentRoot(string contentTypeName, params object[] content)
+        private static XElement GetDocumentRoot(params object[] content)
         {
-            return new XElement(DocumentNodeNames.Root, new XAttribute(DocumentNodeNames.RootTypeAttribute, contentTypeName.RemoveSpecialCharacters()), content);
+            return new XElement(DocumentNodeNames.Root, content);
         }
 
-        private static XElement GetDocumentEntityElement(object elementGuid, object elementLanguage)
+        private static XElement GetDocumentEntityElement(object elementGuid, object elementLanguage, string contentTypeName)
         {
             return new XElement
                 (
                     DocumentNodeNames.Entity, 
+                    new XAttribute(DocumentNodeNames.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
                     new XElement(DocumentNodeNames.EntityGuid, elementGuid), 
                     new XElement(DocumentNodeNames.EntityLanguage, elementLanguage)
                 );

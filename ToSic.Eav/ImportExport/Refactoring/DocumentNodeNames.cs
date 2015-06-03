@@ -13,6 +13,6 @@
 
         public const string EntityLanguage = "Language";
 
-        public const string RootTypeAttribute = "Type";
+        public const string EntityTypeAttribute = "Type";
     }
 }
