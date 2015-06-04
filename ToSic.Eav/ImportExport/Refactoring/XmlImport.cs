@@ -17,9 +17,6 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
         private readonly int zoneId;
 
-        // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-        // private readonly SexyContent.SexyContent contentManager;
-
         private readonly AttributeSet contentType;
 
         /// <summary>
@@ -112,10 +109,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             this.applicationId = applicationId;
             this.zoneId = zoneId;
-            // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-            // contentManager = new SexyContent.SexyContent(zoneId, applicationId);
-            // contentType = contentManager.ContentContext.GetAttributeSet(contentTypeId);
-            contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
+            this.contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
             this.languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
             this.entityClear = entityClear;
@@ -308,11 +302,6 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 foreach(var entityGuid in entityDeleteGuids)
                 {
                     var entityID = contentType.GetEntity(entityGuid).EntityID;
-                    // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-                    //if (contentManager.ContentContext.CanDeleteEntity(entityID).Item1)
-                    //{
-                    //    contentManager.ContentContext.DeleteEntity(entityID);
-                    //}
                     var context = EavContext.Instance(zoneId, applicationId);
                     if (context.CanDeleteEntity(entityID).Item1)
                         context.DeleteEntity(entityID);
