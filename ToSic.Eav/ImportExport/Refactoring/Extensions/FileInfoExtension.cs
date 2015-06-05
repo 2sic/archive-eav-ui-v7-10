@@ -2,7 +2,8 @@
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class FileInfoExtension
+    // TODO2tk: These methods are used in the 2sxc user interface and can be moved to 2sxc maybe.
+    public static class FileInfoExtension
     {
         public static void WriteStream(this FileInfo fileInfo, Stream fileContent)
         {

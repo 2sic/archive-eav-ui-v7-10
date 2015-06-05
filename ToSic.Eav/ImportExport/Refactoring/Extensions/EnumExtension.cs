@@ -3,11 +3,13 @@ using System.ComponentModel;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class EnumExtensions
+    // TODO2tk: This class can be used in the user interface to convert an enumeration value to a readable string... 
+    // it can be moved to the 2sxc project along with the ImportErrorCode.xx.resx files
+    public static class EnumExtensions
     {
         /// <summary>
         /// Get the description of an enumeration value. For that, the enumeration value must have a 
-        /// description attribute.
+        /// description attribute. 
         /// 
         /// [Description("Human readable text of MyValue1."]
         /// MyValue1
