@@ -208,7 +208,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
     <Content Include="Notes for EAV on 2sxc 7.txt" />
   </ItemGroup>
   <ItemGroup>
