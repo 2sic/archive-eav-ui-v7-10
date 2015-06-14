@@ -69,6 +69,7 @@
     <Compile Include="DataSources\Debug\DataSourceInfo.cs" />
     <Compile Include="DataSources\Debug\PipelineInfo.cs" />
     <Compile Include="DataSources\Debug\StreamInfo.cs" />
+    <Compile Include="DataSources\Paging.cs" />
     <Compile Include="DataSources\StreamFallback.cs" />
     <Compile Include="DataSources\Exceptions\DataSourceException.cs" />
     <Compile Include="Data\AttributeBase.cs" />

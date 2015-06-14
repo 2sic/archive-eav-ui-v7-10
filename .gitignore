@@ -158,3 +158,5 @@ $RECYCLE.BIN/
 # Exclusions for ToSic EAV
 Testing/Bin/ToSic.Eav.dll
 Testing/Bin/ToSic.Eav.pdb
+**/ToSic.Eav.dll
+**/ToSic.Eav.pdb
