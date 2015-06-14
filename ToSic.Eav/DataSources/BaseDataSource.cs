@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Caching;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -10,6 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public abstract class BaseDataSource : IDataSource, IDataTarget //, IDataSourceInternals
 	{
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -18,6 +20,7 @@ namespace ToSic.Eav.DataSources
 			In = new Dictionary<string, IDataStream>();
 			Out = new Dictionary<string, IDataStream>();
 			Configuration = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		    CacheRelevantConfigurations = new string[0];
 		}
 
 		/// <summary>
@@ -25,7 +28,74 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Name { get { return GetType().Name; } }
 
-		/// <summary>
+        #region Caching stuff
+        private string[] _cacheRelevantConfigurations = new string[0];
+        /// <summary>
+        /// List of items from the configuration which should be used for creating the cache-key
+        /// </summary>
+        public string[] CacheRelevantConfigurations
+        {
+            get { return _cacheRelevantConfigurations; }
+            set { _cacheRelevantConfigurations = value; } 
+        }
+
+        /// <summary>
+        /// Unique key-id for this specific part - without the full chain to the parents
+        /// </summary>
+        public virtual string CachePartialKey
+	    {
+	        get
+	        {
+	            string key = "";
+	            // Assemble the partial key
+                // If this item has a guid thet it's a configured part which always has this unique guid; then use that
+	            if (DataSourceGuid != Guid.Empty)
+	                key += Name + DataSourceGuid;
+	            else
+	                key += Name + "-NoGuid";
+
+                EnsureConfigurationIsLoaded();
+
+                // note: whenever a item has filter-parameters, these should be part of the key as well...
+                foreach (string configName in CacheRelevantConfigurations)
+	                key += "&" + configName + "=" + Configuration[configName];
+
+	            return key;
+	        } 
+	    }
+
+	    public virtual string CacheFullKey
+	    {
+	        get
+	        {
+	            var fullKey = "";
+
+                // If there is an upstream, use that as the leading part of the id
+	            if (In.ContainsKey(DataSource.DefaultStreamName) && In[DataSource.DefaultStreamName] != null)
+	                fullKey += In[DataSource.DefaultStreamName].Source.CacheFullKey + ">";
+	            
+                // add current key
+                fullKey += CachePartialKey;
+	            return fullKey;
+	        } 
+	    }
+
+	    public virtual DateTime CacheLastRefresh
+	    {
+	        get
+	        {
+                // try to return the upstream creation date
+	            if (In.ContainsKey(DataSource.DefaultStreamName) && In[DataSource.DefaultStreamName].Source != null)
+	                return In[DataSource.DefaultStreamName].Source.CacheLastRefresh;
+                
+                // if no relevant up-stream, just return now!
+	            return DateTime.Now;
+	        } 
+	    }
+
+	    #endregion
+
+        /// <summary>
 		/// The app this data-source is attached to
 		/// </summary>
 		public virtual int AppId { get; set; }

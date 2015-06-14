@@ -47,26 +47,25 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public Paging()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
-            Out.Add("Paging", new DataStream(this, DataSource.DefaultStreamName, GetPaging));
-            Configuration.Add(PageSizeKey, "[Settings:PageSize||10]");
-            Configuration.Add(PageNumberKey, "[Settings:PageNumber||1]");
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetEntities));
+            Out.Add("Paging", new DataStream(this, DataSource.DefaultStreamName, null, GetPaging));
+            Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||10]");
+            Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||1]");
+
+            CacheRelevantConfigurations = new[] {PageSizeKey, PageNumberKey};
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
-		{
-			EnsureConfigurationIsLoaded();
+
+	    private IEnumerable<IEntity> GetEntities()
+	    {
+	        EnsureConfigurationIsLoaded();
 
 		    var itemsToSkip = (PageNumber - 1)*PageSize;
 
-		    var result = In["Default"].List.Skip(itemsToSkip).Take(PageSize).ToList().ToDictionary(x => x.Key, y => y.Value);
-		    return result;
+	        return (In["Default"] as IDataStreamLight).List.Skip(itemsToSkip).Take(PageSize).ToList();
+	    }
 
-		    // nothing found so far, return blank
-            return new Dictionary<int, IEntity>();
-		}
-
-        private IDictionary<int, IEntity> GetPaging()
+        private IEnumerable<IEntity> GetPaging()
         {
             EnsureConfigurationIsLoaded();
 
@@ -85,9 +84,9 @@ namespace ToSic.Eav.DataSources
             var entity = new Data.Entity(0, "Paging", paging, "Title");
 
             // Assemble list of this for the stream
-            var result = new Dictionary<int, IEntity>();
-            result.Add(entity.EntityId, entity);
-            return result;
+            var list = new List<IEntity>();
+            list.Add(entity);
+            return list;
         }
 
 	}

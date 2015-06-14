@@ -64,9 +64,12 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
-		public CacheItem(IDictionary<int, IEntity> entities, IDictionary<int, IContentType> contentTypes,
-			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
-			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, IEnumerable<EntityRelationshipItem> relationships)
+		public CacheItem(IDictionary<int, IEntity> entities, 
+            IDictionary<int, IContentType> contentTypes,
+			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, 
+            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
+			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, 
+            IEnumerable<EntityRelationshipItem> relationships)
 		{
 			Entities = entities;
 			ContentTypes = contentTypes;

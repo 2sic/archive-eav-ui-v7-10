@@ -82,7 +82,20 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		string Name { get; }
 		#endregion
-	}
+
+        #region Caching Information
+        /// <summary>
+        /// List of items from the configuration which should be used for creating the cache-key
+        /// </summary>
+        string[] CacheRelevantConfigurations { get; set; }
+        /// <summary>
+        /// Unique key-id for this specific part - without the full chain to the parents
+        /// </summary>
+        string CachePartialKey { get; }
+        string CacheFullKey { get; }
+        DateTime CacheLastRefresh { get; }
+        #endregion
+    }
 
 	///// <summary>
 	///// Internal interface for building the object

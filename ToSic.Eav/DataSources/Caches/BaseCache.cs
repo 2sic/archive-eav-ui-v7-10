@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
 
@@ -27,7 +26,8 @@ namespace ToSic.Eav.DataSources.Caches
 			Out.Add(DraftsStreamName, new DataStream(this, DraftsStreamName, GetDraftEntities));
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
+        #region Default Streams: All=Default; Published, Draft
+        private IDictionary<int, IEntity> GetEntities()
 		{
 			return EnsureCache().Entities;
 		}
@@ -42,7 +42,9 @@ namespace ToSic.Eav.DataSources.Caches
 			return EnsureCache().DraftEntities;
 		}
 
-		/// <summary>
+        #endregion
+
+        /// <summary>
 		/// The root DataSource
 		/// </summary>
 		/// <remarks>Unity sets this automatically</remarks>
@@ -57,6 +59,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Gets or sets the Dictionary of all AssignmentObjectTypes
 		/// </summary>
 		public abstract Dictionary<int, string> AssignmentObjectTypes { get; protected set; }
+
 		/// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
@@ -67,7 +70,8 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		public DateTime LastRefresh { get { return EnsureCache().LastRefresh; } }
 
-		/// <summary>
+        #region Definition of the abstract Has-Item, Set, Get, Remove
+        /// <summary>
 		/// Test whether CacheKey exists in Cache
 		/// </summary>
 		protected abstract bool HasCacheItem(string cacheKey);
@@ -83,8 +87,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Remove the CacheItem with specified CacheKey
 		/// </summary>
 		protected abstract void RemoveCacheItem(string cacheKey);
+        #endregion
 
-		/// <summary>
+        /// <summary>
 		/// Ensure cache for current AppId
 		/// </summary>
 		protected CacheItem EnsureCache()
@@ -99,7 +104,7 @@ namespace ToSic.Eav.DataSources.Caches
 			if (ZoneId == 0 || AppId == 0)
 				return null;
 
-			var cacheKey = string.Format(CacheKeySchema, ZoneId, AppId);
+            var cacheKey = CachePartialKey;
 
 			if (!HasCacheItem(cacheKey))
 			{
@@ -131,7 +136,29 @@ namespace ToSic.Eav.DataSources.Caches
 			ZoneApps = null;
 		}
 
-		/// <summary>
+        #region Cache-Chain
+
+	    public override DateTime CacheLastRefresh
+	    {
+	        get { return EnsureCache().LastRefresh; }
+	    }
+
+	    private string _cachePartialKey;
+	    public override string CachePartialKey
+	    {
+            get
+            {
+                if (string.IsNullOrEmpty(_cachePartialKey))
+                    _cachePartialKey = string.Format(CacheKeySchema, ZoneId, AppId);
+                return _cachePartialKey;
+            }
+	    }
+
+	    public override string CacheFullKey { get { return CachePartialKey; } }
+
+	    #endregion
+
+        /// <summary>
 		/// Get a ContentType by StaticName if found of DisplayName if not
 		/// </summary>
 		/// <param name="name">Either StaticName or DisplayName</param>

@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using ToSic.Eav.Data;
+
+// new 2015-06-14 for caching
+using System.Runtime.Caching;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -31,7 +36,10 @@ namespace ToSic.Eav.DataSources.Caches
 		private const string _cacheKeySchema = "Z{0}A{1}";
 		public override string CacheKeySchema { get { return _cacheKeySchema; } }
 
-		private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
+
+        #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
+        private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
+
 
 		protected override bool HasCacheItem(string cacheKey)
 		{
@@ -51,6 +59,51 @@ namespace ToSic.Eav.DataSources.Caches
 		protected override void RemoveCacheItem(string cacheKey)
 		{
 			Caches.Remove(cacheKey);	// returns false if key was not found (no Exception)
-		}
-	}
+        }
+        #endregion
+
+        #region BETA Additional Stream Caching
+        // private static readonly IDictionary<string, DataStream> StreamCaches = new Dictionary<string, DataStream>();
+
+	    private ObjectCache ListCache
+	    {
+	        get { return MemoryCache.Default; }
+	    }
+
+	    public bool HasList(string key)
+	    {
+	        return ListCache.Contains(key);
+	    }
+
+        /// <summary>
+        /// Get a DataStream in the cache - will be null if not found
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public IEnumerable<IEntity> GetList(string key)
+	    {
+            var ds = ListCache[key] as IEnumerable<IEntity>;
+	        return ds;
+	    }
+
+        /// <summary>
+        /// Insert a data-stream to the cache - if it can be found
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="list"></param>
+        public void SetList(string key, IEnumerable<IEntity> list)
+	    {
+	        var policy = new CacheItemPolicy();
+	        policy.SlidingExpiration = new TimeSpan(1, 0, 0); // 1 hour
+	        var cache = MemoryCache.Default;
+            cache.Set(key, list, policy);
+	    }
+
+	    public void RemoveList(string key)
+	    {
+	        var cache = MemoryCache.Default;
+	        cache.Remove(key);
+	    }
+        #endregion
+    }
 }

@@ -52,6 +52,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -69,6 +70,7 @@
     <Compile Include="DataSources\Debug\DataSourceInfo.cs" />
     <Compile Include="DataSources\Debug\PipelineInfo.cs" />
     <Compile Include="DataSources\Debug\StreamInfo.cs" />
+    <Compile Include="DataSources\IDataStreamLight.cs" />
     <Compile Include="DataSources\Paging.cs" />
     <Compile Include="DataSources\StreamFallback.cs" />
     <Compile Include="DataSources\Exceptions\DataSourceException.cs" />
