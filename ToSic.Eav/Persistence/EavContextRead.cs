@@ -458,6 +458,7 @@ namespace ToSic.Eav
 
 			#region Build EntityModels
 			var entities = new Dictionary<int, IEntity>();
+		    var entList = new List<IEntity>();
 			foreach (var e in entitiesValues)
 			{
 				var contentType = (ContentType)contentTypes[e.AttributeSetID];
@@ -562,6 +563,7 @@ namespace ToSic.Eav
 				#endregion
 
 				entities.Add(e.EntityID, entityModel);
+                entList.Add(entityModel);
 			}
 			#endregion
 
@@ -580,7 +582,7 @@ namespace ToSic.Eav
 			}
 			#endregion
 
-			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
+			return new CacheItem(entities, entList, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
 		}
 
 		/// <summary>

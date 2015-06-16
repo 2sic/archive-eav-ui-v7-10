@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
 	/// also maintains default User-May-Do-Edit/Sort etc. values
 	/// </summary>
-	public abstract class BaseDataSource : IDataSource, IDataTarget //, IDataSourceInternals
+	public abstract class BaseDataSource : IDataSource, IDataTarget, IDataStreamLight //, IDataSourceInternals
 	{
 
 		/// <summary>
@@ -119,6 +119,17 @@ namespace ToSic.Eav.DataSources
 		{
 			get { return Out[DataSource.DefaultStreamName].List; }
 		}
+
+        public IEnumerable<IEntity> LightList
+        {
+            get { return Out[DataSource.DefaultStreamName].LightList; }
+        }
+
+        IEnumerable<IEntity> IDataStreamLight.List
+        {
+            get { return (Out[DataSource.DefaultStreamName] as IDataStreamLight).List; }
+        }
+
 		public IValueCollectionProvider ConfigurationProvider { get; internal set; }
 		public IDictionary<string, string> Configuration { get; internal set; }
 		internal bool _configurationIsLoaded;

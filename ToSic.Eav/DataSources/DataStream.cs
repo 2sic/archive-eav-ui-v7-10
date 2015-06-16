@@ -36,26 +36,12 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-        ///// <summary>
-        ///// Newer syntaxt to construct a new DataStream
-        ///// Still experimental
-        ///// </summary>
-        ///// <param name="source"></param>
-        ///// <param name="name"></param>
-        ///// <param name="entitiesDelegate"></param>
-        //public DataStream(IDataSource source, string name, GetEntitiesDelegate entitiesDelegate)
-        //{
-        //    Source = source;
-        //    Name = name;
-        //    _entitiesDelegate = entitiesDelegate;
-        //}
-
 		public IDictionary<int, IEntity> List
 		{
 			get
 			{
                 // new version to build upon the simple list, if a simple list was provided instead Tag:PureEntitiesList
-			    if (_entitiesDelegate != null)
+			    if (_listDelegate == null && _entitiesDelegate != null)
 			        return (this as IDataStreamLight).List.ToDictionary(e => e.EntityId, e => e);
 
 			    try
@@ -82,6 +68,11 @@ namespace ToSic.Eav.DataSources
 
         // 2015-06-14 test 2dm to get only entities without the dictionary-setup Tag:PureEntitiesList
 	    IEnumerable<IEntity> IDataStreamLight.List
+        {
+            get { return LightList; }
+        }
+
+        public IEnumerable<IEntity> LightList
 	    {
 	        get
 	        {
@@ -130,6 +121,8 @@ namespace ToSic.Eav.DataSources
 		public IDataSource Source { get; set; }
 
 		public string Name { get; private set; }
+
+
 
     }
 }

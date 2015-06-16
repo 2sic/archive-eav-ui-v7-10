@@ -27,16 +27,27 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public PublishingFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
 			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts||false]");
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			EnsureConfigurationIsLoaded();
-
-			var outStreamName = ShowDrafts ? BaseCache.DraftsStreamName : BaseCache.PublishedStreamName;
-			return In[outStreamName].List;
+		    return DataStream().List;
 		}
+
+        private IEnumerable<IEntity> GetList()
+        {
+            return DataStream().LightList;
+        }
+
+	    private IDataStream DataStream()
+	    {
+	        EnsureConfigurationIsLoaded();
+
+	        var outStreamName = ShowDrafts ? BaseCache.DraftsStreamName : BaseCache.PublishedStreamName;
+	        return In[outStreamName];
+	    }
+
 	}
 }

@@ -13,9 +13,13 @@ namespace ToSic.Eav.UnitTests.DataSources
         {
             const string ItemToFilter = "1023";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
-            var list = filtered.List;
 
-            Assert.AreEqual(ItemToFilter, list.First().Value.EntityId.ToString());
+            // diclist
+            var dicList = filtered.List;
+            var ll = filtered.LightList;
+
+            Assert.AreEqual(ItemToFilter, dicList.First().Value.EntityId.ToString());
+            Assert.AreEqual(ItemToFilter, ll.First().EntityId.ToString());
         }
 
 
@@ -24,9 +28,11 @@ namespace ToSic.Eav.UnitTests.DataSources
         {
             const string ItemToFilter = "";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
-            var list = filtered.List;
+            var dicList = filtered.List;
+            var ll = filtered.LightList.ToList();
 
-            Assert.AreEqual(0, list.Count, "Should return 0 items");
+            Assert.AreEqual(0, dicList.Count, "Should return 0 items");
+            Assert.AreEqual(0, ll.Count, "Should return 0 items");
         }
 
         [TestMethod]
@@ -34,10 +40,15 @@ namespace ToSic.Eav.UnitTests.DataSources
         {
             const string ItemToFilter = "1011,1023,1050,1003";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
-            var list = filtered.List;
 
-            Assert.AreEqual("1011", list.First().Value.EntityId.ToString(), "Test that sorting IS affeted");
-            Assert.AreEqual(4, list.Count, "Count after filtering");
+            var dl = filtered.List;
+            Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affeted");
+            Assert.AreEqual(4, dl.Count, "Count after filtering");
+
+
+            var ll = filtered.LightList.ToList();
+            Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
+            Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
 
         [TestMethod]
@@ -45,10 +56,14 @@ namespace ToSic.Eav.UnitTests.DataSources
         {
             const string ItemToFilter = "1011, 1023 ,1050   ,1003";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
-            var list = filtered.List;
 
-            Assert.AreEqual("1011", list.First().Value.EntityId.ToString(), "Test that sorting IS affeted");
-            Assert.AreEqual(4, list.Count, "Count after filtering");
+            var dl = filtered.List;
+            Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affeted");
+            Assert.AreEqual(4, dl.Count, "Count after filtering");
+
+            var ll = filtered.LightList.ToList();
+            Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
+            Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
 
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)

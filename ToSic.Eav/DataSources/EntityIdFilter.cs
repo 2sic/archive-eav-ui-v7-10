@@ -23,15 +23,6 @@ namespace ToSic.Eav.DataSources
 			set { Configuration[EntityIdKey] = value; }
 		}
 
-		///// <summary>
-		///// Pass throught all Entities if EntityIds is empty
-		///// </summary>
-		//public bool PassThroughOnEmptyEntityIds
-		//{
-		//	get { return bool.Parse(Configuration[PassThroughOnEmptyEntityIdsKey]); }
-		//	set { Configuration[PassThroughOnEmptyEntityIdsKey] = value.ToString(); }
-		//}
-
 		#endregion
 
 		/// <summary>
@@ -46,42 +37,70 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			EnsureConfigurationIsLoaded();
+			var entityIds = GetDistinctArrayOfEntityIds();
 
-			#region Init EntityIds from Configuration (a String)
-			int[] entityIds;
-			try
-			{
-				var configEntityIds = Configuration["EntityIds"];
-				if (string.IsNullOrWhiteSpace(configEntityIds))
-					entityIds = new int[0];
-				else
-				{
-					var lstEntityIds = new List<int>();
-					foreach (var strEntityId in Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
-					{
-						int entityIdToAdd;
-						if (int.TryParse(strEntityId, out entityIdToAdd))
-							lstEntityIds.Add(entityIdToAdd);
-					}
+		    var originals = In[DataSource.DefaultStreamName].List;
 
-					entityIds = lstEntityIds.ToArray();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("Unable to load EntityIds from Configuration.", ex);
-			}
-			#endregion
-
-			var originals = In[DataSource.DefaultStreamName].List;
-
-			//if (entityIds.Length == 0 && PassThroughOnEmptyEntityIds)
-			//	return originals;
-
-			var result = entityIds.Distinct().Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
-
-			return result;
+			return entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
 		}
+
+        // Todo: Dangerous code. Different code which should do the same thing, not 100% reliable...?
+        // won't implement this - as I assume a multi-lookup is more efficient with a full dictionary
+        //private IEnumerable<IEntity> GetList()
+        //{
+        //    var entityIds = GetDistinctArrayOfEntityIds();
+
+        //    var originals = In[DataSource.DefaultStreamName].LightList;
+
+        //    var result = new List<IEntity>();
+
+        //    foreach (var id in entityIds)
+        //    {
+        //        var r = originals.Where(o => o.EntityId == id).First();
+        //        if(r != null) 
+        //            result.Add(r);
+        //    }
+        //    return result;
+        //}
+        //    return originals.Where(o => entityIds.Contains(o.EntityId));// entityIds.Where(originals.Select(o => o));//.ToDictionary(id => id, id => originals[id]);
+        //} 
+
+	    private IEnumerable<int> GetDistinctArrayOfEntityIds()
+	    {
+
+	        EnsureConfigurationIsLoaded();
+
+	        #region Init EntityIds from Configuration (a String)
+
+	        int[] entityIds;
+	        try
+	        {
+	            var configEntityIds = Configuration["EntityIds"];
+	            if (string.IsNullOrWhiteSpace(configEntityIds))
+	                entityIds = new int[0];
+	            else
+	            {
+	                var lstEntityIds = new List<int>();
+	                foreach (
+	                    var strEntityId in
+	                        Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
+	                {
+	                    int entityIdToAdd;
+	                    if (int.TryParse(strEntityId, out entityIdToAdd))
+	                        lstEntityIds.Add(entityIdToAdd);
+	                }
+
+	                entityIds = lstEntityIds.ToArray();
+	            }
+	        }
+	        catch (Exception ex)
+	        {
+	            throw new Exception("Unable to load EntityIds from Configuration.", ex);
+	        }
+
+	        #endregion
+
+            return entityIds.Distinct();
+	    }
 	}
 }

@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 		protected BaseCache()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
 			Out.Add(PublishedStreamName, new DataStream(this, PublishedStreamName, GetPublishedEntities));
 			Out.Add(DraftsStreamName, new DataStream(this, DraftsStreamName, GetDraftEntities));
 		}
@@ -32,7 +32,16 @@ namespace ToSic.Eav.DataSources.Caches
 			return EnsureCache().Entities;
 		}
 
-		private IDictionary<int, IEntity> GetPublishedEntities()
+        /// <summary>
+        /// This retrieves the cached list-only set (without the dictionar)
+        /// </summary>
+        /// <returns></returns>
+	    private IEnumerable<IEntity> GetList()
+	    {
+	        return EnsureCache().List;
+	    }
+
+	    private IDictionary<int, IEntity> GetPublishedEntities()
 		{
 			return EnsureCache().PublishedEntities;
 		}
@@ -231,7 +240,8 @@ namespace ToSic.Eav.DataSources.Caches
 			return AssignmentObjectTypes.SingleOrDefault(a => a.Value == assignmentObjectTypeName).Key;
 		}
 
-		/// <summary>
+        #region GetAssignedEntities by Guid, string and int
+        /// <summary>
 		/// Get Entities with specified AssignmentObjectTypeId and Key
 		/// </summary>
 		public IEnumerable<IEntity> GetAssignedEntities(int assignmentObjectTypeId, Guid key, string contentTypeName = null)
@@ -283,6 +293,7 @@ namespace ToSic.Eav.DataSources.Caches
 			}
 
 			return new List<IEntity>();
-		}
-	}
+        }
+        #endregion
+    }
 }

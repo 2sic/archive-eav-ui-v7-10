@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public Paging()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
             Out.Add("Paging", new DataStream(this, DataSource.DefaultStreamName, null, GetPaging));
             Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||10]");
             Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||1]");
@@ -56,13 +56,13 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private IEnumerable<IEntity> GetEntities()
+	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();
 
 		    var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        return (In["Default"] as IDataStreamLight).List.Skip(itemsToSkip).Take(PageSize).ToList();
+	        return In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
 	    }
 
         private IEnumerable<IEntity> GetPaging()

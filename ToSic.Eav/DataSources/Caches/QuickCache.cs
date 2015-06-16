@@ -63,7 +63,6 @@ namespace ToSic.Eav.DataSources.Caches
         #endregion
 
         #region BETA Additional Stream Caching
-        // private static readonly IDictionary<string, DataStream> StreamCaches = new Dictionary<string, DataStream>();
 
 	    private ObjectCache ListCache
 	    {

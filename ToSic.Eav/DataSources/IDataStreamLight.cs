@@ -11,5 +11,5 @@ namespace ToSic.Eav.DataSources
 		/// Dictionary of Entites in this Stream
 		/// </summary>
 		IEnumerable<IEntity> List { get; }
-	}
+    }
 }

@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources
 	public class SqlDataSource : BaseDataSource
 	{
 		private IDictionary<int, IEntity> _entities;
+	    private List<IEntity> _list; 
 
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
@@ -107,7 +108,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public SqlDataSource()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
@@ -178,9 +179,17 @@ namespace ToSic.Eav.DataSources
 	    }
 
 	    private IDictionary<int, IEntity> GetEntities()
+	    {
+	        if (_entities == null)
+	            _entities = GetList().ToDictionary(e => e.EntityId, e => e);
+
+	        return _entities;
+	    }
+
+	    private IEnumerable<IEntity> GetList()
 		{
-			if (_entities != null)
-				return _entities;
+			if (_list != null)
+				return _list;
 
 			EnsureConfigurationIsLoaded();
 
@@ -188,7 +197,7 @@ namespace ToSic.Eav.DataSources
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
                 throw new System.InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
 
-			_entities = new Dictionary<int, IEntity>();
+	        _list = new List<IEntity>(); // Dictionary<int, IEntity>();
 
 			// Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
@@ -224,7 +233,8 @@ namespace ToSic.Eav.DataSources
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
 						var entity = new Data.Entity(entityId, ContentType, values, TitleField);
-						_entities.Add(entityId, entity);
+					    _list.Add(entity);
+					    //_entities.Add(entityId, entity);
 					}
 					#endregion
 				}
@@ -234,7 +244,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return _entities;
+			return _list;
 		}
 	}
 }
