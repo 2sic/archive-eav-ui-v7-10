@@ -16,48 +16,48 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataStream to get Entities when needed
 	/// </summary>
-	public class DataStream : IDataStream, IDataStreamLight
+	public class DataStream : IDataStream
 	{
-		private readonly GetListDelegate _listDelegate;
-	    private readonly GetEntitiesDelegate _entitiesDelegate;
+		private readonly GetListDelegate _dictionaryDelegate;
+	    private readonly GetEntitiesDelegate _lightListDelegate;
 
 		/// <summary>
 		/// Constructs a new DataStream
 		/// </summary>
 		/// <param name="source">The DataSource providing Entities when needed</param>
 		/// <param name="name">Name of this Stream</param>
-		/// <param name="listDelegate">Function which gets Entities</param>
-		public DataStream(IDataSource source, string name, GetListDelegate listDelegate, GetEntitiesDelegate entitiesDelegate = null)
+		/// <param name="dictionaryDelegate">Function which gets Entities</param>
+		public DataStream(IDataSource source, string name, GetListDelegate dictionaryDelegate, GetEntitiesDelegate lightListDelegate = null)
 		{
 			Source = source;
 			Name = name;
-			_listDelegate = listDelegate;
-		    _entitiesDelegate = entitiesDelegate;
+			_dictionaryDelegate = dictionaryDelegate;
+		    _lightListDelegate = lightListDelegate;
 		}
 
-
+	    private IDictionary<int, IEntity> _dicList; 
 		public IDictionary<int, IEntity> List
 		{
 			get
 			{
+                // already retrieved? then return last result to be faster
+                if (_dicList != null)
+                    return _dicList;
+
                 // new version to build upon the simple list, if a simple list was provided instead Tag:PureEntitiesList
-			    if (_listDelegate == null && _entitiesDelegate != null)
-			        return (this as IDataStreamLight).List.ToDictionary(e => e.EntityId, e => e);
+			    if (_dictionaryDelegate == null && _lightListDelegate != null)
+			        return _dicList = LightList.ToDictionary(e => e.EntityId, e => e);
 
 			    try
 			    {
-			        var getList = new GetListDelegate(_listDelegate);
-			        return getList();
+			        var getList = new GetListDelegate(_dictionaryDelegate);
+			        return _dicList = getList();
 			    }
 			    catch (InvalidOperationException ex)
 			    {
 			        // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
 			        throw ex;
 			    }
-                //catch (DataSourceException ex)
-                //{
-                //    throw ex;
-                //}
 				catch (Exception ex)
 				{
 					throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
@@ -65,44 +65,35 @@ namespace ToSic.Eav.DataSources
 			}
 		}
 
-
-        // 2015-06-14 test 2dm to get only entities without the dictionary-setup Tag:PureEntitiesList
-	    IEnumerable<IEntity> IDataStreamLight.List
-        {
-            get { return LightList; }
-        }
-
+	    private IEnumerable<IEntity> _lightList; 
         public IEnumerable<IEntity> LightList
 	    {
-	        get
-	        {
-                // try to use the built-in Entities-Delegate, but if not defined...
-	            if (_entitiesDelegate != null)
-	            {
-	                try
-	                {
-	                    var getEntitiesDelegate = new GetEntitiesDelegate(_entitiesDelegate);
-	                    return getEntitiesDelegate();
-	                }
-	                catch (InvalidOperationException ex)
-	                {
-	                    // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
-	                    throw ex;
-	                }
-	                catch (Exception ex)
-	                {
-	                    throw new Exception(
-	                        string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name,
-	                            Source.Name), ex);
-	                }
-	            }
+            get
+            {
+                // already retrieved? then return last result to be faster
+                if (_lightList != null)
+                    return _lightList;
 
-                // if no specific entities-delegate defined, use the main delegate
-	            else
-	            {
-	                return List.Select(x => x.Value);
-	            }
-	        }
+                // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
+                if (_lightListDelegate == null && _dictionaryDelegate != null)
+                    return _lightList = List.Select(x => x.Value);
+
+                try
+                {
+                    var getEntitiesDelegate = new GetEntitiesDelegate(_lightListDelegate);
+                    return _lightList = getEntitiesDelegate();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+                    throw ex;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
+                }
+
+            }
 	    }
 
 		/// <summary>

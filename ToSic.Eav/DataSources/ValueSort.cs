@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
 				throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
-            var list = (In[DataSource.DefaultStreamName] as IDataStreamLight).List;
+            var list = In[DataSource.DefaultStreamName].LightList;
 
 			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
 			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();

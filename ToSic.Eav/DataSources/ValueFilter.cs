@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
 			if(lang != "default")
 				throw  new Exception("Can't filter for languages other than 'default'");
 
-			var originals = (In[DataSource.DefaultStreamName] as IDataStreamLight).List;
+			var originals = In[DataSource.DefaultStreamName].LightList;
 
 			//if (string.IsNullOrEmpty(Value) && PassThroughOnEmptyValue)
 			//	return originals;

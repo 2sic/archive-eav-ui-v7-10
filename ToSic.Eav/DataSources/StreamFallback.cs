@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources
         {
             var foundStream = FindIdealFallbackStream();
 
-            return foundStream != null ? (foundStream as IDataStreamLight).List : new List<IEntity>();
+            return foundStream != null ? foundStream.LightList : new List<IEntity>();
         }
 
 	    private IDataStream FindIdealFallbackStream()
