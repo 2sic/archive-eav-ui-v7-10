@@ -11,8 +11,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataTableDataSource : BaseDataSource
 	{
-		private IDictionary<int, IEntity> _entities;
-
 		#region Configuration-properties
 
 		private const string TitleFieldKey = "TitleField";
@@ -89,14 +87,9 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			if (_entities != null)
-				return _entities;
-
 			EnsureConfigurationIsLoaded();
 
-			_entities = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField);
-
-			return _entities;
+			return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField);
 		}
 
 		/// <summary>

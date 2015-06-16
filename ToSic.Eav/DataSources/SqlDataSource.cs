@@ -14,9 +14,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class SqlDataSource : BaseDataSource
 	{
-		private IDictionary<int, IEntity> _entities;
-	    private List<IEntity> _list; 
-
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase);
@@ -180,24 +177,18 @@ namespace ToSic.Eav.DataSources
 
 	    private IDictionary<int, IEntity> GetEntities()
 	    {
-	        if (_entities == null)
-	            _entities = GetList().ToDictionary(e => e.EntityId, e => e);
-
-	        return _entities;
+	        return GetList().ToDictionary(e => e.EntityId, e => e);
 	    }
 
 	    private IEnumerable<IEntity> GetList()
 		{
-			if (_list != null)
-				return _list;
-
 			EnsureConfigurationIsLoaded();
 
             // Check if SQL contains forbidden terms
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
                 throw new System.InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
 
-	        _list = new List<IEntity>(); // Dictionary<int, IEntity>();
+	        var list = new List<IEntity>(); // Dictionary<int, IEntity>();
 
 			// Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
@@ -233,7 +224,7 @@ namespace ToSic.Eav.DataSources
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
 						var entity = new Data.Entity(entityId, ContentType, values, TitleField);
-					    _list.Add(entity);
+					    list.Add(entity);
 					    //_entities.Add(entityId, entity);
 					}
 					#endregion
@@ -244,7 +235,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return _list;
+			return list;
 		}
 	}
 }

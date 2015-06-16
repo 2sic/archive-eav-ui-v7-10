@@ -60,11 +60,8 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 		}
 
-	    private IEnumerable<IEntity> _results;
 		private IEnumerable<IEntity> GetEntities()
 		{
-		    if (_results != null)
-		        return _results;
 			// todo: maybe do something about languages?
 
 			EnsureConfigurationIsLoaded();
@@ -85,10 +82,8 @@ namespace ToSic.Eav.DataSources
 			if (lang == "any")
 				throw new NotImplementedException("language 'any' not implemented yet");
 
-            _results = GetFilteredWithLinq(originals, attr, lang, filter);
+            return GetFilteredWithLinq(originals, attr, lang, filter);
             //_results = GetFilteredWithLoop(originals, attr, lang, filter);
-
-		    return _results;
 		}
 
 
