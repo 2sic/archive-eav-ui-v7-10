@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Caching;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -62,6 +63,11 @@ namespace ToSic.Eav.DataSources
 
 	            return key;
 	        } 
+	    }
+
+	    public ICache Cache
+	    {
+	        get { return DataSource.GetCache(ZoneId, AppId); }
 	    }
 
 	    public virtual string CacheFullKey

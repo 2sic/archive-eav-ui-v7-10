@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// <summary>
 	/// simple, quick cache
 	/// </summary>
-	public class QuickCache : BaseCache
+	public class QuickCache : BaseCache, IListCache
 	{
 		private static Dictionary<int, Data.Zone> _zoneApps;
 
@@ -69,11 +69,10 @@ namespace ToSic.Eav.DataSources.Caches
 	        get { return MemoryCache.Default; }
 	    }
 
-	    public bool HasList(string key)
-	    {
-	        return ListCache.Contains(key);
-	    }
-
+        public bool HasList(string key)
+        {
+            return ListCache.Contains(key);
+        }
         /// <summary>
         /// Get a DataStream in the cache - will be null if not found
         /// </summary>
@@ -98,11 +97,11 @@ namespace ToSic.Eav.DataSources.Caches
             cache.Set(key, list, policy);
 	    }
 
-	    public void RemoveList(string key)
-	    {
-	        var cache = MemoryCache.Default;
-	        cache.Remove(key);
-	    }
+        public void RemoveList(string key)
+        {
+            var cache = MemoryCache.Default;
+            cache.Remove(key);
+        }
         #endregion
     }
 }
