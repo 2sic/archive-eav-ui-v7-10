@@ -41,7 +41,9 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		IDictionary<int, IEntity> List { get; }
 
-		/// <summary>
+        IEnumerable<IEntity> LightList { get; }
+            
+        /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
 		IValueCollectionProvider ConfigurationProvider { get; }

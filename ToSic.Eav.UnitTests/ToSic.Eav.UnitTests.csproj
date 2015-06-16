@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DataSources\Caches\QuickCaches_Test.cs" />
     <Compile Include="DataSources\DataTableDataSource_Test.cs" />
     <Compile Include="DataSources\EntityIdFilter_Test.cs" />
     <Compile Include="DataSources\SqlDataSource_Test.cs" />

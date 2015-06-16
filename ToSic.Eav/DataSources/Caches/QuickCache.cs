@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using ToSic.Eav.Data;
 
@@ -18,6 +19,7 @@ namespace ToSic.Eav.DataSources.Caches
 		public QuickCache()
 		{
 			Cache = this;
+		    DefaultListRetentionTimeInSeconds = 60*60;
 		}
 
 		public override Dictionary<int, Data.Zone> ZoneApps
@@ -73,7 +75,20 @@ namespace ToSic.Eav.DataSources.Caches
         {
             return ListCache.Contains(key);
         }
-        /// <summary>
+
+	    public bool HasList(IDataSource dataSource)
+	    {
+	        return ListCache.Contains(dataSource.CacheFullKey);
+	    }
+
+	    public bool HasList(IDataStream dataStream, bool useStreamName = true)
+	    {
+	        return HasList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
+	    }
+
+	    public int DefaultListRetentionTimeInSeconds { get; set; }
+
+	    /// <summary>
         /// Get a DataStream in the cache - will be null if not found
         /// </summary>
         /// <param name="key"></param>
@@ -84,6 +99,16 @@ namespace ToSic.Eav.DataSources.Caches
 	        return ds;
 	    }
 
+	    public IEnumerable<IEntity> GetList(IDataSource dataSource)
+	    {
+	        return GetList(dataSource.CacheFullKey);
+	    }
+
+	    public IEnumerable<IEntity> GetList(IDataStream dataStream, bool useStreamName = true)
+	    {
+	        return GetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
+	    } 
+
         /// <summary>
         /// Insert a data-stream to the cache - if it can be found
         /// </summary>
@@ -92,10 +117,20 @@ namespace ToSic.Eav.DataSources.Caches
         public void SetList(string key, IEnumerable<IEntity> list)
 	    {
 	        var policy = new CacheItemPolicy();
-	        policy.SlidingExpiration = new TimeSpan(1, 0, 0); // 1 hour
+	        policy.SlidingExpiration = new TimeSpan(0, 0, DefaultListRetentionTimeInSeconds); 
 	        var cache = MemoryCache.Default;
             cache.Set(key, list, policy);
 	    }
+
+        public void SetList(IDataStream dataStream, bool useStreamName = true)
+        {
+            SetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""), dataStream.LightList);
+        }
+
+        public void SetList(IDataSource dataSource)
+        {
+            SetList(dataSource.CacheFullKey, dataSource.LightList);
+        }
 
         public void RemoveList(string key)
         {
