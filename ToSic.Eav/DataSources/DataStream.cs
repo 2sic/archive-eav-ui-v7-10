@@ -21,6 +21,8 @@ namespace ToSic.Eav.DataSources
 		private readonly GetListDelegate _dictionaryDelegate;
 	    private readonly GetEntitiesDelegate _lightListDelegate;
 
+	    public bool CachingEnabled = true;
+
 		/// <summary>
 		/// Constructs a new DataStream
 		/// </summary>
@@ -41,7 +43,7 @@ namespace ToSic.Eav.DataSources
 			get
 			{
                 // already retrieved? then return last result to be faster
-                if (_dicList != null)
+                if (_dicList != null && CachingEnabled)
                     return _dicList;
 
                 // new version to build upon the simple list, if a simple list was provided instead Tag:PureEntitiesList
@@ -71,7 +73,7 @@ namespace ToSic.Eav.DataSources
             get
             {
                 // already retrieved? then return last result to be faster
-                if (_lightList != null)
+                if (_lightList != null && CachingEnabled)
                     return _lightList;
 
                 // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
