@@ -70,7 +70,9 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
-		}
+
+            CacheRelevantConfigurations = new[] { ContentTypeKey };
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the DataTableDataSource class

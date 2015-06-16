@@ -115,8 +115,10 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(CompareModeKey, "default");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
-			//Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
-		}
+            //Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
+
+            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
+        }
 
         //private IDictionary<int, IEntity> GetEntities()
         //{

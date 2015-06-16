@@ -29,7 +29,9 @@ namespace ToSic.Eav.DataSources
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(TypeNameKey, "[Settings:TypeName]");
-		}
+        
+            CacheRelevantConfigurations = new[] { TypeNameKey };
+        }
 
 	    private IEnumerable<IEntity> GetList()
 	    {

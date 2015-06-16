@@ -35,7 +35,9 @@ namespace ToSic.Eav.DataSources
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
-		}
+
+            CacheRelevantConfigurations = new[] { AttributeNamesKey };
+        }
 
 	    private IDictionary<int, IEntity> cached; 
 		private IDictionary<int, IEntity> GetEntities()

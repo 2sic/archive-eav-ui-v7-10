@@ -69,7 +69,7 @@ namespace ToSic.Eav.UnitTests
         {
             var ds = CreatePagingForTesting(45);
             Assert.AreEqual("Paging-NoGuid&PageSize=10&PageNumber=1", ds.CachePartialKey);
-            Assert.AreEqual("DataTableDataSource-NoGuid>Paging-NoGuid&PageSize=10&PageNumber=1", ds.CacheFullKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>Paging-NoGuid&PageSize=10&PageNumber=1", ds.CacheFullKey);
             var lastRefresh = ds.CacheLastRefresh; // get this before comparison, because sometimes slow execution will get strange results
             Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
         }

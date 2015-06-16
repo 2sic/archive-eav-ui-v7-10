@@ -73,7 +73,9 @@ namespace ToSic.Eav.DataSources
 			// Set default switch-keys to 0 = no switch
 			Configuration.Add(AppSwitchKey, "0");
 			Configuration.Add(ZoneSwitchKey, "0");
-		}
+
+            CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
+        }
 
 		/// <summary>
 		/// Attach a different data source than is currently attached...

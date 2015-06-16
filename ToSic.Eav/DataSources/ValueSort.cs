@@ -52,7 +52,9 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(AttrKey, "[Settings:Attributes]");
 			Configuration.Add(DirectionKey, "[Settings:Directions]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
-		}
+
+            CacheRelevantConfigurations = new[] { AttrKey, DirectionKey, LangKey };
+        }
 
 	    private IDictionary<int, IEntity> GetEntities()
 	    {

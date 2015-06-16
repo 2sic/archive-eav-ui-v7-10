@@ -58,7 +58,9 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(AttrKey, "[Settings:AttributeHelperTools]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
-		}
+
+            CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
+        }
 
 		private IEnumerable<IEntity> GetEntities()
 		{

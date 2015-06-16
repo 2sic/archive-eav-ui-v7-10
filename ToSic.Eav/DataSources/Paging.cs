@@ -15,7 +15,6 @@ namespace ToSic.Eav.DataSources
         private const string PageSizeKey = "PageSize";
         private const string PageNumberKey = "PageNumber";
 
-
         /// <summary>
         /// The attribute whoose value will be filtered
         /// </summary>

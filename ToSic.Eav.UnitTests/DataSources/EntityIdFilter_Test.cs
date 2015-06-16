@@ -66,6 +66,37 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
 
+        [TestMethod]
+        public void EntityIdFilter_CacheKey1()
+        {
+            // Simple scenario, 1 filter, no special spaces etc.
+            const string ItemToFilter = "1023";
+            var ds = CreateFilterForTesting(100, ItemToFilter);
+
+            Assert.AreEqual("EntityIdFilter-NoGuid&EntityIds=1023", ds.CachePartialKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1023", ds.CacheFullKey);
+            var lastRefresh = ds.CacheLastRefresh; // get this before comparison, because sometimes slow execution will get strange results
+            Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
+
+        }
+        [TestMethod]
+        public void EntityIdFilter_CacheKeyMulti()
+        {
+            // Multi-value scenario, no special spaces etc.
+            string ItemToFilter = "1011,1023,1050,1003";
+            var ds = CreateFilterForTesting(100, ItemToFilter);
+
+            Assert.AreEqual("EntityIdFilter-NoGuid&EntityIds=1011,1023,1050,1003", ds.CachePartialKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1011,1023,1050,1003", ds.CacheFullKey);
+
+            // Multi-value scenario, no special spaces etc.
+            ItemToFilter = "1011, 1023  ,   1050,    1003,";
+            ds = CreateFilterForTesting(100, ItemToFilter);
+            Assert.AreEqual("EntityIdFilter-NoGuid&EntityIds=1011,1023,1050,1003", ds.CachePartialKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1011,1023,1050,1003", ds.CacheFullKey);
+
+        }
+
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
             var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);

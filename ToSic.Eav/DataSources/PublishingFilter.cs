@@ -29,7 +29,9 @@ namespace ToSic.Eav.DataSources
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
 			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts||false]");
-		}
+
+            CacheRelevantConfigurations = new[] { ShowDraftsKey };
+        }
 
 		private IDictionary<int, IEntity> GetEntities()
 		{

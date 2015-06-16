@@ -112,7 +112,9 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
 			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
 			Configuration.Add(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
-		}
+
+            CacheRelevantConfigurations = new[] { ContentTypeKey, SelectCommandKey, ConnectionStringKey, ConnectionStringNameKey };
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the SqlDataSource class
@@ -148,6 +150,7 @@ namespace ToSic.Eav.DataSources
 	        }
             var sourceText = SelectCommand;
             var ParamNumber = 1;
+	        var additionalParams = new List<string>();
             var Result = new StringBuilder();
             var charProgress = 0;
             var matches = Tokenizer.Matches(sourceText);
@@ -160,9 +163,12 @@ namespace ToSic.Eav.DataSources
                         Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
                     charProgress = curMatch.Index + curMatch.Length;
 
-                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++).ToString();
+                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++);
                     Result.Append(paramName);
                     Configuration.Add(paramName, curMatch.ToString());
+
+                    // add name to list for caching-key
+                    additionalParams.Add(paramName);
                 }
 
                 // attach the rest of the text (after the last match)
@@ -171,6 +177,7 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = Result.ToString();
             }
+	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToArray();
 
 	        base.EnsureConfigurationIsLoaded();
 	    }

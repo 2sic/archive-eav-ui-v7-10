@@ -33,74 +33,54 @@ namespace ToSic.Eav.DataSources
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
 			//Configuration.Add(PassThroughOnEmptyEntityIdsKey, "[Settings:PassThroughOnEmptyEntityIds||false]");
+
+            CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			var entityIds = GetDistinctArrayOfEntityIds();
+            EnsureConfigurationIsLoaded();
+
+		    var entityIds = _cleanedIds;
 
 		    var originals = In[DataSource.DefaultStreamName].List;
 
 			return entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
 		}
 
-        // Todo: Dangerous code. Different code which should do the same thing, not 100% reliable...?
-        // won't implement this - as I assume a multi-lookup is more efficient with a full dictionary
-        //private IEnumerable<IEntity> GetList()
-        //{
-        //    var entityIds = GetDistinctArrayOfEntityIds();
+	    private IEnumerable<int> _cleanedIds;
 
-        //    var originals = In[DataSource.DefaultStreamName].LightList;
+        protected internal override void EnsureConfigurationIsLoaded()
+        {
+            base.EnsureConfigurationIsLoaded();
 
-        //    var result = new List<IEntity>();
+            try
+            {
+                var configEntityIds = Configuration["EntityIds"];
+                if (string.IsNullOrWhiteSpace(configEntityIds))
+                    _cleanedIds = new int[0];
+                else
+                {
+                    var lstEntityIds = new List<int>();
+                    foreach (
+                        var strEntityId in
+                            Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
+                    {
+                        int entityIdToAdd;
+                        if (int.TryParse(strEntityId, out entityIdToAdd))
+                            lstEntityIds.Add(entityIdToAdd);
+                    }
 
-        //    foreach (var id in entityIds)
-        //    {
-        //        var r = originals.Where(o => o.EntityId == id).First();
-        //        if(r != null) 
-        //            result.Add(r);
-        //    }
-        //    return result;
-        //}
-        //    return originals.Where(o => entityIds.Contains(o.EntityId));// entityIds.Where(originals.Select(o => o));//.ToDictionary(id => id, id => originals[id]);
-        //} 
+                    _cleanedIds = lstEntityIds.Distinct();//.ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to load EntityIds from Configuration.", ex);
+            }
 
-	    private IEnumerable<int> GetDistinctArrayOfEntityIds()
-	    {
+            EntityIds = string.Join(",", _cleanedIds.Select(i => i.ToString()).ToArray());
+        }
 
-	        EnsureConfigurationIsLoaded();
-
-	        #region Init EntityIds from Configuration (a String)
-
-	        int[] entityIds;
-	        try
-	        {
-	            var configEntityIds = Configuration["EntityIds"];
-	            if (string.IsNullOrWhiteSpace(configEntityIds))
-	                entityIds = new int[0];
-	            else
-	            {
-	                var lstEntityIds = new List<int>();
-	                foreach (
-	                    var strEntityId in
-	                        Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
-	                {
-	                    int entityIdToAdd;
-	                    if (int.TryParse(strEntityId, out entityIdToAdd))
-	                        lstEntityIds.Add(entityIdToAdd);
-	                }
-
-	                entityIds = lstEntityIds.ToArray();
-	            }
-	        }
-	        catch (Exception ex)
-	        {
-	            throw new Exception("Unable to load EntityIds from Configuration.", ex);
-	        }
-
-	        #endregion
-
-            return entityIds.Distinct();
-	    }
 	}
 }
