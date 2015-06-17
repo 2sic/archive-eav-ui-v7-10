@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
-			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
+			Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
 			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
 			Configuration.Add(ConnectionStringNameKey, "[Settings:ConnectionStringName]");

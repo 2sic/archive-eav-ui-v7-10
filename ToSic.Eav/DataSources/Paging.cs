@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
 		public Paging()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
-            Out.Add("Paging", new DataStream(this, DataSource.DefaultStreamName, null, GetPaging));
+            Out.Add("Paging", new DataStream(this, "Paging", null, GetPaging));
             Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||10]");
             Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||1]");
 
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
             EnsureConfigurationIsLoaded();
 
             // Calculate any additional stuff
-            var itemCount = In["Default"].List.Count;
+            var itemCount = In["Default"].LightList.Count();
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity
