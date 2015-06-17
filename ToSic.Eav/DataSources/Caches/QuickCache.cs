@@ -118,6 +118,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    {
 	        var policy = new CacheItemPolicy();
 	        policy.SlidingExpiration = new TimeSpan(0, 0, DefaultListRetentionTimeInSeconds); 
+
 	        var cache = MemoryCache.Default;
             cache.Set(key, list, policy);
 	    }

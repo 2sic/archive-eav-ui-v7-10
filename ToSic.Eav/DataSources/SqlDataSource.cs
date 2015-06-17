@@ -105,7 +105,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public SqlDataSource()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
@@ -182,10 +182,10 @@ namespace ToSic.Eav.DataSources
 	        base.EnsureConfigurationIsLoaded();
 	    }
 
-	    private IDictionary<int, IEntity> GetEntities()
-	    {
-	        return GetList().ToDictionary(e => e.EntityId, e => e);
-	    }
+        //private IDictionary<int, IEntity> GetEntities()
+        //{
+        //    return GetList().ToDictionary(e => e.EntityId, e => e);
+        //}
 
 	    private IEnumerable<IEntity> GetList()
 		{
