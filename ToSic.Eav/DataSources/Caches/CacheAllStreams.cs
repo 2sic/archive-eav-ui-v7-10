@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Caches
 		#region Configuration-properties
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
-	    // private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
+	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
 	    private bool EnforceUniqueCache = false;
 
 		/// <summary>
@@ -39,11 +39,11 @@ namespace ToSic.Eav.DataSources.Caches
             set { Configuration[RefreshOnSourceRefreshKey] = value.ToString(); }
 	    }
 
-        //public bool ReturnCacheWhileRefreshing
-        //{
-        //    get { return Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]); }
-        //    set { Configuration[ReturnCacheWhileRefreshingKey] = value.ToString(); }
-        //}
+        public bool ReturnCacheWhileRefreshing 
+        {
+            get { return Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]); }
+            set { Configuration[ReturnCacheWhileRefreshingKey] = value.ToString(); }
+        }
 
 
 		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.Caches
 			// Set default switch-keys to 0 = no switch
             Configuration.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
 			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||3600]");
-            // Configuration.Add(ReturnCacheWhileRefreshingKey, "[Settings:" + ReturnCacheWhileRefreshingKey + "||False]");
+		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");// "[Settings:" + ReturnCacheWhileRefreshingKey + "||False]");
         }
 
 		/// <summary>
@@ -85,32 +85,32 @@ namespace ToSic.Eav.DataSources.Caches
 
 		    var cache = Cache as QuickCache;
 			_Out.Clear();
+
 		    foreach (var dataStream in In)
 		    {
-		        var inName = dataStream.Key;
-		        var inStream = dataStream.Value;
+		        var stream = dataStream.Value;
+                var itemInCache = cache.ListGet(stream);
+		        var isInCache = itemInCache != null;
 
-		        var useCache = cache.HasList(inStream);
-                var cacheItem = cache.GetList(inStream);
-                
-                var refresh = false;
-		        if (useCache)
-		        {
-                    // check if upstream has newer data
-		            refresh = RefreshOnSourceRefresh && inStream.Source.CacheLastRefresh > cacheItem.SourceRefresh;
-		            useCache = !refresh;
-		        }
+                var refreshCache = !isInCache || (RefreshOnSourceRefresh && stream.Source.CacheLastRefresh > itemInCache.SourceRefresh);
+                var useCache = isInCache && !refreshCache; // || ReturnCacheWhileRefreshing
 
 		        _Out.Add(dataStream.Key,
                     useCache
-                        ? new DataStream(this, inName, null, () => cacheItem.LightList )
-                        : inStream);
+                        ? new DataStream(this, dataStream.Key, null, () => itemInCache.LightList )
+                        : stream);
 
-                
 
-                // todo: ensure it lands it the cache - but only if ever accessed?
-		        if (!cache.HasList(inStream))
-		            cache.SetList(inStream, durationInSeconds: CacheDurationInSeconds);
+                // ensure it lands it the cache - but only if ever accessed?
+                // note: I currently don't know how to do this in a separate thread - so I won't do it. 
+                // it's too dangerous to just mess around here, because many parallel requests could end up doing this in parallel till one succeeds. 
+                if (refreshCache)
+                    //new Thread(delegate()
+                    {
+                        // cache.RemoveList(itemInCache);
+                        cache.ListSet(stream, durationInSeconds: CacheDurationInSeconds);
+                    }
+                    //).Start();
 		    }
 		}
 	}

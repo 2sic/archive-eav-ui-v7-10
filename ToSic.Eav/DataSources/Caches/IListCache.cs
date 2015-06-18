@@ -8,21 +8,35 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	[PipelineDesigner]
 	public interface IListCache
-	{
-	    // ObjectCache ListCache { get; }
-        int DefaultListRetentionTimeInSeconds { get; set; }
+    {
+        #region Interfaces for the List-Cache
 
-	    ListCacheItem GetList(string key);
-	    ListCacheItem GetList(IDataSource dataSource);
-	    ListCacheItem GetList(IDataStream dataStream, bool useStreamName = true);
+        /// <summary>
+        /// The time a list stays in the cache by default - usually 3600 = 1 hour
+        /// </summary>
+        int ListDefaultRetentionTimeInSeconds { get; set; }
 
-	    void SetList(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0);
-	    void SetList(IDataStream dataStream, bool useStreamName = true, int durationInSeconds = 0);
-	    // void SetList(IDataSource dataSource);
+        /// <summary>
+        /// Get a list from the cache
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+	    ListCacheItem ListGet(string key);
 
-	    void RemoveList(string key);
-	    bool HasList(string key);
-	    bool HasList(IDataSource dataSource);
-	    bool HasList(IDataStream dataStream, bool useStreamName = true);
-	}
+        /// <summary>
+        /// Get a list from the cache
+        /// </summary>
+        /// <param name="dataStream">The data stream on a data-source object</param>
+        /// <param name="useStreamName"></param>
+        /// <returns></returns>
+	    ListCacheItem ListGet(IDataStream dataStream, bool useStreamName = true);
+
+	    void ListSet(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0);
+	    void ListSet(IDataStream dataStream, bool useStreamName = true, int durationInSeconds = 0);
+
+	    void ListRemove(string key);
+	    bool ListHas(string key);
+	    bool ListHas(IDataStream dataStream, bool useStreamName = true);
+        #endregion
+    }
 }

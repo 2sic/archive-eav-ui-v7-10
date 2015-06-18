@@ -12,6 +12,7 @@ namespace ToSic.Eav.DataSources.Caches
         /// The list in the cache
         /// </summary>
         public IEnumerable<IEntity> LightList { get; set; }
+        public string CacheKey { get; set; }
 
 
         /// <summary>
@@ -24,8 +25,9 @@ namespace ToSic.Eav.DataSources.Caches
         /// </summary>
         /// <param name="list"></param>
         /// <param name="sourceRefresh"></param>
-        public ListCacheItem(IEnumerable<IEntity> list, DateTime sourceRefresh)
+        public ListCacheItem(string cacheKey, IEnumerable<IEntity> list, DateTime sourceRefresh)
         {
+            CacheKey = cacheKey;
             LightList = list;
             SourceRefresh = sourceRefresh;
         }

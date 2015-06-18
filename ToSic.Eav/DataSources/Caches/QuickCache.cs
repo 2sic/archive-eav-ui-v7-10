@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources.Caches
 		public QuickCache()
 		{
 			Cache = this;
-		    DefaultListRetentionTimeInSeconds = 60*60;
+		    ListDefaultRetentionTimeInSeconds = 60*60;
 		}
 
 		public override Dictionary<int, Data.Zone> ZoneApps
@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources.Caches
 	        get { return MemoryCache.Default; }
 	    }
 
-        public bool HasList(string key)
+        public bool ListHas(string key)
         {
             return ListCache.Contains(key);
         }
@@ -81,19 +81,19 @@ namespace ToSic.Eav.DataSources.Caches
 	        return ListCache.Contains(dataSource.CacheFullKey);
 	    }
 
-	    public bool HasList(IDataStream dataStream, bool useStreamName = true)
+	    public bool ListHas(IDataStream dataStream, bool useStreamName = true)
 	    {
-	        return HasList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
+	        return ListHas(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
 	    }
 
-	    public int DefaultListRetentionTimeInSeconds { get; set; }
+	    public int ListDefaultRetentionTimeInSeconds { get; set; }
 
 	    /// <summary>
         /// Get a DataStream in the cache - will be null if not found
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public ListCacheItem GetList(string key)
+        public ListCacheItem ListGet(string key)
 	    {
             var ds = ListCache[key] as ListCacheItem;
 	        return ds;
@@ -101,41 +101,36 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    public ListCacheItem GetList(IDataSource dataSource)
 	    {
-	        return GetList(dataSource.CacheFullKey);
+	        return ListGet(dataSource.CacheFullKey);
 	    }
 
-	    public ListCacheItem GetList(IDataStream dataStream, bool useStreamName = true)
+	    public ListCacheItem ListGet(IDataStream dataStream, bool useStreamName = true)
 	    {
-	        return GetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
-	    } 
+	        return ListGet(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
+	    }
 
 
-
-        /// <summary>
-        /// Insert a data-stream to the cache - if it can be found
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="list"></param>
-        public void SetList(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0)
+	    /// <summary>
+	    /// Insert a data-stream to the cache - if it can be found
+	    /// </summary>
+	    /// <param name="key"></param>
+	    /// <param name="list"></param>
+	    /// <param name="durationInSeconds"></param>
+	    public void ListSet(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0)
 	    {
 	        var policy = new CacheItemPolicy();
-	        policy.SlidingExpiration = new TimeSpan(0, 0, durationInSeconds > 0 ? durationInSeconds : DefaultListRetentionTimeInSeconds); 
+	        policy.SlidingExpiration = new TimeSpan(0, 0, durationInSeconds > 0 ? durationInSeconds : ListDefaultRetentionTimeInSeconds); 
 
 	        var cache = MemoryCache.Default;
-            cache.Set(key, new ListCacheItem(list, sourceRefresh), policy);
+            cache.Set(key, new ListCacheItem(key, list, sourceRefresh), policy);
 	    }
 
-        public void SetList(IDataStream dataStream, bool useStreamName = true, int durationInSeconds = 0)
+        public void ListSet(IDataStream dataStream, bool useStreamName = true, int durationInSeconds = 0)
         {
-            SetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""), dataStream.LightList, dataStream.Source.CacheLastRefresh, durationInSeconds);
+            ListSet(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""), dataStream.LightList, dataStream.Source.CacheLastRefresh, durationInSeconds);
         }
 
-        //public void SetList(IDataSource dataSource)
-        //{
-        //    SetList(dataSource.CacheFullKey, dataSource.LightList);
-        //}
-
-        public void RemoveList(string key)
+        public void ListRemove(string key)
         {
             var cache = MemoryCache.Default;
             cache.Remove(key);
