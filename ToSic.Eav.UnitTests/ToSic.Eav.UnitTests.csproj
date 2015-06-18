@@ -58,6 +58,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DataSources\Caches\QuickCaches_Test.cs" />
+    <Compile Include="DataSources\CsvDataSource_Test.cs" />
     <Compile Include="DataSources\DataTableDataSource_Test.cs" />
     <Compile Include="DataSources\EntityIdFilter_Test.cs" />
     <Compile Include="DataSources\SqlDataSource_Test.cs" />
@@ -81,6 +82,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Files\CsvDataSource - Test Invalid Row.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\CsvDataSource - Test Semicolon Delimited.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\CsvDataSource - Test Tab Delimited.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\CsvDataSource - Test Quoted Text.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\CsvDataSource - Test Workbook.xlsx" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
