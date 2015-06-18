@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.EntityClient;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -54,6 +55,7 @@ namespace ToSic.Eav.DataSources
         {
             base.EnsureConfigurationIsLoaded();
 
+            #region clean up list of IDs to remove all white-space etc.
             try
             {
                 var configEntityIds = Configuration["EntityIds"];
@@ -78,6 +80,7 @@ namespace ToSic.Eav.DataSources
             {
                 throw new Exception("Unable to load EntityIds from Configuration.", ex);
             }
+            #endregion
 
             EntityIds = string.Join(",", _cleanedIds.Select(i => i.ToString()).ToArray());
         }

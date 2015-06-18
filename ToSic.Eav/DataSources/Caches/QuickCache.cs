@@ -93,45 +93,47 @@ namespace ToSic.Eav.DataSources.Caches
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public IEnumerable<IEntity> GetList(string key)
+        public ListCacheItem GetList(string key)
 	    {
-            var ds = ListCache[key] as IEnumerable<IEntity>;
+            var ds = ListCache[key] as ListCacheItem;
 	        return ds;
 	    }
 
-	    public IEnumerable<IEntity> GetList(IDataSource dataSource)
+	    public ListCacheItem GetList(IDataSource dataSource)
 	    {
 	        return GetList(dataSource.CacheFullKey);
 	    }
 
-	    public IEnumerable<IEntity> GetList(IDataStream dataStream, bool useStreamName = true)
+	    public ListCacheItem GetList(IDataStream dataStream, bool useStreamName = true)
 	    {
 	        return GetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""));
 	    } 
+
+
 
         /// <summary>
         /// Insert a data-stream to the cache - if it can be found
         /// </summary>
         /// <param name="key"></param>
         /// <param name="list"></param>
-        public void SetList(string key, IEnumerable<IEntity> list)
+        public void SetList(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0)
 	    {
 	        var policy = new CacheItemPolicy();
-	        policy.SlidingExpiration = new TimeSpan(0, 0, DefaultListRetentionTimeInSeconds); 
+	        policy.SlidingExpiration = new TimeSpan(0, 0, durationInSeconds > 0 ? durationInSeconds : DefaultListRetentionTimeInSeconds); 
 
 	        var cache = MemoryCache.Default;
-            cache.Set(key, list, policy);
+            cache.Set(key, new ListCacheItem(list, sourceRefresh), policy);
 	    }
 
-        public void SetList(IDataStream dataStream, bool useStreamName = true)
+        public void SetList(IDataStream dataStream, bool useStreamName = true, int durationInSeconds = 0)
         {
-            SetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""), dataStream.LightList);
+            SetList(dataStream.Source.CacheFullKey + (useStreamName ? "|" + dataStream.Name : ""), dataStream.LightList, dataStream.Source.CacheLastRefresh, durationInSeconds);
         }
 
-        public void SetList(IDataSource dataSource)
-        {
-            SetList(dataSource.CacheFullKey, dataSource.LightList);
-        }
+        //public void SetList(IDataSource dataSource)
+        //{
+        //    SetList(dataSource.CacheFullKey, dataSource.LightList);
+        //}
 
         public void RemoveList(string key)
         {

@@ -22,7 +22,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             var listCache = cache as IListCache;
             Assert.IsFalse(listCache.HasList(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.SetList(ds.CacheFullKey, ds.LightList);
+            listCache.SetList(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
             Assert.IsTrue(listCache.HasList(ds.CacheFullKey), "Should have it in cache now");
             Assert.IsTrue(listCache.HasList(ds), "Should also have the DS default");
             
@@ -32,21 +32,21 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             
 
             // Try to auto-retrieve 
-            IEnumerable<IEntity> cached = listCache.GetList(ds.CacheFullKey);
+            IEnumerable<IEntity> cached = listCache.GetList(ds.CacheFullKey).LightList;
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.GetList(ds);
+            cached = listCache.GetList(ds).LightList;
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.GetList(ds[DataSource.DefaultStreamName]);
-            Assert.AreEqual(null, cached, "Cached should be null because the name isn't correct");
+            var lci = listCache.GetList(ds[DataSource.DefaultStreamName]);
+            Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-            cached = listCache.GetList(ds[DataSource.DefaultStreamName], true);
-            Assert.AreEqual(null, cached, "Cached should be null because the name isn't correct");
+            lci = listCache.GetList(ds[DataSource.DefaultStreamName], true);
+            Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
 
-            cached = listCache.GetList(ds[DataSource.DefaultStreamName], false);
+            cached = listCache.GetList(ds[DataSource.DefaultStreamName], false).LightList;
             Assert.AreEqual(1, cached.Count());
 
         }
@@ -61,7 +61,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             listCache.DefaultListRetentionTimeInSeconds = 1;
             Assert.IsFalse(listCache.HasList(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.SetList(ds.CacheFullKey, ds.LightList);
+            listCache.SetList(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
             Assert.IsTrue(listCache.HasList(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);

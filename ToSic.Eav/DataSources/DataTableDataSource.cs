@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a System.Data.DataTable
 	/// </summary>
-	public class DataTableDataSource : BaseDataSource
+	public class DataTableDataSource : ExternalDataDataSource// BaseDataSource
 	{
 		#region Configuration-properties
 

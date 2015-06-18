@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	public class SqlDataSource : BaseDataSource
+	public class SqlDataSource : ExternalDataDataSource // BaseDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
