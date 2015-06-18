@@ -19,34 +19,33 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             var cache = ds.Cache;
-            var listCache = cache as IListCache;
+            var listCache = cache;// as IListCache;
             Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.ListSet(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
-            Assert.IsTrue(listCache.ListHas(ds.CacheFullKey), "Should have it in cache now");
-            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName], false), "Should also have the DS default");
+            // manually add to cache
+            // listCache.ListSet(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
+            listCache.ListSet(ds[DataSource.DefaultStreamName]);
+            Assert.IsTrue(listCache.ListHas(ds.CacheFullKey + "|Default"), "Should have it in cache now");
+            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName]), "Should also have the DS default");
             
-            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName], false), "should have it by stream as well");
-            Assert.IsFalse(listCache.ListHas(ds[DataSource.DefaultStreamName], true), "should not have it named ATM");
-            Assert.IsFalse(listCache.ListHas(ds[DataSource.DefaultStreamName]), "should not have it named ATM with default parameter");
+            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
-            IEnumerable<IEntity> cached = listCache.ListGet(ds.CacheFullKey).LightList;
+            IEnumerable<IEntity> cached = listCache.ListGet(ds.CacheFullKey + "|Default").LightList;
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.ListGet(ds[DataSource.DefaultStreamName], false).LightList;
+            cached = listCache.ListGet(ds[DataSource.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
-            var lci = listCache.ListGet(ds[DataSource.DefaultStreamName]);
+            var lci = listCache.ListGet(ds.CacheFullKey);
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-            lci = listCache.ListGet(ds[DataSource.DefaultStreamName], true);
-            Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
+            lci = listCache.ListGet(ds[DataSource.DefaultStreamName]);
+            Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
 
-
-            cached = listCache.ListGet(ds[DataSource.DefaultStreamName], false).LightList;
+            cached = listCache.ListGet(ds[DataSource.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
         }
@@ -57,7 +56,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             const string ItemToFilter = "1027";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var listCache = ds.Cache as IListCache;
+            var listCache = ds.Cache; //as IListCache;
             listCache.ListDefaultRetentionTimeInSeconds = 1;
             Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
 

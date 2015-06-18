@@ -68,7 +68,6 @@
     </Compile>
     <Compile Include="DataSources\Caches\CacheAllStreams.cs" />
     <Compile Include="DataSources\Caches\ListCacheItem.cs" />
-    <Compile Include="DataSources\Caches\IListCache.cs" />
     <Compile Include="DataSources\DeferredPipelineQuery.cs" />
     <Compile Include="DataSources\Debug\DataSourceInfo.cs" />
     <Compile Include="DataSources\Debug\PipelineInfo.cs" />
