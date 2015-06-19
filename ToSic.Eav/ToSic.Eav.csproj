@@ -67,13 +67,9 @@
     <Compile Include="Api\Api01\SimpleDataController.cs">
       <SubType>Code</SubType>
     </Compile>
-<<<<<<< HEAD
     <Compile Include="DataSources\Caches\CacheAllStreams.cs" />
     <Compile Include="DataSources\Caches\ListCacheItem.cs" />
-=======
-    <Compile Include="DataSources\Caches\IListCache.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
->>>>>>> 1a4139de0a632a36328a39e793ca6fa6fefa8fd7
     <Compile Include="DataSources\DeferredPipelineQuery.cs" />
     <Compile Include="DataSources\Debug\DataSourceInfo.cs" />
     <Compile Include="DataSources\Debug\PipelineInfo.cs" />
