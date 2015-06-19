@@ -55,6 +55,7 @@ namespace ToSic.Eav.DataSources
 	            else
 	                key += Name + "-NoGuid";
 
+                // Important to check configuration first - to ensure all tokens are resolved to the resulting parameters
                 EnsureConfigurationIsLoaded();
 
                 // note: whenever a item has filter-parameters, these should be part of the key as well...

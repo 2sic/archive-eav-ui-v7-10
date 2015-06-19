@@ -84,16 +84,23 @@ namespace ToSic.Eav.DataSources.Caches
 		{
             EnsureConfigurationIsLoaded();
 
-		    foreach (var stream in In.Select(x => x.Value))
-		    {
-		        // var stream = dataStream.Value as DataStream;
+            _Out.Clear();
 
-                stream.AutoCaching = true;
+		    foreach (var dataStream in In)
+		    {
+		        var inStream = dataStream.Value as DataStream;
+
+                var outStream = new DataStream(this, dataStream.Key, () => inStream.List, () => inStream.LightList, true);
+
+                // inStream.AutoCaching = true;
 		        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
-		            stream.CacheDurationInSeconds = CacheDurationInSeconds;
-                stream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
+		            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
+                outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
+
+                _Out.Add(dataStream.Key, outStream);
+
 		    }
-		    _Out = In;
+		    // _Out = In;
 		}
 	}
 
