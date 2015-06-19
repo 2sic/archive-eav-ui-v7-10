@@ -38,10 +38,22 @@ namespace ToSic.Eav.DataSources
 
         private const string IdColumnIndexKey = "IdColumnIndex";
 
-        public int IdColumnIndex
+        public int? IdColumnIndex
         {
-            get { return int.Parse(Configuration[IdColumnIndexKey]); }
-            set { Configuration[IdColumnIndexKey] = value.ToString(); }
+            get
+            {
+                var value = Configuration[IdColumnIndexKey];
+                if (string.IsNullOrEmpty(value))
+                {
+                    return null;
+                }
+                return new int?(int.Parse(value));
+            }
+            set 
+            { 
+                Configuration[IdColumnIndexKey] = value == null ? null : value.ToString();
+            }
+                
         }
 
 
@@ -61,7 +73,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Add(FilePathKey, "[Settings:FilePath]");
             Configuration.Add(DelimiterKey, "[Settings:Delimiter||;]");
             Configuration.Add(ContentTypeKey, "[Settings:ContentType||Anonymous]");
-            Configuration.Add(IdColumnIndexKey, "[Settings:IdColumnIndex||0]");
+            Configuration.Add(IdColumnIndexKey, "[Settings:IdColumnIndex]");
             Configuration.Add(TitleColumnIndexKey, "[Settings:TitleColumnIndex||0]");
             CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
         }
@@ -73,7 +85,7 @@ namespace ToSic.Eav.DataSources
 
             var entityList = new List<IEntity>();
 
-            using (var parser =  new TextFieldParser(FilePath))
+            using (var parser = new TextFieldParser(FilePath))
             {
                 parser.TextFieldType = FieldType.Delimited;
                 parser.TrimWhiteSpace = true;
@@ -81,23 +93,30 @@ namespace ToSic.Eav.DataSources
 
                 // Parse header
                 var columns = parser.ReadFields();
-                if (IdColumnIndex < 0 || IdColumnIndex >= columns.Length)
+                if (IdColumnIndex.HasValue && (IdColumnIndex < 0 || IdColumnIndex >= columns.Length))
                     throw new ArgumentException("Index for ID column is out of range.", "IdColumnIndex");
 
                 if (TitleColumnIndex < 0 || TitleColumnIndex >= columns.Length)
                     throw new ArgumentException("Index for Title column is out of range.", "TitleColumnIndex");
 
                 // Parse data
-                while (!parser.EndOfData) 
+                int lineNumber = 0;
+                while (!parser.EndOfData)
                 {
+                    lineNumber++;
+
                     var fields = parser.ReadFields();
                     if (fields.Length != columns.Length)
                         throw new FormatException("Row " + parser.LineNumber + ": The number of fields does not match the column count.");
 
                     int entityId;
-                    if (!int.TryParse(fields[IdColumnIndex], out entityId))
+                    if (!IdColumnIndex.HasValue)
+                    {   // No ID column specified, so use the line number
+                        entityId = lineNumber;
+                    }
+                    else if (!int.TryParse(fields[IdColumnIndex.Value], out entityId))
                     {
-                        entityId = (int)parser.LineNumber;
+                        throw new FormatException("Row " + parser.LineNumber + ": The ID field '" + fields[IdColumnIndex.Value] + "' cannot be parsed.");
                     }
                     var entityValues = new Dictionary<string, object>();
                     for (var i = 0; i < columns.Length; i++)
