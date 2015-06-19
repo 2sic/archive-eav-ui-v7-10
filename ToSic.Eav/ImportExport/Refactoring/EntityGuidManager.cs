@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             if (string.IsNullOrEmpty(elementGuid))
             {
                 var elementLanguage = element.GetChildElementValue(DocumentNodeNames.EntityLanguage);
-                if (elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage))
+                if (elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage)) 
                 {   // If the element does not have a GUID and the element has data for the default 
                     // language, create a new GUID
                     entityGuid = Guid.NewGuid();
