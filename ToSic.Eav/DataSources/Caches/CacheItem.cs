@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources.Caches
             IEnumerable<EntityRelationshipItem> relationships)
 		{
 		    List = entList;
-		    Entities = entList.ToDictionary(e => e.EntityId, e => e); // entities;
+		    Entities = entities;// entList.ToDictionary(e => e.EntityId, e => e); // can't use the pure to-dictionary, because I seem to have duplicate entries - probably because of draft-items?
 			ContentTypes = contentTypes;
 			AssignmentObjectTypesGuid = assignmentObjectTypesGuid;
 			AssignmentObjectTypesNumber = assignmentObjectTypesNumber;
