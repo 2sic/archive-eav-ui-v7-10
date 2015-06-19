@@ -24,13 +24,13 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1067", filtered.CacheFullKey);
 
             // check if in cache - shouldn't be yet
-            Assert.IsFalse((filtered.Cache as QuickCache).ListHas(filtered.Out[DataSource.DefaultStreamName]),
+            Assert.IsFalse(filtered.Cache.ListHas(filtered.Out[DataSource.DefaultStreamName]),
                 "Should not be in yet");
 
             var y = cacher.LightList; // not it should get in
 
             // check again, should be in
-            Assert.IsTrue((filtered.Cache as QuickCache).ListHas(filtered.Out[DataSource.DefaultStreamName]),
+            Assert.IsTrue(filtered.Cache.ListHas(filtered.Out[DataSource.DefaultStreamName]),
                 "Should be in now");
         }
 

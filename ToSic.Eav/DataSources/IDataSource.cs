@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -86,6 +87,8 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
         #region Caching Information
+
+	    ICache Cache { get; }
         /// <summary>
         /// List of items from the configuration which should be used for creating the cache-key
         /// </summary>
