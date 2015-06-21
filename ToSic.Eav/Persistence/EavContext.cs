@@ -431,23 +431,22 @@ namespace ToSic.Eav
 
 		#region Update
 
-        // 2dm commented out - doesn't seem to be in use
-        ///// <summary>
-        ///// Update an Entity
-        ///// </summary>
-        ///// <param name="entityGuid">EntityGUID</param>
-        ///// <param name="newValues">new Values of this Entity</param>
-        ///// <param name="autoSave">auto save Changes to DB</param>
-        ///// <param name="dimensionIds">DimensionIds for all Values</param>
-        ///// <param name="masterRecord">Is this the Master Record/Language</param>
-        ///// <param name="updateLog">Update/Import Log List</param>
-        ///// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
-        ///// <returns>the updated Entity</returns>
-        //public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
-        //{
-        //    var entity = GetEntity(entityGuid);
-        //    return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
-        //}
+        /// <summary>
+        /// Update an Entity
+        /// </summary>
+        /// <param name="entityGuid">EntityGUID</param>
+        /// <param name="newValues">new Values of this Entity</param>
+        /// <param name="autoSave">auto save Changes to DB</param>
+        /// <param name="dimensionIds">DimensionIds for all Values</param>
+        /// <param name="masterRecord">Is this the Master Record/Language</param>
+        /// <param name="updateLog">Update/Import Log List</param>
+        /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+        /// <returns>the updated Entity</returns>
+        public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
+        {
+            var entity = GetEntity(entityGuid);
+            return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
+        }
 
 		/// <summary>
 		/// Update an Entity
