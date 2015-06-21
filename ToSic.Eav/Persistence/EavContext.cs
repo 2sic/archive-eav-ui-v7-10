@@ -156,10 +156,10 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Import a new Entity
 		/// </summary>
-		internal Entity ImportEntity(int attributeSetId, Import.ImportEntity importEntity, List<LogItem> importLog, bool isPublished = true)
-		{
-			return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
-		}
+        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<LogItem> importLog, bool isPublished = true)
+        {
+            return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
+        }
 		/// <summary>
 		/// Add a new Entity
 		/// </summary>
@@ -431,22 +431,23 @@ namespace ToSic.Eav
 
 		#region Update
 
-		/// <summary>
-		/// Update an Entity
-		/// </summary>
-		/// <param name="entityGuid">EntityGUID</param>
-		/// <param name="newValues">new Values of this Entity</param>
-		/// <param name="autoSave">auto save Changes to DB</param>
-		/// <param name="dimensionIds">DimensionIds for all Values</param>
-		/// <param name="masterRecord">Is this the Master Record/Language</param>
-		/// <param name="updateLog">Update/Import Log List</param>
-		/// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
-		/// <returns>the updated Entity</returns>
-		public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
-		{
-			var entity = GetEntity(entityGuid);
-			return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
-		}
+        // 2dm commented out - doesn't seem to be in use
+        ///// <summary>
+        ///// Update an Entity
+        ///// </summary>
+        ///// <param name="entityGuid">EntityGUID</param>
+        ///// <param name="newValues">new Values of this Entity</param>
+        ///// <param name="autoSave">auto save Changes to DB</param>
+        ///// <param name="dimensionIds">DimensionIds for all Values</param>
+        ///// <param name="masterRecord">Is this the Master Record/Language</param>
+        ///// <param name="updateLog">Update/Import Log List</param>
+        ///// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+        ///// <returns>the updated Entity</returns>
+        //public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
+        //{
+        //    var entity = GetEntity(entityGuid);
+        //    return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
+        //}
 
 		/// <summary>
 		/// Update an Entity
@@ -576,7 +577,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Update an Entity when using the Import
 		/// </summary>
-		private void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<LogItem> updateLog, List<Attribute> attributes, List<EavValue> currentValues, bool preserveUndefinedValues)
+		private void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<LogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool preserveUndefinedValues)
 		{
 			if (updateLog == null)
 				throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -585,8 +586,9 @@ namespace ToSic.Eav
 			var updatedValueIds = new List<int>();
 			var updatedAttributeIds = new List<int>();
 			foreach (var newValue in newValuesImport)
-			{
-				var attribute = attributes.SingleOrDefault(a => a.StaticName == newValue.Key);
+            {
+                #region Get Attribute Definition from List (or skip this field if not found)
+                var attribute = attributeList.SingleOrDefault(a => a.StaticName == newValue.Key);
 				if (attribute == null) // Attribute not found
 				{
 					// Log Warning for all Values
@@ -594,13 +596,15 @@ namespace ToSic.Eav
 					{
 						ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
 						Value = v,
-						ImportEntity = v.ImportEntity
+						ImportEntity = v.ParentEntity
 					}));
 					continue;
-				}
+                }
+                #endregion
 
-				updatedAttributeIds.Add(attribute.AttributeID);
+                updatedAttributeIds.Add(attribute.AttributeID);
 
+                // Go through each value / dimensions combination
 				foreach (var newSingleValue in newValue.Value)
 				{
 					try
@@ -615,9 +619,9 @@ namespace ToSic.Eav
 					{
 						updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed")
 						{
-							ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
+							ImportAttribute = new ImportAttribute { StaticName = newValue.Key },
 							Value = newSingleValue,
-							ImportEntity = newSingleValue.ImportEntity,
+							ImportEntity = newSingleValue.ParentEntity,
 							Exception = ex
 						});
 					}
@@ -625,7 +629,29 @@ namespace ToSic.Eav
 			}
 
 			// remove all existing values that were not updated
-			var valuesToDelete = currentEntity.Values.Where(v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
+            // Logic should be:
+            // Of all values - skip the ones we just modified and those which are deleted
+		    var valuesToDeleteNew = currentEntity.Values.Where(
+		        v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null);
+
+            // Clean up - sometimes the default language doesn't clean properly - so even if it's good now...
+            // ...there is old data which sometimes still is duplicate and causes issues, so this clean-up is important
+            // So goal: every same-attribute-ID as the updated, with the same non-language-settings, is a left-over
+		    var reallyDelete = valuesToDeleteNew.Where(e => updatedAttributeIds.Contains(e.AttributeID));
+
+		    if (preserveUndefinedValues)
+		    {
+		        var valuesToKeep = valuesToDeleteNew.Where(v => updatedAttributeIds.Contains(v.AttributeID));
+                if(valuesToKeep.Count() > updatedAttributeIds.Count) // in this case something is bad
+                    throw new Exception("have too many to keep, don't know what to do, abort...");
+		        valuesToDeleteNew = valuesToDeleteNew.Where(v => !updatedAttributeIds.Contains(v.AttributeID));
+		    }
+
+		    // && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
+		    var valuesToDelete = valuesToDeleteNew.ToList();
+            //var valuesToDelete = currentEntity.Values.Where(
+            //    v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null 
+            //        && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
 			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
 		}
 
@@ -1580,7 +1606,7 @@ namespace ToSic.Eav
 			var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
 			// Restore Entity
-			var import = new Import.Import(_zoneId, _appId, UserName, true, false);
+			var import = new Import.Import(_zoneId, _appId, UserName, false, false);
 			import.RunImport(null, new List<Import.ImportEntity> { newVersion });
 
 			// Delete Draft (if any)

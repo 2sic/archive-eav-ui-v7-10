@@ -136,16 +136,21 @@ namespace ToSic.Eav.Import
 	{
 		public T Value { get; set; }
 		public IEnumerable<ValueDimension> ValueDimensions { get; set; }
-		public ImportEntity ImportEntity { get; private set; }
+		public ImportEntity ParentEntity { get; private set; }
 
-		public ValueImportModel(ImportEntity importEntity)
+		public ValueImportModel(ImportEntity parentEntity)
 		{
-			ImportEntity = importEntity;
+			ParentEntity = parentEntity;
 		}
+
+	    public string StringValueForTesting 
+	    {
+	        get { return Value.ToString(); }
+	    }
 	}
 
 	internal static class ValueImportModel
-	{
+	{   
 		internal static IValueImportModel GetModel(string value, string type, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
 		{
 			IValueImportModel valueModel;
@@ -202,7 +207,9 @@ namespace ToSic.Eav.Import
 	public interface IValueImportModel
 	{
 		IEnumerable<ValueDimension> ValueDimensions { get; set; }
-		ImportEntity ImportEntity { get; }
+		ImportEntity ParentEntity { get; }
+
+        String StringValueForTesting { get; }
 	}
 
 	public class ValueDimension

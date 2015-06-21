@@ -515,7 +515,7 @@ namespace ToSic.Eav.Testing
 				entities.Add(entity);
 			}
 
-			var import = new Import.Import(2, 2, "BulkImportData", overwriteExistingEntityValues: true);
+			var import = new Import.Import(2, 2, "BulkImportData", leaveExistingValuesUntouched: true);
 			import.RunImport(null, entities);
 
 			Assert.IsEmpty(import.ImportLog.Where(l => l.EntryType == EventLogEntryType.Error));

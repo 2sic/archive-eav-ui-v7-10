@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav;
@@ -84,6 +85,12 @@ namespace ToSic.Eav.ImportExport.Refactoring
             var entities = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null);
             foreach (var entity in entities)
             {
+                Entity x;
+                // 2dm Test code to debug - temporary only
+                if (entity.EntityGUID == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"))
+                    x = entity;
+
+
                 foreach (var language in languages)
                 {
                     var documentElement = GetDocumentEntityElement(entity.EntityGUID, language, contentType.Name);

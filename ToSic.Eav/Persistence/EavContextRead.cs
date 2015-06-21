@@ -35,7 +35,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Test whehter Entity exists on current App and is not deleted
+		/// Test whether Entity exists on current App and is not deleted
 		/// </summary>
 		public bool EntityExists(Guid entityGuid)
 		{
