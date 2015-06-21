@@ -272,8 +272,8 @@ On all your devices.</PreviewContent>
             Assert.AreEqual("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
 
             
-
-            importer.PersistImportToRepository(UserNameOfTestingScript);
+            throw new Exception("This test can't pass yet - had to turn off import because it generated too much data - ask 2dm");
+            // importer.PersistImportToRepository(UserNameOfTestingScript);
         }
 
         [TestMethod]
