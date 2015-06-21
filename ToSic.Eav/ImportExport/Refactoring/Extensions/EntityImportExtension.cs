@@ -15,17 +15,17 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         /// Get values of an attribute in all languages, for example Tobi (German) and Toby (English) of 
         /// the attribute Name.
         /// </summary>
-        public static IEnumerable<IValueImportModel> GetAttributeValues(this Import.Entity entity, string valueName)
+        public static IEnumerable<IValueImportModel> GetAttributeValues(this Import.ImportEntity importEntity, string valueName)
         {
-            return entity.Values.Where(item => item.Key == valueName).Select(item => item.Value).FirstOrDefault();
+            return importEntity.Values.Where(item => item.Key == valueName).Select(item => item.Value).FirstOrDefault();
         }
 
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public static IValueImportModel GetAttributeValue(this Import.Entity entity, string valueName, string valueLanguage)
+        public static IValueImportModel GetAttributeValue(this Import.ImportEntity importEntity, string valueName, string valueLanguage)
         {
-            var values = entity.GetAttributeValues(valueName);
+            var values = importEntity.GetAttributeValues(valueName);
             if (values == null)
             {
                 return null;
@@ -37,30 +37,30 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public static IValueImportModel AppendAttributeValue(this Import.Entity entity, string valueName, string valueString, string valueType, string valueLanguage, bool valueReadOnly, bool resolveHyperlink)
+        public static IValueImportModel AppendAttributeValue(this Import.ImportEntity importEntity, string valueName, string valueString, string valueType, string valueLanguage, bool valueReadOnly, bool resolveHyperlink)
         {
-            var valueModel = GetValueModel(valueString, valueType, valueLanguage, valueReadOnly, resolveHyperlink, entity);          
-            var entityValue = entity.Values.Where(item => item.Key == valueName).Select(item => item.Value).FirstOrDefault();
+            var valueModel = GetValueModel(valueString, valueType, valueLanguage, valueReadOnly, resolveHyperlink, importEntity);          
+            var entityValue = importEntity.Values.Where(item => item.Key == valueName).Select(item => item.Value).FirstOrDefault();
             if (entityValue == null)
             {
-                entity.Values.Add(valueName, valueModel.ToList());
+                importEntity.Values.Add(valueName, valueModel.ToList());
             }
             else
             {
-                entity.Values[valueName].Add(valueModel);
+                importEntity.Values[valueName].Add(valueModel);
             }
             return valueModel;
         }
 
 
-        public static void AppendAttributeValues(this Import.Entity entity, AttributeSet attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        public static void AppendAttributeValues(this Import.ImportEntity importEntity, AttributeSet attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
                 if (value.Key == "IsPublished")
                 {
-                    entity.IsPublished = value.Value is bool ? (bool)value.Value : true;
+                    importEntity.IsPublished = value.Value is bool ? (bool)value.Value : true;
                     continue;
                 }        
                 // Handle content-type attributes
@@ -69,12 +69,12 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 { 
                     throw new ArgumentException("Attribute '" + value.Key + "' does not exist.");
                 }
-                entity.AppendAttributeValue(value.Key, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                importEntity.AppendAttributeValue(value.Key, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
 
 
-        private static IValueImportModel GetValueModel(string valueString, string valueType, string valueLanguage, bool valueRedOnly, bool resolveHyperlink, Import.Entity entity)
+        private static IValueImportModel GetValueModel(string valueString, string valueType, string valueLanguage, bool valueRedOnly, bool resolveHyperlink, Import.ImportEntity importEntity)
         {
             IValueImportModel valueModel;
             var vc = Factory.Container.Resolve<IEavValueConverter>();
@@ -82,7 +82,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
             {
                 case "Boolean":
                     {
-                        valueModel = new ValueImportModel<bool?>(entity)
+                        valueModel = new ValueImportModel<bool?>(importEntity)
                         {
                             Value = string.IsNullOrEmpty(valueString) ? null : new Boolean?(Boolean.Parse(valueString))
                         };
@@ -91,7 +91,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
                 case "Number":
                     {
-                        valueModel = new ValueImportModel<decimal?>(entity)
+                        valueModel = new ValueImportModel<decimal?>(importEntity)
                         {
                             Value = string.IsNullOrEmpty(valueString) ? null : new Decimal?(Decimal.Parse(valueString))
                         };
@@ -100,7 +100,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
                 case "DateTime":
                     {
-                        valueModel = new ValueImportModel<DateTime?>(entity)
+                        valueModel = new ValueImportModel<DateTime?>(importEntity)
                         {
                             Value = string.IsNullOrEmpty(valueString) ? null : new DateTime?(DateTime.Parse(valueString))
                         };
@@ -116,13 +116,13 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                         {
                             valueReference = vc.Convert(ConversionScenario.ConvertFriendlyToData, valueType, valueString);//vc.TryToResolveOneLinkToInternalDnnCode(valueString);
                         }
-                        valueModel = new ValueImportModel<string>(entity) { Value = valueReference };
+                        valueModel = new ValueImportModel<string>(importEntity) { Value = valueReference };
                     }
                     break;
 
                 case "Entity":
                     {
-                        valueModel = new ValueImportModel<List<Guid>>(entity) 
+                        valueModel = new ValueImportModel<List<Guid>>(importEntity) 
                         { 
                             Value = string.IsNullOrEmpty(valueString) ? new List<Guid>() : valueString.Split(',').Select(Guid.Parse).ToList()
                         };
@@ -131,7 +131,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
                 default:
                     {   // String
-                        valueModel = new ValueImportModel<string>(entity) { Value = HttpUtility.HtmlDecode(valueString) };
+                        valueModel = new ValueImportModel<string>(importEntity) { Value = HttpUtility.HtmlDecode(valueString) };
                     }
                     break;
             }
@@ -167,10 +167,10 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         //}
 
 
-        public static void Import(this Import.Entity entity, int zoneId, int appId, string userName)
+        public static void Import(this Import.ImportEntity importEntity, int zoneId, int appId, string userName)
         {
             var import = new Eav.Import.Import(zoneId, appId, userName, true);
-            import.RunImport(null, new[] { entity }, true, true);
+            import.RunImport(null, new[] { importEntity }, true, true);
         }
     }
 }

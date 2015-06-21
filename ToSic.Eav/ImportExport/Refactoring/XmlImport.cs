@@ -1,86 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.VisualBasic.ApplicationServices;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using AttributeSet = ToSic.Eav.AttributeSet;
-using Entity = ToSic.Eav.Import.Entity;
 
 namespace ToSic.Eav.ImportExport.Refactoring
 {
     public class XmlImport
     {
-        private readonly int applicationId;
+        #region properties like _appId, Document, etc.
 
-        private readonly int zoneId;
+        #region Timing / Debuging infos
+        private Stopwatch _timer = new Stopwatch();
 
-        private readonly AttributeSet contentType;
+        /// <summary>
+        /// Helper to measure time used for stuff
+        /// </summary>
+        public Stopwatch Timer
+        {
+            get { return _timer; }
+            set { _timer = value; }
+        }
+
+        public long TimeForMemorySetup;
+        public long TimeForDbImport;
+        #endregion
+
+        private readonly int _appId;
+
+        private readonly int _zoneId;
+
+        private readonly AttributeSet _contentType;
 
         /// <summary>
         /// The xml document to imported.
         /// </summary>
-        public XDocument Document 
-        {
-            get;
-            private set;
-        }
+        public XDocument Document  { get; private set; }
 
         /// <summary>
         /// The elements of the xml document.
         /// </summary>
-        public IEnumerable<XElement> DocumentElements
-        {
-            get;
-            private set;
-        }
+        public IEnumerable<XElement> DocumentElements { get; private set; }
 
         private readonly string documentLanguageFallback;
 
-        private IEnumerable<string> languages;
+        private IEnumerable<string> _languages;
 
-        private readonly ResourceReferenceImport resourceReference;
+        private readonly ResourceReferenceImport _resourceReference;
 
-        private readonly EntityClearImport entityClear;
+        private readonly EntityClearImport _entityClear;
 
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Import.Entity> Entities
-        {
-            get;
-            private set;
-        }
+        public List<ImportEntity> Entities {get; private set; }
 
         /// <summary>
         /// Errors found while importing the document to memory.
         /// </summary>
-        public ImportErrorProtocol ErrorProtocol
-        {
-            get;
-            private set;
-        }
+        public ImportErrorProtocol ErrorProtocol { get; private set; }
+        #endregion
 
-        /// <summary>
-        /// True if errors has been found while importing the document to memory.
-        /// </summary>
-        public bool HasErrors
-        {
-            get { return ErrorProtocol.Count() > 0; }
-        }
-
-        private Import.Entity GetEntity(Guid entityGuid)
+        private ImportEntity GetEntity(Guid entityGuid)
         {
             return Entities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         }
 
-        private Import.Entity AppendEntity(Guid entityGuid)
+        private ImportEntity AppendEntity(Guid entityGuid)
         {
-            var entity = new Import.Entity
+            var entity = new ImportEntity
             {
-                AttributeSetStaticName = contentType.StaticName,
+                AttributeSetStaticName = _contentType.StaticName,
                 AssignmentObjectTypeId = Configuration.AssignmentObjectTypeIdDefault,// SexyContent.SexyContent.AssignmentObjectTypeIDDefault,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
@@ -104,16 +100,16 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <param name="resourceReference">How value references to files and pages are handled</param>
         public XmlImport(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
         {
-            Entities = new List<Import.Entity>();
+            Entities = new List<ImportEntity>();
             ErrorProtocol = new ImportErrorProtocol();
 
-            this.applicationId = applicationId;
-            this.zoneId = zoneId;
-            this.contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
-            this.languages = languages;
+            _appId = applicationId;
+            _zoneId = zoneId;
+            _contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
+            _languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
-            this.entityClear = entityClear;
-            this.resourceReference = resourceReference;
+            _entityClear = entityClear;
+            _resourceReference = resourceReference;
 
             ValidateAndImportToMemory(dataStream);
         }
@@ -125,14 +121,15 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <param name="dataStream">Data stream</param>
         private void ValidateAndImportToMemory(Stream dataStream)
         {
+            Timer.Start();
             try
             {
-                if (languages == null || languages.Count() == 0)
+                if (_languages == null || _languages.Count() == 0)
                 {
-                    languages = new[] { string.Empty };
+                    _languages = new[] { string.Empty };
                 }
 
-                if (contentType == null)
+                if (_contentType == null)
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidContentType);
                     return;
@@ -157,7 +154,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                 // Check the content type of the document (it can be found on each element in the Type attribute)
                 var documentTypeAttribute = DocumentElements.First().Attribute(DocumentNodeNames.EntityTypeAttribute);
-                if (documentTypeAttribute == null || documentTypeAttribute.Value == null || documentTypeAttribute.Value != contentType.Name.RemoveSpecialCharacters())
+                if (documentTypeAttribute == null || documentTypeAttribute.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidRoot);
                     return;
@@ -184,9 +181,9 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     // It is an all language import, so check if all languages are specified for all entities
                     foreach (var documentElementLanguages in documentElementLanguagesAll)
                     {   
-                        if (languages.Except(documentElementLanguages).Any())
+                        if (_languages.Except(documentElementLanguages).Any())
                         {
-                            ErrorProtocol.AppendError(ImportErrorCode.MissingElementLanguage, "Langs=" + string.Join(", ", languages));
+                            ErrorProtocol.AppendError(ImportErrorCode.MissingElementLanguage, "Langs=" + string.Join(", ", _languages));
                             return;
                         }
                     }
@@ -198,7 +195,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     documentElementNumber++;
 
                     var documentElementLanguage = documentElement.GetChildElementValue(DocumentNodeNames.EntityLanguage);
-                    if (!languages.Any(language => language == documentElementLanguage))
+                    if (!_languages.Any(language => language == documentElementLanguage))
                     {   // DNN does not support the language
                         ErrorProtocol.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
                         continue;
@@ -211,7 +208,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         entity = AppendEntity(entityGuid);
                     }
 
-                    var attributes = contentType.GetAttributes();
+                    var attributes = _contentType.GetAttributes();
                     foreach (var attribute in attributes)
                     {   
                         var valueType = attribute.Type;
@@ -224,7 +221,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                         if (value.IsValueEmpty())
                         {   // It is an empty string
-                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, resourceReference.IsResolve());
+                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _resourceReference.IsResolve());
                             continue;
                         }
 
@@ -233,7 +230,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         {   // It is not a value reference.. it is a normal text
                             try
                             {
-                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, resourceReference.IsResolve());
+                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _resourceReference.IsResolve());
                             }
                             catch (FormatException)
                             {
@@ -259,7 +256,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                         // We do not have the value referenced in memory, so search for the 
                         // value in the database 
-                        var dbEntity = contentType.GetEntity(entityGuid);
+                        var dbEntity = _contentType.GetEntity(entityGuid);
                         if (dbEntity == null)
                         {
                             ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
@@ -273,7 +270,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), resourceReference.IsResolve())
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -282,6 +279,8 @@ namespace ToSic.Eav.ImportExport.Refactoring
             {
                 ErrorProtocol.AppendError(ImportErrorCode.Unknown, exception.ToString());
             }
+            Timer.Stop();
+            TimeForMemorySetup = Timer.ElapsedMilliseconds;
         }
 
         /// <summary>
@@ -291,25 +290,26 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <returns>True if succeeded</returns>
         public bool PersistImportToRepository(string userId)
         {
-            if (HasErrors)
-            {
+            if (ErrorProtocol.HasErrors)
                 return false;
-            }
 
-            if (entityClear.IsAll())
+            if (_entityClear.IsAll())
             {
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
                 {
-                    var entityID = contentType.GetEntity(entityGuid).EntityID;
-                    var context = EavContext.Instance(zoneId, applicationId);
-                    if (context.CanDeleteEntity(entityID).Item1)
-                        context.DeleteEntity(entityID);
+                    var entityId = _contentType.GetEntity(entityGuid).EntityID;
+                    var context = EavContext.Instance(_zoneId, _appId);
+                    if (context.CanDeleteEntity(entityId).Item1)
+                        context.DeleteEntity(entityId);
                 }
             }
 
-            var import = new Eav.Import.Import(zoneId, applicationId, userId, true);
+            var import = new Import.Import(_zoneId, _appId, userId, true);
+            Timer.Start();
             import.RunImport(null, Entities, true, true);
+            Timer.Stop();
+            TimeForDbImport = Timer.ElapsedMilliseconds;
             return true;
         }
 
@@ -317,7 +317,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         #region Deserialize statistics methods
         private List<Guid> GetExistingEntityGuids()
         {
-            var existingGuids = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null).Select(entity => entity.EntityGUID).ToList();
+            var existingGuids = _contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null).Select(entity => entity.EntityGUID).ToList();
             return existingGuids;
         }
 
@@ -393,7 +393,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             get 
             {
-                if (entityClear.IsNone())
+                if (_entityClear.IsNone())
                 {
                     return 0;
                 }
@@ -406,7 +406,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// </summary>
         public IEnumerable<string> AttributeNamesInContentType
         {
-            get { return contentType.GetEntitiesAttributeNames(); }
+            get { return _contentType.GetEntitiesAttributeNames(); }
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             get 
             {
-                var existingAttributes = contentType.GetEntitiesAttributeNames();
+                var existingAttributes = _contentType.GetEntitiesAttributeNames();
                 var creatdAttributes = AttributeNamesInDocument;
                 return existingAttributes.Except(creatdAttributes);
             }            
@@ -432,6 +432,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             var result = "<p>Details:</p>";
             result += "<ul>";
+            result += "<li>Time for memory = " + TimeForMemorySetup + "; Time for DB = " + TimeForDbImport + "</li>";
             foreach (var entity in Entities)
             {
                 result += "<li><div>Entity: " + entity.EntityGuid + "</div><ul>";

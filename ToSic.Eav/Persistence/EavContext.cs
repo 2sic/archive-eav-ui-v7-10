@@ -156,9 +156,9 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Import a new Entity
 		/// </summary>
-		internal Entity ImportEntity(int attributeSetId, Import.Entity entity, List<LogItem> importLog, bool isPublished = true)
+		internal Entity ImportEntity(int attributeSetId, Import.ImportEntity importEntity, List<LogItem> importLog, bool isPublished = true)
 		{
-			return AddEntity(null, attributeSetId, entity.Values, null, entity.KeyNumber, entity.KeyGuid, entity.KeyString, entity.AssignmentObjectTypeId, 0, entity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
+			return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
 		}
 		/// <summary>
 		/// Add a new Entity
@@ -592,9 +592,9 @@ namespace ToSic.Eav
 					// Log Warning for all Values
 					updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value")
 					{
-						Attribute = new Import.Attribute { StaticName = newValue.Key },
+						ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
 						Value = v,
-						Entity = v.Entity
+						ImportEntity = v.ImportEntity
 					}));
 					continue;
 				}
@@ -615,9 +615,9 @@ namespace ToSic.Eav
 					{
 						updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed")
 						{
-							Attribute = new Import.Attribute { StaticName = newValue.Key },
+							ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
 							Value = newSingleValue,
-							Entity = newSingleValue.Entity,
+							ImportEntity = newSingleValue.ImportEntity,
 							Exception = ex
 						});
 					}
@@ -1500,7 +1500,7 @@ namespace ToSic.Eav
 		/// <param name="entityId">EntityId</param>
 		/// <param name="changeId">ChangeId to retrieve</param>
 		/// <param name="defaultCultureDimension">Default Language</param>
-		public Import.Entity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
+		public Import.ImportEntity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
 		{
 			// Get Timeline Item
 			string timelineItem;
@@ -1581,7 +1581,7 @@ namespace ToSic.Eav
 
 			// Restore Entity
 			var import = new Import.Import(_zoneId, _appId, UserName, true, false);
-			import.RunImport(null, new List<Import.Entity> { newVersion });
+			import.RunImport(null, new List<Import.ImportEntity> { newVersion });
 
 			// Delete Draft (if any)
 			var entityDraft = GetEntityModel(entityId).GetDraft();
