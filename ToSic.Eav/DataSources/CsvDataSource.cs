@@ -8,7 +8,7 @@ using System.IO;
 namespace ToSic.Eav.DataSources
 {
     [PipelineDesigner]
-    public class CsvDataSource : BaseDataSource
+    public class CsvDataSource : ExternalDataDataSource
     {
         private const string FilePathKey = "FilePath";
 
