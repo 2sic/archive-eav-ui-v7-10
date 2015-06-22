@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using Microsoft.VisualBasic.ApplicationServices;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;

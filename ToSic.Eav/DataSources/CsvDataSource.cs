@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualBasic.FileIO;
+using CsvHelper;
+using System.IO;
 
 
 namespace ToSic.Eav.DataSources
@@ -85,46 +86,45 @@ namespace ToSic.Eav.DataSources
 
             var entityList = new List<IEntity>();
 
-            using (var parser = new TextFieldParser(FilePath))
+            using (var stream = new StreamReader(FilePath))
+            using (var parser = new CsvReader(stream))
             {
-                parser.TextFieldType = FieldType.Delimited;
-                parser.TrimWhiteSpace = true;
-                parser.Delimiters = new string[] { Delimiter };
-
-                // Parse header
-                var columns = parser.ReadFields();
-                if (IdColumnIndex.HasValue && (IdColumnIndex < 0 || IdColumnIndex >= columns.Length))
-                    throw new ArgumentException("Index for ID column is out of range.", "IdColumnIndex");
-
-                if (TitleColumnIndex < 0 || TitleColumnIndex >= columns.Length)
-                    throw new ArgumentException("Index for Title column is out of range.", "TitleColumnIndex");
+                parser.Configuration.Delimiter = Delimiter;
+                parser.Configuration.HasHeaderRecord = true;
+                parser.Configuration.TrimHeaders = true;
+                parser.Configuration.TrimFields = true;
 
                 // Parse data
-                int lineNumber = 0;
-                while (!parser.EndOfData)
+                while (parser.Read())
                 {
-                    lineNumber++;
-
-                    var fields = parser.ReadFields();
-                    if (fields.Length != columns.Length)
-                        throw new FormatException("Row " + parser.LineNumber + ": The number of fields does not match the column count.");
+                    var fields = parser.CurrentRecord;
 
                     int entityId;
                     if (!IdColumnIndex.HasValue)
                     {   // No ID column specified, so use the line number
-                        entityId = lineNumber;
+                        entityId = parser.Row;
+                    }
+                    else if (IdColumnIndex.Value < 0 || IdColumnIndex.Value >= parser.FieldHeaders.Length)
+                    {
+                        throw new ArgumentException("Index for ID column is out of range.", "IdColumnIndex");
                     }
                     else if (!int.TryParse(fields[IdColumnIndex.Value], out entityId))
                     {
-                        throw new FormatException("Row " + parser.LineNumber + ": The ID field '" + fields[IdColumnIndex.Value] + "' cannot be parsed.");
-                    }
-                    var entityValues = new Dictionary<string, object>();
-                    for (var i = 0; i < columns.Length; i++)
-                    {
-                        entityValues.Add(columns[i], fields[i]);
+                        throw new FormatException("Row " + parser.Row + ": The ID field '" + fields[IdColumnIndex.Value] + "' cannot be parsed.");
                     }
 
-                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, columns[TitleColumnIndex]));
+                    if (TitleColumnIndex < 0 || TitleColumnIndex >= parser.FieldHeaders.Length)
+                    {
+                        throw new ArgumentException("Index for Title column is out of range.", "TitleColumnIndex");
+                    }
+
+                    var entityValues = new Dictionary<string, object>();
+                    for (var i = 0; i < parser.FieldHeaders.Length; i++)
+                    {
+                        entityValues.Add(parser.FieldHeaders[i], fields[i]);
+                    }
+
+                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, parser.FieldHeaders[TitleColumnIndex]));
                 }
             }
             return entityList;

@@ -84,20 +84,11 @@ namespace ToSic.Eav.UnitTests.DataSources
         }
 
         [TestMethod]
-        [Description("Parses a file where one row has not values for all columns - Test should fail with exception.")]
-        [ExpectedException(typeof(FormatException))]
+        [Description("Parses a file where one row has not values for all columns - Test should succeed anyway.")]
         public void CsvDataSource_ParseFileWithInvalidRow()
         {
-            try
-            {
-                var source = CreateDataSource("Files/CsvDataSource - Test Invalid Row.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
-                var sourceList = source.LightList;
-            }
-            catch (Exception ex)
-            {
-                // The pipeline does wrap my exception expected
-                throw ex.InnerException;
-            }
+            var source = CreateDataSource("Files/CsvDataSource - Test Invalid Row.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
+            AssertIsSourceListValid(source);
         }
 
 
@@ -118,7 +109,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 Assert.AreEqual(TestFileColumnCount, entity.Attributes.Count(), "Entity " + i + ": Attributes do not match the columns in the file.");
                 if (!source.IdColumnIndex.HasValue)
                 {
-                    Assert.AreEqual(i + 1, entity.EntityId, "Entity " + i + ": ID does not match.");
+                    Assert.AreEqual(i + 2, entity.EntityId, "Entity " + i + ": ID does not match.");
                 }
                 else
                 {
