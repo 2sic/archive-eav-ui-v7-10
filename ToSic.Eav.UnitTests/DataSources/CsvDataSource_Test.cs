@@ -15,22 +15,22 @@ namespace ToSic.Eav.UnitTests.DataSources
 
         private const int TestFileColumnCount = 5;
 
-        private const int TestFileIdColumnIndex = 0;
+        private const string TestFileIdColumnName = "ID";
 
-        private const int TestFileTitleColumnIndex = 1;
+        private const string TestFileTitleColumnName = "Title";
 
 
         [TestMethod]
         public void CsvDataSource_ParseSemicolonDelimitedFile()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
+            var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
         [TestMethod]
         public void CsvDataSource_ParseTabDelimitedFile()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Tab Delimited.csv", "\t", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
+            var source = CreateDataSource("Files/CsvDataSource - Test Tab Delimited.csv", "[tab]", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
@@ -38,42 +38,42 @@ namespace ToSic.Eav.UnitTests.DataSources
         [Description("Parses a file where texts are enquoted, for example 'Hello 2sic'.")]
         public void CsvDataSource_ParseFileWithQuotedText()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Quoted Text.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
+            var source = CreateDataSource("Files/CsvDataSource - Test Quoted Text.csv", ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
         [TestMethod]
-        [Description("Parses a file and the index of the ID column is not defined - IDs should be taken from line numbers.")]
-        public void CsvDataSource_ParseFileWithUndefinedIdColumnIndex()
+        [Description("Parses a file and the name of the ID column is not defined - IDs should be taken from row numbers.")]
+        public void CsvDataSource_ParseFileWithUndefinedIdColumnName()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", null, TestFileTitleColumnIndex);
+            var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", null, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
         [TestMethod]
-        [Description("Parses a file, but the index of the ID column is out of range (Index = Columns count = 40) - Test should fail with exception.")]
+        [Description("Parses a file and the Title column is not defined - Test should fail with exception.")]
         [ExpectedException(typeof(ArgumentException))]
-        public void CsvDataSource_ParseFileWithIdColumnIndexOutOfRange()
+        public void CsvDataSource_ParseFileWithUndefinedTitleColumnName()
         {
             try
             {
-                var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileRowCount /* 40 */, TestFileTitleColumnIndex);
-                var sourceList = source.LightList;
+                var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileIdColumnName, null);
+                AssertIsSourceListValid(source);
             }
             catch (Exception ex)
-            {       
+            {
                 // The pipeline does wrap my exception expected
                 throw ex.InnerException;
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void CsvDataSource_ParseFileWithTextColumnIndexOutOfRange()
+        [ExpectedException(typeof(FormatException))]
+        public void CsvDataSource_ParseFileWithIdColumnThatCannotBeParsed()
         {
             try
             {
-                var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileRowCount /* 40 */);
+                var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
                 var sourceList = source.LightList;
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         [Description("Parses a file where one row has not values for all columns - Test should succeed anyway.")]
         public void CsvDataSource_ParseFileWithInvalidRow()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Invalid Row.csv", ";", "Anonymous", TestFileIdColumnIndex, TestFileTitleColumnIndex);
+            var source = CreateDataSource("Files/CsvDataSource - Test Invalid Row.csv", ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
@@ -107,32 +107,32 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var entity = sourceList.ElementAt(i);
 
                 Assert.AreEqual(TestFileColumnCount, entity.Attributes.Count(), "Entity " + i + ": Attributes do not match the columns in the file.");
-                if (!source.IdColumnIndex.HasValue)
+                if (string.IsNullOrEmpty(source.IdColumnName))
                 {
                     Assert.AreEqual(i + 2, entity.EntityId, "Entity " + i + ": ID does not match.");
                 }
                 else
                 {
-                    Assert.AreEqual(GetAttributeValueAt(entity, source.IdColumnIndex.Value), entity.EntityId.ToString(), "Entity " + i + ": ID does not match.");
+                    Assert.AreEqual(GetAttributeValue(entity, source.IdColumnName), entity.EntityId.ToString(), "Entity " + i + ": ID does not match.");
                 }
-                Assert.IsNotNull(GetAttributeValueAt(entity, source.TitleColumnIndex), "Entity " + i + ": Title should not be null.");
+                Assert.IsNotNull(GetAttributeValue(entity, source.TitleColumnName), "Entity " + i + ": Title should not be null.");
             }
         }
 
-        private static object GetAttributeValueAt(IEntity entity, int index)
+        private static object GetAttributeValue(IEntity entity, string name)
         {
-            return entity.GetBestValue(entity.Attributes.ElementAt(index).Key);
+            return entity.GetBestValue(entity.Attributes[name].Name);
         }
 
-        public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", int? IdColumnIndex = null, int TitleColumnIndex = 1)
+        public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string IdColumnName = null, string TitleColumnName = null)
         {
             var source = new CsvDataSource() 
             {
                 FilePath = filePath,
                 Delimiter = delimiter,
                 ContentType = contentType,
-                IdColumnIndex = IdColumnIndex,
-                TitleColumnIndex = TitleColumnIndex
+                IdColumnName = IdColumnName,
+                TitleColumnName = TitleColumnName
 
             };
             source.ConfigurationProvider = new ValueCollectionProvider_Test().ValueCollection();

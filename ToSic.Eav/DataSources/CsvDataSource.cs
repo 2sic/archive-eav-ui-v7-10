@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CsvHelper;
 using System.IO;
+using System.Web;
 
 
 namespace ToSic.Eav.DataSources
@@ -16,6 +17,12 @@ namespace ToSic.Eav.DataSources
         {
             get { return Configuration[FilePathKey]; }
             set { Configuration[FilePathKey] = value; }
+        }
+
+
+        public string ServerFilePath
+        {
+            get { return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath; }
         }
 
 
@@ -37,33 +44,21 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private const string IdColumnIndexKey = "IdColumnIndex";
+        private const string IdColumnNameKey = "IdColumnName";
 
-        public int? IdColumnIndex
+        public string IdColumnName
         {
-            get
-            {
-                var value = Configuration[IdColumnIndexKey];
-                if (string.IsNullOrEmpty(value))
-                {
-                    return null;
-                }
-                return new int?(int.Parse(value));
-            }
-            set 
-            { 
-                Configuration[IdColumnIndexKey] = value == null ? null : value.ToString();
-            }
-                
+            get { return Configuration[IdColumnNameKey]; }
+            set { Configuration[IdColumnNameKey] = value; }               
         }
 
 
-        private const string TitleColumnIndexKey = "TitleColumnIndex";
+        private const string TitleColumnNameKey = "TitleColumnName";
 
-        public int TitleColumnIndex
+        public string TitleColumnName
         {
-            get { return int.Parse(Configuration[TitleColumnIndexKey]); }
-            set { Configuration[TitleColumnIndexKey] = value.ToString(); }
+            get { return Configuration[TitleColumnNameKey]; }
+            set { Configuration[TitleColumnNameKey] = value; }
         }
 
 
@@ -74,8 +69,8 @@ namespace ToSic.Eav.DataSources
             Configuration.Add(FilePathKey, "[Settings:FilePath]");
             Configuration.Add(DelimiterKey, "[Settings:Delimiter||;]");
             Configuration.Add(ContentTypeKey, "[Settings:ContentType||Anonymous]");
-            Configuration.Add(IdColumnIndexKey, "[Settings:IdColumnIndex]");
-            Configuration.Add(TitleColumnIndexKey, "[Settings:TitleColumnIndex||0]");
+            Configuration.Add(IdColumnNameKey, "[Settings:IdColumnName]");
+            Configuration.Add(TitleColumnNameKey, "[Settings:TitleColumnName||Title]");
             CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
         }
 
@@ -86,10 +81,10 @@ namespace ToSic.Eav.DataSources
 
             var entityList = new List<IEntity>();
 
-            using (var stream = new StreamReader(FilePath))
+            using (var stream = new StreamReader(ServerFilePath))
             using (var parser = new CsvReader(stream))
             {
-                parser.Configuration.Delimiter = Delimiter;
+                parser.Configuration.Delimiter = Delimiter.Replace("[tab]", "\t").Replace("[nl]", "\n").Replace("[cr]", "\r");
                 parser.Configuration.HasHeaderRecord = true;
                 parser.Configuration.TrimHeaders = true;
                 parser.Configuration.TrimFields = true;
@@ -100,23 +95,23 @@ namespace ToSic.Eav.DataSources
                     var fields = parser.CurrentRecord;
 
                     int entityId;
-                    if (!IdColumnIndex.HasValue)
-                    {   // No ID column specified, so use the line number
+                    if (string.IsNullOrEmpty(IdColumnName))
+                    {   // No ID column specified, so use the row number
                         entityId = parser.Row;
                     }
-                    else if (IdColumnIndex.Value < 0 || IdColumnIndex.Value >= parser.FieldHeaders.Length)
+                    else
                     {
-                        throw new ArgumentException("Index for ID column is out of range.", "IdColumnIndex");
-                    }
-                    else if (!int.TryParse(fields[IdColumnIndex.Value], out entityId))
-                    {
-                        throw new FormatException("Row " + parser.Row + ": The ID field '" + fields[IdColumnIndex.Value] + "' cannot be parsed.");
+                        var idColumnIndex = Array.FindIndex(parser.FieldHeaders, columnName => columnName == IdColumnName);
+                        if(idColumnIndex == -1)
+                            throw new ArgumentException("ID column specified cannot be found in the file.", "IdColumnName");
+
+                        if (!int.TryParse(fields[idColumnIndex], out entityId))
+                            throw new FormatException("Row " + parser.Row + ": ID field '" + fields[idColumnIndex] + "' cannot be parsed.");
                     }
 
-                    if (TitleColumnIndex < 0 || TitleColumnIndex >= parser.FieldHeaders.Length)
-                    {
-                        throw new ArgumentException("Index for Title column is out of range.", "TitleColumnIndex");
-                    }
+                    var titleColumnIndex = Array.FindIndex(parser.FieldHeaders, columnName => columnName == TitleColumnName);
+                    if (titleColumnIndex == -1)
+                        throw new ArgumentException("Title column specified cannot be found in the file", "TitleColumnName");
 
                     var entityValues = new Dictionary<string, object>();
                     for (var i = 0; i < parser.FieldHeaders.Length; i++)
@@ -124,7 +119,7 @@ namespace ToSic.Eav.DataSources
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
                     }
 
-                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, parser.FieldHeaders[TitleColumnIndex]));
+                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, parser.FieldHeaders[titleColumnIndex]));
                 }
             }
             return entityList;
