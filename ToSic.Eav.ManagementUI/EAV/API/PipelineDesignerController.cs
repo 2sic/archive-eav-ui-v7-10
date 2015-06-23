@@ -314,7 +314,7 @@ namespace ToSic.Eav.ManagementUI.API
 		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
 		{
 			var outStreams = ConstructPipeline(appId, id);
-			var debugInfo = new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
+		    var debugInfo = new DataSources.Debug.PipelineInfo(outStreams);// ConstructPipeline(appId, id));
 			return new
 			{
 				Query = Serializer.Prepare(outStreams), // outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),

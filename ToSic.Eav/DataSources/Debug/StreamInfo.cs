@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Debug
 
                 //SourceOut = strm.Source.Out.(strm)
                 // SourceOut = strm.Name;
-                Count = strm.List.Count;
+                Count = strm.LightList.Count();
             }
             catch
             {
