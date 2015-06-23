@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -313,13 +314,26 @@ namespace ToSic.Eav.ManagementUI.API
 		[HttpGet]
 		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
 		{
+            // Get the query, run it and track how much time this took
 			var outStreams = ConstructPipeline(appId, id);
+		    var timer = new Stopwatch();
+            timer.Start();
+		    var query = Serializer.Prepare(outStreams);
+            timer.Stop();
+
+            // Now get some more debug info
 		    var debugInfo = new DataSources.Debug.PipelineInfo(outStreams);// ConstructPipeline(appId, id));
+
+            // ...and return the results
 			return new
 			{
-				Query = Serializer.Prepare(outStreams), // outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
+				Query = query, // Serializer.Prepare(outStreams), // outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
 				debugInfo.Streams,
-				debugInfo.Sources
+				debugInfo.Sources,
+                QueryTimer = new { 
+                    Milliseconds = timer.ElapsedMilliseconds,
+                    Ticks = timer.ElapsedTicks
+                }
 			};
 		}
 
