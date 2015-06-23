@@ -156,17 +156,11 @@ namespace ToSic.Eav.Tokens
                         string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
                         string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
 
-                        if (string.IsNullOrEmpty(strConversion))
-                        {
-                            if (!String.IsNullOrEmpty(strIfEmptyReplacment)) 
-                                // Always repeat replacement material, as it comes from a safe (admin edited) source
-                                strConversion = (repeat > 0) ? //repeatFallbackOnly ?
-                                    ReplaceTokens(strIfEmptyReplacment, repeat - 1)
-                                    : strIfEmptyReplacment;
-                                    
-                                // if we didn't do a fallback, then check if repeat is desired here
-                        }
-                        else if (repeat > 0)
+                        var useFallback = string.IsNullOrEmpty(strConversion);
+                        if (useFallback)
+                            strConversion = strIfEmptyReplacment; 
+                        
+                        if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
                             strConversion = ReplaceTokens(strConversion, repeat - 1);
 
                         Result.Append(strConversion);
