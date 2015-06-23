@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources
             Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 
             Configuration.Add(FilePathKey, "[Settings:FilePath]");
-            Configuration.Add(DelimiterKey, "[Settings:Delimiter||;]");
+            Configuration.Add(DelimiterKey, "[Settings:Delimiter||\t]");
             Configuration.Add(ContentTypeKey, "[Settings:ContentType||Anonymous]");
             Configuration.Add(IdColumnNameKey, "[Settings:IdColumnName]");
             Configuration.Add(TitleColumnNameKey, "[Settings:TitleColumnName||Title]");
@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
             using (var stream = new StreamReader(ServerFilePath))
             using (var parser = new CsvReader(stream))
             {
-                parser.Configuration.Delimiter = Delimiter.Replace("[tab]", "\t").Replace("[nl]", "\n").Replace("[cr]", "\r");
+                parser.Configuration.Delimiter = Delimiter;
                 parser.Configuration.HasHeaderRecord = true;
                 parser.Configuration.TrimHeaders = true;
                 parser.Configuration.TrimFields = true;
@@ -109,17 +109,25 @@ namespace ToSic.Eav.DataSources
                             throw new FormatException("Row " + parser.Row + ": ID field '" + fields[idColumnIndex] + "' cannot be parsed.");
                     }
 
-                    var titleColumnIndex = Array.FindIndex(parser.FieldHeaders, columnName => columnName == TitleColumnName);
-                    if (titleColumnIndex == -1)
-                        throw new ArgumentException("Title column specified cannot be found in the file", "TitleColumnName");
-
+                    string entityTitleName;
+                    if (string.IsNullOrEmpty(TitleColumnName))
+                    {
+                        entityTitleName = parser.FieldHeaders[0];
+                    } 
+                    else
+                    {   // The following is a little bit complicated, but it checks that the title specified exists
+                        entityTitleName = parser.FieldHeaders.FirstOrDefault(columnName => columnName == TitleColumnName);
+                        if (entityTitleName == null)
+                            throw new ArgumentException("Title column specified cannot be found in the file.", "TitleColumnName");
+                    }
+                    
                     var entityValues = new Dictionary<string, object>();
                     for (var i = 0; i < parser.FieldHeaders.Length; i++)
                     {
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
                     }
 
-                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, parser.FieldHeaders[titleColumnIndex]));
+                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, entityTitleName));
                 }
             }
             return entityList;

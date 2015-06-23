@@ -30,7 +30,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         [TestMethod]
         public void CsvDataSource_ParseTabDelimitedFile()
         {
-            var source = CreateDataSource("Files/CsvDataSource - Test Tab Delimited.csv", "[tab]", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
+            var source = CreateDataSource("Files/CsvDataSource - Test Tab Delimited.csv", "\t", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
 
@@ -48,23 +48,6 @@ namespace ToSic.Eav.UnitTests.DataSources
         {
             var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", null, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
-        }
-
-        [TestMethod]
-        [Description("Parses a file and the Title column is not defined - Test should fail with exception.")]
-        [ExpectedException(typeof(ArgumentException))]
-        public void CsvDataSource_ParseFileWithUndefinedTitleColumnName()
-        {
-            try
-            {
-                var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileIdColumnName, null);
-                AssertIsSourceListValid(source);
-            }
-            catch (Exception ex)
-            {
-                // The pipeline does wrap my exception expected
-                throw ex.InnerException;
-            }
         }
 
         [TestMethod]
