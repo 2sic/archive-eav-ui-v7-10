@@ -31,6 +31,7 @@
 //namespace DotNetNuke.Services.Tokens
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -154,8 +155,20 @@ namespace ToSic.Eav.Tokens
                         string strFormat = curMatch.Result("${format}");
                         string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
                         string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
-                        if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
-                            strConversion = strIfEmptyReplacment;
+
+                        if (string.IsNullOrEmpty(strConversion))
+                        {
+                            if (!String.IsNullOrEmpty(strIfEmptyReplacment)) 
+                                // Always repeat replacement material, as it comes from a safe (admin edited) source
+                                strConversion = (repeat > 0) ? //repeatFallbackOnly ?
+                                    ReplaceTokens(strIfEmptyReplacment, repeat - 1)
+                                    : strIfEmptyReplacment;
+                                    
+                                // if we didn't do a fallback, then check if repeat is desired here
+                        }
+                        else if (repeat > 0)
+                            strConversion = ReplaceTokens(strConversion, repeat - 1);
+
                         Result.Append(strConversion);
                     }
                 }
@@ -165,8 +178,8 @@ namespace ToSic.Eav.Tokens
                 
                 // Ready to finish, but first, ensure repeating if desired
                 string finalResult = Result.ToString();
-                if (repeat > 0)
-                    finalResult= ReplaceTokens(finalResult, repeat - 1);
+                //if (!repeatFallbackOnly && repeat > 0)
+                //    finalResult = ReplaceTokens(finalResult, repeat - 1, repeatFallbackOnly);
                 return finalResult;
             }
 
