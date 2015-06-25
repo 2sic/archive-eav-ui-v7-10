@@ -28,6 +28,13 @@ namespace ToSic.Eav.UnitTests.DataSources
         }
 
         [TestMethod]
+        public void CsvDataSource_ParseSemicolonDelimitedUTF8File()
+        {
+            var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited UTF8.csv", ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
+            AssertIsSourceListValid(source);
+        }
+
+        [TestMethod]
         public void CsvDataSource_ParseTabDelimitedFile()
         {
             var source = CreateDataSource("Files/CsvDataSource - Test Tab Delimited.csv", "\t", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
