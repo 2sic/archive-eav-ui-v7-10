@@ -229,15 +229,18 @@ and a token with sub-token for fallback [QueryString:Id||[Module:SubId]]
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
 
 and a [bad token without property] and a [Source::SubkeyWithoutKey]
-but this should [token:key] again";
+but this should [token:key] again
+Now try a token which returns a token: [AppSettings:UserNameMaybeFromUrl||Johny]";
             
+            // Even without recurrence it should process the fallback-token at least once
             var expectedNoRecurrance =
                 @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
-and a token with sub-token for fallback [Module:SubId]
+and a token with sub-token for fallback 4567
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
 
 and a [bad token without property] and a [Source::SubkeyWithoutKey]
-but this should What a Token! again";
+but this should What a Token! again
+Now try a token which returns a token: [QueryString:UserName||Samantha]";
 
             var expectedRecurrance =
                 @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
@@ -245,7 +248,9 @@ and a token with sub-token for fallback 4567
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
 
 and a [bad token without property] and a [Source::SubkeyWithoutKey]
-but this should What a Token! again";
+but this should What a Token! again
+Now try a token which returns a token: Daniel";
+
             var qs = new StaticValueProvider("QueryString");
             qs.Properties.Add("UserName", "Daniel");
             //qs.Properties.Add("Id", "7");
@@ -254,6 +259,7 @@ but this should What a Token! again";
             var appS = new StaticValueProvider("AppSettings");
             appS.Properties.Add("DefaultUserName", "Name Unknown");
             appS.Properties.Add("RootUserId", "-1");
+            appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
             var tok = new StaticValueProvider("token");
             tok.Properties.Add("key", "What a Token!");
             var sources = new Dictionary<string, IValueProvider>();
