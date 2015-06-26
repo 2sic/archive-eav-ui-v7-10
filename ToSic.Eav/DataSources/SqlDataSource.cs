@@ -12,10 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	public class SqlDataSource : BaseDataSource
+	public class SqlDataSource : ExternalDataDataSource // BaseDataSource
 	{
-		private IDictionary<int, IEntity> _entities;
-
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase);
@@ -107,14 +105,16 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public SqlDataSource()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
-			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
+			Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
 			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
 			Configuration.Add(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
-		}
+
+            CacheRelevantConfigurations = new[] { ContentTypeKey, SelectCommandKey, ConnectionStringKey, ConnectionStringNameKey };
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the SqlDataSource class
@@ -150,6 +150,7 @@ namespace ToSic.Eav.DataSources
 	        }
             var sourceText = SelectCommand;
             var ParamNumber = 1;
+	        var additionalParams = new List<string>();
             var Result = new StringBuilder();
             var charProgress = 0;
             var matches = Tokenizer.Matches(sourceText);
@@ -162,9 +163,12 @@ namespace ToSic.Eav.DataSources
                         Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
                     charProgress = curMatch.Index + curMatch.Length;
 
-                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++).ToString();
+                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++);
                     Result.Append(paramName);
                     Configuration.Add(paramName, curMatch.ToString());
+
+                    // add name to list for caching-key
+                    additionalParams.Add(paramName);
                 }
 
                 // attach the rest of the text (after the last match)
@@ -173,22 +177,25 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = Result.ToString();
             }
+	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToArray();
 
 	        base.EnsureConfigurationIsLoaded();
 	    }
 
-	    private IDictionary<int, IEntity> GetEntities()
-		{
-			if (_entities != null)
-				return _entities;
+        //private IDictionary<int, IEntity> GetEntities()
+        //{
+        //    return GetList().ToDictionary(e => e.EntityId, e => e);
+        //}
 
+	    private IEnumerable<IEntity> GetList()
+		{
 			EnsureConfigurationIsLoaded();
 
             // Check if SQL contains forbidden terms
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
                 throw new System.InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
 
-			_entities = new Dictionary<int, IEntity>();
+	        var list = new List<IEntity>(); // Dictionary<int, IEntity>();
 
 			// Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
@@ -224,7 +231,8 @@ namespace ToSic.Eav.DataSources
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
 						var entity = new Data.Entity(entityId, ContentType, values, TitleField);
-						_entities.Add(entityId, entity);
+					    list.Add(entity);
+					    //_entities.Add(entityId, entity);
 					}
 					#endregion
 				}
@@ -234,7 +242,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return _entities;
+			return list;
 		}
 	}
 }

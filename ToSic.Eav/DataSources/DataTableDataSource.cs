@@ -9,10 +9,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a System.Data.DataTable
 	/// </summary>
-	public class DataTableDataSource : BaseDataSource
+	public class DataTableDataSource : ExternalDataDataSource// BaseDataSource
 	{
-		private IDictionary<int, IEntity> _entities;
-
 		#region Configuration-properties
 
 		private const string TitleFieldKey = "TitleField";
@@ -72,7 +70,9 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
-		}
+
+            CacheRelevantConfigurations = new[] { ContentTypeKey };
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the DataTableDataSource class
@@ -89,14 +89,9 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			if (_entities != null)
-				return _entities;
-
 			EnsureConfigurationIsLoaded();
 
-			_entities = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField);
-
-			return _entities;
+			return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField);
 		}
 
 		/// <summary>

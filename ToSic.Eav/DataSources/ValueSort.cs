@@ -48,13 +48,19 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueSort()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(AttrKey, "[Settings:Attributes]");
 			Configuration.Add(DirectionKey, "[Settings:Directions]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
-		}
 
-		private IDictionary<int, IEntity> GetEntities()
+            CacheRelevantConfigurations = new[] { AttrKey, DirectionKey, LangKey };
+        }
+
+        //private IDictionary<int, IEntity> GetEntities()
+        //{
+        //    return GetList().ToDictionary(x => x.EntityId, y => y);
+        //}
+		private IEnumerable<IEntity> GetList()
 		{
 			// todo: maybe do something about languages?
 			// todo: test datetime & decimal types
@@ -75,17 +81,19 @@ namespace ToSic.Eav.DataSources
 				throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
+            var list = In[DataSource.DefaultStreamName].LightList;
+
 			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
 			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();
-			var results = (from e in In[DataSource.DefaultStreamName].List
-						   where e.Value.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
+			var results = (from e in list
+						   where e.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
 						   select e);
 
 			// if list is blank, stop here and return blank list
 			if (!results.Any())
-				return results.ToDictionary(x => x.Key, y => y.Value);
+				return results;
 
-			IOrderedEnumerable<KeyValuePair<int, IEntity>> ordered = null;
+            IOrderedEnumerable<IEntity> ordered = null;
 
 			for (var i = 0; i < attr.Count(); i++)
 			{
@@ -100,19 +108,19 @@ namespace ToSic.Eav.DataSources
 				{
 					// First sort...
 					ordered = isAscending
-						? results.OrderBy(e => getObjToSort(e.Value, a, specAttr))
-						: results.OrderByDescending(e => getObjToSort(e.Value, a, specAttr));
+						? results.OrderBy(e => getObjToSort(e, a, specAttr))
+						: results.OrderByDescending(e => getObjToSort(e, a, specAttr));
 				}
 				else
 				{
 					// following sorts...
 					ordered = isAscending
-						? ordered.ThenBy(e => getObjToSort(e.Value, a, specAttr))
-						: ordered.ThenByDescending(e => getObjToSort(e.Value, a, specAttr));
+						? ordered.ThenBy(e => getObjToSort(e, a, specAttr))
+						: ordered.ThenByDescending(e => getObjToSort(e, a, specAttr));
 				}
 			}
 
-			return ordered.ToDictionary(x => x.Key, y => y.Value);
+			return ordered;
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

@@ -21,6 +21,11 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		public IDictionary<int, IEntity> Entities { get; private set; }
 
+        /// <summary>
+        /// The simple list of entities, used in many pipeline parts
+        /// </summary>
+        public IEnumerable<IEntity> List { get; private set; } 
+
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
@@ -64,11 +69,17 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
-		public CacheItem(IDictionary<int, IEntity> entities, IDictionary<int, IContentType> contentTypes,
-			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
-			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, IEnumerable<EntityRelationshipItem> relationships)
+		public CacheItem(
+            IDictionary<int, IEntity> entities, 
+            IEnumerable<IEntity> entList,
+            IDictionary<int, IContentType> contentTypes,
+			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, 
+            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
+			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, 
+            IEnumerable<EntityRelationshipItem> relationships)
 		{
-			Entities = entities;
+		    List = entList;
+		    Entities = entities;// entList.ToDictionary(e => e.EntityId, e => e); // can't use the pure to-dictionary, because I seem to have duplicate entries - probably because of draft-items?
 			ContentTypes = contentTypes;
 			AssignmentObjectTypesGuid = assignmentObjectTypesGuid;
 			AssignmentObjectTypesNumber = assignmentObjectTypesNumber;

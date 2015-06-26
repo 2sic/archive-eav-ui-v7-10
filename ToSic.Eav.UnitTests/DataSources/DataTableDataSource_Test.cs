@@ -31,6 +31,18 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(defaultOut.List.Count == ItemsToGenerate);
         }
 
+        [TestMethod]
+        public void DataTable_CacheKey()
+        {
+            const int ItemsToGenerate = 499;
+            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate);
+
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CachePartialKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CacheFullKey);
+            var lastRefresh = ds.CacheLastRefresh; // get this before comparison, because sometimes slow execution will get strange results
+            Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
+        }
+
         public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001)
         {
             var dataTable = new DataTable();

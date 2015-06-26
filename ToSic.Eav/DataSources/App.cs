@@ -73,7 +73,9 @@ namespace ToSic.Eav.DataSources
 			// Set default switch-keys to 0 = no switch
 			Configuration.Add(AppSwitchKey, "0");
 			Configuration.Add(ZoneSwitchKey, "0");
-		}
+
+            CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
+        }
 
 		/// <summary>
 		/// Attach a different data source than is currently attached...
@@ -104,6 +106,8 @@ namespace ToSic.Eav.DataSources
 			}
 			catch (KeyNotFoundException)
 			{
+                // todo: maybe auto-attach to cache of current system?
+
 				throw new Exception("App DataSource must have a Default In-Stream with name " + DataSource.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
 			}
 
@@ -115,17 +119,19 @@ namespace ToSic.Eav.DataSources
 			// because the "real" source already applies filters like published
 			var cache = (BaseCache)DataSource.GetCache(zoneId: ZoneId, appId: AppId);
 			var listOfTypes = cache.GetContentTypes();
-			foreach (var contentType in listOfTypes)
-			{
-				var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
-				var typeName = contentType.Value.Name;
-				if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@"))
-				{
-					ds.TypeName = contentType.Value.Name;
-					if (!_Out.ContainsKey(typeName))
-						_Out.Add(contentType.Value.Name, ds.Out[DataSource.DefaultStreamName]);
-				}
-			}
+		    foreach (var contentType in listOfTypes)
+		    {
+		        var typeName = contentType.Value.Name;
+		        if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@") && !_Out.ContainsKey(typeName))
+		        {
+		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
+		            ds.TypeName = contentType.Value.Name;
+
+		            ds.Out[DataSource.DefaultStreamName].AutoCaching = true; // enable auto-caching 
+
+		            _Out.Add(contentType.Value.Name, ds.Out[DataSource.DefaultStreamName]);
+		        }
+		    }
 		}
 	}
 

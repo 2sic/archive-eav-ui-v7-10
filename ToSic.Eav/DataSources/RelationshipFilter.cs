@@ -108,17 +108,24 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public RelationshipFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
 			Configuration.Add(CompareAttributeKey, "EntityTitle");
 			Configuration.Add(CompareModeKey, "default");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
-			//Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
-		}
+            //Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
 
-		private IDictionary<int, IEntity> GetEntities()
+            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
+        }
+
+        //private IDictionary<int, IEntity> GetEntities()
+        //{
+        //    return GetList().ToDictionary(e => e.EntityId, e => e);
+        //}
+
+		private IEnumerable<IEntity> GetList()
 		{
 			// todo: maybe do something about languages?
 
@@ -140,7 +147,7 @@ namespace ToSic.Eav.DataSources
 
 			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == "entitytitle" ? 't' : 'x';
 
-			var originals = In[DataSource.DefaultStreamName].List;
+			var originals = In[DataSource.DefaultStreamName].LightList;
 
 			//if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
 			//	return originals;
@@ -148,7 +155,7 @@ namespace ToSic.Eav.DataSources
 			// only get those, having a relationship on this name
 			var results = // (ChildOrParent == "child") ?
 				(from e in originals
-				 where e.Value.Relationships.Children[relationship].Any()
+				 where e.Relationships.Children[relationship].Any()
 				 select e);
 			//: (from e in originals
 			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
@@ -157,7 +164,7 @@ namespace ToSic.Eav.DataSources
 			if (ChildOrParent == "child")
 			{
 				results = (from e in results
-						   where e.Value.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr).ToLower() == filter)
+						   where e.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr).ToLower() == filter)
 						   select e);
 			}
 			else
@@ -168,7 +175,7 @@ namespace ToSic.Eav.DataSources
 				//		   select e);
 			}
 
-			return results.ToDictionary(x => x.Key, y => y.Value);
+			return results;// .ToDictionary(x => x.Key, y => y.Value);
 		}
 
 		private string getStringToCompare(IEntity e, string a, char special)

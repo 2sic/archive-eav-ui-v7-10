@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using ToSic.Eav.DataSources.Exceptions;
@@ -18,7 +19,6 @@ namespace ToSic.Eav.DataSources
 		private const string AttrKey = "AttributeHelperTools";
 		private const string FilterKey = "Value";
 		private const string LangKey = "Language";
-		//private const string PassThroughOnEmptyValueKey = "PassThroughOnEmptyValue";
 
 
 		/// <summary>
@@ -39,16 +39,6 @@ namespace ToSic.Eav.DataSources
 			set { Configuration[FilterKey] = value; }
 		}
 
-		///// <summary>
-		///// Pass throught all Entities if Value is empty
-		///// </summary>
-		//public bool PassThroughOnEmptyValue
-		//{
-		//	get { return bool.Parse(Configuration[PassThroughOnEmptyValueKey]); }
-		//	set { Configuration[PassThroughOnEmptyValueKey] = value.ToString(); }
-		//}
-
-
 		/// <summary>
 		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
 		/// </summary>
@@ -64,18 +54,16 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetEntities));
 			Configuration.Add(AttrKey, "[Settings:AttributeHelperTools]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
-			//Configuration.Add(PassThroughOnEmptyValueKey, "[Settings:PassThroughOnEmptyValue]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
-		}
 
-	    private IDictionary<int, IEntity> _results;
-		private IDictionary<int, IEntity> GetEntities()
+            CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
+        }
+
+		private IEnumerable<IEntity> GetEntities()
 		{
-		    if (_results != null)
-		        return _results;
 			// todo: maybe do something about languages?
 
 			EnsureConfigurationIsLoaded();
@@ -85,7 +73,7 @@ namespace ToSic.Eav.DataSources
 			if(lang != "default")
 				throw  new Exception("Can't filter for languages other than 'default'");
 
-			var originals = In[DataSource.DefaultStreamName].List;
+			var originals = In[DataSource.DefaultStreamName].LightList;
 
 			//if (string.IsNullOrEmpty(Value) && PassThroughOnEmptyValue)
 			//	return originals;
@@ -96,22 +84,21 @@ namespace ToSic.Eav.DataSources
 			if (lang == "any")
 				throw new NotImplementedException("language 'any' not implemented yet");
 
-            _results = GetFilteredWithLinq(originals, attr, lang, filter);
+            return GetFilteredWithLinq(originals, attr, lang, filter);
             //_results = GetFilteredWithLoop(originals, attr, lang, filter);
-
-		    return _results;
 		}
 
-	    private Dictionary<int, IEntity> GetFilteredWithLinq(IDictionary<int, IEntity> originals, string attr, string lang, string filter)
+
+	    private IEnumerable<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, string attr, string lang, string filter)
 	    {
 	        var langArr = new string[] {lang};
 	        string nullError = "{error: not found}";
             try
 	        {
 	            var results = (from e in originals
-	                where (e.Value.GetBestValue(attr, langArr) ?? nullError).ToString() == filter
+	                where (e.GetBestValue(attr, langArr) ?? nullError).ToString() == filter
 	                select e);
-	            return results.ToDictionary(x => x.Key, y => y.Value);
+	            return results;//.ToDictionary(x => x.Key, y => y.Value);
 	        }
 	        catch (Exception ex)
 	        {

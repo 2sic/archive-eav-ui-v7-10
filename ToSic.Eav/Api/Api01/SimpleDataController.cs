@@ -5,7 +5,6 @@ using ToSic.Eav;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using Entity = ToSic.Eav.Entity;
-using ImportEntity = ToSic.Eav.Import.Entity;
 
 namespace ToSic.Eav.Api.Api01
 {

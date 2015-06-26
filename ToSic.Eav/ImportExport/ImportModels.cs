@@ -6,19 +6,19 @@ using System.Linq;
 
 namespace ToSic.Eav.Import
 {
-	public class AttributeSet
+	public class ImportAttributeSet
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
 		public string Description { get; set; }
 		public string Scope { get; set; }
-		public List<Attribute> Attributes { get; set; }	// The List<> class does guarantee ordering
-		public Attribute TitleAttribute { get; set; }
+		public List<ImportAttribute> Attributes { get; set; }	// The List<> class does guarantee ordering
+		public ImportAttribute TitleAttribute { get; set; }
 		public bool AlwaysShareConfiguration { get; set; }
 
-		public AttributeSet() { }
+		public ImportAttributeSet() { }
 
-		public AttributeSet(string name, string staticName, string description, string scope, List<Attribute> attributes, bool alwaysShareConfiguration = false)
+		public ImportAttributeSet(string name, string staticName, string description, string scope, List<ImportAttribute> attributes, bool alwaysShareConfiguration = false)
 		{
 			Name = name;
 			StaticName = staticName;
@@ -31,39 +31,39 @@ namespace ToSic.Eav.Import
 		/// <summary>
 		/// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
 		/// </summary>
-		public static AttributeSet SystemAttributeSet(string staticName, string description, List<Attribute> attributes, bool alwaysShareConfiguration = false)
+		public static ImportAttributeSet SystemAttributeSet(string staticName, string description, List<ImportAttribute> attributes, bool alwaysShareConfiguration = false)
 		{
-			return new AttributeSet(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
+			return new ImportAttributeSet(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
 		}
 	}
 
-	public class Attribute
+	public class ImportAttribute
 	{
 		public string StaticName { get; set; }
 		public string Type { get; set; }
-		public List<Entity> AttributeMetaData { get; set; }
+		public List<ImportEntity> AttributeMetaData { get; set; }
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public Attribute() { }
+		public ImportAttribute() { }
 
 		/// <summary>
 		/// Get an Import-AttributeHelperTools
 		/// </summary>
-		private Attribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
+		private ImportAttribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
 		{
 			StaticName = staticName;
 			Type = type.ToString();
-			AttributeMetaData = new List<Entity> { GetAttributeMetaData(name, notes, visibleInEditUi, EavContext.SerializeValue(defaultValue)) };
+			AttributeMetaData = new List<ImportEntity> { GetAttributeMetaData(name, notes, visibleInEditUi, EavContext.SerializeValue(defaultValue)) };
 		}
 
 		/// <summary>
 		/// Get an Import-AttributeHelperTools
 		/// </summary>
-		public static Attribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
+		public static ImportAttribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
 		{
-			var attribute = new Attribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
+			var attribute = new ImportAttribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
 			attribute.AttributeMetaData.Add(GetStringAttributeMetaData(inputType, rowCount));
 			return attribute;
 		}
@@ -71,18 +71,18 @@ namespace ToSic.Eav.Import
 		/// <summary>
 		/// Get an Import-AttributeHelperTools
 		/// </summary>
-		public static Attribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
+		public static ImportAttribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
 		{
-			var attribute = new Attribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
+			var attribute = new ImportAttribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
 			return attribute;
 		}
 
 		/// <summary>
 		/// Shortcut to get an @All Entity Describing an AttributeHelperTools
 		/// </summary>
-		private static Entity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
+		private static ImportEntity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
 		{
-			var allEntity = new Entity
+			var allEntity = new ImportEntity
 			{
 				AttributeSetStaticName = "@All",
 				Values = new Dictionary<string, List<IValueImportModel>>()
@@ -99,9 +99,9 @@ namespace ToSic.Eav.Import
 			return allEntity;
 		}
 
-		private static Entity GetStringAttributeMetaData(string inputType, int? rowCount)
+		private static ImportEntity GetStringAttributeMetaData(string inputType, int? rowCount)
 		{
-			var stringEntity = new Entity
+			var stringEntity = new ImportEntity
 			{
 				AttributeSetStaticName = "@String",
 				Values = new Dictionary<string, List<IValueImportModel>>()
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Import
 		}
 	}
 
-	public class Entity
+	public class ImportEntity
 	{
 		public string AttributeSetStaticName { get; set; }
 		public int? KeyNumber { get; set; }
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Import
 		public bool IsPublished { get; set; }
 		public Dictionary<string, List<IValueImportModel>> Values { get; set; }
 
-		public Entity()
+		public ImportEntity()
 		{
 			IsPublished = true;
 		}
@@ -136,17 +136,22 @@ namespace ToSic.Eav.Import
 	{
 		public T Value { get; set; }
 		public IEnumerable<ValueDimension> ValueDimensions { get; set; }
-		public Entity Entity { get; private set; }
+		public ImportEntity ParentEntity { get; private set; }
 
-		public ValueImportModel(Entity entity)
+		public ValueImportModel(ImportEntity parentEntity)
 		{
-			Entity = entity;
+			ParentEntity = parentEntity;
 		}
+
+	    public string StringValueForTesting 
+	    {
+	        get { return Value.ToString(); }
+	    }
 	}
 
 	internal static class ValueImportModel
-	{
-		internal static IValueImportModel GetModel(string value, string type, IEnumerable<ValueDimension> dimensions, Entity entity)
+	{   
+		internal static IValueImportModel GetModel(string value, string type, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
 		{
 			IValueImportModel valueModel;
 
@@ -154,7 +159,7 @@ namespace ToSic.Eav.Import
 			{
 				case "String":
 				case "Hyperlink":
-					valueModel = new ValueImportModel<string>(entity) { Value = value };
+					valueModel = new ValueImportModel<string>(importEntity) { Value = value };
 					break;
 				case "Number":
 					decimal typedDecimal;
@@ -162,7 +167,7 @@ namespace ToSic.Eav.Import
 					decimal? typedDecimalNullable = null;
 					if (isDecimal)
 						typedDecimalNullable = typedDecimal;
-					valueModel = new ValueImportModel<decimal?>(entity)
+					valueModel = new ValueImportModel<decimal?>(importEntity)
 					{
 						Value = typedDecimalNullable
 					};
@@ -173,18 +178,18 @@ namespace ToSic.Eav.Import
 						var guid = Guid.Parse(v);
 						return guid == Guid.Empty ? new Guid?() : guid;
 					}).ToList() : new List<Guid?>(0);
-					valueModel = new ValueImportModel<List<Guid?>>(entity) { Value = entityGuids };
+					valueModel = new ValueImportModel<List<Guid?>>(importEntity) { Value = entityGuids };
 					break;
 				case "DateTime":
 					DateTime typedDateTime;
-					valueModel = new ValueImportModel<DateTime?>(entity)
+					valueModel = new ValueImportModel<DateTime?>(importEntity)
 					{
 						Value = DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime) ? typedDateTime : new DateTime?()
 					};
 					break;
 				case "Boolean":
 					bool typedBoolean;
-					valueModel = new ValueImportModel<bool?>(entity)
+					valueModel = new ValueImportModel<bool?>(importEntity)
 					{
 						Value = Boolean.TryParse(value, out typedBoolean) ? typedBoolean : new bool?()
 					};
@@ -202,7 +207,9 @@ namespace ToSic.Eav.Import
 	public interface IValueImportModel
 	{
 		IEnumerable<ValueDimension> ValueDimensions { get; set; }
-		Entity Entity { get; }
+		ImportEntity ParentEntity { get; }
+
+        String StringValueForTesting { get; }
 	}
 
 	public class ValueDimension
@@ -214,9 +221,9 @@ namespace ToSic.Eav.Import
 	public class LogItem
 	{
 		public EventLogEntryType EntryType { get; private set; }
-		public Entity Entity { get; set; }
-		public AttributeSet AttributeSet { get; set; }
-		public Attribute Attribute { get; set; }
+		public ImportEntity ImportEntity { get; set; }
+		public ImportAttributeSet ImportAttributeSet { get; set; }
+		public ImportAttribute ImportAttribute { get; set; }
 		public IValueImportModel Value { get; set; }
 		public Exception Exception { get; set; }
 		public string Message { get; private set; }

@@ -1,5 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using ToSic.Eav.Data;
+
+// new 2015-06-14 for caching
+using System.Runtime.Caching;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -31,7 +37,10 @@ namespace ToSic.Eav.DataSources.Caches
 		private const string _cacheKeySchema = "Z{0}A{1}";
 		public override string CacheKeySchema { get { return _cacheKeySchema; } }
 
-		private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
+
+        #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
+        private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
+
 
 		protected override bool HasCacheItem(string cacheKey)
 		{
@@ -51,6 +60,9 @@ namespace ToSic.Eav.DataSources.Caches
 		protected override void RemoveCacheItem(string cacheKey)
 		{
 			Caches.Remove(cacheKey);	// returns false if key was not found (no Exception)
-		}
-	}
+        }
+        #endregion
+
+
+    }
 }

@@ -21,8 +21,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string AttributeNames
 		{
-			get { return Configuration[AttributeNamesKey]; }
-			set { Configuration[AttributeNamesKey] = value; }
+		    get { return Configuration[AttributeNamesKey]; }
+		    set { Configuration[AttributeNamesKey] = value; }
 
 		}
 
@@ -33,30 +33,38 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public AttributeFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
 			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
-		}
 
-	    private IDictionary<int, IEntity> cached; 
-		private IDictionary<int, IEntity> GetEntities()
+            CacheRelevantConfigurations = new[] { AttributeNamesKey };
+        }
+
+        /// <summary>
+        /// Get the list of all items with reduced attributes-list
+        /// </summary>
+        /// <returns></returns>
+		private IEnumerable<IEntity> GetList()
 		{
-		    if (cached != null)
-		        return cached;
 			EnsureConfigurationIsLoaded();
 
-			var result = new Dictionary<int, IEntity>();
-
-			var attributeNames = AttributeNames.Split(',');
+		    var attributeNames = AttributeNames.Split(',');
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
-			foreach (var entity in In[DataSource.DefaultStreamName].List)
-			{
-				var entityModel = new Data.Entity(entity.Value, entity.Value.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value), entity.Value.Relationships.AllRelationships);
-
-				result.Add(entity.Key, entityModel);
-			}
-		    cached = result;
-			return result;
+		    return In[DataSource.DefaultStreamName].LightList
+                .Select(entity => new Data.Entity(entity, 
+                    entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
+                    entity.Relationships.AllRelationships)).Cast<IEntity>().ToList();
 		}
+
+        /// <summary>
+        /// Load configuration and normalize parameters AttributeNames
+        /// </summary>
+	    protected internal override void EnsureConfigurationIsLoaded()
+	    {
+	        base.EnsureConfigurationIsLoaded();
+
+            var namesList = (from a in AttributeNames.Split(',') select a.Trim()).ToArray();
+            AttributeNames = string.Join(",", namesList.ToArray());
+	    }
 	}
 }

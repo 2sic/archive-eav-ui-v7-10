@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -41,7 +42,9 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		IDictionary<int, IEntity> List { get; }
 
-		/// <summary>
+        IEnumerable<IEntity> LightList { get; }
+            
+        /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
 		IValueCollectionProvider ConfigurationProvider { get; }
@@ -82,7 +85,22 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		string Name { get; }
 		#endregion
-	}
+
+        #region Caching Information
+
+	    ICache Cache { get; }
+        /// <summary>
+        /// List of items from the configuration which should be used for creating the cache-key
+        /// </summary>
+        string[] CacheRelevantConfigurations { get; set; }
+        /// <summary>
+        /// Unique key-id for this specific part - without the full chain to the parents
+        /// </summary>
+        string CachePartialKey { get; }
+        string CacheFullKey { get; }
+        DateTime CacheLastRefresh { get; }
+        #endregion
+    }
 
 	///// <summary>
 	///// Internal interface for building the object

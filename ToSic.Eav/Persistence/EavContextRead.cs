@@ -35,7 +35,7 @@ namespace ToSic.Eav
 		}
 
 		/// <summary>
-		/// Test whehter Entity exists on current App and is not deleted
+		/// Test whether Entity exists on current App and is not deleted
 		/// </summary>
 		public bool EntityExists(Guid entityGuid)
 		{
@@ -372,16 +372,11 @@ namespace ToSic.Eav
 		{
 			var contentTypes = GetContentTypes(appId);
 
-			Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid = null;
-			Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber = null;
-			Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString = null;
-			if (!entitiesOnly)
-			{
-				assignmentObjectTypesGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
-				assignmentObjectTypesNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
-				assignmentObjectTypesString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
-			}
-			var relationships = new List<EntityRelationshipItem>();
+            var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+            var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+            var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+
+            var relationships = new List<EntityRelationshipItem>();
 
 			#region Prepare & Extend EntityIds
 			if (entityIds == null)
@@ -458,6 +453,8 @@ namespace ToSic.Eav
 
 			#region Build EntityModels
 			var entities = new Dictionary<int, IEntity>();
+		    var entList = new List<IEntity>();
+
 			foreach (var e in entitiesValues)
 			{
 				var contentType = (ContentType)contentTypes[e.AttributeSetID];
@@ -482,40 +479,44 @@ namespace ToSic.Eav
 					entityModel.EntityId = e.PublishedEntityId.Value;
 				}
 
-				#region Add assignmentObjectTypes with Key
+				#region Add metadata-lists based on AssignmentObjectTypes 
 
-                // todo: unclear why #1 is handled in a special way - why should this not be cached?
+                // unclear why #1 is handled in a special way - why should this not be cached? I believe 1 means no specific assignment
 				if (e.AssignmentObjectTypeID != 1 && !entitiesOnly)
 				{
+                    // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
 					if (e.KeyGuid.HasValue)
 					{
-						if (!assignmentObjectTypesGuid.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-							assignmentObjectTypesGuid.Add(e.AssignmentObjectTypeID, new Dictionary<Guid, IEnumerable<IEntity>>());
+                        // Ensure that this assignment-Type (like 4 = entity-assignment) already has a dictionary for storage
+						if (!metadataForGuid.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
+							metadataForGuid.Add(e.AssignmentObjectTypeID, new Dictionary<Guid, IEnumerable<IEntity>>());
 
-						if (!assignmentObjectTypesGuid[e.AssignmentObjectTypeID].ContainsKey(e.KeyGuid.Value)) // ensure Guid
-							assignmentObjectTypesGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value] = new List<IEntity>();
+                        // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
+						if (!metadataForGuid[e.AssignmentObjectTypeID].ContainsKey(e.KeyGuid.Value)) // ensure Guid
+							metadataForGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value]).Add(entityModel);
+                        // Now all containers must exist, add this item
+						((List<IEntity>)metadataForGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value]).Add(entityModel);
 					}
 					if (e.KeyNumber.HasValue)
 					{
-						if (!assignmentObjectTypesNumber.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-							assignmentObjectTypesNumber.Add(e.AssignmentObjectTypeID, new Dictionary<int, IEnumerable<IEntity>>());
+						if (!metadataForNumber.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
+							metadataForNumber.Add(e.AssignmentObjectTypeID, new Dictionary<int, IEnumerable<IEntity>>());
 
-						if (!assignmentObjectTypesNumber[e.AssignmentObjectTypeID].ContainsKey(e.KeyNumber.Value)) // ensure Guid
-							assignmentObjectTypesNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value] = new List<IEntity>();
+						if (!metadataForNumber[e.AssignmentObjectTypeID].ContainsKey(e.KeyNumber.Value)) // ensure Guid
+							metadataForNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value]).Add(entityModel);
+						((List<IEntity>)metadataForNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value]).Add(entityModel);
 					}
 					if (!string.IsNullOrEmpty(e.KeyString))
 					{
-						if (!assignmentObjectTypesString.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-							assignmentObjectTypesString.Add(e.AssignmentObjectTypeID, new Dictionary<string, IEnumerable<IEntity>>());
+						if (!metadataForString.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
+							metadataForString.Add(e.AssignmentObjectTypeID, new Dictionary<string, IEnumerable<IEntity>>());
 
-						if (!assignmentObjectTypesString[e.AssignmentObjectTypeID].ContainsKey(e.KeyString)) // ensure Guid
-							assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString] = new List<IEntity>();
+						if (!metadataForString[e.AssignmentObjectTypeID].ContainsKey(e.KeyString)) // ensure Guid
+							metadataForString[e.AssignmentObjectTypeID][e.KeyString] = new List<IEntity>();
 
-						((List<IEntity>)assignmentObjectTypesString[e.AssignmentObjectTypeID][e.KeyString]).Add(entityModel);
+						((List<IEntity>)metadataForString[e.AssignmentObjectTypeID][e.KeyString]).Add(entityModel);
 					}
 				}
 
@@ -562,6 +563,7 @@ namespace ToSic.Eav
 				#endregion
 
 				entities.Add(e.EntityID, entityModel);
+                entList.Add(entityModel);
 			}
 			#endregion
 
@@ -580,7 +582,7 @@ namespace ToSic.Eav
 			}
 			#endregion
 
-			return new CacheItem(entities, contentTypes, assignmentObjectTypesGuid, assignmentObjectTypesNumber, assignmentObjectTypesString, relationships);
+			return new CacheItem(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
 		}
 
 		/// <summary>

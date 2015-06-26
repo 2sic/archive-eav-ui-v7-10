@@ -12,7 +12,8 @@ namespace ToSic.Eav.DataSources.SqlSources
 		private readonly EavContext _context;
 		private bool _ready;
 
-		/// <summary>
+        #region App/Zone
+        /// <summary>
 		/// Gets the ZoneId of this DataSource
 		/// </summary>
 		public override int ZoneId
@@ -26,8 +27,9 @@ namespace ToSic.Eav.DataSources.SqlSources
 		{
 			get { return _context.AppId; }
 		}
+        #endregion
 
-		private IDictionary<int, IEntity> GetEntities()
+        private IDictionary<int, IEntity> GetEntities()
 		{
 			return _context.GetEntitiesModel(AppId, this);
 		}

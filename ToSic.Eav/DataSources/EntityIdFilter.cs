@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.EntityClient;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -23,15 +24,6 @@ namespace ToSic.Eav.DataSources
 			set { Configuration[EntityIdKey] = value; }
 		}
 
-		///// <summary>
-		///// Pass throught all Entities if EntityIds is empty
-		///// </summary>
-		//public bool PassThroughOnEmptyEntityIds
-		//{
-		//	get { return bool.Parse(Configuration[PassThroughOnEmptyEntityIdsKey]); }
-		//	set { Configuration[PassThroughOnEmptyEntityIdsKey] = value.ToString(); }
-		//}
-
 		#endregion
 
 		/// <summary>
@@ -42,46 +34,56 @@ namespace ToSic.Eav.DataSources
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
 			//Configuration.Add(PassThroughOnEmptyEntityIdsKey, "[Settings:PassThroughOnEmptyEntityIds||false]");
+
+            CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
-			EnsureConfigurationIsLoaded();
+            EnsureConfigurationIsLoaded();
 
-			#region Init EntityIds from Configuration (a String)
-			int[] entityIds;
-			try
-			{
-				var configEntityIds = Configuration["EntityIds"];
-				if (string.IsNullOrWhiteSpace(configEntityIds))
-					entityIds = new int[0];
-				else
-				{
-					var lstEntityIds = new List<int>();
-					foreach (var strEntityId in Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
-					{
-						int entityIdToAdd;
-						if (int.TryParse(strEntityId, out entityIdToAdd))
-							lstEntityIds.Add(entityIdToAdd);
-					}
+		    var entityIds = _cleanedIds;
 
-					entityIds = lstEntityIds.ToArray();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("Unable to load EntityIds from Configuration.", ex);
-			}
-			#endregion
+		    var originals = In[DataSource.DefaultStreamName].List;
 
-			var originals = In[DataSource.DefaultStreamName].List;
-
-			//if (entityIds.Length == 0 && PassThroughOnEmptyEntityIds)
-			//	return originals;
-
-			var result = entityIds.Distinct().Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
-
-			return result;
+			return entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
 		}
+
+	    private IEnumerable<int> _cleanedIds;
+
+        protected internal override void EnsureConfigurationIsLoaded()
+        {
+            base.EnsureConfigurationIsLoaded();
+
+            #region clean up list of IDs to remove all white-space etc.
+            try
+            {
+                var configEntityIds = Configuration["EntityIds"];
+                if (string.IsNullOrWhiteSpace(configEntityIds))
+                    _cleanedIds = new int[0];
+                else
+                {
+                    var lstEntityIds = new List<int>();
+                    foreach (
+                        var strEntityId in
+                            Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
+                    {
+                        int entityIdToAdd;
+                        if (int.TryParse(strEntityId, out entityIdToAdd))
+                            lstEntityIds.Add(entityIdToAdd);
+                    }
+
+                    _cleanedIds = lstEntityIds.Distinct();//.ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to load EntityIds from Configuration.", ex);
+            }
+            #endregion
+
+            EntityIds = string.Join(",", _cleanedIds.Select(i => i.ToString()).ToArray());
+        }
+
 	}
 }

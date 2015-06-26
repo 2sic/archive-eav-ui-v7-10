@@ -24,77 +24,77 @@ namespace ToSic.Eav
 		public void EnsurePipelineDesignerAttributeSets()
 		{
 			#region Define AttributeSets for DataPipeline and DataPipelinePart
-			var pipelinesAttributeSet = Import.AttributeSet.SystemAttributeSet(DataSource.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
-				new List<Import.Attribute>
+			var pipelinesAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(DataSource.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
-					Import.Attribute.StringAttribute("Description", "Description", "Short info about this pipeline, what it's for", true),
-					Import.Attribute.BooleanAttribute("AllowEdit", "Allow Edit", "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true, true),
-					Import.Attribute.StringAttribute("StreamsOut", "Streams Out", "Comma separated list of streams this pipeline offers to the target. Like 'Content, Presentation, ListContent, ListPresentation'", false),
-					Import.Attribute.StringAttribute("StreamWiring", "Stream Wiring", "List of connections between the parts of this pipeline, each connection on one line, like 6730:Default>6732:Default", false, rowCount: 10),
-					Import.Attribute.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
+					Import.ImportAttribute.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
+					Import.ImportAttribute.StringAttribute("Description", "Description", "Short info about this pipeline, what it's for", true),
+					Import.ImportAttribute.BooleanAttribute("AllowEdit", "Allow Edit", "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true, true),
+					Import.ImportAttribute.StringAttribute("StreamsOut", "Streams Out", "Comma separated list of streams this pipeline offers to the target. Like 'Content, Presentation, ListContent, ListPresentation'", false),
+					Import.ImportAttribute.StringAttribute("StreamWiring", "Stream Wiring", "List of connections between the parts of this pipeline, each connection on one line, like 6730:Default>6732:Default", false, rowCount: 10),
+					Import.ImportAttribute.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
 			});
 
-			var pipelinePartsAttributeSet = Import.AttributeSet.SystemAttributeSet(DataSource.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
-				new List<Import.Attribute>
+			var pipelinePartsAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(DataSource.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
-					Import.Attribute.StringAttribute("Description", "Description", "Notes about this item", true),
-					Import.Attribute.StringAttribute("PartAssemblyAndType", "Part Assembly and Type", "Assembly and type info to help the system find this dll etc.", true),
-					Import.Attribute.StringAttribute("VisualDesignerData", "Visual Designer Data", "Technical data for the designer so it can save it's values etc.", true),
+					Import.ImportAttribute.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
+					Import.ImportAttribute.StringAttribute("Description", "Description", "Notes about this item", true),
+					Import.ImportAttribute.StringAttribute("PartAssemblyAndType", "Part Assembly and Type", "Assembly and type info to help the system find this dll etc.", true),
+					Import.ImportAttribute.StringAttribute("VisualDesignerData", "Visual Designer Data", "Technical data for the designer so it can save it's values etc.", true),
 				});
 			#endregion
 
 			#region Define AttributeSets for DataSources Configurations
 
-			var dsrcApp = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<Import.Attribute>());
+			var dsrcApp = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<Import.ImportAttribute>());
 
-			var dsrcAttributeFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
-				new List<Import.Attribute>
+			var dsrcAttributeFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("AttributeNames", "AttributeNames", null, true),
+					Import.ImportAttribute.StringAttribute("AttributeNames", "AttributeNames", null, true),
 				});
 
-			var dsrcEntityIdFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
-				new List<Import.Attribute>
+			var dsrcEntityIdFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
+					Import.ImportAttribute.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyEntityIds", "Pass-Throught on empty EntityIds", "If this is true and EntityIds results to an empty list, all entities are passed through.", true, false),
 				});
 
-			var dsrcEntityTypeFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
-				new List<Import.Attribute>
+			var dsrcEntityTypeFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("TypeName", "TypeName", null, true),
+					Import.ImportAttribute.StringAttribute("TypeName", "TypeName", null, true),
 				});
 
-			var dsrcValueFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
-				new List<Import.Attribute>
+			var dsrcValueFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("AttributeHelperTools", "AttributeHelperTools", null, true),
-					Import.Attribute.StringAttribute("Value", "Value", null, true),
+					Import.ImportAttribute.StringAttribute("AttributeHelperTools", "AttributeHelperTools", null, true),
+					Import.ImportAttribute.StringAttribute("Value", "Value", null, true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});
 
-			var dsrcValueSort = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
-				new List<Import.Attribute>
+			var dsrcValueSort = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("Attributes", "Attributes", null, true),
-					Import.Attribute.StringAttribute("Directions", "Directions", null, true),
+					Import.ImportAttribute.StringAttribute("Attributes", "Attributes", null, true),
+					Import.ImportAttribute.StringAttribute("Directions", "Directions", null, true),
 				});
 
-			var dsrcRelationshipFilter = Import.AttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
-				new List<Import.Attribute>
+			var dsrcRelationshipFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
+				new List<Import.ImportAttribute>
 				{
-					Import.Attribute.StringAttribute("Relationship", "Relationship", null, true),
-					Import.Attribute.StringAttribute("Filter", "Filter", null, true),
+					Import.ImportAttribute.StringAttribute("Relationship", "Relationship", null, true),
+					Import.ImportAttribute.StringAttribute("Filter", "Filter", null, true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyFilter", "Pass-Throught on empty Filter", "If this is true and Filter results to an empty string, all entities are passed through.", true, false),
 				});
 
 			#endregion
 
 			// Collect AttributeSets for use in Import
-			var attributeSets = new List<Import.AttributeSet>
+			var attributeSets = new List<Import.ImportAttributeSet>
 			{
 				pipelinesAttributeSet,
 				pipelinePartsAttributeSet,

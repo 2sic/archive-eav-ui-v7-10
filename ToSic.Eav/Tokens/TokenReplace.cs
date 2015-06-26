@@ -31,6 +31,7 @@
 //namespace DotNetNuke.Services.Tokens
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -154,8 +155,14 @@ namespace ToSic.Eav.Tokens
                         string strFormat = curMatch.Result("${format}");
                         string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
                         string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
-                        if (!String.IsNullOrEmpty(strIfEmptyReplacment) && String.IsNullOrEmpty(strConversion))
-                            strConversion = strIfEmptyReplacment;
+
+                        var useFallback = string.IsNullOrEmpty(strConversion);
+                        if (useFallback)
+                            strConversion = strIfEmptyReplacment; 
+                        
+                        if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
+                            strConversion = ReplaceTokens(strConversion, repeat - 1);
+
                         Result.Append(strConversion);
                     }
                 }
@@ -165,8 +172,8 @@ namespace ToSic.Eav.Tokens
                 
                 // Ready to finish, but first, ensure repeating if desired
                 string finalResult = Result.ToString();
-                if (repeat > 0)
-                    finalResult= ReplaceTokens(finalResult, repeat - 1);
+                //if (!repeatFallbackOnly && repeat > 0)
+                //    finalResult = ReplaceTokens(finalResult, repeat - 1, repeatFallbackOnly);
                 return finalResult;
             }
 
