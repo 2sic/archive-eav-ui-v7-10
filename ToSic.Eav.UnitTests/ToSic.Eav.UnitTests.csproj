@@ -99,6 +99,9 @@
     <None Include="Files\CsvDataSource - Test Quoted Text.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Files\CsvDataSource - Test Semicolon Delimited UTF8.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Files\CsvDataSource - Test Semicolon Delimited.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
