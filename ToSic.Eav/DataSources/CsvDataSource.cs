@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Add(DelimiterKey, "[Settings:Delimiter||\t]");
             Configuration.Add(ContentTypeKey, "[Settings:ContentType||Anonymous]");
             Configuration.Add(IdColumnNameKey, "[Settings:IdColumnName]");
-            Configuration.Add(TitleColumnNameKey, "[Settings:TitleColumnName||Title]");
+            Configuration.Add(TitleColumnNameKey, "[Settings:TitleColumnName]");
             CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
         }
 
