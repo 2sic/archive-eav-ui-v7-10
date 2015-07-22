@@ -59,6 +59,9 @@ namespace ToSic.Eav.Import
 
             var transaction = _db.Connection.BeginTransaction();
 
+			// Enhance the SQL timeout for imports
+			_db.CommandTimeout = 3600;
+
             // import AttributeSets if any were included
             if (newAttributeSets != null)
             {
