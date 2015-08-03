@@ -71,7 +71,7 @@ namespace ToSic.Eav
 			var dsrcValueFilter = Import.ImportAttributeSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
 				new List<Import.ImportAttribute>
 				{
-					Import.ImportAttribute.StringAttribute("AttributeHelperTools", "AttributeHelperTools", null, true),
+					Import.ImportAttribute.StringAttribute("Attribute", "Attribute", null, true),
 					Import.ImportAttribute.StringAttribute("Value", "Value", null, true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});

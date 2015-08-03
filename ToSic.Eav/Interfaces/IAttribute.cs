@@ -3,27 +3,27 @@
 namespace ToSic.Eav
 {
 	/// <summary>
-	/// Represents an AttributeHelperTools
+	/// Represents an Attribute
 	/// </summary>
 	public interface IAttributeBase
 	{
 		/// <summary>
-		/// Name of the AttributeHelperTools
+		/// Name of the Attribute
 		/// </summary>
 		string Name { get; }
 		/// <summary>
-		/// Type of the AttributeHelperTools
+		/// Type of the Attribute
 		/// </summary>
 		string Type { get; }
 	}
 
 	/// <summary>
-	/// Represents an AttributeHelperTools with Values
+	/// Represents an Attribute with Values
 	/// </summary>
 	public interface IAttribute : IAttributeBase
 	{
 		/// <summary>
-		/// Gets a IEnumerable of all Values of this Entity's AttributeHelperTools
+		/// Gets a IEnumerable of all Values of this Entity's Attribute
 		/// </summary>
 		IEnumerable<IValue> Values { get; }
 		/// <summary>
@@ -45,7 +45,7 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an AttributeHelperTools of a Generic Type
+	/// Represents an Attribute of a Generic Type
 	/// </summary>
 	/// <typeparam name="T">Type of the Value</typeparam>
 	public interface IAttribute<T> : IAttribute
@@ -85,24 +85,24 @@ namespace ToSic.Eav
 	}
 
 	/// <summary>
-	/// Represents an AttributeHelperTools for management purposes
+	/// Represents an Attribute for management purposes
 	/// </summary>
 	public interface IAttributeManagement : IAttribute
 	{
 		/// <summary>
-		/// Gets or sets whether the AttributeHelperTools is the Title AttributeHelperTools in the AttributeHelperTools Set
+		/// Gets or sets whether the Attribute is the Title Attribute in the Attribute Set
 		/// </summary>
 		bool IsTitle { get; set; }
 		/// <summary>
-		/// Sets the Name of the AttributeHelperTools
+		/// Sets the Name of the Attribute
 		/// </summary>
 		new string Name { set; }
 		/// <summary>
-		/// Sets the Type of the AttributeHelperTools
+		/// Sets the Type of the Attribute
 		/// </summary>
 		new string Type { set; }
 		/// <summary>
-		/// Sets the Values of this AttributeHelperTools
+		/// Sets the Values of this Attribute
 		/// </summary>
 		new IEnumerable<IValue> Values { set; }
 		/// <summary>

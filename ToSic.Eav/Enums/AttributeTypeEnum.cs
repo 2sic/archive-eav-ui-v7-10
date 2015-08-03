@@ -1,21 +1,21 @@
 ﻿namespace ToSic.Eav
 {
 	/// <summary>
-	/// AttributeHelperTools Type Enum
+	/// Attribute Type Enum
 	/// </summary>
 	public enum AttributeTypeEnum
 	{
 		/// <summary>Boolean Attribute Type</summary>
 		Boolean,
-		/// <summary>DateTime AttributeHelperTools Type</summary>
+		/// <summary>DateTime Attribute Type</summary>
 		DateTime,
-		/// <summary>Entity AttributeHelperTools Type</summary>
+		/// <summary>Entity Attribute Type</summary>
 		Entity,
-		/// <summary>Hyperlink AttributeHelperTools Type</summary>
+		/// <summary>Hyperlink Attribute Type</summary>
 		Hyperlink,
-		/// <summary>Number AttributeHelperTools Type</summary>
+		/// <summary>Number Attribute Type</summary>
 		Number,
-		/// <summary>String AttributeHelperTools Type</summary>
+		/// <summary>String Attribute Type</summary>
 		String
 	}
 }

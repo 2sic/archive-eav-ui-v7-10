@@ -39,7 +39,7 @@ namespace ToSic.Eav.Data
 		}
 
 		/// <summary>
-		/// Get Children of a specified AttributeHelperTools Name
+		/// Get Children of a specified Attribute Name
 		/// </summary>
 		public ChildEntities Children
 		{
@@ -63,9 +63,9 @@ namespace ToSic.Eav.Data
 			}
 
 			/// <summary>
-			/// Get Children of a specified AttributeHelperTools Name
+			/// Get Children of a specified Attribute Name
 			/// </summary>
-			/// <param name="attributeName">AttributeHelperTools Name</param>
+			/// <param name="attributeName">Attribute Name</param>
 			public IEnumerable<IEntity> this[string attributeName]
 			{
 				get

@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Data
 {
 	///// <summary>
-	///// Extended AttributeHelperTools Model for internal Cache
+	///// Extended Attribute Model for internal Cache
 	///// </summary>
 	//internal class AttributeDefinition : AttributeBase
 	//{

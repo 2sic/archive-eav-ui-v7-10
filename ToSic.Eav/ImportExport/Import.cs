@@ -132,15 +132,15 @@ namespace ToSic.Eav.Import
             {
                 Eav.Attribute destinationAttribute;
                 var isNewAttribute = false;
-                try	// try to add new AttributeHelperTools
+                try	// try to add new Attribute
                 {
                     var isTitle = importAttribute == importAttributeSet.TitleAttribute;
                     destinationAttribute = _db.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
                     isNewAttribute = true;
                 }
-                catch (ArgumentException ex)	// AttributeHelperTools already exists
+				catch (ArgumentException ex)	// Attribute already exists
                 {
-                    _importLog.Add(new LogItem(EventLogEntryType.Warning, "AttributeHelperTools already exists") { ImportAttribute = importAttribute, Exception = ex });
+					_importLog.Add(new LogItem(EventLogEntryType.Warning, "Attribute already exists") { ImportAttribute = importAttribute, Exception = ex });
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 

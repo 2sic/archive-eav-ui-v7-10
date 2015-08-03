@@ -86,7 +86,7 @@ namespace ToSic.Eav.Data
 			}
 			catch (KeyNotFoundException)
 			{
-				throw new KeyNotFoundException(string.Format("The Title AttributeHelperTools with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
+				throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
 			}
 			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
 			IsPublished = true;

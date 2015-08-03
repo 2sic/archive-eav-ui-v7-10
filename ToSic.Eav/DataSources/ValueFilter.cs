@@ -9,14 +9,14 @@ using ToSic.Eav.DataSources.Exceptions;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Return only Entities having a specific value in an AttributeHelperTools
+	/// Return only Entities having a specific value in an Attribute
 	/// </summary>
 	[PipelineDesigner]
 	public class ValueFilter : BaseDataSource
 	{
 		#region Configuration-properties
 
-		private const string AttrKey = "AttributeHelperTools";
+		private const string AttrKey = "Attribute";
 		private const string FilterKey = "Value";
 		private const string LangKey = "Language";
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
 		public ValueFilter()
 		{
 			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetEntities));
-			Configuration.Add(AttrKey, "[Settings:AttributeHelperTools]");
+			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 

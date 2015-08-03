@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the Title AttributeHelperTools of the Source DataTable
+		/// Gets or sets the Name of the Title Attribute of the Source DataTable
 		/// </summary>
 		public string TitleField
 		{
