@@ -107,6 +107,8 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="EAV\FormlyEditUI\Controller.js" />
+    <Content Include="EAV\FormlyEditUI\EditEntity.html" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
@@ -238,6 +240,7 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\API\EntitiesController.cs" />
+    <Compile Include="EAV\FormlyEditUI\ContentTypeController.cs" />
     <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
       <DependentUpon>PipelineManagement.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

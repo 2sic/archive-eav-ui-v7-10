@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		IContentType GetContentType(string name);
 		/// <summary>
-		/// Gets a GeontentType by Id
+		/// Gets a ContentType by Id
 		/// </summary>
 		IContentType GetContentType(int contentTypeId);
 

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+</head>
+<body ng-app="formlyExample" ng-controller="MainCtrl as vm">
+
+	<div style="margin:20px;">
+		<form ng-submit="vm.onSubmit()" novalidate>
+			<formly-form model="vm.model" fields="vm.formFields">
+				<button type="submit" class="btn btn-primary submit-button">Submit</button>
+			</formly-form>
+		</form>
+		<h3>Form Data</h3>
+		<pre>{{vm.model | json}}</pre>
+		<pre>{{vm.debug | json}}</pre>
+	</div>
+
+	<!-- Put custom templates here -->
+	<script type="text/ng-template" id="custom.html">
+		<div class="form-group">
+			<label for="{{::id}}">{{options.templateOptions.label}}</label>
+			<input id="{{::id}}" name="{{::id}}" class="form-control" ng-model="model[options.key]" />
+		</div>
+	</script>
+	<script type="text/ng-template" id="example-directive.html">
+		<div class="form-group">
+			<label for="{{::id}}">{{options.templateOptions.label}}</label>
+			<input id="{{::id}}" name="{{::id}}" class="form-control" ng-model="model[options.key]" />
+		</div>
+	</script>
+
+	<link rel="stylesheet" href="/CSS/bootstrap.min.css" />
+	<link rel="stylesheet" href="/CSS/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="/Scripts/toaster.css" />
+	<script src="/Scripts/angular.min.js"></script>
+	<script src="/Scripts/angular-resource.min.js"></script>
+	<script src="/Scripts/angular-animate.min.js"></script>
+	<script src="/Scripts/toaster.js"></script>
+	<script src="Controller.js"></script>
+
+	<!-- apiCheck is used by formly to validate its api -->
+	<script src="//rawgit.com/kentcdodds/apiCheck.js/master/dist/api-check.js"></script>
+	<!-- This is the current state of master for formly core. -->
+	<script src="//rawgit.com/formly-js/angular-formly/master/dist/formly.js"></script>
+	<!-- This is the current state of master for the bootstrap templates -->
+	<script src="//rawgit.com/formly-js/angular-formly-templates-bootstrap/master/dist/angular-formly-templates-bootstrap.js"></script>
+
+
+</body>
+</html>
