@@ -14,6 +14,7 @@
 		<h3>Form Data</h3>
 		<pre>{{vm.model | json}}</pre>
 		<pre>{{vm.debug | json}}</pre>
+		<pre>{{vm.formFields | json}}</pre>
 	</div>
 
 	<!-- Put custom templates here -->
@@ -40,11 +41,11 @@
 	<script src="Controller.js"></script>
 
 	<!-- apiCheck is used by formly to validate its api -->
-	<script src="//rawgit.com/kentcdodds/apiCheck.js/master/dist/api-check.js"></script>
+	<script src="lib/api-check.js"></script>
 	<!-- This is the current state of master for formly core. -->
-	<script src="//rawgit.com/formly-js/angular-formly/master/dist/formly.js"></script>
+	<script src="lib/formly.min.js"></script>
 	<!-- This is the current state of master for the bootstrap templates -->
-	<script src="//rawgit.com/formly-js/angular-formly-templates-bootstrap/master/dist/angular-formly-templates-bootstrap.js"></script>
+	<script src="lib/angular-formly-templates-bootstrap.min.js"></script>
 
 
 </body>

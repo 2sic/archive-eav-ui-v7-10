@@ -51,7 +51,7 @@ namespace ToSic.Eav.ManagementUI.FormlyEditUI
 			{
 				a.Type,
 				a.StaticName,
-				MetaData = eavContext.GetAttributeMetaData(a.AttributeID, metaDataZoneId, metaDataAppId, null).ToDictionary(v => v.Key, e => e.Value[0]).ToList()
+				MetaData = eavContext.GetAttributeMetaData(a.AttributeID, metaDataZoneId, metaDataAppId, null).ToDictionary(v => v.Key, e => e.Value[0])
 			});
 
 			return config;
