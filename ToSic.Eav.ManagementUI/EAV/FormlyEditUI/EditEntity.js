@@ -41,6 +41,7 @@
 
 		vm.formFields = null;
 
+		// ToDo: Path must be relative, get zone and app id from eavApp
 		$http.get('/api/eav/ContentType/GetContentTypeConfiguration?appId=1&zoneId=1&contentTypeName=' + encodeURIComponent($scope.contentTypeName))
 		.then(function (result) {
 			vm.debug = result;
@@ -73,8 +74,8 @@
 			if (!subType)
 				subType = 'default';
 
-			// Special case: override type to string-textarea if multiline field should be used
-			if (e.MetaData.RowCount > 1)
+			// Special case: override subtype for string-textarea
+			if (e.Type.toLowerCase() == 'string' && e.MetaData.RowCount > 1)
 				subType = 'textarea';
 
 			return (type + '-' + subType).toLowerCase();
