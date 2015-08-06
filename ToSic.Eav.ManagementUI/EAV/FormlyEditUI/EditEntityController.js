@@ -3,7 +3,7 @@
 	'use strict';
 
 	var outerApp = angular.module('testModule', ['eavEditEntity']);
-	outerApp.controller('outerAppController', function() {
+	outerApp.controller('outerAppController', function($q) {
 		var vm = this;
 		vm.registeredControls = [];
 		vm.registerEditControl = function(control) {
@@ -17,6 +17,16 @@
 					valid = false;
 			});
 			return valid;
+		};
+
+		vm.save = function() {
+			var savePromises = [];
+			angular.forEach(vm.registeredControls, function (e, i) {
+				savePromises.push(e.save());
+			});
+			$q.all(savePromises).then(function() {
+				alert("All save promises resolved!");
+			});
 		};
 	});
 
@@ -171,7 +181,7 @@
 
 	app.directive('eavEditEntity', function() {
 		return {
-			template: '<formly-form ng-submit="vm.onSubmit()" model="vm.model" fields="vm.formFields"><button ng-click="vm.onSubmit()" class="btn btn-primary submit-button">Submit</button></formly-form><h3>Debug</h3><pre>{{vm.model | json}}</pre><!--<pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre>-->',
+			template: '<formly-form ng-submit="vm.onSubmit()" form="vm.form" model="vm.model" fields="vm.formFields"></formly-form><h3>Debug</h3><pre>{{vm.model | json}}</pre><!--<pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre>-->',
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
@@ -190,8 +200,13 @@
 			alert(JSON.stringify(vm.model), null, 2);
 		};
 
+		vm.save = function() {
+			alert("Saving not implemented yet!");
+		};
+
 		vm.control = {
-			isValid: function () { return true; }
+			isValid: function() { return vm.form.$valid; },
+			save: vm.save
 		};
 
 		$scope.registerEditControl(vm.control);

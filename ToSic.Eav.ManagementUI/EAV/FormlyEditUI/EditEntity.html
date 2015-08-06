@@ -7,8 +7,7 @@
 
 	<div style="margin:20px;" ng-controller="outerAppController as vm">
 		<eav-edit-entity content-type-name="All Field Types" register-edit-control="vm.registerEditControl"></eav-edit-entity>
-		
-		{{vm.isValid()}}
+		<button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">Save</button>
 	</div>
 
 	<link rel="stylesheet" href="/CSS/bootstrap.min.css" />
