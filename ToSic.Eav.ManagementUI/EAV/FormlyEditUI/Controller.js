@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('formlyExample', ['formly', 'formlyBootstrap'], function config(formlyConfigProvider) {
+	var app = angular.module('formlyExample', ['formly', 'formlyBootstrap', 'ui.bootstrap'], function config(formlyConfigProvider) {
 
 		formlyConfigProvider.setType({
 			name: 'string-default',
@@ -27,7 +27,7 @@
 				if (!options.templateOptions.options && options.templateOptions.settings.DropdownValues) {
 					var o = options.templateOptions.settings.DropdownValues;
 					o = o.replace('\r', '').split('\n');
-					o = o.map(function(e, i) {
+					o = o.map(function (e, i) {
 						var s = e.split(':');
 						return {
 							name: s[0],
@@ -58,12 +58,96 @@
 			}
 		});
 
-		// ToDo: Finish number-default
 		formlyConfigProvider.setType({
 			name: 'number-default',
-			template: '<input class="form-control" ng-model="model[options.key]">',
-			wrapper: ['bootstrapLabel', 'bootstrapHasError']
+			template: '<input type="number" class="form-control" ng-model="model[options.key]">',
+			wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+			defaultOptions: {
+				ngModelAttrs: {
+					'{{to.settings.Min}}': { value: 'min' },
+					'{{to.settings.Max}}': { value: 'max' },
+					'{{to.settings.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Decimals + "})?$" : null}}': { value: 'pattern' }
+				}
+			}
 		});
+
+		formlyConfigProvider.setType({
+			name: 'boolean-default',
+			template: "<div class=\"checkbox\">\n\t<label>\n\t\t<input type=\"checkbox\"\n           class=\"formly-field-checkbox\"\n\t\t       ng-model=\"model[options.key]\">\n\t\t{{to.label}}\n\t\t{{to.required ? '*' : ''}}\n\t</label>\n</div>\n",
+			wrapper: ['bootstrapHasError']
+		});
+
+
+		/* Control: datetime-default */
+		var attributes = [
+			'date-disabled',
+			'custom-class',
+			'show-weeks',
+			'starting-day',
+			'init-date',
+			'min-mode',
+			'max-mode',
+			'format-day',
+			'format-month',
+			'format-year',
+			'format-day-header',
+			'format-day-title',
+			'format-month-title',
+			'year-range',
+			'shortcut-propagation',
+			'datepicker-popup',
+			'show-button-bar',
+			'current-text',
+			'clear-text',
+			'close-text',
+			'close-on-date-selection',
+			'datepicker-append-to-body'
+		];
+
+		var bindings = [
+		  'datepicker-mode',
+		  'min-date',
+		  'max-date'
+		];
+
+		var ngModelAttrs = {};
+
+		angular.forEach(attributes, function (attr) {
+			ngModelAttrs[camelize(attr)] = { attribute: attr };
+		});
+
+		angular.forEach(bindings, function (binding) {
+			ngModelAttrs[camelize(binding)] = { bound: binding };
+		});
+
+		formlyConfigProvider.setType({
+			name: 'datetime-default',
+			wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+			template: '<input class="form-control" ng-model="model[options.key]" is-open="to.isOpen" datepicker-options="to.datepickerOptions" />',
+			defaultOptions: {
+				ngModelAttrs: ngModelAttrs,
+				templateOptions: {
+					addonLeft: {
+						'class': 'glyphicon glyphicon-calendar',
+						onClick: function (options, scope) {
+							scope.to.isOpen = true;
+						}
+					},
+					datepickerOptions: {},
+					datepickerPopup: 'dd.MM.yyyy'
+				}
+			}
+		});
+
+		function camelize(string) {
+			string = string.replace(/[\-_\s]+(.)?/g, function(match, chr) {
+				return chr ? chr.toUpperCase() : '';
+			});
+			// Ensure 1st char is always lowercase
+			return string.replace(/^([A-Z])/, function(match, chr) {
+				return chr ? chr.toLowerCase() : '';
+			});
+		}
 
 	});
 
@@ -83,7 +167,7 @@
 			vm.debug = result;
 
 			// Transform EAV content type configuration to formFields
-			angular.forEach(result.data, function (e,i) {
+			angular.forEach(result.data, function (e, i) {
 				vm.formFields.push({
 					key: e.StaticName,
 					type: getType(e),
@@ -94,7 +178,7 @@
 						settings: e.MetaData
 					},
 					hide: (e.MetaData.VisibleInEditUI ? !e.MetaData.VisibleInEditUI : false),
-					defaultValue: e.MetaData.DefaultValue
+					defaultValue: convertDefaultValue(e)
 				});
 			});
 
@@ -115,6 +199,23 @@
 				subType = 'textarea';
 
 			return (type + '-' + subType).toLowerCase();
+		}
+
+		// Returns a typed default value from the string representation
+		function convertDefaultValue(attributeConfiguration) {
+			var e = attributeConfiguration;
+
+			if (!e.MetaData.DefaultValue)
+				return null;
+
+			switch (e.Type.toLowerCase()) {
+				case 'boolean':
+					return e.MetaData.DefaultValue.toLowerCase() == 'true';
+				case 'datetime':
+					return new Date(e.MetaData.DefaultValue);
+				default:
+					return e.MetaData.DefaultValue;
+			}
 		}
 
 	});
