@@ -110,10 +110,11 @@
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.js" />
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.min.js" />
     <Content Include="EAV\FormlyEditUI\lib\api-check.js" />
-    <Content Include="EAV\FormlyEditUI\Controller.js" />
+    <Content Include="EAV\FormlyEditUI\EditEntityController.js" />
     <Content Include="EAV\FormlyEditUI\EditEntity.html" />
     <Content Include="EAV\FormlyEditUI\lib\formly.js" />
     <Content Include="EAV\FormlyEditUI\lib\formly.min.js" />
+    <Content Include="EAV\FormlyEditUI\lib\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />

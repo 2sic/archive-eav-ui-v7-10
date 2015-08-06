@@ -2,7 +2,25 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('formlyExample', ['formly', 'formlyBootstrap', 'ui.bootstrap'], function config(formlyConfigProvider) {
+	var outerApp = angular.module('testModule', ['eavEditEntity']);
+	outerApp.controller('outerAppController', function() {
+		var vm = this;
+		vm.registeredControls = [];
+		vm.registerEditControl = function(control) {
+			vm.registeredControls.push(control);
+		};
+
+		vm.isValid = function() {
+			var valid = true;
+			angular.forEach(vm.registeredControls, function (e, i) {
+				if (!e.isValid())
+					valid = false;
+			});
+			return valid;
+		};
+	});
+
+	var app = angular.module('eavEditEntity', ['formly', 'formlyBootstrap', 'ui.bootstrap'], function config(formlyConfigProvider) {
 
 		formlyConfigProvider.setType({
 			name: 'string-default',
@@ -151,18 +169,38 @@
 
 	});
 
+	app.directive('eavEditEntity', function() {
+		return {
+			template: '<formly-form ng-submit="vm.onSubmit()" model="vm.model" fields="vm.formFields"><button ng-click="vm.onSubmit()" class="btn btn-primary submit-button">Submit</button></formly-form><h3>Debug</h3><pre>{{vm.model | json}}</pre><!--<pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre>-->',
+			restrict: 'E',
+			scope: {
+				contentTypeName: '@contentTypeName',
+				registerEditControl: '=registerEditControl'
+			},
+			controller: 'MainCtrl',
+			controllerAs: 'vm',
+			//link: function (scope, element, attrs) {
+			//}
+		};
+	});
 
-	app.controller('MainCtrl', function MainCtrl($http) {
+	app.controller('MainCtrl', function MainCtrl($http, $scope) {
 		var vm = this;
 		vm.onSubmit = function onSubmit() {
 			alert(JSON.stringify(vm.model), null, 2);
 		};
 
+		vm.control = {
+			isValid: function () { return true; }
+		};
+
+		$scope.registerEditControl(vm.control);
+
 		vm.model = {};
 
 		vm.formFields = null;
 
-		$http.get('/api/eav/ContentType/GetContentTypeConfiguration?appId=1&zoneId=1&contentTypeName=All Field Types')
+		$http.get('/api/eav/ContentType/GetContentTypeConfiguration?appId=1&zoneId=1&contentTypeName=' + encodeURIComponent($scope.contentTypeName))
 		.then(function (result) {
 			vm.debug = result;
 
