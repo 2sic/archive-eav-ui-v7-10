@@ -123,9 +123,11 @@
     <Compile Include="ImportExport\XmlExport.cs" />
     <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="Data\Entity.cs" />
+    <Compile Include="Persistence\AttributeSet_Partial.cs" />
     <Compile Include="Persistence\DbAttributeSet.cs" />
     <Compile Include="Persistence\DbLoadForCaching.cs" />
     <Compile Include="Persistence\DbShortcuts.cs" />
+    <Compile Include="Persistence\DbVersioning.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">
       <DependentUpon>EavContext.edmx</DependentUpon>

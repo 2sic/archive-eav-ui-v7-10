@@ -8,7 +8,6 @@ using System.Data;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence;
@@ -31,6 +30,8 @@ namespace ToSic.Eav
 	        }
 	    }
 
+        public DbVersioning Versioning { get; private set; }
+
 	    #endregion
 
         #region Static Fields
@@ -44,21 +45,7 @@ namespace ToSic.Eav
 		public static string AttributeStaticNameRegExNotes = "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
 		#endregion
 
-		#region Constants
-        ///// <summary>
-        ///// Name of the Default App in all Zones
-        ///// </summary>
-        //public const string DefaultAppName = "Default";
-        ///// <summary>
-        ///// Default Entity AssignmentObjectTypeId
-        ///// </summary>
-        //public const int DefaultAssignmentObjectTypeId = 1;
-		// private const string CultureSystemKey = "Culture";
-        ///// <summary>
-        ///// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
-        ///// </summary>
-        //private const string DataTimelineEntityStateOperation = "s";
-		#endregion
+
 
 		#region Private Fields
 		public int _appId;
@@ -66,7 +53,7 @@ namespace ToSic.Eav
 		/// <summary>caches all AttributeSets for each App</summary>
 		internal readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 		/// <summary>SaveChanges() assigns all Changes to this ChangeLog</summary>
-		internal int _mainChangeLogId;
+		public int MainChangeLogId;
 		internal bool _purgeCacheOnSave = true;
 		private readonly List<EntityRelationshipQueueItem> _entityRelationshipsQueue = new List<EntityRelationshipQueueItem>();
 		#endregion
@@ -113,7 +100,9 @@ namespace ToSic.Eav
 		private static EavContext Instance()
 		{
 			var connectionString = Configuration.GetConnectionString();
-			return new EavContext(connectionString);
+			var x = new EavContext(connectionString);
+            x.Versioning = new DbVersioning(x);
+		    return x;
 		}
 
 		/// <summary>
@@ -210,7 +199,7 @@ namespace ToSic.Eav
                     throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
             }
 
-            var changeId = GetChangeLogId();
+            var changeId = Versioning.GetChangeLogId();
 
             var newEntity = new Entity
             {
@@ -268,7 +257,7 @@ namespace ToSic.Eav
 			if (target.Values.Any())
 			{
 				foreach (var eavValue in target.Values)
-					eavValue.ChangeLogIDDeleted = GetChangeLogId();
+                    eavValue.ChangeLogIDDeleted = Versioning.GetChangeLogId();
 			}
 
 			// Add all Values with Dimensions
@@ -301,7 +290,7 @@ namespace ToSic.Eav
 		/// </summary>
 		private EavValue AddValue(Entity entity, int attributeId, string value, bool autoSave = true)
 		{
-			var changeId = GetChangeLogId();
+            var changeId = Versioning.GetChangeLogId();
 
 			var newValue = new EavValue
 			{
@@ -374,7 +363,7 @@ namespace ToSic.Eav
 			{
 				Type = type,
 				StaticName = staticName,
-				ChangeLogIDCreated = GetChangeLogId()
+                ChangeLogIDCreated = Versioning.GetChangeLogId()
 			};
 			var setAssignment = new AttributeInSet
 			{
@@ -429,7 +418,7 @@ namespace ToSic.Eav
                 StaticName = staticName,
                 Description = description,
                 Scope = scope,
-                ChangeLogIDCreated = GetChangeLogId(),
+                ChangeLogIDCreated = Versioning.GetChangeLogId(),
                 AppID = targetAppId
             };
 
@@ -521,15 +510,15 @@ namespace ToSic.Eav
 			if (!entity.IsPublished && isPublished)
 			{
 				if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-					SaveEntityToDataTimeline(entity);
+					Versioning.SaveEntityToDataTimeline(entity);
 				entity = PublishEntity(entityId, false);
 			}
 
-			entity.ChangeLogIDModified = GetChangeLogId();
+            entity.ChangeLogIDModified = Versioning.GetChangeLogId();
 
 			SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
-			SaveEntityToDataTimeline(entity);
+			Versioning.SaveEntityToDataTimeline(entity);
 
 			return entity;
 		}
@@ -578,7 +567,7 @@ namespace ToSic.Eav
 					// Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
 					// if yes, delete/invalidate the value
 					if (valueToPurge.ValuesDimensions.Count == 1)
-						valueToPurge.ChangeLogIDDeleted = GetChangeLogId();
+                        valueToPurge.ChangeLogIDDeleted = Versioning.GetChangeLogId();
 					// if now, remove dimension from Value
 					else
 					{
@@ -668,7 +657,7 @@ namespace ToSic.Eav
             //var valuesToDelete = currentEntity.Values.Where(
             //    v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null 
             //        && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
-			valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = GetChangeLogId());
+            valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = Versioning.GetChangeLogId());
 		}
 
 		/// <summary>
@@ -806,7 +795,7 @@ namespace ToSic.Eav
 		private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<Import.ValueDimension> valueDimensions = null)
 		{
 			var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
-			var changeId = GetChangeLogId();
+            var changeId = Versioning.GetChangeLogId();
 
 			// Get Value or create new one
 			var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, entityModel, newValueSerialized, changeId, valueDimensions);
@@ -930,24 +919,7 @@ namespace ToSic.Eav
 			return value;
 		}
 
-        ///// <summary>
-        ///// Serialize Value to a String for SQL Server or XML Export
-        ///// </summary>
-        //public static string SerializeValue(object newValue)
-        //{
-        //    string newValueSerialized;
-        //    if (newValue is DateTime)
-        //        newValueSerialized = ((DateTime)newValue).ToString("s");
-        //    else if (newValue is double)
-        //        newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
-        //    else if (newValue is decimal)
-        //        newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
-        //    else if (newValue == null)
-        //        newValueSerialized = string.Empty;
-        //    else
-        //        newValueSerialized = newValue.ToString();
-        //    return newValueSerialized;
-        //}
+
 
 		/// <summary>
 		/// Serialize Value to a String for SQL Server or XML Export
@@ -1063,8 +1035,8 @@ namespace ToSic.Eav
 				throw new Exception("SaveChanges with AppId 0 not allowed.");
 
 			// enure changelog exists and is set to SQL CONTEXT_INFO variable
-			if (_mainChangeLogId == 0)
-				GetChangeLogId(UserName);
+			if (MainChangeLogId == 0)
+                Versioning.GetChangeLogId(UserName);
 
 			var modifiedItems = base.SaveChanges(options);
 
@@ -1234,7 +1206,7 @@ namespace ToSic.Eav
 			// If entity was Published, set Deleted-Flag
 			if (entity.IsPublished)
 			{
-				entity.ChangeLogIDDeleted = GetChangeLogId();
+                entity.ChangeLogIDDeleted = Versioning.GetChangeLogId();
 				// Also delete the Draft (if any)
 				var draftEntityId = GetDraftEntityId(entity.EntityID);
 				if (draftEntityId.HasValue)
@@ -1257,113 +1229,6 @@ namespace ToSic.Eav
 		#endregion
 
 
-        //#region Apps
-
-        ///// <summary>
-        ///// Add a new App
-        ///// </summary>
-        //internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
-        //{
-        //    var newApp = new App
-        //    {
-        //        Name = name,
-        //        Zone = zone
-        //    };
-        //    AddToApps(newApp);
-
-        //    SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
-
-        //    EnsureSharedAttributeSets(newApp);
-
-        //    DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
-
-        //    return newApp;
-        //}
-
-        ///// <summary>
-        ///// Add a new App to the current Zone
-        ///// </summary>
-        ///// <param name="name">The name of the new App</param>
-        ///// <returns></returns>
-        //public App AddApp(string name)
-        //{
-        //    return AddApp(DbS.GetZone(ZoneId), name);
-        //}
-
-        ///// <summary>
-        ///// Delete an existing App with any Values and Attributes
-        ///// </summary>
-        ///// <param name="appId">AppId to delete</param>
-        //public void DeleteApp(int appId)
-        //{
-        //    // enure changelog exists and is set to SQL CONTEXT_INFO variable
-        //    if (_mainChangeLogId == 0)
-        //        GetChangeLogId(UserName);
-
-        //    // Delete app using StoredProcedure
-        //    DeleteAppInternal(appId);
-
-        //    // Remove App from Global Cache
-        //    DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
-        //}
-
-        ///// <summary>
-        ///// Get all Apps in the current Zone
-        ///// </summary>
-        ///// <returns></returns>
-        //public List<App> GetApps()
-        //{
-        //    return Apps.Where(a => a.ZoneID == ZoneId).ToList();
-        //}
-
-        ///// <summary>
-        ///// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
-        ///// </summary>
-        //private void EnsureSharedAttributeSets(App app, bool autoSave = true)
-        //{
-        //    if (app.AppID == 0)
-        //        throw new Exception("App must have a valid AppID");
-
-        //    var sharedAttributeSets = DbS.GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
-        //    foreach (var sharedSet in sharedAttributeSets)
-        //    {
-        //        // Skip if attributeSet with StaticName already exists
-        //        if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
-        //            continue;
-
-        //        // create new AttributeSet
-        //        var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
-        //        newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
-        //    }
-
-        //    // Ensure new AttributeSets are created and cache is refreshed
-        //    if (autoSave)
-        //        SaveChanges();
-        //}
-
-        ///// <summary>
-        ///// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
-        ///// </summary>
-        //internal void EnsureSharedAttributeSets()
-        //{
-        //    foreach (var app in Apps)
-        //        EnsureSharedAttributeSets(app, false);
-
-        //    SaveChanges();
-        //}
-
-        //#endregion
-
-        ///// <summary>
-        ///// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
-        ///// </summary>
-        //private static Dictionary<string, ValueViewModel> DictionaryToValuesViewModel(IDictionary newValues)
-        //{
-        //    if (newValues is Dictionary<string, ValueViewModel>)
-        //        return (Dictionary<string, ValueViewModel>)newValues;
-
-        //    return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueViewModel { ReadOnly = false, Value = newValues[key] });
-        //}
 
 		#region Internal Helper Classes
 		private class EntityRelationshipQueueItem
@@ -1376,91 +1241,8 @@ namespace ToSic.Eav
 
 		#region Versioning
 
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		/// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
-		public int GetChangeLogId(string userName)
-		{
-			if (_mainChangeLogId == 0)
-			{
-				if (Connection.State != ConnectionState.Open)
-					Connection.Open();	// make sure same connection is used later
-				_mainChangeLogId = AddChangeLog(userName).Single().ChangeID;
-			}
-
-			return _mainChangeLogId;
-		}
-
-		/// <summary>
-		/// Creates a ChangeLog immediately
-		/// </summary>
-		private int GetChangeLogId()
-		{
-			return GetChangeLogId(UserName);
-		}
-
-		/// <summary>
-		/// Set ChangeLog ID on current Context and connection
-		/// </summary>
-		/// <param name="changeLogId"></param>
-		public void SetChangeLogId(int changeLogId)
-		{
-			if (_mainChangeLogId != 0)
-				throw new Exception("ChangeLogID was already set");
 
 
-			Connection.Open();	// make sure same connection is used later
-			SetChangeLogIdInternal(changeLogId);
-			_mainChangeLogId = changeLogId;
-		}
-
-		/// <summary>
-		/// Persist modified Entity to DataTimeline
-		/// </summary>
-		private void SaveEntityToDataTimeline(Entity currentEntity)
-		{
-			var export = new XmlExport(this);
-			var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
-			var timelineItem = new DataTimelineItem
-			{
-				SourceTable = "ToSIC_EAV_Entities",
-				Operation = Constants.DataTimelineEntityStateOperation,
-				NewData = entityModelSerialized.ToString(),
-				SourceGuid = currentEntity.EntityGUID,
-				SourceID = currentEntity.EntityID,
-				SysLogID = GetChangeLogId(),
-				SysCreatedDate = DateTime.Now
-			};
-			AddToDataTimeline(timelineItem);
-
-			SaveChanges();
-		}
-
-		/// <summary>
-		/// Get all Versions of specified EntityId
-		/// </summary>
-		public DataTable GetEntityVersions(int entityId)
-		{
-			// get Versions from DataTimeline
-			var entityVersions = (from d in DataTimeline
-								  join c in ChangeLogs on d.SysLogID equals c.ChangeID
-                                  where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
-								  orderby c.Timestamp descending
-								  select new { d.SysCreatedDate, c.User, c.ChangeID }).ToList();
-
-			// Generate DataTable with Version-Numbers
-			var versionNumber = entityVersions.Count;	// add version number decrement to prevent additional sorting
-			var result = new DataTable();
-			result.Columns.Add("Timestamp", typeof(DateTime));
-			result.Columns.Add("User", typeof(string));
-			result.Columns.Add("ChangeId", typeof(int));
-			result.Columns.Add("VersionNumber", typeof(int));
-			foreach (var version in entityVersions)
-				result.Rows.Add(version.SysCreatedDate, version.User, version.ChangeID, versionNumber--);	// decrement versionnumber
-
-			return result;
-		}
 
 		/// <summary>
 		/// Get an Entity in the specified Version from DataTimeline using XmlImport
@@ -1561,14 +1343,4 @@ namespace ToSic.Eav
 		#endregion
 	}
 
-	#region Ensure Static name of new AttributeSets
-	public partial class AttributeSet
-	{
-		public AttributeSet()
-		{
-			_StaticName = Guid.NewGuid().ToString();
-			_AppID = AppID;
-		}
-	}
-	#endregion
 }

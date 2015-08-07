@@ -49,7 +49,7 @@ namespace ToSic.Eav.ManagementUI
 			e.Cancel = true;
 			var setToDelete = (AttributeSet)e.Entity;
 			var db = (EavContext)e.Context;
-			setToDelete.ChangeLogIDDeleted = db.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
+			setToDelete.ChangeLogIDDeleted = db.Versioning.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
 			db.SaveChanges();
 		}
 

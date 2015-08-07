@@ -9,11 +9,11 @@ namespace ToSic.Eav.Testing
 		public void GetEntityVersions()
 		{
 			var ctx = EavContext.Instance(appId: 2);
-			var allVersioned = ctx.GetEntityVersions(5449);
+			var allVersioned = ctx.Versioning.GetEntityVersions(5449);
 
-			var unchanged = ctx.GetEntityVersions(330);
+			var unchanged = ctx.Versioning.GetEntityVersions(330);
 
-			var partlyVersioned = ctx.GetEntityVersions(329);
+			var partlyVersioned = ctx.Versioning.GetEntityVersions(329);
 
 			const int defaultCultureDimension = 5;
 

@@ -66,7 +66,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void dsrcAttributeSet_Inserting(object sender, EntityDataSourceChangingEventArgs e)
 		{
 			var newSet = (AttributeSet)e.Entity;
-			newSet.ChangeLogIDCreated = DB.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
+			newSet.ChangeLogIDCreated = DB.Versioning.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
 			newSet.Scope = Scope;
             newSet.AppID = AppId ?? Constants.MetaDataAppId;
 		}

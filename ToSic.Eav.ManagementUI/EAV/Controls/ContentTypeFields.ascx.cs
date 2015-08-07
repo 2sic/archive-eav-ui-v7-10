@@ -195,7 +195,7 @@ namespace ToSic.Eav.ManagementUI
 			var values = new Dictionary<string, ValueViewModel> { { "Name", new ValueViewModel { Value = insertedAttribute.StaticName } } };
 
 			var dbMetaData = EavContext.Instance(Db.ZoneId, Db.AppId);
-			dbMetaData.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);
+			dbMetaData.Versioning.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);
 			dbMetaData.UserName = HttpContext.Current.User.Identity.Name;
 			dbMetaData.UpdateFieldAdditionalProperties(insertedAttribute.AttributeID, true, values);
 			#endregion
