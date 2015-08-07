@@ -1247,22 +1247,25 @@ namespace ToSic.Eav
 		/// <returns>Dictionary with ZoneId as Key and ZoneModel</returns>
 		public Dictionary<int, Data.Zone> GetAllZones()
 		{
-			var zones = (from z in Zones
-						 select
-							 new
-							 {
-								 ZoneId = z.ZoneID,
-								 DefaultAppId = z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
-								 Apps = from a in z.Apps select new { a.AppID, a.Name }
-							 }).ToDictionary(z => z.ZoneId,
-												 z =>
-												 new Data.Zone
-												 {
-													 ZoneId = z.ZoneId,
-													 Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),
-													 DefaultAppId = z.DefaultAppId
-												 });
-
+            //var zones = (from z in Zones
+            //             select
+            //                 new
+            //                 {
+            //                     ZoneId = z.ZoneID,
+            //                     DefaultAppId = z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
+            //                     Apps = from a in z.Apps select new { a.AppID, a.Name }
+            //                 }).ToDictionary(z => z.ZoneId,
+            //                                     z =>
+            //                                     new Data.Zone
+            //                                     {
+            //                                         ZoneId = z.ZoneId,
+            //                                         Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),
+            //                                         DefaultAppId = z.DefaultAppId
+            //                                     });
+		    var zones = Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
+                        z.ZoneID, 
+                        z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
+                        z.Apps.ToDictionary(a => a.AppID, a => a.Name)));
 			return zones;
 		}
 

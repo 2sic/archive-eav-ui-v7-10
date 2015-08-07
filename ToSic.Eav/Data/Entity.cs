@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -44,7 +45,7 @@ namespace ToSic.Eav.Data
         /// Relationship-helper object, important to navigate to children and parents
         /// </summary>
 		[ScriptIgnore]
-		public RelationshipManager Relationships { get; internal set; }
+		public IRelationshipManager Relationships { get; internal set; }
         /// <summary>
         /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
         /// </summary>

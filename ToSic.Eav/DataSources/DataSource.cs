@@ -131,7 +131,7 @@ namespace ToSic.Eav
 				newDs.ConfigurationProvider = valueCollectionProvider;
 		}
 
-		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav" };
+		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
 		/// <summary>
 		/// Gets a DataSource with Pipeline having PublishingFilter, ICache and IRootSource.
 		/// </summary>
@@ -174,7 +174,7 @@ namespace ToSic.Eav
 		/// <returns>A new ICache</returns>
 		public static ICache GetCache(int zoneId, int? appId = null)
 		{
-			return (ICache)GetDataSource("ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav", zoneId, appId);
+			return (ICache)GetDataSource("ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", zoneId, appId);
 		}
 
 		/// <summary>
