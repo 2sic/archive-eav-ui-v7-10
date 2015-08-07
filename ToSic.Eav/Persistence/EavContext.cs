@@ -11,13 +11,30 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
 {
 	public partial class EavContext
-	{
-		#region Static Fields
-		/// <summary>
+    {
+        #region Extracted, now externalized objects with actions
+
+	    private DbShortcuts _dbs;
+
+	    private DbShortcuts DbS
+	    {
+	        get
+	        {
+	            if(_dbs == null)
+                    _dbs = new DbShortcuts(this);
+	            return _dbs;
+	        }
+	    }
+
+	    #endregion
+
+        #region Static Fields
+        /// <summary>
 		/// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
 		/// </summary>
 		public static string AttributeStaticNameRegEx = "^[_a-zA-Z]{1}[_a-zA-Z0-9]*";
@@ -44,13 +61,13 @@ namespace ToSic.Eav
 		#endregion
 
 		#region Private Fields
-		private int _appId;
-		private int _zoneId;
+		public int _appId;
+		internal int _zoneId;
 		/// <summary>caches all AttributeSets for each App</summary>
-		private readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+		internal readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 		/// <summary>SaveChanges() assigns all Changes to this ChangeLog</summary>
-		private int _mainChangeLogId;
-		private bool _purgeCacheOnSave = true;
+		internal int _mainChangeLogId;
+		internal bool _purgeCacheOnSave = true;
 		private readonly List<EntityRelationshipQueueItem> _entityRelationshipsQueue = new List<EntityRelationshipQueueItem>();
 		#endregion
 
@@ -189,7 +206,7 @@ namespace ToSic.Eav
 			// Prevent duplicate add of FieldProperties
 			if (assignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
 			{
-				if (GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber, null, null).Any(e => e.AttributeSetID == attributeSetId))
+				if (DbS.GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
 					throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber));
 			}
 
@@ -395,37 +412,37 @@ namespace ToSic.Eav
 			return AddAttributeSet(name, description, staticName, scope, autoSave, null);
 		}
 
-		private AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
-		{
-			if (string.IsNullOrEmpty(staticName))
-				staticName = Guid.NewGuid().ToString();
+        private AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
+        {
+            if (string.IsNullOrEmpty(staticName))
+                staticName = Guid.NewGuid().ToString();
 
-			var targetAppId = appId.HasValue ? appId.Value : _appId;
+            var targetAppId = appId.HasValue ? appId.Value : _appId;
 
-			// ensure AttributeSet with StaticName doesn't exist on App
-			if (AttributeSetExists(staticName, targetAppId))
-				throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
+            // ensure AttributeSet with StaticName doesn't exist on App
+            if (AttributeSetExists(staticName, targetAppId))
+                throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
 
-			var newSet = new AttributeSet
-			{
-				Name = name,
-				StaticName = staticName,
-				Description = description,
-				Scope = scope,
-				ChangeLogIDCreated = GetChangeLogId(),
-				AppID = targetAppId
-			};
+            var newSet = new AttributeSet
+            {
+                Name = name,
+                StaticName = staticName,
+                Description = description,
+                Scope = scope,
+                ChangeLogIDCreated = GetChangeLogId(),
+                AppID = targetAppId
+            };
 
-			AddToAttributeSets(newSet);
+            AddToAttributeSets(newSet);
 
-			if (_contentTypes.ContainsKey(_appId))
-				_contentTypes.Remove(_appId);
+            if (_contentTypes.ContainsKey(_appId))
+                _contentTypes.Remove(_appId);
 
-			if (autoSave)
-				SaveChanges();
+            if (autoSave)
+                SaveChanges();
 
-			return newSet;
-		}
+            return newSet;
+        }
 
 		#endregion
 
@@ -444,7 +461,7 @@ namespace ToSic.Eav
         /// <returns>the updated Entity</returns>
         public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
         {
-            var entity = GetEntity(entityGuid);
+            var entity = DbS.GetEntity(entityGuid);
             return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
         }
 
@@ -532,7 +549,7 @@ namespace ToSic.Eav
 		private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
 		{
 			var entityModel = entity.EntityID != 0 ? GetEntityModel(entity.EntityID) : null;
-			var newValuesTyped = DictionaryToValuesViewModel(newValues);
+			var newValuesTyped = Persistence.HelpersToRefactor.DictionaryToValuesViewModel(newValues);
 			foreach (var newValue in newValuesTyped)
 			{
 				var attribute = attributes.Single(a => a.StaticName == newValue.Key);
@@ -671,7 +688,7 @@ namespace ToSic.Eav
 		/// <returns>The published Entity</returns>
 		internal Entity PublishEntity(int entityId, bool autoSave = true)
 		{
-			var unpublishedEntity = GetEntity(entityId);
+			var unpublishedEntity = DbS.GetEntity(entityId);
 			if (unpublishedEntity.IsPublished)
 				throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
 
@@ -686,7 +703,7 @@ namespace ToSic.Eav
 			// Replace currently published Entity with draft Entity and delete the draft
 			else
 			{
-				publishedEntity = GetEntity(unpublishedEntity.PublishedEntityId.Value);
+				publishedEntity = DbS.GetEntity(unpublishedEntity.PublishedEntityId.Value);
 				CloneEntityValues(unpublishedEntity, publishedEntity);
 
 				// delete the Draft Entity
@@ -757,7 +774,7 @@ namespace ToSic.Eav
 			var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
 			foreach (var entityGuid in guidIds.ToList())
 			{
-				var firstEntityId = GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
+				var firstEntityId = DbS.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
 				if (firstEntityId != null)
 					guidIds[entityGuid.Key] = firstEntityId;
 			}
@@ -788,7 +805,7 @@ namespace ToSic.Eav
 		/// </summary>
 		private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<Import.ValueDimension> valueDimensions = null)
 		{
-			var newValueSerialized = SerializeValue(newValue);
+			var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
 			var changeId = GetChangeLogId();
 
 			// Get Value or create new one
@@ -913,24 +930,24 @@ namespace ToSic.Eav
 			return value;
 		}
 
-		/// <summary>
-		/// Serialize Value to a String for SQL Server or XML Export
-		/// </summary>
-		public static string SerializeValue(object newValue)
-		{
-			string newValueSerialized;
-			if (newValue is DateTime)
-				newValueSerialized = ((DateTime)newValue).ToString("s");
-			else if (newValue is double)
-				newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
-			else if (newValue is decimal)
-				newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
-			else if (newValue == null)
-				newValueSerialized = string.Empty;
-			else
-				newValueSerialized = newValue.ToString();
-			return newValueSerialized;
-		}
+        ///// <summary>
+        ///// Serialize Value to a String for SQL Server or XML Export
+        ///// </summary>
+        //public static string SerializeValue(object newValue)
+        //{
+        //    string newValueSerialized;
+        //    if (newValue is DateTime)
+        //        newValueSerialized = ((DateTime)newValue).ToString("s");
+        //    else if (newValue is double)
+        //        newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
+        //    else if (newValue is decimal)
+        //        newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
+        //    else if (newValue == null)
+        //        newValueSerialized = string.Empty;
+        //    else
+        //        newValueSerialized = newValue.ToString();
+        //    return newValueSerialized;
+        //}
 
 		/// <summary>
 		/// Serialize Value to a String for SQL Server or XML Export
@@ -944,7 +961,7 @@ namespace ToSic.Eav
 			var relationshipValue = value as Value<Data.EntityRelationship>;
 			if (relationshipValue != null)
 			{
-				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+				var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? DbS.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
 
 				return string.Join(",", entityGuids);
 			}
@@ -1000,13 +1017,13 @@ namespace ToSic.Eav
 		{
 			foreach (var relationship in _entityRelationshipsQueue)
 			{
-				var entity = GetEntity(relationship.ParentEntityGuid);
+				var entity = DbS.GetEntity(relationship.ParentEntityGuid);
 				var childEntityIds = new List<int?>();
 				foreach (var childGuid in relationship.ChildEntityGuids)
 				{
 					try
 					{
-						childEntityIds.Add(childGuid.HasValue ? GetEntity(childGuid.Value).EntityID : new int?());
+						childEntityIds.Add(childGuid.HasValue ? DbS.GetEntity(childGuid.Value).EntityID : new int?());
 					}
 					catch (InvalidOperationException) { }	// may occur if the child entity wasn't created successfully
 				}
@@ -1169,11 +1186,11 @@ namespace ToSic.Eav
 			if (entityChild.Any())
 				messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
 
-			var assignedEntitiesFieldProperties = GetEntitiesInternal(DataSource.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
+			var assignedEntitiesFieldProperties = DbS.GetEntitiesInternal(DataSource.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
 			if (assignedEntitiesFieldProperties.Any())
 				messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
 
-			var assignedEntitiesDataPipeline = GetEntitiesInternal(DataSource.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
+			var assignedEntitiesDataPipeline = DbS.GetEntitiesInternal(DataSource.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
 			if (assignedEntitiesDataPipeline.Any())
 				messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
 
@@ -1185,7 +1202,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool DeleteEntity(int repositoryId)
 		{
-			return DeleteEntity(GetEntity(repositoryId));
+			return DeleteEntity(DbS.GetEntity(repositoryId));
 		}
 
 		/// <summary>
@@ -1193,7 +1210,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool DeleteEntity(Guid entityGuid)
 		{
-			return DeleteEntity(GetEntity(entityGuid));
+			return DeleteEntity(DbS.GetEntity(entityGuid));
 		}
 
 		/// <summary>
@@ -1414,16 +1431,16 @@ namespace ToSic.Eav
 
 		#endregion
 
-		/// <summary>
-		/// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
-		/// </summary>
-		private static Dictionary<string, ValueViewModel> DictionaryToValuesViewModel(IDictionary newValues)
-		{
-			if (newValues is Dictionary<string, ValueViewModel>)
-				return (Dictionary<string, ValueViewModel>)newValues;
+        ///// <summary>
+        ///// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
+        ///// </summary>
+        //private static Dictionary<string, ValueViewModel> DictionaryToValuesViewModel(IDictionary newValues)
+        //{
+        //    if (newValues is Dictionary<string, ValueViewModel>)
+        //        return (Dictionary<string, ValueViewModel>)newValues;
 
-			return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueViewModel { ReadOnly = false, Value = newValues[key] });
-		}
+        //    return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueViewModel { ReadOnly = false, Value = newValues[key] });
+        //}
 
 		#region Internal Helper Classes
 		private class EntityRelationshipQueueItem

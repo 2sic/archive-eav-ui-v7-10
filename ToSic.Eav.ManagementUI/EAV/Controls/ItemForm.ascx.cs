@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ToSic.Eav.Data;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -28,6 +29,7 @@ namespace ToSic.Eav.ManagementUI
 			get { return DefaultCultureDimension == null || DimensionIds.Contains(DefaultCultureDimension.Value); }
 		}
 		protected EavContext Db;
+	    protected DbShortcuts DbS;
 		private string _fieldTemplatesPath;
 		protected string FieldTemplatesPath
 		{
@@ -88,6 +90,7 @@ namespace ToSic.Eav.ManagementUI
 				throw new Exception("Form can be initialized only once!");
 
 			Db = EavContext.Instance(ZoneId, AppId);
+		    DbS = new DbShortcuts(Db);
 			Db.UserName = System.Web.HttpContext.Current.User.Identity.Name;
 
 			SetJsonGeneralData();
@@ -112,7 +115,7 @@ namespace ToSic.Eav.ManagementUI
 
 					break;
 				case FormViewMode.Edit:
-					var entity = Db.GetEntity(EntityId);
+					var entity = DbS.GetEntity(EntityId);
 					var entityModel = Db.GetEntityModel(EntityId);
 					AttributeSetId = entity.AttributeSetID;
 					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
@@ -138,7 +141,7 @@ namespace ToSic.Eav.ManagementUI
 			if (entityModel.GetDraft() != null)
 			{
 				entityModel = entityModel.GetDraft();
-				entity = Db.GetEntity(entityModel.RepositoryId);
+				entity = DbS.GetEntity(entityModel.RepositoryId);
 			}
 			_repositoryId = entityModel.RepositoryId;
 			#region Set JSON Data/Models
@@ -225,7 +228,7 @@ namespace ToSic.Eav.ManagementUI
 		/// </summary>
 		private void AddFormControls(int attributeSetId)
 		{
-			var attributeSet = Db.GetAttributeSet(attributeSetId);
+			var attributeSet = DbS.GetAttributeSet(attributeSetId);
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
 			var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : Db.AppId;

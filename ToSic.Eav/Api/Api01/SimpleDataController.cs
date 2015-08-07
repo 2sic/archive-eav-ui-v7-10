@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Api.Api01
 {
@@ -12,6 +13,7 @@ namespace ToSic.Eav.Api.Api01
     public class SimpleDataController
     {
         private readonly EavContext _contentContext;
+        private readonly DbShortcuts DbS;
 
         private readonly string _defaultLanguageCode;
 
@@ -37,6 +39,7 @@ namespace ToSic.Eav.Api.Api01
             _userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
             _contentContext = EavContext.Instance(zoneId, appId);
+            DbS = new DbShortcuts(_contentContext);
         }
 
 
@@ -53,7 +56,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public void Create(string contentTypeName, Dictionary<string, object> values)
         {
-            var attributeSet = _contentContext.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
+            var attributeSet = DbS.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
             {
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
@@ -79,7 +82,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values)
         {
-            var entity = _contentContext.GetEntity(entityId);
+            var entity = DbS.GetEntity(entityId);
             Update(entity, values);
         }
 
@@ -96,13 +99,13 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values)
         {
-            var entity = _contentContext.GetEntity(entityGuid);
+            var entity = DbS.GetEntity(entityGuid);
             Update(entity, values);
         }
 
         private void Update(Entity entity, Dictionary<string, object> values)
         {
-            var attributeSet = _contentContext.GetAttributeSet(entity.AttributeSetID);
+            var attributeSet = DbS.GetAttributeSet(entity.AttributeSetID);
             var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
             importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             importEntity.Import(_zoneId, _appId, _userName);
@@ -134,7 +137,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = _contentContext.GetEntity(entityGuid);
+            var entity = DbS.GetEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -169,7 +172,7 @@ namespace ToSic.Eav.Api.Api01
                     var guids = new List<Guid>();
                     foreach (var id in ids)
                     {
-                        var entity = _contentContext.GetEntity(id);
+                        var entity = DbS.GetEntity(id);
                         guids.Add(entity.EntityGUID);
                     }
                     result.Add(value.Key, string.Join(",", guids));

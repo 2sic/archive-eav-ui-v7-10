@@ -42,7 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HelpersToRefactor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

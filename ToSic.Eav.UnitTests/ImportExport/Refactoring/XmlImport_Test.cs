@@ -10,6 +10,7 @@ using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {
@@ -256,7 +257,8 @@ On all your devices.</PreviewContent>
             // 4. Re-export and compare with import file
 
             var db = EavContext.Instance(ZoneId, AppId);
-            var dbEntity = db.GetEntitiesByGuid(SingleItemGuid).First();
+            var DbS = new DbShortcuts(db);
+            var dbEntity = DbS.GetEntitiesByGuid(SingleItemGuid).First();
 
             // Assert.AreEqual(5, dbEntity.Values.Count);
 

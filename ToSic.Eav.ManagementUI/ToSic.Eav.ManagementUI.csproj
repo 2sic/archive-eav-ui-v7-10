@@ -456,9 +456,21 @@
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
+      <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
+      <Name>ToSic.Eav.ImportExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj">
+      <Project>{1c929025-5e2c-4671-9e71-c11d9c567b23}</Project>
+      <Name>ToSic.Eav.Persistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
       <Name>ToSic.Eav.TokenEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj">
+      <Project>{f93f5fb1-95a6-4c4b-bdcf-b001e82f766f}</Project>
+      <Name>ToSic.Eav.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}</Project>

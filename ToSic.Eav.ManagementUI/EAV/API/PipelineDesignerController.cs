@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.ValueProvider;
 
@@ -39,6 +40,7 @@ namespace ToSic.Eav.ManagementUI.API
 
         #endregion
         private EavContext _context;
+	    private DbShortcuts DbS;
 		private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
 
@@ -160,6 +162,7 @@ namespace ToSic.Eav.ManagementUI.API
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
 			_context = EavContext.Instance(appId: appId);
+            DbS = new DbShortcuts(_context);
 			_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
@@ -181,7 +184,7 @@ namespace ToSic.Eav.ManagementUI.API
 				//id = entity.EntityID;
 			}
 
-			var pipelinePartAttributeSetId = _context.GetAttributeSet(DataSource.DataPipelinePartStaticName).AttributeSetID;
+			var pipelinePartAttributeSetId = DbS.GetAttributeSet(DataSource.DataPipelinePartStaticName).AttributeSetID;
 			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
 			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 

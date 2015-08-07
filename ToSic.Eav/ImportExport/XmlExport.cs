@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ImportExport
 {
@@ -10,6 +11,7 @@ namespace ToSic.Eav.ImportExport
 	public class XmlExport
 	{
 		private readonly EavContext _ctx;
+	    private readonly DbShortcuts _dbs;
 
 		/// <summary>
 		/// Initializes a new instance of the XmlExport class.
@@ -17,6 +19,7 @@ namespace ToSic.Eav.ImportExport
 		public XmlExport(EavContext ctx)
 		{
 			_ctx = ctx;
+            _dbs = new DbShortcuts(ctx);
 		}
 
 		/// <summary>
@@ -33,7 +36,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(IEntity entity)
 		{
-			var eavEntity = _ctx.GetEntity(entity.EntityId);
+			var eavEntity = _dbs.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
 
 			// Prepare Values

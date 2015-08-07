@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Import
 {
@@ -14,6 +15,7 @@ namespace ToSic.Eav.Import
     {
         #region Private Fields
         private readonly EavContext _db;
+        private readonly DbShortcuts DbS;
         private readonly int _zoneId;
         private readonly int _appId;
         private readonly bool _leaveExistingValuesUntouched;
@@ -37,6 +39,7 @@ namespace ToSic.Eav.Import
         public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true)
         {
             _db = EavContext.Instance(zoneId, appId);
+            DbS = new DbShortcuts(_db);
 
             _db.UserName = userName;
             _zoneId = _db.ZoneId;
@@ -105,7 +108,7 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void ImportAttributeSet(ImportAttributeSet importAttributeSet)
         {
-            var destinationSet = _db.GetAttributeSet(importAttributeSet.StaticName);
+            var destinationSet = DbS.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
                 destinationSet = _db.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
@@ -171,7 +174,7 @@ namespace ToSic.Eav.Import
             #region try to get AttributeSet or otherwise cancel & log error
 
             // todo: tag:optimize try to cache the attribute-set definition, because this causes DB calls for no reason on each and every entity
-            var attributeSet = _db.GetAttributeSet(importEntity.AttributeSetStaticName);
+            var attributeSet = DbS.GetAttributeSet(importEntity.AttributeSetStaticName);
             if (attributeSet == null)	// AttributeSet not Found
             {
                 _importLog.Add(new LogItem(EventLogEntryType.Error, "AttributeSet not found") { ImportEntity = importEntity, ImportAttributeSet = new ImportAttributeSet { StaticName = importEntity.AttributeSetStaticName } });
@@ -180,11 +183,11 @@ namespace ToSic.Eav.Import
             #endregion
 
             // Update existing Entity
-            if (importEntity.EntityGuid.HasValue && _db.EntityExists(importEntity.EntityGuid.Value))
+            if (importEntity.EntityGuid.HasValue && DbS.EntityExists(importEntity.EntityGuid.Value))
             {
                 #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
                 // Get existing, published Entity
-                var existingEntities = _db.GetEntitiesByGuid(importEntity.EntityGuid.Value);
+                var existingEntities = DbS.GetEntitiesByGuid(importEntity.EntityGuid.Value);
                 Entity existingEntity;
                 try
                 {

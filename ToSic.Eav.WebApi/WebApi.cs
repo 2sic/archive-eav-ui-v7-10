@@ -6,6 +6,7 @@ using System.Web.Http;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -36,6 +37,14 @@ namespace ToSic.Eav.WebApi
 	            return _context;
 	        }
 	    }
+
+        public DbShortcuts DbS
+        {
+            get
+            {
+                return new DbShortcuts(CurrentContext);
+            }
+        }
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;
@@ -150,7 +159,7 @@ namespace ToSic.Eav.WebApi
         {
             if (appId.HasValue)
                 AppId = appId.Value;
-            var entity = CurrentContext.GetEntity(entityGuid);
+            var entity = DbS.GetEntity(entityGuid);
             Delete(contentType, entity.EntityID);
         }
 

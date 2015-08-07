@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.Persistence;
 using AttributeSet = ToSic.Eav.AttributeSet;
 
 namespace ToSic.Eav.ImportExport.Refactoring
@@ -104,7 +105,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             _appId = applicationId;
             _zoneId = zoneId;
-            _contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
+            _contentType = new DbShortcuts(EavContext.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
             _languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;

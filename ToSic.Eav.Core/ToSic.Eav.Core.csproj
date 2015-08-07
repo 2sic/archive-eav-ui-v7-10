@@ -56,7 +56,7 @@
     <Compile Include="Enums\AttributeMoveDirection.cs" />
     <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
-    <Compile Include="Factory.cs" />
+    <Compile Include="HelpersToRefactor.cs" />
     <Compile Include="Interfaces\IAttribute.cs" />
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDimension.cs" />

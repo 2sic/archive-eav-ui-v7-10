@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
 {
@@ -111,7 +112,7 @@ namespace ToSic.Eav
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps
 			foreach (var attributeSet in attributeSets)
-				_metaDataCtx.GetAttributeSet(attributeSet.StaticName).AlwaysShareConfiguration = true;
+				new DbShortcuts(_metaDataCtx).GetAttributeSet(attributeSet.StaticName).AlwaysShareConfiguration = true;
 
 			_metaDataCtx.SaveChanges();
 

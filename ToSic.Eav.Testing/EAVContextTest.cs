@@ -4,6 +4,7 @@ using NUnit.Framework;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.SqlSources;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Testing
 {
@@ -30,8 +31,9 @@ namespace ToSic.Eav.Testing
 		public void DimensionsTest()
 		{
 			var Context = new EavContext();
+		    var DbS = new DbShortcuts(Context);
 
-			var Entity = Context.GetEntity(277);
+			var Entity = DbS.GetEntity(277);
 
 			//Context.UpdateEntity();
 
