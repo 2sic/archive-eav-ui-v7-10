@@ -6,7 +6,7 @@
 <body ng-app="testModule">
 
 	<div style="margin:20px; max-width:500px" ng-controller="outerAppController as vm">
-		<eav-edit-entity content-type-name="All Field Types" register-edit-control="vm.registerEditControl"></eav-edit-entity>
+		<eav-edit-entity content-type-name="All Field Types" entity-id="6573" register-edit-control="vm.registerEditControl"></eav-edit-entity>
 		<eav-edit-entity content-type-name="All Field Types" register-edit-control="vm.registerEditControl"></eav-edit-entity>
 		<button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">Save</button>
 	</div>

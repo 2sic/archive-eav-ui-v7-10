@@ -11,6 +11,7 @@
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
+				entityId: '@entityId',
 				registerEditControl: '=registerEditControl'
 			},
 			controller: 'EditEntityCtrl',
@@ -19,7 +20,8 @@
 	});
 
 	// The controller for the main form directive
-	app.controller('EditEntityCtrl', function editEntityCtrl($http, $scope) {
+	app.controller('EditEntityCtrl', function editEntityCtrl($http, $scope, formlyConfig) {
+		
 		var vm = this;
 
 		vm.save = function() {
@@ -64,21 +66,30 @@
 
 		});
 
+		if ($scope.entityId) {
+			$http.get('/api/eav/Entity/GetEntity?appId=1&zoneId=1&entityId=' + $scope.entityId)
+				.then(function(result) {
+					vm.model = result.data;
+				});
+		}
+
 		// Returns the field type for an attribute configuration
 		function getType(attributeConfiguration) {
 			var e = attributeConfiguration;
-			var type = e.Type;
+			var type = e.Type.toLowerCase();
 			var subType = e.MetaData.InputType;
 
-			// Use subtype 'default' if none is specified
-			if (!subType)
-				subType = 'default';
+			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (e.Type.toLowerCase() == 'string' && e.MetaData.RowCount > 1)
+			if (type == 'string' && e.MetaData.RowCount > 1)
 				subType = 'textarea';
 
-			return (type + '-' + subType).toLowerCase();
+			// Use subtype 'default' if none is specified - or type does not exist
+			if (!subType || !formlyConfig.getType(type + '-' + subType))
+				subType = 'default';
+
+			return (type + '-' + subType);
 		}
 
 		// Returns a typed default value from the string representation

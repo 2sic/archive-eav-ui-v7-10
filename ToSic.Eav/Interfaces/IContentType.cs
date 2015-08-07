@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
+
+namespace ToSic.Eav
 {
 	/// <summary>
 	/// Represents a Content Type
@@ -25,5 +28,9 @@
         /// Get the id of the source Content Type if configuration is used from another
         /// </summary>
         int? UsesConfigurationOfAttributeSet { get; }
+		/// <summary>
+		/// Dictionary with all Attribute Definitions
+		/// </summary>
+		IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
 	}
 }

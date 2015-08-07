@@ -41,17 +41,17 @@ namespace ToSic.Eav.ManagementUI.FormlyEditUI
 
 			var eavContext = EavContext.Instance(zoneId, appId);
 
-			var attributeSet = eavContext.GetAttributeSet(result.AttributeSetId);
+			//var attributeSet = eavContext.GetAttributeSet(result.AttributeSetId);
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-			var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : eavContext.AppId;
-			var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : eavContext.ZoneId;
+			var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : eavContext.AppId;
+			var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : eavContext.ZoneId;
 
-			var config = eavContext.GetAttributes(attributeSet.AttributeSetID).ToList().Select(a => new
+			var config = result.AttributeDefinitions.Select(a => new
 			{
-				a.Type,
-				a.StaticName,
-				MetaData = eavContext.GetAttributeMetaData(a.AttributeID, metaDataZoneId, metaDataAppId, null).ToDictionary(v => v.Key, e => e.Value[0])
+				a.Value.Type,
+				StaticName = a.Value.Name,
+				MetaData = eavContext.GetAttributeMetaData(a.Value.AttributeId, metaDataZoneId, metaDataAppId, null).ToDictionary(v => v.Key, e => e.Value[0])
 			});
 
 			return config;
