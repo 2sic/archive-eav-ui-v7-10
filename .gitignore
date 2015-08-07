@@ -97,7 +97,7 @@ publish/
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
 
 # Windows Azure Build Output
 csx
@@ -160,3 +160,4 @@ Testing/Bin/ToSic.Eav.dll
 Testing/Bin/ToSic.Eav.pdb
 **/ToSic.Eav.dll
 **/ToSic.Eav.pdb
+/packages
