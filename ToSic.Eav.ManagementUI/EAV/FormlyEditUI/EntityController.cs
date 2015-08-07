@@ -23,7 +23,6 @@ namespace ToSic.Eav.ManagementUI.FormlyEditUI
 	public class EntityController : ApiController
     {
 
-		// I must keep the serializer so it can be configured from outside if necessary
 		private Serializer _serializer;
 		public Serializer Serializer
 		{
