@@ -155,7 +155,7 @@ namespace ToSic.Eav.ManagementUI
 			var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : zoneId;
 			var entityReadOnly = entityModel.GetDraft() != null;
 
-			foreach (var attribute in Db.GetAttributes(entity.AttributeSetID))
+			foreach (var attribute in DbS.GetAttributes(entity.AttributeSetID))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 				var attributeModel = entityModel[attribute.StaticName];
@@ -234,7 +234,7 @@ namespace ToSic.Eav.ManagementUI
 			var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : Db.AppId;
 			var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : Db.ZoneId;
 
-			foreach (var attribute in Db.GetAttributes(attributeSetId))
+			foreach (var attribute in DbS.GetAttributes(attributeSetId))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 

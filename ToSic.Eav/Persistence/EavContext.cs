@@ -420,7 +420,7 @@ namespace ToSic.Eav
             var targetAppId = appId.HasValue ? appId.Value : _appId;
 
             // ensure AttributeSet with StaticName doesn't exist on App
-            if (AttributeSetExists(staticName, targetAppId))
+            if (DbS.AttributeSetExists(staticName, targetAppId))
                 throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
 
             var newSet = new AttributeSet
@@ -506,7 +506,7 @@ namespace ToSic.Eav
 				dimensionIds = new List<int>(0);
 
 			// Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
-			var attributes = GetAttributes(entity.AttributeSetID).ToList();
+			var attributes = DbS.GetAttributes(entity.AttributeSetID).ToList();
 			var currentValues = entity.EntityID != 0 ? Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
 			// Update Values from Import Model
@@ -1401,7 +1401,7 @@ namespace ToSic.Eav
 			if (app.AppID == 0)
 				throw new Exception("App must have a valid AppID");
 
-			var sharedAttributeSets = GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+			var sharedAttributeSets = DbS.GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
 			foreach (var sharedSet in sharedAttributeSets)
 			{
 				// Skip if attributeSet with StaticName already exists
@@ -1563,7 +1563,7 @@ namespace ToSic.Eav
 			// Parse XML
 			var xEntity = XElement.Parse(timelineItem);
 			var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
-			var assignmentObjectTypeId = GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
+			var assignmentObjectTypeId = DbS.GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
 
 			// Prepare source and target-Languages
 			if (!defaultCultureDimension.HasValue)

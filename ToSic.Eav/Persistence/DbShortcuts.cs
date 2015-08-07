@@ -113,6 +113,103 @@ namespace ToSic.Eav.Persistence
         {
             return Context.AttributeSets.SingleOrDefault(a => a.StaticName == staticName && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
         }
+
+
+
+        /// <summary>
+        /// Get AttributeSetId by StaticName and Scope
+        /// </summary>
+        /// <param name="staticName">StaticName of the AttributeSet</param>
+        /// <param name="scope">Optional Filter by Scope</param>
+        /// <returns>AttributeSetId or Exception</returns>
+        public int GetAttributeSetId(string staticName, AttributeScope? scope)
+        {
+            var scopeFilter = scope.HasValue ? scope.ToString() : null;
+
+            try
+            {
+                return Context.AttributeSets.Single(s => s.AppID == Context.AppId /*_appId*/  && s.StaticName == staticName && (s.Scope == scopeFilter || scopeFilter == null)).AttributeSetID;
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in Scope \"" + scopeFilter + "\".", ex);
+            }
+        }
+
+        /// <summary>
+        /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.
+        /// </summary>
+        /// <param name="attributeSetId">AttributeSetId to resolve</param>
+        private int ResolveAttributeSetId(int attributeSetId)
+        {
+            var usesConfigurationOfAttributeSet = Context.AttributeSets.Where(a => a.AttributeSetID == attributeSetId).Select(a => a.UsesConfigurationOfAttributeSet).Single();
+            return usesConfigurationOfAttributeSet.HasValue ? usesConfigurationOfAttributeSet.Value : attributeSetId;
+        }
+
+        /// <summary>
+        /// Test whether AttributeSet exists on specified App and is not deleted
+        /// </summary>
+        public bool AttributeSetExists(string staticName, int appId)
+        {
+            return Context.AttributeSets.Any(a => !a.ChangeLogIDDeleted.HasValue && a.AppID == appId && a.StaticName == staticName);
+        }
+
+        /// <summary>
+        /// Get AttributeSets
+        /// </summary>
+        /// <param name="appId">Filter by AppId</param>
+        /// <param name="scope">optional Filter by Scope</param>
+        internal IQueryable<AttributeSet> GetAttributeSets(int appId, AttributeScope? scope)
+        {
+            var result = Context.AttributeSets.Where(a => a.AppID == appId && !a.ChangeLogIDDeleted.HasValue);
+
+            if (scope != null)
+            {
+                var scopeString = scope.ToString();
+                result = result.Where(a => a.Scope == scopeString);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get Attributes of an AttributeSet
+        /// </summary>
+        public IQueryable<Attribute> GetAttributes(int attributeSetId)
+        {
+            attributeSetId = ResolveAttributeSetId(attributeSetId);
+
+            return from ais in Context.AttributesInSets
+                   where ais.AttributeSetID == attributeSetId
+                   orderby ais.SortOrder
+                   select ais.Attribute;
+        }
+
+        #endregion
+
+
+
+        #region Assignment Object Types
+        /// <summary>
+        /// AssignmentObjectType with specified Name 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public AssignmentObjectType GetAssignmentObjectType(string name)
+        {
+            return Context.AssignmentObjectTypes.Single(a => a.Name == name);
+        }
+
+        /// <summary>
+        /// Get all AssignmentObjectTypes with Id and Name
+        /// </summary>
+        public Dictionary<int, string> GetAssignmentObjectTypes()
+        {
+            return (from a in Context.AssignmentObjectTypes
+                    select new { a.AssignmentObjectTypeID, a.Name }).ToDictionary(a => a.AssignmentObjectTypeID, a => a.Name);
+        }
+
+
         #endregion
     }
 }

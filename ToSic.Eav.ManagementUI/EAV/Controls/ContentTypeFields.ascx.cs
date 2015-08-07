@@ -6,12 +6,14 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web;
 using ToSic.Eav.Data;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class ContentTypeFields : UserControl
 	{
 		protected EavContext Db;
+	    protected DbShortcuts DbS;
 
 		#region Properties
 		public int AttributeSetId { get; set; }
@@ -34,6 +36,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Init(object sender, EventArgs e)
 		{
 			Db = EavContext.Instance(appId: AppId);
+            DbS = new DbShortcuts(Db);
 			Db.UserName = HttpContext.Current.User.Identity.Name;
 		}
 
@@ -111,7 +114,7 @@ namespace ToSic.Eav.ManagementUI
 				case "EditAllTypeMetaData":
 				case "EditTypeMetaData":
 					var metaDataAttributeSetStaticName = e.CommandName == "EditAllTypeMetaData" ? "@All" : "@" + Db.Attributes.Single(a => a.AttributeID == attributeId).Type;
-					var metaDataAttributeSetId = Db.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
+					var metaDataAttributeSetId = DbS.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
 
 					var editMetaDataUrl = Forms.GetItemFormUrl(attributeId, metaDataAttributeSetId, DataSource.AssignmentObjectTypeIdFieldProperties, NewItemUrl, EditItemUrl, MetaDataReturnUrl.Replace("[AttributeSetId]", AttributeSetId.ToString(CultureInfo.InvariantCulture)), IsDialog, DimensionIds.FirstOrDefault());
 					Response.Redirect(editMetaDataUrl);
