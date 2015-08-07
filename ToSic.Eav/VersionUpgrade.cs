@@ -8,7 +8,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class VersionUpgrade
 	{
-		private readonly EavContext _metaDataCtx = EavContext.Instance(DataSource.DefaultZoneId, DataSource.MetaDataAppId);
+		private readonly EavContext _metaDataCtx = EavContext.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
 		private readonly string _userName;
 
 		/// <summary>
@@ -25,7 +25,7 @@ namespace ToSic.Eav
 		public void EnsurePipelineDesignerAttributeSets()
 		{
 			#region Define AttributeSets for DataPipeline and DataPipelinePart
-			var pipelinesAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(DataSource.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
+			var pipelinesAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(Constants.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
 				new List<Import.ImportAttribute>
 				{
 					Import.ImportAttribute.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
@@ -36,7 +36,7 @@ namespace ToSic.Eav
 					Import.ImportAttribute.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
 			});
 
-			var pipelinePartsAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(DataSource.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
+			var pipelinePartsAttributeSet = Import.ImportAttributeSet.SystemAttributeSet(Constants.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
 				new List<Import.ImportAttribute>
 				{
 					Import.ImportAttribute.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
@@ -107,7 +107,7 @@ namespace ToSic.Eav
 				dsrcValueSort,
 				dsrcRelationshipFilter
 			};
-			var import = new Import.Import(DataSource.DefaultZoneId, DataSource.MetaDataAppId, _userName);
+            var import = new Import.Import(Constants.DefaultZoneId, Constants.MetaDataAppId, _userName);
 			import.RunImport(attributeSets, null);
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps

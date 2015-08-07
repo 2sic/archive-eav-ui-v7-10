@@ -448,7 +448,7 @@ namespace ToSic.Eav.Persistence
                 throw new Exception("App must have a valid AppID");
 
             // todo: bad - don't want data-sources here
-            var sharedAttributeSets = GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+            var sharedAttributeSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
             foreach (var sharedSet in sharedAttributeSets)
             {
                 // Skip if attributeSet with StaticName already exists

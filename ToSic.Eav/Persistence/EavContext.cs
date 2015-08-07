@@ -77,7 +77,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public int AppId
 		{
-			get { return _appId == 0 ? DataSource.MetaDataAppId : _appId; }
+            get { return _appId == 0 ? Constants.MetaDataAppId : _appId; }
 			set { _appId = value; }
 		}
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public int ZoneId
 		{
-			get { return _zoneId == 0 ? DataSource.DefaultZoneId : _zoneId; }
+            get { return _zoneId == 0 ? Constants.DefaultZoneId : _zoneId; }
 			set { _zoneId = value; }
 		}
 
@@ -145,8 +145,8 @@ namespace ToSic.Eav
 				}
 				else
 				{
-					_zoneId = DataSource.DefaultZoneId;
-					_appId = DataSource.MetaDataAppId;
+                    _zoneId = Constants.DefaultZoneId;
+                    _appId = Constants.MetaDataAppId;
 					return;
 				}
 			}
@@ -204,10 +204,10 @@ namespace ToSic.Eav
         private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
         {
             // Prevent duplicate add of FieldProperties
-            if (assignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
+            if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
             {
-                if (DbS.GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
-                    throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber));
+                if (DbS.GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
+                    throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
             }
 
             var changeId = GetChangeLogId();
@@ -567,7 +567,7 @@ namespace ToSic.Eav
 				foreach (var valueToPurge in valuesToPurge)
 				{
 					// Don't touch Value if attribute is not visible in UI
-					var attributeMetadata = attributeMetadataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, valueToPurge.AttributeID, "@All").FirstOrDefault();
+					var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, valueToPurge.AttributeID, "@All").FirstOrDefault();
 					if (attributeMetadata != null)
 					{
 						var visibleInEditUi = ((Attribute<bool?>)attributeMetadata["VisibleInEditUI"]).TypedContents;
@@ -1132,7 +1132,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public Entity UpdateFieldAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
 		{
-			var fieldPropertyEntity = Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == DataSource.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
+			var fieldPropertyEntity = Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
 			if (fieldPropertyEntity != null)
 				return UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
 
@@ -1140,7 +1140,7 @@ namespace ToSic.Eav
 			var systemScope = AttributeScope.System.ToString();
 			var attributeSetId = AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == _appId).AttributeSetID;
 
-			return AddEntity(attributeSetId, fieldProperties, null, attributeId, DataSource.AssignmentObjectTypeIdFieldProperties);
+			return AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
 		}
 
 		#endregion
@@ -1186,11 +1186,11 @@ namespace ToSic.Eav
 			if (entityChild.Any())
 				messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
 
-			var assignedEntitiesFieldProperties = DbS.GetEntitiesInternal(DataSource.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
+			var assignedEntitiesFieldProperties = DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
 			if (assignedEntitiesFieldProperties.Any())
 				messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
 
-			var assignedEntitiesDataPipeline = DbS.GetEntitiesInternal(DataSource.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
+			var assignedEntitiesDataPipeline = DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
 			if (assignedEntitiesDataPipeline.Any())
 				messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
 

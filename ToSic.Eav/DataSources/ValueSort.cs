@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueSort()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 			Configuration.Add(AttrKey, "[Settings:Attributes]");
 			Configuration.Add(DirectionKey, "[Settings:Directions]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSources
 				throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
-            var list = In[DataSource.DefaultStreamName].LightList;
+            var list = In[Constants.DefaultStreamName].LightList;
 
 			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
 			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();

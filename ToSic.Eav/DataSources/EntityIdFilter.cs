@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public EntityIdFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
 			//Configuration.Add(PassThroughOnEmptyEntityIdsKey, "[Settings:PassThroughOnEmptyEntityIds||false]");
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
 
 		    var entityIds = _cleanedIds;
 
-		    var originals = In[DataSource.DefaultStreamName].List;
+		    var originals = In[Constants.DefaultStreamName].List;
 
 			return entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
 		}

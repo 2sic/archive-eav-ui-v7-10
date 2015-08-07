@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public StreamFallback()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities, GetList));
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
@@ -48,11 +48,11 @@ namespace ToSic.Eav.DataSources
             EnsureConfigurationIsLoaded();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-	        if (In.ContainsKey(DataSource.DefaultStreamName) && In[DataSource.DefaultStreamName].List.Any())
-	            return In[DataSource.DefaultStreamName];
+	        if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())
+	            return In[Constants.DefaultStreamName];
 
 	        // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
-	        var streamList = In.Where(x => x.Key != DataSource.DefaultStreamName).OrderBy(x => x.Key);
+	        var streamList = In.Where(x => x.Key != Constants.DefaultStreamName).OrderBy(x => x.Key);
 	        foreach (var stream in streamList)
 	            if (stream.Value.List.Any())
 	            {

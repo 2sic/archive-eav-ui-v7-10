@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
 
         public CsvDataSource()
         {
-            Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
+            Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 
             Configuration.Add(FilePathKey, "[Settings:FilePath]");
             Configuration.Add(DelimiterKey, "[Settings:Delimiter||\t]");

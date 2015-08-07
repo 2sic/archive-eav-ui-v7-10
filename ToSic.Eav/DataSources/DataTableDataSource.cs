@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public DataTableDataSource()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");

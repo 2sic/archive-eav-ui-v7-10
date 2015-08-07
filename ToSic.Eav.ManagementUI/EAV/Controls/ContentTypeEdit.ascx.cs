@@ -68,7 +68,7 @@ namespace ToSic.Eav.ManagementUI
 			var newSet = (AttributeSet)e.Entity;
 			newSet.ChangeLogIDCreated = DB.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
 			newSet.Scope = Scope;
-			newSet.AppID = AppId ?? DataSource.MetaDataAppId;
+            newSet.AppID = AppId ?? Constants.MetaDataAppId;
 		}
 	}
 }

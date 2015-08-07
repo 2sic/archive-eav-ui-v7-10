@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources
 			if(lang != "default")
 				throw  new Exception("Can't filter for languages other than 'default'");
 
-			var originals = In[DataSource.DefaultStreamName].LightList;
+			var originals = In[Constants.DefaultStreamName].LightList;
 
 			//if (string.IsNullOrEmpty(Value) && PassThroughOnEmptyValue)
 			//	return originals;

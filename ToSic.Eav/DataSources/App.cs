@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources
 		public App()
 		{
 			// this one is unusual, so don't pre-attach a default data stream
-			//Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
 			// Set default switch-keys to 0 = no switch
 			Configuration.Add(AppSwitchKey, "0");
@@ -85,13 +85,13 @@ namespace ToSic.Eav.DataSources
 		{
 			// all not-set properties will auto-initialize
 			if (ZoneSwitch != 0)
-				ZoneId = ZoneSwitch; //In[DataSource.DefaultStreamName].Source.ZoneId;
+				ZoneId = ZoneSwitch; //In[Constants.DefaultStreamName].Source.ZoneId;
 			if (AppSwitch != 0)
-				AppId = AppSwitch; // In[DataSource.DefaultStreamName].Source.ZoneId;
+				AppId = AppSwitch; // In[Constants.DefaultStreamName].Source.ZoneId;
 
 			var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
-			In.Remove(DataSource.DefaultStreamName);
-			In.Add(DataSource.DefaultStreamName, newDs[DataSource.DefaultStreamName]);
+			In.Remove(Constants.DefaultStreamName);
+			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
 		}
 
 		/// <summary>
@@ -102,18 +102,18 @@ namespace ToSic.Eav.DataSources
 			IDataStream upstream;
 			try
 			{
-				upstream = In[DataSource.DefaultStreamName];
+				upstream = In[Constants.DefaultStreamName];
 			}
 			catch (KeyNotFoundException)
 			{
                 // todo: maybe auto-attach to cache of current system?
 
-				throw new Exception("App DataSource must have a Default In-Stream with name " + DataSource.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
+				throw new Exception("App DataSource must have a Default In-Stream with name " + Constants.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
 			}
 
 			var upstreamDataSource = upstream.Source;
 			_Out.Clear();
-			_Out.Add(DataSource.DefaultStreamName, upstreamDataSource.Out[DataSource.DefaultStreamName]);
+			_Out.Add(Constants.DefaultStreamName, upstreamDataSource.Out[Constants.DefaultStreamName]);
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
@@ -122,14 +122,14 @@ namespace ToSic.Eav.DataSources
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Value.Name;
-		        if (typeName != DataSource.DefaultStreamName && !typeName.StartsWith("@") && !_Out.ContainsKey(typeName))
+		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_Out.ContainsKey(typeName))
 		        {
 		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
 		            ds.TypeName = contentType.Value.Name;
 
-		            ds.Out[DataSource.DefaultStreamName].AutoCaching = true; // enable auto-caching 
+		            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
 
-		            _Out.Add(contentType.Value.Name, ds.Out[DataSource.DefaultStreamName]);
+		            _Out.Add(contentType.Value.Name, ds.Out[Constants.DefaultStreamName]);
 		        }
 		    }
 		}

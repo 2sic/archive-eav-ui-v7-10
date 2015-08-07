@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 		/// </summary>
 		public EavSqlStore()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			_context = EavContext.Instance();
             DbS = new DbShortcuts(_context);
 		}

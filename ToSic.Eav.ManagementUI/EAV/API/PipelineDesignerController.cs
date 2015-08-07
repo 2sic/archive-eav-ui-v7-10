@@ -88,7 +88,7 @@ namespace ToSic.Eav.ManagementUI.API
 
 				#region Deserialize some Entity-Values
 				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
-				pipelineJson[DataSource.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[DataSource.DataPipelineStreamWiringStaticName]);
+				pipelineJson[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[Constants.DataPipelineStreamWiringStaticName]);
 
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
@@ -184,7 +184,7 @@ namespace ToSic.Eav.ManagementUI.API
 				//id = entity.EntityID;
 			}
 
-			var pipelinePartAttributeSetId = DbS.GetAttributeSet(DataSource.DataPipelinePartStaticName).AttributeSetID;
+			var pipelinePartAttributeSetId = DbS.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
 			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
 			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 
@@ -216,7 +216,7 @@ namespace ToSic.Eav.ManagementUI.API
 				// Add new DataSource
 				else
 				{
-					var entitiy = _context.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, DataSource.AssignmentObjectTypeEntity);
+					var entitiy = _context.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
 					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
@@ -391,7 +391,7 @@ namespace ToSic.Eav.ManagementUI.API
 			foreach (var dataSource in dataSources)
 			{
 				// Delete Configuration Entities (if any)
-				var dataSourceConfig = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
+				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
 				if (dataSourceConfig != null)
 					_context.DeleteEntity(dataSourceConfig.EntityId);
 

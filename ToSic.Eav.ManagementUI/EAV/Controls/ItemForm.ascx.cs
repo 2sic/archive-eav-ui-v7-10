@@ -152,8 +152,8 @@ namespace ToSic.Eav.ManagementUI
 			#endregion
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-			var metaDataAppId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : appId;
-			var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : zoneId;
+            var metaDataAppId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : appId;
+            var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : zoneId;
 			var entityReadOnly = entityModel.GetDraft() != null;
 
 			foreach (var attribute in DbS.GetAttributes(entity.AttributeSetID))
@@ -199,7 +199,7 @@ namespace ToSic.Eav.ManagementUI
 				#endregion
 
 				// Only add if VisibleInEditUI != false or AssignmentObjectType == Field Properties
-				if (!(fieldTemplate.MetaData.ContainsKey("VisibleInEditUI") && ((IAttribute<bool?>)fieldTemplate.MetaData["VisibleInEditUI"]).Typed[DimensionIds] == false) || entity.AssignmentObjectTypeID == DataSource.AssignmentObjectTypeIdFieldProperties)
+				if (!(fieldTemplate.MetaData.ContainsKey("VisibleInEditUI") && ((IAttribute<bool?>)fieldTemplate.MetaData["VisibleInEditUI"]).Typed[DimensionIds] == false) || entity.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties)
 					phFields.Controls.Add(fieldTemplate);
 			}
 
@@ -232,8 +232,8 @@ namespace ToSic.Eav.ManagementUI
 			var attributeSet = DbS.GetAttributeSet(attributeSetId);
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-			var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : Db.AppId;
-			var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : Db.ZoneId;
+            var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Db.AppId;
+            var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Db.ZoneId;
 
 			foreach (var attribute in DbS.GetAttributes(attributeSetId))
 			{

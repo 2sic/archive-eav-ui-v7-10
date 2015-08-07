@@ -153,7 +153,7 @@ namespace ToSic.Eav.Import
                     foreach (var entity in importAttribute.AttributeMetaData)
                     {
                         // Validate Entity
-                        entity.AssignmentObjectTypeId = DataSource.AssignmentObjectTypeIdFieldProperties;
+                        entity.AssignmentObjectTypeId = Constants.AssignmentObjectTypeIdFieldProperties;
 
                         // Set KeyNumber
                         if (destinationAttribute.AttributeID == 0)

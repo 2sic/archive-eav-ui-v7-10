@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigurationProvider = config;
 
 		    // this one is unusual, so don't pre-attach a default data stream
-		    //Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities));
+		    //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 		}
 
 		/// <summary>

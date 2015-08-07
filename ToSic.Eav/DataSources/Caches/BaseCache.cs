@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 		protected BaseCache()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, GetEntities, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities, GetList));
 			Out.Add(PublishedStreamName, new DataStream(this, PublishedStreamName, GetPublishedEntities));
 			Out.Add(DraftsStreamName, new DataStream(this, DraftsStreamName, GetDraftEntities));
 
@@ -224,7 +224,7 @@ namespace ToSic.Eav.DataSources.Caches
 								   ? zoneId.Value
 								   : (appId.HasValue
 										  ? ZoneApps.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
-										  : DataSource.DefaultZoneId);
+                                          : Constants.DefaultZoneId);
 
 			var resultAppId = appId.HasValue
 								  ? ZoneApps[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key

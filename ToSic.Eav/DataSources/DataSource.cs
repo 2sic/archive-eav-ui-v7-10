@@ -14,40 +14,40 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DataSource
 	{
-		/// <summary>
-		/// Default ZoneId. Used if none is specified on the Context.
-		/// </summary>
-		public readonly static int DefaultZoneId = 1;
-		/// <summary>
-		/// AppId where MetaData (Entities) are stored.
-		/// </summary>
-		public readonly static int MetaDataAppId = 1;
-		/// <summary>
-		/// AssignmentObjectTypeId for FieldProperties (Field MetaData)
-		/// </summary>
-		public readonly static int AssignmentObjectTypeIdFieldProperties = 2;
-		/// <summary>
-		/// AssignmentObjectTypeId for DataPipelines
-		/// </summary>
-		public readonly static int AssignmentObjectTypeEntity = 4;
-		/// <summary>
-		/// StaticName of the DataPipeline AttributeSet
-		/// </summary>
-		public readonly static string DataPipelineStaticName = "DataPipeline";
-		/// <summary>
-		/// StaticName of the DataPipelinePart AttributeSet
-		/// </summary>
-		public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
+        ///// <summary>
+        ///// Default ZoneId. Used if none is specified on the Context.
+        ///// </summary>
+        //public readonly static int DefaultZoneId = 1;
+        ///// <summary>
+        ///// AppId where MetaData (Entities) are stored.
+        ///// </summary>
+        //public readonly static int MetaDataAppId = 1;
+        ///// <summary>
+        ///// AssignmentObjectTypeId for FieldProperties (Field MetaData)
+        ///// </summary>
+        //public readonly static int AssignmentObjectTypeIdFieldProperties = 2;
+        ///// <summary>
+        ///// AssignmentObjectTypeId for DataPipelines
+        ///// </summary>
+        //public readonly static int AssignmentObjectTypeEntity = 4;
+        ///// <summary>
+        ///// StaticName of the DataPipeline AttributeSet
+        ///// </summary>
+        //public readonly static string DataPipelineStaticName = "DataPipeline";
+        ///// <summary>
+        ///// StaticName of the DataPipelinePart AttributeSet
+        ///// </summary>
+        //public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
 
-        /// <summary>
-        /// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
-        /// </summary>
-        public const string DataPipelineStreamWiringStaticName = "StreamWiring";
+        ///// <summary>
+        ///// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
+        ///// </summary>
+        //public const string DataPipelineStreamWiringStaticName = "StreamWiring";
 
-		/// <summary>
-		/// Default In-/Out-Stream Name
-		/// </summary>
-		public const string DefaultStreamName = "Default";
+        ///// <summary>
+        ///// Default In-/Out-Stream Name
+        ///// </summary>
+        //public const string DefaultStreamName = "Default";
 
 		/// <summary>
 		/// Assemble a DataSource with specified Type/Interface-Chain in reversed order.
@@ -160,7 +160,7 @@ namespace ToSic.Eav
 		{
 			if (zoneId == null || appId == null)
 			{
-				var cache = GetCache(DefaultZoneId, MetaDataAppId);
+                var cache = GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
 				return cache.GetZoneAppId(zoneId, appId);
 			}
 			return Tuple.Create(zoneId.Value, appId.Value);

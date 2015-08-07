@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public RelationshipFilter()
 		{
-			Out.Add(DataSource.DefaultStreamName, new DataStream(this, DataSource.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
 			Configuration.Add(CompareAttributeKey, "EntityTitle");
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
 
 			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == "entitytitle" ? 't' : 'x';
 
-			var originals = In[DataSource.DefaultStreamName].LightList;
+			var originals = In[Constants.DefaultStreamName].LightList;
 
 			//if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
 			//	return originals;

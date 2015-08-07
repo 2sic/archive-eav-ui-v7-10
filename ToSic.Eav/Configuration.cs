@@ -69,7 +69,7 @@ namespace ToSic.Eav
             get
             {
                 if(_assignmentObjectTypeIdDefault == -1)
-                    _assignmentObjectTypeIdDefault = DataSource.GetCache(DataSource.DefaultZoneId, DataSource.MetaDataAppId).GetAssignmentObjectTypeId("Default");
+                    _assignmentObjectTypeIdDefault = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).GetAssignmentObjectTypeId("Default");
                 return _assignmentObjectTypeIdDefault;
             }
         }

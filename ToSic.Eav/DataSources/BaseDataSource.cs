@@ -78,8 +78,8 @@ namespace ToSic.Eav.DataSources
 	            var fullKey = "";
 
                 // If there is an upstream, use that as the leading part of the id
-	            if (In.ContainsKey(DataSource.DefaultStreamName) && In[DataSource.DefaultStreamName] != null)
-	                fullKey += In[DataSource.DefaultStreamName].Source.CacheFullKey + ">";
+	            if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName] != null)
+	                fullKey += In[Constants.DefaultStreamName].Source.CacheFullKey + ">";
 	            
                 // add current key
                 fullKey += CachePartialKey;
@@ -92,8 +92,8 @@ namespace ToSic.Eav.DataSources
 	        get
 	        {
                 // try to return the upstream creation date
-	            if (In.ContainsKey(DataSource.DefaultStreamName) && In[DataSource.DefaultStreamName].Source != null)
-	                return In[DataSource.DefaultStreamName].Source.CacheLastRefresh;
+	            if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].Source != null)
+	                return In[Constants.DefaultStreamName].Source.CacheLastRefresh;
                 
                 // if no relevant up-stream, just return now!
 	            return DateTime.Now;
@@ -124,12 +124,12 @@ namespace ToSic.Eav.DataSources
 
 		public IDictionary<int, IEntity> List
 		{
-			get { return Out[DataSource.DefaultStreamName].List; }
+			get { return Out[Constants.DefaultStreamName].List; }
 		}
 
         public IEnumerable<IEntity> LightList
         {
-            get { return Out[DataSource.DefaultStreamName].LightList; }
+            get { return Out[Constants.DefaultStreamName].LightList; }
         }
 
 		public IValueCollectionProvider ConfigurationProvider { get; internal set; }
@@ -173,7 +173,7 @@ namespace ToSic.Eav.DataSources
 
 		public void Attach(string streamName, IDataSource dataSource)
 		{
-			Attach(streamName, dataSource[DataSource.DefaultStreamName]);
+			Attach(streamName, dataSource[Constants.DefaultStreamName]);
 		}
 
 		public void Attach(string streamName, IDataStream dataStream)
@@ -215,7 +215,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public virtual bool Ready
 		{
-			get { return (In[DataSource.DefaultStreamName].Source != null && In[DataSource.DefaultStreamName].Source.Ready); }
+			get { return (In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready); }
 		}
 
 		#endregion

@@ -14,7 +14,7 @@ namespace ToSic.Eav.Persistence
         public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId, int zoneId, int appId)
         {
             // Get all EntityIds describing the Attribute (e.g. General and @String)
-            var entities = DataSource.GetMetaDataSource(zoneId, appId).GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, attributeId);
+            var entities = DataSource.GetMetaDataSource(zoneId, appId).GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, attributeId);
             // Return all Attributes of all Entities with Value
             return entities.SelectMany(e => e.Attributes).ToDictionary(a => a.Key, a => a.Value);
         }

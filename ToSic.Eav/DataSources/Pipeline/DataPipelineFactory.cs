@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources
 			var source = DataSource.GetInitialDataSource(appId: appId);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);	// ToDo: Validate change/extension with zoneId and appId Parameter
 
-			var appEntities = source[DataSource.DefaultStreamName].List;
+			var appEntities = source[Constants.DefaultStreamName].List;
 			IEntity dataPipeline;
 			try
 			{
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
 			{
 				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
 			}
-			var dataPipelineParts = metaDataSource.GetAssignedEntities(DataSource.AssignmentObjectTypeEntity, dataPipeline.EntityGuid, DataSource.DataPipelinePartStaticName);
+			var dataPipelineParts = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
 			#endregion
 
 			var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources
 		private static void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[DataSource.DataPipelineStreamWiringStaticName][0]);
+			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[Constants.DataPipelineStreamWiringStaticName][0]);
 			var initializedWirings = new List<WireInfo>();
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
