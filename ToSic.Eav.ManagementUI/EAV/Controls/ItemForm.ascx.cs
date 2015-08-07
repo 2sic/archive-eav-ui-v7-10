@@ -208,7 +208,7 @@ namespace ToSic.Eav.ManagementUI
 
 		private void SetJsonGeneralData()
 		{
-			litJsonDimensionsModel.Text = GetJsonString(Db.GetLanguages().Select(l => new { DimensionId = l.DimensionID, l.ExternalKey, l.Name }));
+			litJsonDimensionsModel.Text = GetJsonString(new DbDimensions(Db).GetLanguages().Select(l => new { DimensionId = l.DimensionID, l.ExternalKey, l.Name }));
 			pnlEditForm.Attributes["data-defaultculturedimension"] = DefaultCultureDimension.ToString();
 			pnlEditForm.Attributes["data-activeculturedimension"] = DimensionIds.SingleOrDefault().ToString();
 			pnlEditForm.Attributes["data-applicationpath"] = Request.ApplicationPath;
@@ -328,7 +328,7 @@ namespace ToSic.Eav.ManagementUI
 				dimensionIds.Add(DefaultCultureDimension.Value);
 
 			Entity result;
-			var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : EavContext.DefaultAssignmentObjectTypeId;
+            var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : Constants.DefaultAssignmentObjectTypeId;
 			if (!KeyGuid.HasValue)
 				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 			else

@@ -91,7 +91,7 @@ namespace ToSic.Eav.Data
 			{
 				throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
 			}
-			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
+			AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
 			IsPublished = true;
 			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
 		}

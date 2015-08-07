@@ -4,9 +4,36 @@ using System.Linq;
 
 namespace ToSic.Eav
 {
-	public partial class EavContext
+	public class DbDimensions: EavContext
 	{
-		private int GetDimensionId(string systemKey, string externalKey)
+        private EavContext Context { get; set; }
+
+        public DbDimensions(EavContext cntxt)
+        {
+            Context = cntxt;
+        }
+
+        private static List<Dimension> _cachedDimensions;
+
+        #region Cached Dimensions
+
+        internal void EnsureDimensionsCache()
+        {
+            if (_cachedDimensions == null)
+                _cachedDimensions = Dimensions.ToList();
+        }
+
+        /// <summary>
+        /// Clear DimensionsCache in current Application Cache
+        /// </summary>
+        public void ClearDimensionsCache()
+        {
+            _cachedDimensions = null;
+        }
+
+        #endregion
+
+		internal int GetDimensionId(string systemKey, string externalKey)
 		{
 			EnsureDimensionsCache();
 
@@ -81,7 +108,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Add a new Dimension
 		/// </summary>
-		private void AddDimension(string systemKey, string name, Zone zone, Dimension parent = null, bool autoSave = false)
+		internal void AddDimension(string systemKey, string name, Zone zone, Dimension parent = null, bool autoSave = false)
 		{
 			var newDimension = new Dimension
 			{
@@ -153,7 +180,7 @@ namespace ToSic.Eav
 		/// <param name="zoneId">null means ZoneId on current Context</param>
 		public bool HasLanguages(int? zoneId = null)
 		{
-			return Dimensions.Any(d => d.Parent == Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId.HasValue ? zoneId : ZoneId) && p.ParentID == null && p.SystemKey == CultureSystemKey));
+			return Dimensions.Any(d => d.Parent == Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId.HasValue ? zoneId : ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
 		}
 
 		#endregion

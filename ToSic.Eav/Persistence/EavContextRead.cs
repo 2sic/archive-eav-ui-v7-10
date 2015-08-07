@@ -1,9 +1,10 @@
 ﻿using System.Data;
 using System.Linq;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
 {
-	public partial class EavContext
+	public class ListForSomeAscx : EavContext
 	{
         // 2015-08-07 2dm: the only code left here is for an ASCX-view in the management-UI which will be replaced by angularjs soon
         // so I'm not refactoring this as it's not relevant
@@ -25,7 +26,7 @@ namespace ToSic.Eav
 			var draftEntities = DataSource.GetInitialDataSource(_zoneId, _appId, true).List.Where(e => entityIds.Contains(e.Key));
 			var entitiesModel = publishedEntities.Union(draftEntities);
 
-			var columnNamesArray = DbS.GetAttributes(attributeSetId).Select(a => a.StaticName);
+			var columnNamesArray = new DbShortcuts(this).GetAttributes(attributeSetId).Select(a => a.StaticName);
 			if (columnNames != null)
 			{
 				var columNamesFilter = columnNames.Split(',');

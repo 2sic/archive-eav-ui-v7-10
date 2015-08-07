@@ -278,7 +278,7 @@ namespace ToSic.Eav.Testing
 				EntityGuid = entityGuid,
 				AttributeSetStaticName = attributeSetStaticName,
 				KeyNumber = 999,
-				AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId
+				AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId
 			};
 			entity.Values = GetEntityValues(entity, attributeSet, isUpdate: true, now: DateTime.Now.ToLongTimeString().Replace(":", ""));
 			var entities = new List<Import.ImportEntity> { entity };
@@ -300,7 +300,7 @@ namespace ToSic.Eav.Testing
 			{
 				EntityGuid = entityGuid,
 				AttributeSetStaticName = attributeSetStaticName,
-				AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId
+				AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId
 			};
 			// Title first Import
 			var titleValue = new List<IValueImportModel>
@@ -415,7 +415,7 @@ namespace ToSic.Eav.Testing
 			{
 				EntityGuid = entityGuid,
 				AttributeSetStaticName = attributeSetStaticName,
-				AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId
+				AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId
 			};
 
 			entity.Values = new Dictionary<string, List<IValueImportModel>>
@@ -496,7 +496,7 @@ namespace ToSic.Eav.Testing
 				{
 					EntityGuid = entityGuid,
 					AttributeSetStaticName = "4e0f8568-a2fe-435c-abda-0602dddeb400",
-					AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId
+                    AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId
 				};
 				entity.Values = new Dictionary<string, List<IValueImportModel>>
 				{

@@ -45,19 +45,19 @@ namespace ToSic.Eav
 		#endregion
 
 		#region Constants
-		/// <summary>
-		/// Name of the Default App in all Zones
-		/// </summary>
-		public const string DefaultAppName = "Default";
-		/// <summary>
-		/// Default Entity AssignmentObjectTypeId
-		/// </summary>
-		public const int DefaultAssignmentObjectTypeId = 1;
-		private const string CultureSystemKey = "Culture";
-		/// <summary>
-		/// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
-		/// </summary>
-		private const string DataTimelineEntityStateOperation = "s";
+        ///// <summary>
+        ///// Name of the Default App in all Zones
+        ///// </summary>
+        //public const string DefaultAppName = "Default";
+        ///// <summary>
+        ///// Default Entity AssignmentObjectTypeId
+        ///// </summary>
+        //public const int DefaultAssignmentObjectTypeId = 1;
+		// private const string CultureSystemKey = "Culture";
+        ///// <summary>
+        ///// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
+        ///// </summary>
+        //private const string DataTimelineEntityStateOperation = "s";
 		#endregion
 
 		#region Private Fields
@@ -162,7 +162,7 @@ namespace ToSic.Eav
 				_appId = foundAppId.Value;
 			}
 			else
-				_appId = zone.Apps.Where(a => a.Value == DefaultAppName).Select(a => a.Key).Single();
+				_appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
 
 		}
 
@@ -170,77 +170,77 @@ namespace ToSic.Eav
 
 		#region Add
 
-		/// <summary>
-		/// Import a new Entity
-		/// </summary>
+        /// <summary>
+        /// Import a new Entity
+        /// </summary>
         internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<LogItem> importLog, bool isPublished = true)
         {
             return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
         }
-		/// <summary>
-		/// Add a new Entity
-		/// </summary>
-		public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-		{
-			return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-		}
-		/// <summary>
-		/// Add a new Entity
-		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-		{
-			return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-		}
-		/// <summary>
-		/// Add a new Entity
-		/// </summary>
-		public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-		{
-			return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-		}
-		/// <summary>
-		/// Add a new Entity
-		/// </summary>
-		private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
-		{
-			// Prevent duplicate add of FieldProperties
-			if (assignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
-			{
-				if (DbS.GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
-					throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber));
-			}
+        /// <summary>
+        /// Add a new Entity
+        /// </summary>
+        public Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        {
+            return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+        }
+        /// <summary>
+        /// Add a new Entity
+        /// </summary>
+        public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        {
+            return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+        }
+        /// <summary>
+        /// Add a new Entity
+        /// </summary>
+        public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        {
+            return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+        }
+        /// <summary>
+        /// Add a new Entity
+        /// </summary>
+        private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
+        {
+            // Prevent duplicate add of FieldProperties
+            if (assignmentObjectTypeId == DataSource.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
+            {
+                if (DbS.GetEntities(DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
+                    throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", DataSource.AssignmentObjectTypeIdFieldProperties, keyNumber));
+            }
 
-			var changeId = GetChangeLogId();
+            var changeId = GetChangeLogId();
 
-			var newEntity = new Entity
-			{
-				ConfigurationSet = configurationSet,
-				AssignmentObjectTypeID = assignmentObjectTypeId,
-				KeyNumber = keyNumber,
-				KeyGuid = keyGuid,
-				KeyString = keyString,
-				SortOrder = sortOrder,
-				ChangeLogIDCreated = changeId,
-				ChangeLogIDModified = changeId,
-				EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
-				IsPublished = isPublished
-			};
+            var newEntity = new Entity
+            {
+                ConfigurationSet = configurationSet,
+                AssignmentObjectTypeID = assignmentObjectTypeId,
+                KeyNumber = keyNumber,
+                KeyGuid = keyGuid,
+                KeyString = keyString,
+                SortOrder = sortOrder,
+                ChangeLogIDCreated = changeId,
+                ChangeLogIDModified = changeId,
+                EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
+                IsPublished = isPublished
+            };
 
-			if (attributeSet != null)
-				newEntity.Set = attributeSet;
-			else
-				newEntity.AttributeSetID = attributeSetId;
+            if (attributeSet != null)
+                newEntity.Set = attributeSet;
+            else
+                newEntity.AttributeSetID = attributeSetId;
 
-			AddToEntities(newEntity);
+            AddToEntities(newEntity);
 
-			SaveChanges();
+            SaveChanges();
 
-			UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
+            UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
-			SaveChanges();
+            SaveChanges();
 
-			return newEntity;
-		}
+            return newEntity;
+        }
 
 		/// <summary>
 		/// Clone an Entity with all Values
@@ -821,7 +821,7 @@ namespace ToSic.Eav
 				foreach (var valueDimension in valueDimensions)
 				{
 					// ToDo: 2bg Log Error but continue
-					var dimensionId = GetDimensionId(null, valueDimension.DimensionExternalKey);
+					var dimensionId = new DbDimensions(this).GetDimensionId(null, valueDimension.DimensionExternalKey);
 					if (dimensionId == 0)
 						throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
 
@@ -1258,79 +1258,6 @@ namespace ToSic.Eav
 
 		#region Zones
 
-		/// <summary>
-		/// Get all Zones
-		/// </summary>
-		/// <returns>Dictionary with ZoneId as Key and ZoneModel</returns>
-		public Dictionary<int, Data.Zone> GetAllZones()
-		{
-            //var zones = (from z in Zones
-            //             select
-            //                 new
-            //                 {
-            //                     ZoneId = z.ZoneID,
-            //                     DefaultAppId = z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
-            //                     Apps = from a in z.Apps select new { a.AppID, a.Name }
-            //                 }).ToDictionary(z => z.ZoneId,
-            //                                     z =>
-            //                                     new Data.Zone
-            //                                     {
-            //                                         ZoneId = z.ZoneId,
-            //                                         Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),
-            //                                         DefaultAppId = z.DefaultAppId
-            //                                     });
-		    var zones = Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
-                        z.ZoneID, 
-                        z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
-                        z.Apps.ToDictionary(a => a.AppID, a => a.Name)));
-			return zones;
-		}
-
-		/// <summary>
-		/// Get all Zones
-		/// </summary>
-		/// <returns></returns>
-		public List<Zone> GetZones()
-		{
-			return Zones.ToList();
-		}
-
-		/// <summary>
-		/// Get a single Zone
-		/// </summary>
-		/// <returns>Zone or null</returns>
-		public Zone GetZone(int zoneId)
-		{
-			return Zones.SingleOrDefault(z => z.ZoneID == zoneId);
-		}
-
-		/// <summary>
-		/// Creates a new Zone with a default App and Culture-Root-Dimension
-		/// </summary>
-		public Tuple<Zone, App> AddZone(string name)
-		{
-			var newZone = new Zone { Name = name };
-			AddToZones(newZone);
-
-			AddDimension(CultureSystemKey, "Culture Root", newZone);
-
-			var newApp = AddApp(newZone);
-
-			SaveChanges();
-
-			return Tuple.Create(newZone, newApp);
-		}
-
-		/// <summary>
-		/// Update a Zone
-		/// </summary>
-		public void UpdateZone(int zoneId, string name)
-		{
-			var zone = Zones.Single(z => z.ZoneID == zoneId);
-			zone.Name = name;
-
-			SaveChanges();
-		}
 
 		#endregion
 
@@ -1339,7 +1266,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Add a new App
 		/// </summary>
-		private App AddApp(Zone zone, string name = DefaultAppName)
+		internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
 		{
 			var newApp = new App
 			{
@@ -1364,7 +1291,7 @@ namespace ToSic.Eav
 		/// <returns></returns>
 		public App AddApp(string name)
 		{
-			return AddApp(GetZone(ZoneId), name);
+			return AddApp(DbS.GetZone(ZoneId), name);
 		}
 
 		/// <summary>
@@ -1502,7 +1429,7 @@ namespace ToSic.Eav
 			var timelineItem = new DataTimelineItem
 			{
 				SourceTable = "ToSIC_EAV_Entities",
-				Operation = DataTimelineEntityStateOperation,
+				Operation = Constants.DataTimelineEntityStateOperation,
 				NewData = entityModelSerialized.ToString(),
 				SourceGuid = currentEntity.EntityGUID,
 				SourceID = currentEntity.EntityID,
@@ -1522,7 +1449,7 @@ namespace ToSic.Eav
 			// get Versions from DataTimeline
 			var entityVersions = (from d in DataTimeline
 								  join c in ChangeLogs on d.SysLogID equals c.ChangeID
-								  where d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId
+                                  where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
 								  orderby c.Timestamp descending
 								  select new { d.SysCreatedDate, c.User, c.ChangeID }).ToList();
 
@@ -1551,7 +1478,7 @@ namespace ToSic.Eav
 			string timelineItem;
 			try
 			{
-				timelineItem = DataTimeline.Where(d => d.Operation == DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
+                timelineItem = DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
 			}
 			catch (InvalidOperationException ex)
 			{
@@ -1568,11 +1495,12 @@ namespace ToSic.Eav
 			// Prepare source and target-Languages
 			if (!defaultCultureDimension.HasValue)
 				throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
-			var defaultLanguage = GetDimension(defaultCultureDimension.Value).ExternalKey;
-			var targetDimensions = GetLanguages();
+		    var dim = new DbDimensions(this);
+			var defaultLanguage = dim.GetDimension(defaultCultureDimension.Value).ExternalKey;
+			var targetDimensions = dim.GetLanguages();
 			var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionID")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
 			var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
-			var sourceDimensions = GetDimensions(allSourceDimensionIdsDistinct).ToList();
+			var sourceDimensions = dim.GetDimensions(allSourceDimensionIdsDistinct).ToList();
 			int sourceDefaultDimensionId;
 			if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension.Value))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
 				sourceDefaultDimensionId = defaultCultureDimension.Value;

@@ -43,10 +43,10 @@ namespace ToSic.Eav.Testing
 		public void DimensionsCacheTest()
 		{
 			var Context = new EavContext();
-
-			var Entity1 = Context.GetLanguages();
-			var Entity2 = Context.GetLanguages();
-			var Entity3 = Context.GetLanguages();
+		    var dim = new DbDimensions(Context);
+			var Entity1 = dim.GetLanguages();
+			var Entity2 = dim.GetLanguages();
+			var Entity3 = dim.GetLanguages();
 
 			//Context.UpdateEntity();
 
