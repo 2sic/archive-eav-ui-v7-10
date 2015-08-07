@@ -548,7 +548,7 @@ namespace ToSic.Eav
 		/// </summary>
 		private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
 		{
-			var entityModel = entity.EntityID != 0 ? GetEntityModel(entity.EntityID) : null;
+			var entityModel = entity.EntityID != 0 ? new DbLoadForCaching(this).GetEntityModel(entity.EntityID) : null;
 			var newValuesTyped = Persistence.HelpersToRefactor.DictionaryToValuesViewModel(newValues);
 			foreach (var newValue in newValuesTyped)
 			{
@@ -1177,7 +1177,7 @@ namespace ToSic.Eav
 		public Tuple<bool, string> CanDeleteEntity(int entityId)
 		{
 			var messages = new List<string>();
-			var entityModel = GetEntityModel(entityId);
+            var entityModel = new DbLoadForCaching(this).GetEntityModel(entityId);
 
 			if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
 				return new Tuple<bool, string>(true, null);
@@ -1629,7 +1629,7 @@ namespace ToSic.Eav
 			import.RunImport(null, new List<Import.ImportEntity> { newVersion });
 
 			// Delete Draft (if any)
-			var entityDraft = GetEntityModel(entityId).GetDraft();
+            var entityDraft = new DbLoadForCaching(this).GetEntityModel(entityId).GetDraft();
 			if (entityDraft != null)
 				DeleteEntity(entityDraft.RepositoryId);
 		}

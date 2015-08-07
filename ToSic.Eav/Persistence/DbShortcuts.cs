@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.Data;
+//using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.Persistence
 {
@@ -183,6 +185,79 @@ namespace ToSic.Eav.Persistence
                    where ais.AttributeSetID == attributeSetId
                    orderby ais.SortOrder
                    select ais.Attribute;
+        }
+
+        /// <summary>
+        /// Get a List of AttributeWithMetaInfo of specified AttributeSet and DimensionIds
+        /// </summary>
+        public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
+        {
+            var attributesInSet = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+
+            var systemScope = AttributeScope.System.ToString();
+
+            return (from a in attributesInSet
+                    let metaData = new Metadata().GetAttributeMetaData(a.AttributeID, Context.ZoneId, Context.AppId)
+                    select new AttributeWithMetaInfo
+                    {
+                        AttributeID = a.AttributeID,
+                        IsTitle = a.IsTitle,
+                        StaticName = a.Attribute.StaticName,
+                        Name = metaData.ContainsKey("Name") && metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
+                        Notes = metaData.ContainsKey("Notes") && metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
+                        Type = a.Attribute.Type,
+                        HasTypeMetaData = Context.AttributesInSets.Any(s => s.Set == Context.AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
+                        MetaData = metaData
+                    }).ToList();
+        }
+
+
+        /// <summary>
+        /// Get a List of all Attributes in specified AttributeSet
+        /// </summary>
+        /// <param name="attributeSet">Reference to an AttributeSet</param>
+        /// <param name="includeTitleAttribute">Specify whether TitleAttribute should be included</param>
+        public List<Attribute> GetAttributes(AttributeSet attributeSet, bool includeTitleAttribute = true)
+        {
+            var items = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSet.AttributeSetID);
+            if (!includeTitleAttribute)
+                items = items.Where(a => !a.IsTitle);
+
+            return items.Select(a => a.Attribute).ToList();
+        }
+
+        /// <summary>
+        /// Get Title Attribute for specified AttributeSetId
+        /// </summary>
+        public Attribute GetTitleAttribute(int attributeSetId)
+        {
+            return Context.AttributesInSets.Single(a => a.AttributeSetID == attributeSetId && a.IsTitle).Attribute;
+        }
+
+        ///// <summary>
+        ///// Get Entities describing the Attribute (e.g. General and @String)
+        ///// </summary>
+        //public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId)
+        //{
+        //    return GetAttributeMetaData(attributeId, Context.ZoneId /*_zoneId*/, Context.AppId /*_appId*/);
+        //}
+        ///// <summary>
+        ///// Get Entities describing the Attribute (e.g. General and @String)
+        ///// </summary>
+        //public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId, int zoneId, int appId)
+        //{
+        //    // Get all EntityIds describing the Attribute (e.g. General and @String)
+        //    var entities = DataSource.GetMetaDataSource(zoneId, appId).GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, attributeId);
+        //    // Return all Attributes of all Entities with Value
+        //    return entities.SelectMany(e => e.Attributes).ToDictionary(a => a.Key, a => a.Value);
+        //}
+
+        /// <summary>
+        /// Get a list of all Attributes in Set for specified AttributeSetId
+        /// </summary>
+        public List<AttributeInSet> GetAttributesInSet(int attributeSetId)
+        {
+            return Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
         }
 
         #endregion

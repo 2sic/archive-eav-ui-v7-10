@@ -250,11 +250,11 @@ namespace ToSic.Eav.Testing
 		public void DraftEntitiesTest()
 		{
 			var db1 = EavContext.Instance(appId: 2);
-			var publishedWitDraft = db1.GetEntityModel(5454);
+			var publishedWitDraft = new DbLoadForCaching(db1).GetEntityModel(5454);
 			Assert.NotNull(publishedWitDraft.GetDraft());
 
 			var db2 = EavContext.Instance(appId: 2);
-			var draftEntity = db2.GetEntityModel(5458);
+            var draftEntity = new DbLoadForCaching(db2).GetEntityModel(5458);
 			Assert.NotNull(draftEntity.GetPublished());
 		}
 
@@ -265,7 +265,7 @@ namespace ToSic.Eav.Testing
 			var entityIds = new[] { 45 };
 			foreach (var entityId in entityIds)
 			{
-				ctx.GetEntityModel(entityId);
+                new DbLoadForCaching(ctx).GetEntityModel(entityId);
 			}
 		}
 	}

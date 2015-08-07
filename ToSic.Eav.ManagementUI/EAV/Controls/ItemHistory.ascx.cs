@@ -2,6 +2,7 @@
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -21,7 +22,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_eavContext = EavContext.Instance(appId: AppId);
-			var entityDraft = _eavContext.GetEntityModel(EntityId).GetDraft();
+			var entityDraft = new DbLoadForCaching(_eavContext).GetEntityModel(EntityId).GetDraft();
 			if (entityDraft != null)
 				DraftRepositoryId = entityDraft.RepositoryId;
 

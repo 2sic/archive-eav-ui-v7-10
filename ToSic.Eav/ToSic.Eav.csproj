@@ -124,6 +124,7 @@
     <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="Data\Entity.cs" />
     <Compile Include="Persistence\DbAttributeSet.cs" />
+    <Compile Include="Persistence\DbLoadForCaching.cs" />
     <Compile Include="Persistence\DbShortcuts.cs" />
     <Compile Include="Persistence\EavContext.cs" />
     <Compile Include="Persistence\EavContext1.Designer.cs">
@@ -136,6 +137,7 @@
     <Compile Include="ImportExport\Import.cs" />
     <Compile Include="Persistence\EavContextDimensions.cs" />
     <Compile Include="Persistence\EavContextRead.cs" />
+    <Compile Include="Persistence\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Tools.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Web.UI;
@@ -116,7 +117,7 @@ namespace ToSic.Eav.ManagementUI
 					break;
 				case FormViewMode.Edit:
 					var entity = DbS.GetEntity(EntityId);
-					var entityModel = Db.GetEntityModel(EntityId);
+					var entityModel = new DbLoadForCaching(Db).GetEntityModel(EntityId);
 					AttributeSetId = entity.AttributeSetID;
 					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
 					break;
@@ -188,7 +189,7 @@ namespace ToSic.Eav.ManagementUI
 
 				fieldTemplate.EnableViewState = true;
 				fieldTemplate.Attribute = attribute;
-				fieldTemplate.MetaData = Db.GetAttributeMetaData(attribute.AttributeID, metaDataZoneId, metaDataAppId);
+				fieldTemplate.MetaData = new Metadata().GetAttributeMetaData(attribute.AttributeID, metaDataZoneId, metaDataAppId);
 				fieldTemplate.MasterRecord = MasterRecord;
 				fieldTemplate.AppId = AppId;
 				fieldTemplate.ZoneId = ZoneId;
@@ -240,7 +241,7 @@ namespace ToSic.Eav.ManagementUI
 
 				#region Set Values and other Meta data
 				fieldTemplate.Attribute = attribute;
-				fieldTemplate.MetaData = Db.GetAttributeMetaData(attribute.AttributeID, metaDataZoneId, metaDataAppId);
+				fieldTemplate.MetaData = new Metadata().GetAttributeMetaData(attribute.AttributeID, metaDataZoneId, metaDataAppId);
 				fieldTemplate.EnableViewState = true;
 				fieldTemplate.Enabled = true;
 				fieldTemplate.MasterRecord = true;

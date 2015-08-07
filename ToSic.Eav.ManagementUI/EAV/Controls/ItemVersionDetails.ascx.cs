@@ -3,6 +3,7 @@ using System.Data;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -28,7 +29,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_ctx = EavContext.Instance(null, AppId);
-			_currentEntity = _ctx.GetEntityModel(EntityId);
+			_currentEntity = new DbLoadForCaching(_ctx).GetEntityModel(EntityId);
 
 			// Set Control Heading Text
 			var entityTitle = _currentEntity.Title == null ? "(no Title)" : _currentEntity.Title[DimensionIds];

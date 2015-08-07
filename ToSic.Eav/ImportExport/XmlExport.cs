@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport
 	public class XmlExport
 	{
 		private readonly EavContext _ctx;
-	    private readonly DbShortcuts _dbs;
+	    private readonly DbShortcuts DbS;
 
 		/// <summary>
 		/// Initializes a new instance of the XmlExport class.
@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport
 		public XmlExport(EavContext ctx)
 		{
 			_ctx = ctx;
-            _dbs = new DbShortcuts(ctx);
+            DbS = new DbShortcuts(ctx);
 		}
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(int entityId)
 		{
-			var iEntity = _ctx.GetEntityModel(entityId);
+			var iEntity = new DbLoadForCaching(_ctx).GetEntityModel(entityId);
 			return GetEntityXElement(iEntity);
 		}
 
@@ -36,7 +36,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(IEntity entity)
 		{
-			var eavEntity = _dbs.GetEntity(entity.EntityId);
+			var eavEntity = DbS.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
 
 			// Prepare Values
