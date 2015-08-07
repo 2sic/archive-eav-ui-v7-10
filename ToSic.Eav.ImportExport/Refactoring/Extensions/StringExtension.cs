@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class StringExtension
+    public static class StringExtension
     {
         /// <summary>
         /// Get for example en-US from [ref(en-US,ro)].

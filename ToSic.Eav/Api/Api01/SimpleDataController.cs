@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
-using Entity = ToSic.Eav.Entity;
 
 namespace ToSic.Eav.Api.Api01
 {

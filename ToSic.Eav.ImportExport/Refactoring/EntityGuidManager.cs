@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
+using ToSic.Eav.ImportExport.Refactoring.Options;
 
 namespace ToSic.Eav.ImportExport.Refactoring
 {
-    internal class EntityGuidManager
+    public class EntityGuidManager
     {
         private Guid entityGuidLast = Guid.Empty;
 

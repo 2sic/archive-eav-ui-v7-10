@@ -168,3 +168,6 @@ Resources.zip.manifest
 
 # Node stuff, Grunt, etc.
 node_modules/
+
+# dlls
+bin/

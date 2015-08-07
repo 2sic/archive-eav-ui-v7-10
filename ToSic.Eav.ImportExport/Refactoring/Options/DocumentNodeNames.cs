@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.ImportExport.Refactoring
+﻿namespace ToSic.Eav.ImportExport.Refactoring.Options
 {
     /// <summary>
     /// Element names of the 2SexyContent data xml.
     /// </summary>
-    internal static class DocumentNodeNames
+    public static class DocumentNodeNames
     {
         public const string Root = "SexyContentData";
 
