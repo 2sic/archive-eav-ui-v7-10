@@ -73,7 +73,7 @@ namespace ToSic.Eav.Import
 
                 _db.ImportEntityRelationshipsQueue();
 
-				_db.EnsureSharedAttributeSets();
+				DbS.EnsureSharedAttributeSets();
 
                 _db.SaveChanges();
             }
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Import
 	        destinationSet.AlwaysShareConfiguration = importAttributeSet.AlwaysShareConfiguration;
 	        if (destinationSet.AlwaysShareConfiguration)
 	        {
-		        _db.EnsureSharedAttributeSets();
+		        DbS.EnsureSharedAttributeSets();
 	        }
 	        _db.SaveChanges();
 

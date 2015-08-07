@@ -412,7 +412,7 @@ namespace ToSic.Eav
 			return AddAttributeSet(name, description, staticName, scope, autoSave, null);
 		}
 
-        private AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
+        internal AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();
@@ -1256,107 +1256,103 @@ namespace ToSic.Eav
 
 		#endregion
 
-		#region Zones
 
+        //#region Apps
 
-		#endregion
+        ///// <summary>
+        ///// Add a new App
+        ///// </summary>
+        //internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
+        //{
+        //    var newApp = new App
+        //    {
+        //        Name = name,
+        //        Zone = zone
+        //    };
+        //    AddToApps(newApp);
 
-		#region Apps
+        //    SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
-		/// <summary>
-		/// Add a new App
-		/// </summary>
-		internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
-		{
-			var newApp = new App
-			{
-				Name = name,
-				Zone = zone
-			};
-			AddToApps(newApp);
+        //    EnsureSharedAttributeSets(newApp);
 
-			SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
+        //    DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
 
-			EnsureSharedAttributeSets(newApp);
+        //    return newApp;
+        //}
 
-			DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
+        ///// <summary>
+        ///// Add a new App to the current Zone
+        ///// </summary>
+        ///// <param name="name">The name of the new App</param>
+        ///// <returns></returns>
+        //public App AddApp(string name)
+        //{
+        //    return AddApp(DbS.GetZone(ZoneId), name);
+        //}
 
-			return newApp;
-		}
+        ///// <summary>
+        ///// Delete an existing App with any Values and Attributes
+        ///// </summary>
+        ///// <param name="appId">AppId to delete</param>
+        //public void DeleteApp(int appId)
+        //{
+        //    // enure changelog exists and is set to SQL CONTEXT_INFO variable
+        //    if (_mainChangeLogId == 0)
+        //        GetChangeLogId(UserName);
 
-		/// <summary>
-		/// Add a new App to the current Zone
-		/// </summary>
-		/// <param name="name">The name of the new App</param>
-		/// <returns></returns>
-		public App AddApp(string name)
-		{
-			return AddApp(DbS.GetZone(ZoneId), name);
-		}
+        //    // Delete app using StoredProcedure
+        //    DeleteAppInternal(appId);
 
-		/// <summary>
-		/// Delete an existing App with any Values and Attributes
-		/// </summary>
-		/// <param name="appId">AppId to delete</param>
-		public void DeleteApp(int appId)
-		{
-			// enure changelog exists and is set to SQL CONTEXT_INFO variable
-			if (_mainChangeLogId == 0)
-				GetChangeLogId(UserName);
+        //    // Remove App from Global Cache
+        //    DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
+        //}
 
-			// Delete app using StoredProcedure
-			DeleteAppInternal(appId);
+        ///// <summary>
+        ///// Get all Apps in the current Zone
+        ///// </summary>
+        ///// <returns></returns>
+        //public List<App> GetApps()
+        //{
+        //    return Apps.Where(a => a.ZoneID == ZoneId).ToList();
+        //}
 
-			// Remove App from Global Cache
-			DataSource.GetCache(ZoneId, AppId).PurgeGlobalCache();
-		}
+        ///// <summary>
+        ///// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
+        ///// </summary>
+        //private void EnsureSharedAttributeSets(App app, bool autoSave = true)
+        //{
+        //    if (app.AppID == 0)
+        //        throw new Exception("App must have a valid AppID");
 
-		/// <summary>
-		/// Get all Apps in the current Zone
-		/// </summary>
-		/// <returns></returns>
-		public List<App> GetApps()
-		{
-			return Apps.Where(a => a.ZoneID == ZoneId).ToList();
-		}
+        //    var sharedAttributeSets = DbS.GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+        //    foreach (var sharedSet in sharedAttributeSets)
+        //    {
+        //        // Skip if attributeSet with StaticName already exists
+        //        if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
+        //            continue;
 
-		/// <summary>
-		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
-		/// </summary>
-		private void EnsureSharedAttributeSets(App app, bool autoSave = true)
-		{
-			if (app.AppID == 0)
-				throw new Exception("App must have a valid AppID");
+        //        // create new AttributeSet
+        //        var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
+        //        newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
+        //    }
 
-			var sharedAttributeSets = DbS.GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
-			foreach (var sharedSet in sharedAttributeSets)
-			{
-				// Skip if attributeSet with StaticName already exists
-				if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
-					continue;
+        //    // Ensure new AttributeSets are created and cache is refreshed
+        //    if (autoSave)
+        //        SaveChanges();
+        //}
 
-				// create new AttributeSet
-				var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
-				newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
-			}
+        ///// <summary>
+        ///// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
+        ///// </summary>
+        //internal void EnsureSharedAttributeSets()
+        //{
+        //    foreach (var app in Apps)
+        //        EnsureSharedAttributeSets(app, false);
 
-			// Ensure new AttributeSets are created and cache is refreshed
-			if (autoSave)
-				SaveChanges();
-		}
+        //    SaveChanges();
+        //}
 
-		/// <summary>
-		/// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
-		/// </summary>
-		internal void EnsureSharedAttributeSets()
-		{
-			foreach (var app in Apps)
-				EnsureSharedAttributeSets(app, false);
-
-			SaveChanges();
-		}
-
-		#endregion
+        //#endregion
 
         ///// <summary>
         ///// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)

@@ -200,8 +200,9 @@ namespace ToSic.Eav.Testing
 		public void AddRemoveApp()
 		{
 			var db = EavContext.Instance();
+		    var DbS = new DbShortcuts(db);
 			// Add new App
-			var app = db.AddApp("Test Clean Remove");
+			var app = DbS.AddApp("Test Clean Remove");
 			db.AppId = app.AppID;
 
 			// Add new AttributeSet
@@ -231,7 +232,7 @@ namespace ToSic.Eav.Testing
 			db.RemoveAttributeInSet(attribute3.AttributeID, attributeSet.AttributeSetID);
 
 			// Delete the App
-			db.DeleteApp(app.AppID);
+			DbS.DeleteApp(app.AppID);
 		}
 
 		//[Test]

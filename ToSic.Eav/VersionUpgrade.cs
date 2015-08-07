@@ -116,7 +116,7 @@ namespace ToSic.Eav
 
 			_metaDataCtx.SaveChanges();
 
-			_metaDataCtx.EnsureSharedAttributeSets();
+			new DbShortcuts(_metaDataCtx).EnsureSharedAttributeSets();
 			#endregion
 		}
 	}

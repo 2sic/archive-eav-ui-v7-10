@@ -352,7 +352,7 @@ namespace ToSic.Eav.Persistence
 
             new DbDimensions(Context).AddDimension(Constants.CultureSystemKey, "Culture Root", newZone);
 
-            var newApp = Context.AddApp(newZone);
+            var newApp = AddApp(newZone);
 
             Context.SaveChanges();
 
@@ -369,6 +369,113 @@ namespace ToSic.Eav.Persistence
 
             Context.SaveChanges();
         }
+        #endregion
+
+
+
+
+        #region Apps
+
+        /// <summary>
+        /// Add a new App
+        /// </summary>
+        internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
+        {
+            var newApp = new App
+            {
+                Name = name,
+                Zone = zone
+            };
+            Context.AddToApps(newApp);
+
+            Context.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
+
+            EnsureSharedAttributeSets(newApp);
+
+            EnsureCacheRefresh(Context.ZoneId, Context.AppId);
+
+            return newApp;
+        }
+
+        private void EnsureCacheRefresh(int zoneId, int appId)
+        {
+            // todo: bad - don't want any data-source in here!
+            DataSource.GetCache(zoneId, appId).PurgeGlobalCache();
+        }
+
+        /// <summary>
+        /// Add a new App to the current Zone
+        /// </summary>
+        /// <param name="name">The name of the new App</param>
+        /// <returns></returns>
+        public App AddApp(string name)
+        {
+            return AddApp(GetZone(Context.ZoneId), name);
+        }
+
+        /// <summary>
+        /// Delete an existing App with any Values and Attributes
+        /// </summary>
+        /// <param name="appId">AppId to delete</param>
+        public void DeleteApp(int appId)
+        {
+            // enure changelog exists and is set to SQL CONTEXT_INFO variable
+            if (Context._mainChangeLogId == 0)
+                Context.GetChangeLogId(Context.UserName);
+
+            // Delete app using StoredProcedure
+            Context.DeleteAppInternal(appId);
+
+            // Remove App from Global Cache
+            EnsureCacheRefresh(Context.ZoneId, Context.AppId);
+        }
+
+        /// <summary>
+        /// Get all Apps in the current Zone
+        /// </summary>
+        /// <returns></returns>
+        public List<App> GetApps()
+        {
+            return Context.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
+        }
+
+        /// <summary>
+        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
+        /// </summary>
+        private void EnsureSharedAttributeSets(App app, bool autoSave = true)
+        {
+            if (app.AppID == 0)
+                throw new Exception("App must have a valid AppID");
+
+            // todo: bad - don't want data-sources here
+            var sharedAttributeSets = GetAttributeSets(DataSource.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+            foreach (var sharedSet in sharedAttributeSets)
+            {
+                // Skip if attributeSet with StaticName already exists
+                if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
+                    continue;
+
+                // create new AttributeSet
+                var newAttributeSet = Context.AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
+                newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
+            }
+
+            // Ensure new AttributeSets are created and cache is refreshed
+            if (autoSave)
+                Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
+        /// </summary>
+        internal void EnsureSharedAttributeSets()
+        {
+            foreach (var app in Context.Apps)
+                EnsureSharedAttributeSets(app, false);
+
+            Context.SaveChanges();
+        }
+
         #endregion
     }
 }
