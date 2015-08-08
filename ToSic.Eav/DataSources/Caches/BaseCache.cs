@@ -6,20 +6,21 @@ using Microsoft.Practices.Unity;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Caches
 {
 	/// <summary>
 	/// Represents an abstract Cache DataSource
 	/// </summary>
-	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache
+	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache, IDeferredEntitiesList
 	{
 		/// <summary>PublishedEntities Stream Name</summary>
 		public const string PublishedStreamName = "Published";
 		/// <summary>Draft-Entities Stream Name</summary>
 		public const string DraftsStreamName = "Drafts";
 
-		protected IDataSource Cache { get; set; }
+		protected BaseCache Cache { get; set; }
 
 		protected BaseCache()
 		{
@@ -378,5 +379,15 @@ namespace ToSic.Eav.DataSources.Caches
         #endregion
 
         #endregion
+
+        IDictionary<int, IEntity> IDeferredEntitiesList.List
+        {
+            get { return Out[Constants.DefaultStreamName].List; }
+        }
+
+        IEnumerable<IEntity> IDeferredEntitiesList.LightList
+        {
+            get { return Out[Constants.DefaultStreamName].LightList; }
+        }
     }
 }

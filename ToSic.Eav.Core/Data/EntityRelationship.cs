@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public IEnumerable<int?> EntityIds { get; private set; }
 
-        private readonly IDictionary<int, IEntity> _fullEntityList;
+        private readonly IDeferredEntitiesList _fullEntityList;
         private List<IEntity> _entities;
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="fullEntitiesListForLookup">DataSource to retrieve child entities</param>
         /// <param name="entityIds">List of IDs to initialize with</param>
-        public EntityRelationship(IDictionary<int, IEntity> fullEntitiesListForLookup, IEnumerable<int?> entityIds = null)
+        public EntityRelationship(IDeferredEntitiesList fullEntitiesListForLookup, IEnumerable<int?> entityIds = null)
         {
             EntityIds = entityIds ?? EntityIdsEmpty;
             _fullEntityList = fullEntitiesListForLookup; 
@@ -44,7 +45,7 @@ namespace ToSic.Eav.Data
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
             if (_entities == null)
                 //_entities = _source == null ? new List<IEntity>() : _source.Out[Constants.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
-                _entities = _fullEntityList == null ? new List<IEntity>() : EntityIds.Select(l => l.HasValue ? _fullEntityList[l.Value] : null).ToList();
+                _entities = _fullEntityList == null ? new List<IEntity>() : EntityIds.Select(l => l.HasValue ? _fullEntityList.List[l.Value] : null).ToList();
 
             return new EntityEnum(_entities);
         }

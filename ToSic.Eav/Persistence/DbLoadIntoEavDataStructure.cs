@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Persistence
 {
@@ -15,7 +17,7 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Get all Entities Models for specified AppId
         /// </summary>
-        internal IDictionary<int, IEntity> GetEavEntities(int appId, IDataSource source)
+        internal IDictionary<int, IEntity> GetEavEntities(int appId, BaseCache source)
         {
             return GetAppDataPackage(null, appId, source, true).Entities;
         }
@@ -73,7 +75,7 @@ namespace ToSic.Eav.Persistence
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        internal AppDataPackage GetAppDataPackage(int[] entityIds, int appId, IDataSource source, bool entitiesOnly = false)
+        internal AppDataPackage GetAppDataPackage(int[] entityIds, int appId, IDeferredEntitiesList source, bool entitiesOnly = false)
         {
             var contentTypes = GetEavContentTypes(appId);
 
@@ -231,7 +233,7 @@ namespace ToSic.Eav.Persistence
                 foreach (var r in e.RelatedEntities)
                 {
                     var attributeModel = entityAttributes[r.AttributeID];
-                    var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source.List);
+                    var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
                     attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
@@ -294,7 +296,7 @@ namespace ToSic.Eav.Persistence
         /// Get EntityModel for specified EntityId
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
-        public IEntity GetEavEntity(int entityId, IDataSource source = null)
+        public IEntity GetEavEntity(int entityId, BaseCache source = null)
         {
             return GetAppDataPackage(new[] { entityId }, Context.AppId /*_appId*/, source, true).Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 // using ToSic.Eav.DataSources;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model for an Entity-Attribute
         /// </summary>
-        public static IValue GetValueModel(string attributeType, IEnumerable<int?> entityIds, IDictionary<int, IEntity> fullEntityListForLookup = null)
+        public static IValue GetValueModel(string attributeType, IEnumerable<int?> entityIds, IDeferredEntitiesList fullEntityListForLookup = null)
         {
             return GetValueModel(attributeType, entityIds, new Dimension[0], -1, -1, fullEntityListForLookup);
         }
@@ -41,7 +42,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated, IDictionary<int, IEntity> fullEntityListForLookup = null)
+        private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated, IDeferredEntitiesList fullEntityListForLookup = null)
         {
             IValueManagement typedModel;
             var stringValue = value as string;

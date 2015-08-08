@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.RootSources;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.DataSources.SqlSources
@@ -8,7 +10,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 	/// <summary>
 	/// A DataSource that uses SQL Server as Backend
 	/// </summary>
-	public class EavSqlStore : BaseDataSource, RootSources.IRootSource
+	public class EavSqlStore : BaseDataSource, IRootSource
 	{
 		private readonly EavContext _context;
 	    private readonly DbShortcuts DbS;
@@ -33,7 +35,8 @@ namespace ToSic.Eav.DataSources.SqlSources
 
         private IDictionary<int, IEntity> GetEntities()
 		{
-			return new DbLoadIntoEavDataStructure(_context).GetEavEntities(AppId, this);
+            // 2015-08-08 2dm: note: changed to use the source null (previously this), as it's only used for internal deferred child-entity lookups and would cause infinite looping
+			return new DbLoadIntoEavDataStructure(_context).GetEavEntities(AppId, null);
 		}
 
 		/// <summary>
@@ -59,12 +62,12 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready { get { return _ready; } }
 
-		public AppDataPackage GetDataForCache(IDataSource cache)
+		public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups)
 		{
-			return new DbLoadIntoEavDataStructure(_context).GetAppDataPackage(null, AppId, cache);
+			return new DbLoadIntoEavDataStructure(_context).GetAppDataPackage(null, AppId, targetCacheForDeferredLookups);
 		}
 
-		public Dictionary<int, Data.Zone> GetAllZones()
+	    public Dictionary<int, Data.Zone> GetAllZones()
 		{
 			return DbS.GetAllZones();
 		}
