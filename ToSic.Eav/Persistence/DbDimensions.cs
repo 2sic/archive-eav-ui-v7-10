@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
 {
-	public class DbDimensions: EavContext
+	public class DbDimensions: DbExtensionCommandsBase
 	{
-        private EavContext Context { get; set; }
-
-        public DbDimensions(EavContext cntxt)
-        {
-            Context = cntxt;
-        }
-
+	    public DbDimensions(EavContext cntx) : base(cntx)
+	    {
+	    }
         private static List<Dimension> _cachedDimensions;
 
         #region Cached Dimensions
 
-        internal void EnsureDimensionsCache()
+
+
+	    internal void EnsureDimensionsCache()
         {
             if (_cachedDimensions == null)
-                _cachedDimensions = Dimensions.ToList();
+                _cachedDimensions = Context.Dimensions.ToList();
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace ToSic.Eav
 		{
 			EnsureDimensionsCache();
 
-			return _cachedDimensions.Where(d => string.Equals(d.SystemKey, systemKey, StringComparison.InvariantCultureIgnoreCase) && string.Equals(d.ExternalKey, externalKey, StringComparison.InvariantCultureIgnoreCase) && d.ZoneID == ZoneId).Select(d => d.DimensionID).FirstOrDefault();
+            return _cachedDimensions.Where(d => string.Equals(d.SystemKey, systemKey, StringComparison.InvariantCultureIgnoreCase) && string.Equals(d.ExternalKey, externalKey, StringComparison.InvariantCultureIgnoreCase) && d.ZoneID == Context.ZoneId).Select(d => d.DimensionID).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -46,7 +45,7 @@ namespace ToSic.Eav
 		/// <returns>A Dimension or null</returns>
 		public Dimension GetDimension(int dimensionId)
 		{
-			return Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
+			return Context.Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
 		}
 
 		/// <summary>
@@ -54,7 +53,7 @@ namespace ToSic.Eav
 		/// </summary>
 		internal IEnumerable<Dimension> GetDimensions(IEnumerable<int> dimensionIds)
 		{
-			return Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == ZoneId);
+			return Context.Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == Context.ZoneId);
 		}
 
 		/// <summary>
@@ -64,7 +63,7 @@ namespace ToSic.Eav
 		{
 			EnsureDimensionsCache();
 
-			return _cachedDimensions.Where(d => d.ParentID.HasValue && d.Parent.SystemKey == systemKey && d.ZoneID == ZoneId).ToList();
+			return _cachedDimensions.Where(d => d.ParentID.HasValue && d.Parent.SystemKey == systemKey && d.ZoneID == Context.ZoneId).ToList();
 		}
 
 		/// <summary>
@@ -72,7 +71,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId)
 		{
-			return Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
+            return Context.Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
 		}
 
 		/// <summary>
@@ -80,7 +79,7 @@ namespace ToSic.Eav
 		/// </summary>
 		public IQueryable<Dimension> GetFallbackDimensions(int entityId, int attributeId)
 		{
-			return from vd in ValuesDimensions
+            return from vd in Context.ValuesDimensions
 				   where
 					  vd.Value.EntityID == entityId &&
 					  vd.Value.AttributeID == attributeId &&
@@ -95,13 +94,13 @@ namespace ToSic.Eav
 		/// </summary>
 		public void UpdateDimension(int dimensionId, bool? active = null, string name = null)
 		{
-			var dimension = Dimensions.Single(d => d.DimensionID == dimensionId);
+			var dimension = Context.Dimensions.Single(d => d.DimensionID == dimensionId);
 			if (active.HasValue)
 				dimension.Active = active.Value;
 			if (name != null)
 				dimension.Name = name;
 
-			SaveChanges();
+            Context.SaveChanges();
 			ClearDimensionsCache();
 		}
 
@@ -117,10 +116,10 @@ namespace ToSic.Eav
 				Zone = zone,
 				Parent = parent
 			};
-			AddToDimensions(newDimension);
+            Context.AddToDimensions(newDimension);
 
 			if (autoSave)
-				SaveChanges();
+                Context.SaveChanges();
 
 			ClearDimensionsCache();
 		}
@@ -165,10 +164,10 @@ namespace ToSic.Eav
 				Name = name,
 				ExternalKey = externalKey,
 				ParentID = GetDimensionId("Culture", null),
-				ZoneID = ZoneId
+                ZoneID = Context.ZoneId
 			};
-			AddToDimensions(newLanguage);
-			SaveChanges();
+            Context.AddToDimensions(newLanguage);
+            Context.SaveChanges();
 			ClearDimensionsCache();
 
 			return newLanguage;
@@ -180,7 +179,7 @@ namespace ToSic.Eav
 		/// <param name="zoneId">null means ZoneId on current Context</param>
 		public bool HasLanguages(int? zoneId = null)
 		{
-			return Dimensions.Any(d => d.Parent == Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId.HasValue ? zoneId : ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
+            return Context.Dimensions.Any(d => d.Parent == Context.Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId.HasValue ? zoneId : Context.ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
 		}
 
 		#endregion

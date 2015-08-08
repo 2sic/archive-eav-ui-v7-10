@@ -9,14 +9,14 @@ using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbVersioning
+    public class DbVersioning: DbExtensionCommandsBase
     {
-        public EavContext Context { get; internal set; }
-
-        public DbVersioning(EavContext cntx)
+        public DbVersioning(EavContext cntx) : base(cntx)
         {
-            Context = cntx;
         }
+
+        public int MainChangeLogId;
+
 
         /// <summary>
         /// Creates a ChangeLog immediately
@@ -24,14 +24,14 @@ namespace ToSic.Eav.Persistence
         /// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
         public int GetChangeLogId(string userName)
         {
-            if (Context.MainChangeLogId == 0)
+            if (MainChangeLogId == 0)
             {
                 if (Context.Connection.State != ConnectionState.Open)
                     Context.Connection.Open();	// make sure same connection is used later
-                Context.MainChangeLogId = Context.AddChangeLog(userName).Single().ChangeID;
+                MainChangeLogId = Context.AddChangeLog(userName).Single().ChangeID;
             }
 
-            return Context.MainChangeLogId;
+            return MainChangeLogId;
         }
 
         /// <summary>
@@ -48,13 +48,13 @@ namespace ToSic.Eav.Persistence
         /// <param name="changeLogId"></param>
         public void SetChangeLogId(int changeLogId)
         {
-            if (Context.MainChangeLogId != 0)
+            if (MainChangeLogId != 0)
                 throw new Exception("ChangeLogID was already set");
 
 
             Context.Connection.Open();	// make sure same connection is used later
             Context.SetChangeLogIdInternal(changeLogId);
-            Context.MainChangeLogId = changeLogId;
+            MainChangeLogId = changeLogId;
         }
 
 
@@ -199,7 +199,7 @@ namespace ToSic.Eav.Persistence
             import.RunImport(null, new List<Import.ImportEntity> { newVersion });
 
             // Delete Draft (if any)
-            var entityDraft = new DbLoadAsEav(Context).GetEavEntity(entityId).GetDraft();
+            var entityDraft = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId).GetDraft();
             if (entityDraft != null)
                 Context.EntCommands.DeleteEntity(entityDraft.RepositoryId);
         }

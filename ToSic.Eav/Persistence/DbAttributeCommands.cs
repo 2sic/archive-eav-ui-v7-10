@@ -7,15 +7,9 @@ using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbAttributeCommands
+    public class DbAttributeCommands: DbExtensionCommandsBase
     {
-        public EavContext Context { get; private set; }
-
-        public DbAttributeCommands(EavContext cntxt)
-        {
-            Context = cntxt;
-        }
-
+        public DbAttributeCommands(EavContext cntx) : base(cntx) {}
 
         /// <summary>
         /// Change the sort order of an attribute - move up or down
@@ -158,5 +152,20 @@ namespace ToSic.Eav.Persistence
             return newAttribute;
         }
 
+        /// <summary>
+        /// Update AdditionalProperties of an attribute 
+        /// </summary>
+        public Entity UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
+        {
+            var fieldPropertyEntity = Context.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
+            if (fieldPropertyEntity != null)
+                return Context.EntCommands.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
+
+            var metaDataSetName = isAllProperty ? "@All" : "@" + Context.Attributes.Single(a => a.AttributeID == attributeId).Type;
+            var systemScope = AttributeScope.System.ToString();
+            var attributeSetId = Context.AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/).AttributeSetID;
+
+            return Context.EntCommands.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
+        }
     }
 }

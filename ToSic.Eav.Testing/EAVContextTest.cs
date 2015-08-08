@@ -229,7 +229,7 @@ namespace ToSic.Eav.Testing
 
 			// update existing AttributeSets
 			db.AttrCommands.UpdateAttribute(attribute2.AttributeID, "Attribute2Renamed");
-			db.RemoveAttributeInSet(attribute3.AttributeID, attributeSet.AttributeSetID);
+			db.AttSetCommands.RemoveAttributeInSet(attribute3.AttributeID, attributeSet.AttributeSetID);
 
 			// Delete the App
 			DbS.DeleteApp(app.AppID);
@@ -251,11 +251,11 @@ namespace ToSic.Eav.Testing
 		public void DraftEntitiesTest()
 		{
 			var db1 = EavContext.Instance(appId: 2);
-			var publishedWitDraft = new DbLoadAsEav(db1).GetEavEntity(5454);
+			var publishedWitDraft = new DbLoadIntoEavDataStructure(db1).GetEavEntity(5454);
 			Assert.NotNull(publishedWitDraft.GetDraft());
 
 			var db2 = EavContext.Instance(appId: 2);
-            var draftEntity = new DbLoadAsEav(db2).GetEavEntity(5458);
+            var draftEntity = new DbLoadIntoEavDataStructure(db2).GetEavEntity(5458);
 			Assert.NotNull(draftEntity.GetPublished());
 		}
 
@@ -266,7 +266,7 @@ namespace ToSic.Eav.Testing
 			var entityIds = new[] { 45 };
 			foreach (var entityId in entityIds)
 			{
-                new DbLoadAsEav(ctx).GetEavEntity(entityId);
+                new DbLoadIntoEavDataStructure(ctx).GetEavEntity(entityId);
 			}
 		}
 	}

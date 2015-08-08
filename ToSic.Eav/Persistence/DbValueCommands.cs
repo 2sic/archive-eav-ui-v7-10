@@ -7,15 +7,11 @@ using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbValueCommands
+    public class DbValueCommands : DbExtensionCommandsBase
     {
-        public EavContext Context { get; private set; }
-
-        public DbValueCommands(EavContext cntxt)
+        public DbValueCommands(EavContext cntx) : base(cntx)
         {
-            Context = cntxt;
         }
-
 
         /// <summary>
         /// Copy all Values (including Related Entities) from teh Source Entity to the target entity

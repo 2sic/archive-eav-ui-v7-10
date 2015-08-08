@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using Microsoft.Practices.Unity;
@@ -376,7 +377,7 @@ namespace ToSic.Eav.ManagementUI.API
 			if (_context == null)
 				_context = EavContext.Instance(appId: appId);
 
-			var canDeleteResult = _context.CanDeleteEntity(id);
+		    var canDeleteResult = (new EntityBLL().CanDeleteEntity(_context, id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)
 				throw new Exception(canDeleteResult.Item2);
 

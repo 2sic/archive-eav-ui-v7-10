@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
@@ -14,40 +13,6 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DataSource
 	{
-        ///// <summary>
-        ///// Default ZoneId. Used if none is specified on the Context.
-        ///// </summary>
-        //public readonly static int DefaultZoneId = 1;
-        ///// <summary>
-        ///// AppId where MetaData (Entities) are stored.
-        ///// </summary>
-        //public readonly static int MetaDataAppId = 1;
-        ///// <summary>
-        ///// AssignmentObjectTypeId for FieldProperties (Field MetaData)
-        ///// </summary>
-        //public readonly static int AssignmentObjectTypeIdFieldProperties = 2;
-        ///// <summary>
-        ///// AssignmentObjectTypeId for DataPipelines
-        ///// </summary>
-        //public readonly static int AssignmentObjectTypeEntity = 4;
-        ///// <summary>
-        ///// StaticName of the DataPipeline AttributeSet
-        ///// </summary>
-        //public readonly static string DataPipelineStaticName = "DataPipeline";
-        ///// <summary>
-        ///// StaticName of the DataPipelinePart AttributeSet
-        ///// </summary>
-        //public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
-
-        ///// <summary>
-        ///// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
-        ///// </summary>
-        //public const string DataPipelineStreamWiringStaticName = "StreamWiring";
-
-        ///// <summary>
-        ///// Default In-/Out-Stream Name
-        ///// </summary>
-        //public const string DefaultStreamName = "Default";
 
 		/// <summary>
 		/// Assemble a DataSource with specified Type/Interface-Chain in reversed order.
@@ -91,16 +56,15 @@ namespace ToSic.Eav
 			return newDs;
 		}
 
-		/// <summary>
-		/// Get DataSource for specified sourceName/Type using Unity.
-		/// </summary>
-		/// <param name="T">Full Qualified Type</param>
-		/// <param name="zoneId">ZoneId for this DataSource</param>
-		/// <param name="appId">AppId for this DataSource</param>
-		/// <param name="upstream">In-Connection</param>
-		/// <param name="valueCollectionProvider">Provides configuration values if needed</param>
-		/// <returns>A single DataSource</returns>
-		public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
+	    /// <summary>
+	    /// Get DataSource for specified sourceName/Type using Unity.
+	    /// </summary>
+	    /// <param name="zoneId">ZoneId for this DataSource</param>
+	    /// <param name="appId">AppId for this DataSource</param>
+	    /// <param name="upstream">In-Connection</param>
+	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <returns>A single DataSource</returns>
+	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
 			IValueCollectionProvider valueCollectionProvider = null)
 		{
             if(upstream == null && valueCollectionProvider == null)

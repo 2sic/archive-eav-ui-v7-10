@@ -22,7 +22,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_eavContext = EavContext.Instance(appId: AppId);
-			var entityDraft = new DbLoadAsEav(_eavContext).GetEavEntity(EntityId).GetDraft();
+			var entityDraft = new DbLoadIntoEavDataStructure(_eavContext).GetEavEntity(EntityId).GetDraft();
 			if (entityDraft != null)
 				DraftRepositoryId = entityDraft.RepositoryId;
 

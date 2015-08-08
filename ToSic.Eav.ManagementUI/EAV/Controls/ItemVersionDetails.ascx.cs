@@ -29,7 +29,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_ctx = EavContext.Instance(null, AppId);
-			_currentEntity = new DbLoadAsEav(_ctx).GetEavEntity(EntityId);
+			_currentEntity = new DbLoadIntoEavDataStructure(_ctx).GetEavEntity(EntityId);
 
 			// Set Control Heading Text
 			var entityTitle = _currentEntity.Title == null ? "(no Title)" : _currentEntity.Title[DimensionIds];

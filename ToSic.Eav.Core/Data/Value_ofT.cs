@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     {
         public T TypedContents { get; internal set; }
 
-        internal Value(T typedContents)
+        public Value(T typedContents)
         {
             TypedContents = typedContents;
         }

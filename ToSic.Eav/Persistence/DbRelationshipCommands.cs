@@ -7,18 +7,17 @@ using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbRelationshipCommands
+    public class DbRelationshipCommands: DbExtensionCommandsBase
     {
-        public EavContext Context { get; private set; }
-
-        public DbRelationshipCommands(EavContext cntxt)
-        {
-            Context = cntxt;
-        }
+        
 
         private readonly List<EntityRelationshipQueueItem> _entityRelationshipsQueue =
             new List<EntityRelationshipQueueItem>();
 
+
+        public DbRelationshipCommands(EavContext cntx) : base(cntx)
+        {
+        }
 
         /// <summary>
         /// Update Relationships of an Entity

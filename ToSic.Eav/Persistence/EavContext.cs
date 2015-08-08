@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
@@ -32,10 +29,9 @@ namespace ToSic.Eav
         public DbAttributeCommands AttrCommands { get; private set; }
         public DbRelationshipCommands RelCommands { get; private set; }
         public DbAttributeSetCommands AttSetCommands { get; private set; }
+        public DbPublishing PubCommands { get; private set; }
 
 	    #endregion
-
-
 
 		#region Private Fields
 		public int _appId;
@@ -43,7 +39,6 @@ namespace ToSic.Eav
 		/// <summary>caches all AttributeSets for each App</summary>
 		internal readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 		/// <summary>SaveChanges() assigns all Changes to this ChangeLog</summary>
-		public int MainChangeLogId;
 		#endregion
 
 		#region Properties like AppId, ZoneId, UserName etc.
@@ -97,6 +92,7 @@ namespace ToSic.Eav
             x.AttrCommands = new DbAttributeCommands(x);
             x.RelCommands = new DbRelationshipCommands(x);
             x.AttSetCommands = new DbAttributeSetCommands(x);
+            x.PubCommands = new DbPublishing(x);
 		    return x;
 		}
 
@@ -156,137 +152,12 @@ namespace ToSic.Eav
 		#region Update
 
 
-		/// <summary>
-		/// Update an Entity when using the Import
-		/// </summary>
-		internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<LogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool preserveUndefinedValues)
-		{
-			if (updateLog == null)
-				throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
-
-			// track updated values to remove values that were not updated automatically
-			var updatedValueIds = new List<int>();
-			var updatedAttributeIds = new List<int>();
-			foreach (var newValue in newValuesImport)
-            {
-                #region Get Attribute Definition from List (or skip this field if not found)
-                var attribute = attributeList.SingleOrDefault(a => a.StaticName == newValue.Key);
-				if (attribute == null) // Attribute not found
-				{
-					// Log Warning for all Values
-					updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value")
-					{
-						ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
-						Value = v,
-						ImportEntity = v.ParentEntity
-					}));
-					continue;
-                }
-                #endregion
-
-                updatedAttributeIds.Add(attribute.AttributeID);
-
-                // Go through each value / dimensions combination
-				foreach (var newSingleValue in newValue.Value)
-				{
-					try
-					{
-						var updatedValue = UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
-
-						var updatedEavValue = updatedValue as EavValue;
-						if (updatedEavValue != null)
-							updatedValueIds.Add(updatedEavValue.ValueID);
-					}
-					catch (Exception ex)
-					{
-						updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed")
-						{
-							ImportAttribute = new ImportAttribute { StaticName = newValue.Key },
-							Value = newSingleValue,
-							ImportEntity = newSingleValue.ParentEntity,
-							Exception = ex
-						});
-					}
-				}
-			}
-
-			// remove all existing values that were not updated
-            // Logic should be:
-            // Of all values - skip the ones we just modified and those which are deleted
-		    var valuesToDeleteNew = currentEntity.Values.Where(
-		        v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null);
-
-            // Clean up - sometimes the default language doesn't clean properly - so even if it's good now...
-            // ...there is old data which sometimes still is duplicate and causes issues, so this clean-up is important
-            // So goal: every same-attribute-ID as the updated, with the same non-language-settings, is a left-over
-		    var reallyDelete = valuesToDeleteNew.Where(e => updatedAttributeIds.Contains(e.AttributeID));
-
-		    if (preserveUndefinedValues)
-		    {
-		        var valuesToKeep = valuesToDeleteNew.Where(v => updatedAttributeIds.Contains(v.AttributeID));
-                if(valuesToKeep.Count() > updatedAttributeIds.Count) // in this case something is bad
-                    throw new Exception("have too many to keep, don't know what to do, abort...");
-		        valuesToDeleteNew = valuesToDeleteNew.Where(v => !updatedAttributeIds.Contains(v.AttributeID));
-		    }
-
-		    // && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
-		    var valuesToDelete = valuesToDeleteNew.ToList();
-            //var valuesToDelete = currentEntity.Values.Where(
-            //    v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null 
-            //        && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
-            valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = Versioning.GetChangeLogId());
-		}
-
-		/// <summary>
-		/// Publish a Draft Entity
-		/// </summary>
-		/// <param name="entityId">ID of the Draft-Entity</param>
-		public Entity PublishEntity(int entityId)
-		{
-			return PublishEntity(entityId, true);
-		}
-
-		/// <summary>
-		/// Publish a Draft-Entity
-		/// </summary>
-		/// <param name="entityId">ID of the Draft-Entity</param>
-		/// <param name="autoSave">Call SaveChanges() automatically?</param>
-		/// <returns>The published Entity</returns>
-		internal Entity PublishEntity(int entityId, bool autoSave = true)
-		{
-			var unpublishedEntity = DbS.GetEntity(entityId);
-			if (unpublishedEntity.IsPublished)
-				throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
-
-			Entity publishedEntity;
-
-			// Publish Draft-Entity
-			if (!unpublishedEntity.PublishedEntityId.HasValue)
-			{
-				unpublishedEntity.IsPublished = true;
-				publishedEntity = unpublishedEntity;
-			}
-			// Replace currently published Entity with draft Entity and delete the draft
-			else
-			{
-				publishedEntity = DbS.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-				ValCommands.CloneEntityValues(unpublishedEntity, publishedEntity);
-
-				// delete the Draft Entity
-				EntCommands.DeleteEntity(unpublishedEntity, false);
-			}
-
-			if (autoSave)
-				SaveChanges();
-
-			return publishedEntity;
-		}
 
 		#region Update Values
 		/// <summary>
 		/// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
 		/// </summary>
-		private object UpdateValueByImport(Entity currentEntity, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
+		internal object UpdateValueByImport(Entity currentEntity, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
 		{
 			switch (attribute.Type)
 			{
@@ -500,62 +371,14 @@ namespace ToSic.Eav
 
 
 
-        ///// <summary>
-        ///// Update Relationships of an Entity
-        ///// </summary>
-        //private void UpdateEntityRelationships(int attributeId, IEnumerable<int?> newValue, Entity currentEntity)
-        //{
-        //    // remove existing Relationships that are not in new list
-        //    var newEntityIds = newValue.ToList();
-        //    var existingRelationships = currentEntity.EntityParentRelationships.Where(e => e.AttributeID == attributeId).ToList();
-
-        //    // Delete all existing relationships
-        //    foreach (var relationToDelete in existingRelationships)
-        //        EntityRelationships.DeleteObject(relationToDelete);
-
-        //    // Create new relationships
-        //    for (int i = 0; i < newEntityIds.Count; i++)
-        //    {
-        //        var newEntityId = newEntityIds[i];
-        //        currentEntity.EntityParentRelationships.Add(new EntityRelationship { AttributeID = attributeId, ChildEntityID = newEntityId, SortOrder = i });
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
-        ///// </summary>
-        //private void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid entityGuid)
-        //{
-        //    _entityRelationshipsQueue.Add(new EntityRelationshipQueueItem { AttributeId = attributeId, ChildEntityGuids = newValue, ParentEntityGuid = entityGuid });
-        //}
-
-        ///// <summary>
-        ///// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
-        ///// </summary>
-        //internal void ImportEntityRelationshipsQueue()
-        //{
-        //    foreach (var relationship in _entityRelationshipsQueue)
-        //    {
-        //        var entity = DbS.GetEntity(relationship.ParentEntityGuid);
-        //        var childEntityIds = new List<int?>();
-        //        foreach (var childGuid in relationship.ChildEntityGuids)
-        //        {
-        //            try
-        //            {
-        //                childEntityIds.Add(childGuid.HasValue ? DbS.GetEntity(childGuid.Value).EntityID : new int?());
-        //            }
-        //            catch (InvalidOperationException) { }	// may occur if the child entity wasn't created successfully
-        //        }
-
-        //        UpdateEntityRelationships(relationship.AttributeId, childEntityIds, entity);
-        //    }
-
-        //    _entityRelationshipsQueue.Clear();
-        //}
 
 		#endregion
 
-		/// <summary>
+        #endregion
+
+        #region Save and check if to kill cache
+
+        /// <summary>
 		/// Persists all updates to the data source and optionally resets change tracking in the object context.
 		/// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
 		/// If items were modified, Cache is purged on current Zone/App
@@ -566,7 +389,7 @@ namespace ToSic.Eav
 				throw new Exception("SaveChanges with AppId 0 not allowed.");
 
 			// enure changelog exists and is set to SQL CONTEXT_INFO variable
-			if (MainChangeLogId == 0)
+			if (Versioning.MainChangeLogId == 0)
                 Versioning.GetChangeLogId(UserName);
 
 			var modifiedItems = base.SaveChanges(options);
@@ -577,155 +400,8 @@ namespace ToSic.Eav
 			return modifiedItems;
 		}
 
-
-		/// <summary>
-		/// Update AdditionalProperties of a Field
-		/// </summary>
-		public Entity UpdateFieldAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
-		{
-			var fieldPropertyEntity = Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
-			if (fieldPropertyEntity != null)
-				return EntCommands.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
-
-			var metaDataSetName = isAllProperty ? "@All" : "@" + Attributes.Single(a => a.AttributeID == attributeId).Type;
-			var systemScope = AttributeScope.System.ToString();
-			var attributeSetId = AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == _appId).AttributeSetID;
-
-			return EntCommands.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
-		}
-
 		#endregion
 
-		#region Delete
-
-		/// <summary>
-		/// Remove an Attribute from an AttributeSet and delete values
-		/// </summary>
-		public void RemoveAttributeInSet(int attributeId, int attributeSetId)
-		{
-			// Delete the AttributeInSet
-			DeleteObject(AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
-
-			// Delete all Values an their ValueDimensions
-			var valuesToDelete = Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
-			foreach (var valueToDelete in valuesToDelete)
-			{
-				valueToDelete.ValuesDimensions.ToList().ForEach(DeleteObject);
-				DeleteObject(valueToDelete);
-			}
-
-			// Delete all Entity-Relationships
-			var relationshipsToDelete = EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
-			relationshipsToDelete.ForEach(DeleteObject);
-
-			SaveChanges();
-		}
-
-		/// <summary>
-		/// Test whehter Entity can be deleted safe if it has no relationships
-		/// </summary>
-		/// <returns>Item1: Indicates whether Entity can be deleted. Item2: Messages why Entity can't be deleted safe.</returns>
-		public Tuple<bool, string> CanDeleteEntity(int entityId)
-		{
-			var messages = new List<string>();
-            var entityModel = new DbLoadAsEav(this).GetEavEntity(entityId);
-
-			if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
-				return new Tuple<bool, string>(true, null);
-
-			var entityChild = EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
-			if (entityChild.Any())
-				messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
-
-			var assignedEntitiesFieldProperties = DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
-			if (assignedEntitiesFieldProperties.Any())
-				messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
-
-			var assignedEntitiesDataPipeline = DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
-			if (assignedEntitiesDataPipeline.Any())
-				messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
-
-			return Tuple.Create(!messages.Any(), string.Join(" ", messages));
-		}
-
-        ///// <summary>
-        ///// Delete an Entity
-        ///// </summary>
-        //public bool DeleteEntity(int repositoryId)
-        //{
-        //    return DeleteEntity(DbS.GetEntity(repositoryId));
-        //}
-
-        ///// <summary>
-        ///// Delete an Entity
-        ///// </summary>
-        //public bool DeleteEntity(Guid entityGuid)
-        //{
-        //    return DeleteEntity(DbS.GetEntity(entityGuid));
-        //}
-
-        ///// <summary>
-        ///// Delete an Entity
-        ///// </summary>
-        //private bool DeleteEntity(Entity entity, bool autoSave = true)
-        //{
-        //    if (entity == null)
-        //        return false;
-
-        //    #region Delete Related Records (Values, Value-Dimensions, Relationships)
-        //    // Delete all Value-Dimensions
-        //    var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
-        //    valueDimensions.ForEach(DeleteObject);
-        //    // Delete all Values
-        //    entity.Values.ToList().ForEach(DeleteObject);
-        //    // Delete all Parent-Relationships
-        //    entity.EntityParentRelationships.ToList().ForEach(DeleteObject);
-        //    #endregion
-
-        //    // If entity was Published, set Deleted-Flag
-        //    if (entity.IsPublished)
-        //    {
-        //        entity.ChangeLogIDDeleted = Versioning.GetChangeLogId();
-        //        // Also delete the Draft (if any)
-        //        var draftEntityId = EntCommands.GetDraftEntityId(entity.EntityID);
-        //        if (draftEntityId.HasValue)
-        //            DeleteEntity(draftEntityId.Value);
-        //    }
-        //    // If entity was a Draft, really delete that Entity
-        //    else
-        //    {
-        //        // Delete all Child-Relationships
-        //        entity.EntityChildRelationships.ToList().ForEach(DeleteObject);
-        //        DeleteObject(entity);
-        //    }
-
-        //    if (autoSave)
-        //        SaveChanges();
-
-        //    return true;
-        //}
-
-		#endregion
-
-
-
-        //#region Internal Helper Classes
-        //private class EntityRelationshipQueueItem
-        //{
-        //    public int AttributeId { get; set; }
-        //    public Guid ParentEntityGuid { get; set; }
-        //    public List<Guid?> ChildEntityGuids { get; set; }
-        //}
-        //#endregion
-
-		#region Versioning
-
-
-
-
-
-
-		#endregion
 	}
 
 }

@@ -52,8 +52,13 @@
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\Dimension.cs" />
+    <Compile Include="Data\EntityRelationship.cs" />
     <Compile Include="Data\EntityRelationshipItem.cs" />
+    <Compile Include="Data\RelatedEntities.cs" />
+    <Compile Include="Data\RelationshipManager.cs" />
     <Compile Include="Data\TypedValue_ofT.cs" />
+    <Compile Include="Data\Value.cs" />
+    <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
     <Compile Include="Enums\AttributeMoveDirection.cs" />
     <Compile Include="Enums\AttributeScope.cs" />

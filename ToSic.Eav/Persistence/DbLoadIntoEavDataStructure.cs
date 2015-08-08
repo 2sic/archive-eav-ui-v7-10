@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbLoadAsEav
+    public class DbLoadIntoEavDataStructure: DbExtensionCommandsBase
     {
-        public EavContext Context;
-
-        public DbLoadAsEav(EavContext cntx)
+        public DbLoadIntoEavDataStructure(EavContext cntx) : base(cntx)
         {
-            Context = cntx;
         }
 
         /// <summary>
@@ -236,7 +231,7 @@ namespace ToSic.Eav.Persistence
                 foreach (var r in e.RelatedEntities)
                 {
                     var attributeModel = entityAttributes[r.AttributeID];
-                    var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
+                    var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source.List);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
                     attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();

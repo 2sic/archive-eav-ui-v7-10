@@ -29,7 +29,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(int entityId)
 		{
-			var iEntity = new DbLoadAsEav(_ctx).GetEavEntity(entityId);
+			var iEntity = new DbLoadIntoEavDataStructure(_ctx).GetEavEntity(entityId);
 			return GetEntityXElement(iEntity);
 		}
 

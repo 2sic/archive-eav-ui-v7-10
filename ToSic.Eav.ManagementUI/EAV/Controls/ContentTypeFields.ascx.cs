@@ -197,7 +197,7 @@ namespace ToSic.Eav.ManagementUI
 			var dbMetaData = EavContext.Instance(Db.ZoneId, Db.AppId);
 			dbMetaData.Versioning.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);
 			dbMetaData.UserName = HttpContext.Current.User.Identity.Name;
-			dbMetaData.UpdateFieldAdditionalProperties(insertedAttribute.AttributeID, true, values);
+			dbMetaData.AttrCommands.UpdateAttributeAdditionalProperties(insertedAttribute.AttributeID, true, values);
 			#endregion
 		}
 

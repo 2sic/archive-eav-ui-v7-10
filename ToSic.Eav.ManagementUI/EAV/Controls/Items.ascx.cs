@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
 using System.Web.UI;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -152,7 +153,7 @@ namespace ToSic.Eav.ManagementUI
 			var deleteArgs = new EntityDeletingEventArgs { EntityId = repositoryId };
 
 			// test if entity can be deleted
-			var canDeleteEntity = ctx.CanDeleteEntity(repositoryId);
+		    var canDeleteEntity = new EntityBLL().CanDeleteEntity(ctx, repositoryId); // ctx.EntCommands.CanDeleteEntity(repositoryId);
 			// cancel if entity can't be deleted
 			if (!canDeleteEntity.Item1)
 			{

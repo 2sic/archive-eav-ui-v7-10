@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.Persistence;
@@ -120,7 +121,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!_contentContext.CanDeleteEntity(entityId).Item1)
+            if (!new EntityBLL().CanDeleteEntity(_contentContext,entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }

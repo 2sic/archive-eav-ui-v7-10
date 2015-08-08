@@ -420,7 +420,7 @@ namespace ToSic.Eav.Persistence
         public void DeleteApp(int appId)
         {
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (Context.MainChangeLogId == 0)
+            if (Context.Versioning.MainChangeLogId == 0)
                 Context.Versioning.GetChangeLogId(Context.UserName);
 
             // Delete app using StoredProcedure

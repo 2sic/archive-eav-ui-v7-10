@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
 	public class RelationshipManager: IRelationshipManager
 	{
 		private readonly IEntity _entity;
-		internal readonly IEnumerable<EntityRelationshipItem> AllRelationships;
+	    public readonly IEnumerable<EntityRelationshipItem> AllRelationships;
 
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.

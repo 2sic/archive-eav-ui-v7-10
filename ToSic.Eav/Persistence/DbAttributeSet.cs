@@ -5,15 +5,11 @@ using System.Text;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbAttributeSetCommands
+    public class DbAttributeSetCommands : DbExtensionCommandsBase
     {
-        private EavContext Context;
-
-        public DbAttributeSetCommands(EavContext eavDb)
+        public DbAttributeSetCommands(EavContext cntx) : base(cntx)
         {
-            Context = eavDb;
         }
-
 
         /// <summary>
         /// Add a new AttributeSet
@@ -55,5 +51,28 @@ namespace ToSic.Eav.Persistence
             return newSet;
         }
 
+
+        /// <summary>
+        /// Remove an Attribute from an AttributeSet and delete values
+        /// </summary>
+        public void RemoveAttributeInSet(int attributeId, int attributeSetId)
+        {
+            // Delete the AttributeInSet
+            Context.DeleteObject(Context.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
+
+            // Delete all Values an their ValueDimensions
+            var valuesToDelete = Context.Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
+            foreach (var valueToDelete in valuesToDelete)
+            {
+                valueToDelete.ValuesDimensions.ToList().ForEach(Context.DeleteObject);
+                Context.DeleteObject(valueToDelete);
+            }
+
+            // Delete all Entity-Relationships
+            var relationshipsToDelete = Context.EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
+            relationshipsToDelete.ForEach(Context.DeleteObject);
+
+            Context.SaveChanges();
+        }
     }
 }

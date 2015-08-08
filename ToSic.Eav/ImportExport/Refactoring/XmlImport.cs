@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
@@ -300,7 +301,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     var entityId = _contentType.GetEntity(entityGuid).EntityID;
                     var context = EavContext.Instance(_zoneId, _appId);
-                    if (context.CanDeleteEntity(entityId).Item1)
+                    if (new EntityBLL().CanDeleteEntity(context,entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
                         context.EntCommands.DeleteEntity(entityId);
                 }
             }

@@ -117,7 +117,7 @@ namespace ToSic.Eav.ManagementUI
 					break;
 				case FormViewMode.Edit:
 					var entity = DbS.GetEntity(EntityId);
-					var entityModel = new DbLoadAsEav(Db).GetEavEntity(EntityId);
+					var entityModel = new DbLoadIntoEavDataStructure(Db).GetEavEntity(EntityId);
 					AttributeSetId = entity.AttributeSetID;
 					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
 					break;
