@@ -301,7 +301,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     var entityId = _contentType.GetEntity(entityGuid).EntityID;
                     var context = EavContext.Instance(_zoneId, _appId);
                     if (context.CanDeleteEntity(entityId).Item1)
-                        context.DeleteEntity(entityId);
+                        context.EntCommands.DeleteEntity(entityId);
                 }
             }
 

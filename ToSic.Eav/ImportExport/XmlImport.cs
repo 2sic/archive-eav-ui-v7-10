@@ -29,9 +29,9 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		/// <param name="keyGuid">KeyGuid of the Entity</param>
 		/// <param name="keyString">KeyString of the Entity</param>
-		public static Import.ImportEntity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		public static ImportEntity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
-			var targetEntity = new Import.ImportEntity
+			var targetEntity = new ImportEntity
 			{
 				AssignmentObjectTypeId = assignmentObjectTypeId,
 				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,

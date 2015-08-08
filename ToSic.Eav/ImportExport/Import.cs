@@ -54,7 +54,7 @@ namespace ToSic.Eav.Import
         public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities, bool commitTransaction = true, bool purgeCache = true)
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
-            _db.PurgeCacheOnSave = false;
+            _db.PurgeAppCacheOnSave = false;
 
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
             if (_db.Connection.State != ConnectionState.Open)
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Import
                 foreach (var attributeSet in newAttributeSets)
                     ImportAttributeSet(attributeSet);
 
-                _db.ImportEntityRelationshipsQueue();
+                _db.RelCommands.ImportEntityRelationshipsQueue();
 
 				DbS.EnsureSharedAttributeSets();
 
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Import
                 foreach (var entity in newEntities)
                     PersistOneImportEntity(entity);
 
-                _db.ImportEntityRelationshipsQueue();
+                _db.RelCommands.ImportEntityRelationshipsQueue();
 
                 _db.SaveChanges();
             }
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Import
             var destinationSet = DbS.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = _db.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
+                destinationSet = _db.AttSetCommands.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
@@ -138,7 +138,7 @@ namespace ToSic.Eav.Import
                 try	// try to add new Attribute
                 {
                     var isTitle = importAttribute == importAttributeSet.TitleAttribute;
-                    destinationAttribute = _db.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
+                    destinationAttribute = _db.AttrCommands.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
                     isNewAttribute = true;
                 }
 				catch (ArgumentException ex)	// Attribute already exists
@@ -217,11 +217,11 @@ namespace ToSic.Eav.Import
                 #endregion
 
                 #region Delete Draft-Entity (if any)
-                var draftEntityId = _db.GetDraftEntityId(existingEntity.EntityID);
+                var draftEntityId = _db.EntCommands.GetDraftEntityId(existingEntity.EntityID);
                 if (draftEntityId.HasValue)
                 {
                     _importLog.Add(new LogItem(EventLogEntryType.Information, "Draft-Entity deleted") { ImportEntity = importEntity, });
-                    _db.DeleteEntity(draftEntityId.Value);
+                    _db.EntCommands.DeleteEntity(draftEntityId.Value);
                 }
                 #endregion
 
@@ -229,12 +229,12 @@ namespace ToSic.Eav.Import
                 if (_leaveExistingValuesUntouched)	// Skip values that are already present in existing Entity
                     newValues = newValues.Where(v => existingEntity.Values.All(ev => ev.Attribute.StaticName != v.Key)).ToDictionary(v => v.Key, v => v.Value);
 
-                _db.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
+                _db.EntCommands.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
             }
             // Add new Entity
             else
             {
-                _db.AddEntity(attributeSet.AttributeSetID, importEntity, _importLog, importEntity.IsPublished);
+                _db.EntCommands.AddEntity(attributeSet.AttributeSetID, importEntity, _importLog, importEntity.IsPublished);
             }
         }
     }

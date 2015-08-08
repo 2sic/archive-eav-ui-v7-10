@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
         private IDictionary<int, IEntity> GetEntities()
 		{
-			return new DbLoadForCaching(_context).GetEntitiesModel(AppId, this);
+			return new DbLoadAsEav(_context).GetEavEntities(AppId, this);
 		}
 
 		/// <summary>
@@ -59,9 +59,9 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready { get { return _ready; } }
 
-		public CacheItem GetDataForCache(IDataSource cache)
+		public AppDataPackage GetDataForCache(IDataSource cache)
 		{
-			return new DbLoadForCaching(_context).GetDataForCache(null, AppId, cache);
+			return new DbLoadAsEav(_context).GetAppDataPackage(null, AppId, cache);
 		}
 
 		public Dictionary<int, Data.Zone> GetAllZones()

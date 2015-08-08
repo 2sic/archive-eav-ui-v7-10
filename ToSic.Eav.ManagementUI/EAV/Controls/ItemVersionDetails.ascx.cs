@@ -29,7 +29,7 @@ namespace ToSic.Eav.ManagementUI
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			_ctx = EavContext.Instance(null, AppId);
-			_currentEntity = new DbLoadForCaching(_ctx).GetEntityModel(EntityId);
+			_currentEntity = new DbLoadAsEav(_ctx).GetEavEntity(EntityId);
 
 			// Set Control Heading Text
 			var entityTitle = _currentEntity.Title == null ? "(no Title)" : _currentEntity.Title[DimensionIds];
@@ -40,7 +40,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void btnRestore_Click(object sender, EventArgs e)
 		{
-			_ctx.RestoreEntityVersion(EntityId, ChangeId, DefaultCultureDimension);
+			_ctx.Versioning.RestoreEntityVersion(EntityId, ChangeId, DefaultCultureDimension);
 
 			Response.Redirect(EditItemUrl.Replace("[EntityId]", EntityId.ToString()));
 		}

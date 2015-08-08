@@ -124,7 +124,7 @@ namespace ToSic.Eav.Api.Api01
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }
-            _contentContext.DeleteEntity(entityId);
+            _contentContext.EntCommands.DeleteEntity(entityId);
         }
 
 

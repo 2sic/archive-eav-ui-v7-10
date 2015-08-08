@@ -125,7 +125,11 @@
     <Compile Include="Data\Entity.cs" />
     <Compile Include="Persistence\AttributeSet_Partial.cs" />
     <Compile Include="Persistence\DbAttributeSet.cs" />
-    <Compile Include="Persistence\DbLoadForCaching.cs" />
+    <Compile Include="Persistence\DbAttributeCommands.cs" />
+    <Compile Include="Persistence\DbRelationshipCommands.cs" />
+    <Compile Include="Persistence\DbValueCommands.cs" />
+    <Compile Include="Persistence\DbEntityCommands.cs" />
+    <Compile Include="Persistence\DbLoadAsEav.cs" />
     <Compile Include="Persistence\DbShortcuts.cs" />
     <Compile Include="Persistence\DbVersioning.cs" />
     <Compile Include="Persistence\EavContext.cs" />

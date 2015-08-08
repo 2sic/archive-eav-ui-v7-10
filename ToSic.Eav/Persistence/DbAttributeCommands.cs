@@ -1,0 +1,162 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ToSic.Eav.Import;
+
+namespace ToSic.Eav.Persistence
+{
+    public class DbAttributeCommands
+    {
+        public EavContext Context { get; private set; }
+
+        public DbAttributeCommands(EavContext cntxt)
+        {
+            Context = cntxt;
+        }
+
+
+        /// <summary>
+        /// Change the sort order of an attribute - move up or down
+        /// </summary>
+        /// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
+        public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
+        {
+            var attributeToMove = Context.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == setId);
+            var attributeToInterchange = direction == AttributeMoveDirection.Up ?
+                Context.AttributesInSets.OrderByDescending(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder < attributeToMove.SortOrder) :
+                Context.AttributesInSets.OrderBy(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder > attributeToMove.SortOrder);
+
+            var newSortOrder = attributeToInterchange.SortOrder;
+            attributeToInterchange.SortOrder = attributeToMove.SortOrder;
+            attributeToMove.SortOrder = newSortOrder;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Set an Attribute as Title on an AttributeSet
+        /// </summary>
+        public void SetTitleAttribute(int attributeId, int attributeSetId)
+        {
+            Context.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).IsTitle = true;
+
+            // unset other Attributes with isTitle=true
+            var oldTitleAttributes = Context.AttributesInSets.Where(s => s.AttributeSetID == attributeSetId && s.IsTitle);
+            foreach (var oldTitleAttribute in oldTitleAttributes)
+                oldTitleAttribute.IsTitle = false;
+
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Update an Attribute
+        /// </summary>
+        public Attribute UpdateAttribute(int attributeId, string staticName)
+        {
+            return UpdateAttribute(attributeId, staticName, null);
+        }
+        /// <summary>
+        /// Update an Attribute
+        /// </summary>
+        public Attribute UpdateAttribute(int attributeId, string staticName, int? attributeSetId = null, bool isTitle = false)
+        {
+            var attribute = Context.Attributes.Single(a => a.AttributeID == attributeId);
+            Context.SaveChanges();
+
+            if (isTitle)
+                SetTitleAttribute(attributeId, attributeSetId.Value);
+
+            return attribute;
+        }
+
+
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// </summary>
+        public Attribute AppendAttribute(AttributeSet attributeSet, string staticName, string type, bool isTitle = false, bool autoSave = true)
+        {
+            return AppendAttribute(attributeSet, 0, staticName, type, isTitle, autoSave);
+        }
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// </summary>
+        public Attribute AppendAttribute(int attributeSetId, string staticName, string type, bool isTitle = false)
+        {
+            return AppendAttribute(null, attributeSetId, staticName, type, isTitle, true);
+        }
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// </summary>
+        private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, bool isTitle, bool autoSave)
+        {
+            var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
+            if (!sortOrder.HasValue)
+                sortOrder = 0;
+            else
+                sortOrder++;
+
+            return AddAttribute(attributeSet, attributeSetId, staticName, type, sortOrder.Value, 1, isTitle, autoSave);
+        }
+
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// </summary>
+        public Attribute AddAttribute(int attributeSetId, string staticName, string type, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
+        {
+            return AddAttribute(null, attributeSetId, staticName, type, sortOrder, attributeGroupId, isTitle, autoSave);
+        }
+
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// </summary>
+        private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
+        {
+            if (attributeSet == null)
+                attributeSet = Context.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
+            else if (attributeSetId != 0)
+                throw new Exception("Can only set attributeSet or attributeSetId");
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(staticName, Constants.AttributeStaticNameRegEx, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
+
+            // Prevent Duplicate Name
+            if (Context.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == Context.AppId /* _appId*/ ))
+                throw new ArgumentException("An Attribute with static name " + staticName + " already exists", "staticName");
+
+            var newAttribute = new Attribute
+            {
+                Type = type,
+                StaticName = staticName,
+                ChangeLogIDCreated = Context.Versioning.GetChangeLogId()
+            };
+            var setAssignment = new AttributeInSet
+            {
+                Attribute = newAttribute,
+                Set = attributeSet,
+                SortOrder = sortOrder,
+                AttributeGroupID = attributeGroupId,
+                IsTitle = isTitle
+            };
+            Context.AddToAttributes(newAttribute);
+            Context.AddToAttributesInSets(setAssignment);
+
+            // Set Attribute as Title if there's no title field in this set
+            if (!attributeSet.AttributesInSets.Any(a => a.IsTitle))
+                setAssignment.IsTitle = true;
+
+            if (isTitle)
+            {
+                // unset old Title Fields
+                var oldTitleFields = attributeSet.AttributesInSets.Where(a => a.IsTitle && a.Attribute.StaticName != staticName).ToList();
+                foreach (var titleField in oldTitleFields)
+                    titleField.IsTitle = false;
+            }
+
+            if (autoSave)
+                Context.SaveChanges();
+            return newAttribute;
+        }
+
+    }
+}

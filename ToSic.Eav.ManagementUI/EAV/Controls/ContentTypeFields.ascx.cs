@@ -100,15 +100,15 @@ namespace ToSic.Eav.ManagementUI
 			switch (e.CommandName)
 			{
 				case "MoveUp":
-					Db.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Up);
+					Db.AttrCommands.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Up);
 					grdAttributesInSets.DataBind();
 					break;
 				case "MoveDown":
-					Db.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Down);
+					Db.AttrCommands.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Down);
 					grdAttributesInSets.DataBind();
 					break;
 				case "MakeTitle":
-					Db.SetTitleAttribute(attributeId, AttributeSetId);
+					Db.AttrCommands.SetTitleAttribute(attributeId, AttributeSetId);
 					grdAttributesInSets.DataBind();
 					break;
 				case "EditAllTypeMetaData":

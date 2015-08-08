@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
-        private static readonly IDictionary<string, CacheItem> Caches = new Dictionary<string, CacheItem>();
+        private static readonly IDictionary<string, AppDataPackage> Caches = new Dictionary<string, AppDataPackage>();
 
 
 		protected override bool HasCacheItem(string cacheKey)
@@ -47,12 +47,12 @@ namespace ToSic.Eav.DataSources.Caches
 			return Caches.ContainsKey(cacheKey);
 		}
 
-		protected override void SetCacheItem(string cacheKey, CacheItem item)
+		protected override void SetCacheItem(string cacheKey, AppDataPackage item)
 		{
 			Caches[cacheKey] = item;
 		}
 
-		protected override CacheItem GetCacheItem(string cacheKey)
+		protected override AppDataPackage GetCacheItem(string cacheKey)
 		{
 			return Caches[cacheKey];
 		}

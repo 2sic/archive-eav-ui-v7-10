@@ -21,6 +21,19 @@ namespace ToSic.Eav
         /// </summary>
         public const string DataTimelineEntityStateOperation = "s";
 
+        #region DB Field / Names Constants
+
+        /// <summary>
+        /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
+        /// </summary>
+        public static string AttributeStaticNameRegEx = "^[_a-zA-Z]{1}[_a-zA-Z0-9]*";
+
+        /// <summary>
+        /// If AttributeSet StaticName doesn't match, users see this message.
+        /// </summary>
+        public static string AttributeStaticNameRegExNotes = "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
+
+        #endregion
 
         #region DataSource Constants
 
@@ -64,6 +77,5 @@ namespace ToSic.Eav
 
 
         #endregion
-
     }
 }

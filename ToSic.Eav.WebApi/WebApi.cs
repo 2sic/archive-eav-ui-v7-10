@@ -144,7 +144,7 @@ namespace ToSic.Eav.WebApi
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             if (!CurrentContext.CanDeleteEntity(id).Item1)
                 throw new InvalidOperationException("The entity " + id  + " cannot be deleted because of it is referenced by another object.");
-            CurrentContext.DeleteEntity(id);
+            CurrentContext.EntCommands.DeleteEntity(id);
         }
 
 	    /// <summary>

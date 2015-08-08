@@ -96,7 +96,7 @@ namespace ToSic.Eav.Testing
 					{"City", new ValueViewModel {Value = "Buchs 17:51"}}
 				};
 
-			context.UpdateEntity(entityId, newValues);
+			context.EntCommands.UpdateEntity(entityId, newValues);
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Testing
 					{"City", new ValueViewModel {Value = "Buchs 17:51"}}
 				};
 
-			context.AddEntity(37, newValues, null, null);
+			context.EntCommands.AddEntity(37, newValues, null, null);
 		}
 
 		[Test]
@@ -123,7 +123,7 @@ namespace ToSic.Eav.Testing
 			var context = EavContext.Instance(1, 1);
 			var entityId = 2372;
 			var newValues = new Dictionary<string, ValueViewModel>();
-			context.UpdateEntity(entityId, newValues);
+			context.EntCommands.UpdateEntity(entityId, newValues);
 		}
 
 		[Test]
@@ -206,11 +206,11 @@ namespace ToSic.Eav.Testing
 			db.AppId = app.AppID;
 
 			// Add new AttributeSet
-			var attributeSet = db.AddAttributeSet("Sample Attribute Set", "Sample Attribute Set Description", null, "");
-			db.AppendAttribute(attributeSet, "Attribute1", "String", true);
-			var attribute2 = db.AppendAttribute(attributeSet, "Attribute2", "String");
-			var attribute3 = db.AppendAttribute(attributeSet, "Attribute3", "String");
-			var attribute4 = db.AppendAttribute(attributeSet, "Attribute4", "Entity");
+			var attributeSet = db.AttSetCommands.AddAttributeSet("Sample Attribute Set", "Sample Attribute Set Description", null, "");
+			db.AttrCommands.AppendAttribute(attributeSet, "Attribute1", "String", true);
+			var attribute2 = db.AttrCommands.AppendAttribute(attributeSet, "Attribute2", "String");
+			var attribute3 = db.AttrCommands.AppendAttribute(attributeSet, "Attribute3", "String");
+			var attribute4 = db.AttrCommands.AppendAttribute(attributeSet, "Attribute4", "Entity");
 
 			// Add new Entities
 			var values = new Dictionary<string, ValueViewModel>
@@ -219,16 +219,16 @@ namespace ToSic.Eav.Testing
 				{"Attribute2", new ValueViewModel{ Value = "Sample Value 2"}},
 				{"Attribute3", new ValueViewModel{ Value = "Sample Value 3"}},
 			};
-			var entity1 = db.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
+			var entity1 = db.EntCommands.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
 			values.Add("Attribute4", new ValueViewModel { Value = new[] { entity1.EntityID } });
-			var entity2 = db.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
+			var entity2 = db.EntCommands.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
 
 			// Update existing Entity
 			values["Attribute3"].Value = "Sample Value 3 modified";
-			db.UpdateEntity(entity1.EntityID, values, dimensionIds: new[] { 2 });
+			db.EntCommands.UpdateEntity(entity1.EntityID, values, dimensionIds: new[] { 2 });
 
 			// update existing AttributeSets
-			db.UpdateAttribute(attribute2.AttributeID, "Attribute2Renamed");
+			db.AttrCommands.UpdateAttribute(attribute2.AttributeID, "Attribute2Renamed");
 			db.RemoveAttributeInSet(attribute3.AttributeID, attributeSet.AttributeSetID);
 
 			// Delete the App
@@ -251,11 +251,11 @@ namespace ToSic.Eav.Testing
 		public void DraftEntitiesTest()
 		{
 			var db1 = EavContext.Instance(appId: 2);
-			var publishedWitDraft = new DbLoadForCaching(db1).GetEntityModel(5454);
+			var publishedWitDraft = new DbLoadAsEav(db1).GetEavEntity(5454);
 			Assert.NotNull(publishedWitDraft.GetDraft());
 
 			var db2 = EavContext.Instance(appId: 2);
-            var draftEntity = new DbLoadForCaching(db2).GetEntityModel(5458);
+            var draftEntity = new DbLoadAsEav(db2).GetEavEntity(5458);
 			Assert.NotNull(draftEntity.GetPublished());
 		}
 
@@ -266,7 +266,7 @@ namespace ToSic.Eav.Testing
 			var entityIds = new[] { 45 };
 			foreach (var entityId in entityIds)
 			{
-                new DbLoadForCaching(ctx).GetEntityModel(entityId);
+                new DbLoadAsEav(ctx).GetEavEntity(entityId);
 			}
 		}
 	}

@@ -392,12 +392,12 @@ namespace ToSic.Eav.Persistence
 
             EnsureSharedAttributeSets(newApp);
 
-            EnsureCacheRefresh(Context.ZoneId, Context.AppId);
+            PurgeGlobalCache(Context.ZoneId, Context.AppId);
 
             return newApp;
         }
 
-        private void EnsureCacheRefresh(int zoneId, int appId)
+        private void PurgeGlobalCache(int zoneId, int appId)
         {
             // todo: bad - don't want any data-source in here!
             DataSource.GetCache(zoneId, appId).PurgeGlobalCache();
@@ -427,7 +427,7 @@ namespace ToSic.Eav.Persistence
             Context.DeleteAppInternal(appId);
 
             // Remove App from Global Cache
-            EnsureCacheRefresh(Context.ZoneId, Context.AppId);
+            PurgeGlobalCache(Context.ZoneId, Context.AppId);
         }
 
         /// <summary>
@@ -456,7 +456,7 @@ namespace ToSic.Eav.Persistence
                     continue;
 
                 // create new AttributeSet
-                var newAttributeSet = Context.AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
+                var newAttributeSet = Context.AttSetCommands.AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
                 newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
             }
 

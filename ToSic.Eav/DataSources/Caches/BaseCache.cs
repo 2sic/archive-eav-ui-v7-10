@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
 
@@ -90,11 +91,11 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Sets the CacheItem with specified CacheKey
 		/// </summary>
-		protected abstract void SetCacheItem(string cacheKey, CacheItem item);
+		protected abstract void SetCacheItem(string cacheKey, AppDataPackage item);
 		/// <summary>
 		/// Get CacheItem with specified CacheKey
 		/// </summary>
-		protected abstract CacheItem GetCacheItem(string cacheKey);
+		protected abstract AppDataPackage GetCacheItem(string cacheKey);
 		/// <summary>
 		/// Remove the CacheItem with specified CacheKey
 		/// </summary>
@@ -104,7 +105,7 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
 		/// Ensure cache for current AppId
 		/// </summary>
-		protected CacheItem EnsureCache()
+		protected AppDataPackage EnsureCache()
 		{
 			if (ZoneApps == null || AssignmentObjectTypes == null)
 			{

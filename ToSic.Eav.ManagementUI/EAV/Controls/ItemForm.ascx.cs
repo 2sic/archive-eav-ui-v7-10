@@ -117,7 +117,7 @@ namespace ToSic.Eav.ManagementUI
 					break;
 				case FormViewMode.Edit:
 					var entity = DbS.GetEntity(EntityId);
-					var entityModel = new DbLoadForCaching(Db).GetEntityModel(EntityId);
+					var entityModel = new DbLoadAsEav(Db).GetEavEntity(EntityId);
 					AttributeSetId = entity.AttributeSetID;
 					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
 					break;
@@ -330,9 +330,9 @@ namespace ToSic.Eav.ManagementUI
 			Entity result;
             var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : Constants.DefaultAssignmentObjectTypeId;
 			if (!KeyGuid.HasValue)
-				result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+				result = Db.EntCommands.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 			else
-				result = Db.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+				result = Db.EntCommands.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 
 			RedirectToListItems();
 
@@ -358,7 +358,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 			#endregion
 
-			var result = Db.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
+			var result = Db.EntCommands.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
 
 			RedirectToListItems();
 

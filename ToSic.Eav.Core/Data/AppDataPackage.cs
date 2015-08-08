@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public class CacheItem
+	public class AppDataPackage
 	{
 		#region Private Fields
 		private IDictionary<int, IEntity> _publishedEntities;
@@ -69,7 +68,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
-		public CacheItem(
+		public AppDataPackage(
             IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
             IDictionary<int, IContentType> contentTypes,

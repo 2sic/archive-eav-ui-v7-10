@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.DataSources.RootSources
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources.RootSources
 		/// <summary>
 		/// Get a CacheItem to build Cache for this App
 		/// </summary>
-		CacheItem GetDataForCache(IDataSource cache);
+		AppDataPackage GetDataForCache(IDataSource cache);
 		/// <summary>
 		/// Get a Dictionary of all Zones and Apps
 		/// </summary>

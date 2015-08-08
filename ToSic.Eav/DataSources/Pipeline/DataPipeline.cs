@@ -24,14 +24,14 @@ namespace ToSic.Eav.DataSources
 			var sourcePipelineEntity = dbs.GetEntity(pipelineEntityId);
             if (sourcePipelineEntity.Set.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
 				throw new ArgumentException("Entity is not an DataPipeline Entity", "pipelineEntityId");
-			var pipelineEntityClone = ctx.CloneEntity(sourcePipelineEntity, true);
+			var pipelineEntityClone = ctx.EntCommands.CloneEntity(sourcePipelineEntity, true);
 
 			// Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
 			var pipelineParts = dbs.GetEntities(Constants.AssignmentObjectTypeEntity, sourcePipelineEntity.EntityGUID);
 			var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
 			foreach (var pipelinePart in pipelineParts)
 			{
-				var pipelinePartClone = ctx.CloneEntity(pipelinePart, true);
+				var pipelinePartClone = ctx.EntCommands.CloneEntity(pipelinePart, true);
 				pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGUID;
 				pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
 
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
 				var configurationEntity = dbs.GetEntities(Constants.AssignmentObjectTypeEntity, pipelinePart.EntityGUID).SingleOrDefault();
 				if (configurationEntity != null)
 				{
-					var configurationClone = ctx.CloneEntity(configurationEntity, true);
+					var configurationClone = ctx.EntCommands.CloneEntity(configurationEntity, true);
 					configurationClone.KeyGuid = pipelinePartClone.EntityGUID;
 				}
 			}

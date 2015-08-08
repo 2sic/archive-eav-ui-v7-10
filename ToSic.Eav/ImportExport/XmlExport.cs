@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ImportExport
@@ -27,7 +29,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(int entityId)
 		{
-			var iEntity = new DbLoadForCaching(_ctx).GetEntityModel(entityId);
+			var iEntity = new DbLoadAsEav(_ctx).GetEavEntity(entityId);
 			return GetEntityXElement(iEntity);
 		}
 
@@ -70,7 +72,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		private XElement GetValueXElement(string attributeStaticname, IValue value, string attributeType)
 		{
-			var valueSerialized = _ctx.SerializeValue(value);
+			var valueSerialized = SerializeValue(value);
 			// create Value-Child-Element with Dimensions as Children
 			var valueXElement = new XElement("Value",
 				new XAttribute("Key", attributeStaticname),
@@ -84,5 +86,37 @@ namespace ToSic.Eav.ImportExport
 
 			return valueXElement;
 		}
+
+        /// <summary>
+        /// Serialize Value to a String for SQL Server or XML Export
+        /// </summary>
+        internal string SerializeValue(IValue value)
+        {
+            var stringValue = value as Value<string>;
+            if (stringValue != null)
+                return stringValue.TypedContents;
+
+            var relationshipValue = value as Value<Data.EntityRelationship>;
+            if (relationshipValue != null)
+            {
+                var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? DbS.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+
+                return string.Join(",", entityGuids);
+            }
+
+            var boolValue = value as Value<bool?>;
+            if (boolValue != null)
+                return boolValue.TypedContents.ToString();
+
+            var dateTimeValue = value as Value<DateTime?>;
+            if (dateTimeValue != null)
+                return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
+
+            var decimalValue = value as Value<decimal?>;
+            if (decimalValue != null)
+                return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
+
+            throw new NotSupportedException("Can't serialize Value");
+        }
 	}
 }

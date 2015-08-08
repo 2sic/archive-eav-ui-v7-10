@@ -17,9 +17,9 @@ namespace ToSic.Eav.Testing
 
 			const int defaultCultureDimension = 5;
 
-			var version = ctx.GetEntityVersion(5449, 8063, defaultCultureDimension);
+			var version = ctx.Versioning.GetEntityVersion(5449, 8063, defaultCultureDimension);
 
-			ctx.RestoreEntityVersion(5449, 8065, defaultCultureDimension);
+			ctx.Versioning.RestoreEntityVersion(5449, 8065, defaultCultureDimension);
 
 			Debug.Write(version);
 		}
