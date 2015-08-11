@@ -39,6 +39,9 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +52,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Data\AppDataPackage.cs" />
     <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\AttributeHelperTools.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\Dimension.cs" />
@@ -60,11 +64,15 @@
     <Compile Include="Data\Value.cs" />
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Enums\AttributeMoveDirection.cs" />
     <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="HelpersToRefactor.cs" />
+    <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
+    <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
+    <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="Interfaces\IAttribute.cs" />
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />

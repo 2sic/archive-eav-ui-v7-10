@@ -75,6 +75,10 @@ namespace ToSic.Eav
         /// </summary>
         public const string DefaultStreamName = "Default";
 
+        /// <summary>PublishedEntities Stream Name</summary>
+        public const string PublishedStreamName = "Published";
+        /// <summary>Draft-Entities Stream Name</summary>
+        public const string DraftsStreamName = "Drafts";
 
         #endregion
     }

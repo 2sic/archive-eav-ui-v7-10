@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
+using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.RootSources;
+using ToSic.Eav.DataSources.SqlSources;
 
 namespace ToSic.Eav.DataSources
 {
@@ -14,8 +13,8 @@ namespace ToSic.Eav.DataSources
         /// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
         public IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
         {
-            cont.RegisterType<Eav.DataSources.Caches.ICache, Eav.DataSources.Caches.QuickCache>();
-            cont.RegisterType<Eav.DataSources.RootSources.IRootSource, Eav.DataSources.SqlSources.EavSqlStore>();
+            cont.RegisterType<ICache, QuickCache>();
+            cont.RegisterType<IRootSource, EavSqlStore>();
 
             // register some Default Constructors
             cont.RegisterType<SqlDataSource>(new InjectionConstructor());

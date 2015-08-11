@@ -91,20 +91,21 @@ namespace ToSic.Eav
 		}
 
 
-        /// <summary>
-        /// Get Loadable Types from an assembly
-        /// </summary>
-        /// <remarks>Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes </remarks>
-        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
-        {
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                return e.Types.Where(t => t != null);
-            }
-        }
+        // moved, only used once...
+        ///// <summary>
+        ///// Get Loadable Types from an assembly
+        ///// </summary>
+        ///// <remarks>Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes </remarks>
+        //public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        //{
+        //    try
+        //    {
+        //        return assembly.GetTypes();
+        //    }
+        //    catch (ReflectionTypeLoadException e)
+        //    {
+        //        return e.Types.Where(t => t != null);
+        //    }
+        //}
 	}
 }

@@ -68,40 +68,20 @@
   <ItemGroup>
     <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\Caches\CacheAllStreams.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSources\Configuration.cs" />
     <Compile Include="DataSources\DeferredPipelineQuery.cs" />
-    <Compile Include="DataSources\ExternalDataDataSource.cs" />
-    <Compile Include="DataSources\Paging.cs" />
     <Compile Include="DataSources\Pipeline\DataPipeline.cs" />
     <Compile Include="DataSources\Pipeline\DataPipelineFactory.cs" />
     <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
-    <Compile Include="DataSources\StreamFallback.cs" />
-    <Compile Include="Data\AttributeHelperTools.cs" />
-    <Compile Include="Data\AttributeWithMetaInfo.cs" />
-    <Compile Include="DataSources\DataSource.cs" />
-    <Compile Include="DataSources\AttributeFilter.cs" />
-    <Compile Include="DataSources\BaseDataSource.cs" />
     <Compile Include="DataSources\Caches\BaseCache.cs" />
     <Compile Include="DataSources\Caches\QuickCache.cs" />
-    <Compile Include="DataSources\DataTableDataSource.cs" />
-    <Compile Include="DataSources\EntityIdFilter.cs" />
-    <Compile Include="DataSources\App.cs" />
-    <Compile Include="DataSources\PublishingFilter.cs" />
-    <Compile Include="DataSources\SqlDataSource.cs" />
-    <Compile Include="DataSources\RelationshipFilter.cs" />
-    <Compile Include="DataSources\ValueSort.cs" />
-    <Compile Include="DataSources\ValueFilter.cs" />
-    <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="DataSources\Helpers.cs" />
-    <Compile Include="DataSources\PassThrough.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
-    <Compile Include="Data\Entity.cs" />
+    <Compile Include="Data\AttributeWithMetaInfo.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
-    <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
-    <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="ImportExport\LogItem.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\AttributeExtension.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\AttributeSetExtension.cs" />
@@ -146,9 +126,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
-    <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
-    <Compile Include="ValueProvider\EntityValueProvider.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
   <ItemGroup>

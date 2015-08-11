@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
+﻿using System.Collections.Generic;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources

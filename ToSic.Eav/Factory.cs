@@ -7,7 +7,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// The Eav Factory, used to construct a DataSource
 	/// </summary>
-	public class Factory
+	public class OldFactory
 	{
 		private static IUnityContainer _container;
 

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Id as an int
         /// </summary>
-		public int EntityId { get; internal set; }
+		public int EntityId { get; set; } // todo: set shouldn't be pbulic
         /// <summary>
         /// Id of this item inside the repository. Can be different than the real Id, because it may be a temporary version of this content-item
         /// </summary>
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
-		public IAttribute Title { get; internal set; }
+		public IAttribute Title { get;  set; } // todo: title shouldn' have a public set, had to open this while refactoring
         /// <summary>
         /// List of all attributes
         /// </summary>
@@ -58,11 +58,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
         /// </summary>
-		internal IEntity DraftEntity { get; set; }
+		public IEntity DraftEntity { get; set; }
         /// <summary>
         /// If this entity is draft and there is a published edition, then it can be navigated through PublishedEntity
         /// </summary>
-        internal IEntity PublishedEntity { get; set; }
+        public IEntity PublishedEntity { get; set; }
 
         /// <summary>
         /// Shorhand accessor to retrieve an attribute
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Create a new Entity
 		/// </summary>
-		internal Entity(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
+		public Entity(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
@@ -118,7 +118,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Create a new Entity based on an Entity and Attributes
 		/// </summary>
-		internal Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
+		public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;

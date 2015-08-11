@@ -15,18 +15,18 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache, IDeferredEntitiesList
 	{
-		/// <summary>PublishedEntities Stream Name</summary>
-		public const string PublishedStreamName = "Published";
-		/// <summary>Draft-Entities Stream Name</summary>
-		public const string DraftsStreamName = "Drafts";
+        ///// <summary>PublishedEntities Stream Name</summary>
+        //public const string PublishedStreamName = "Published";
+        ///// <summary>Draft-Entities Stream Name</summary>
+        //public const string DraftsStreamName = "Drafts";
 
 		protected BaseCache Cache { get; set; }
 
 		protected BaseCache()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities, GetList));
-			Out.Add(PublishedStreamName, new DataStream(this, PublishedStreamName, GetPublishedEntities));
-			Out.Add(DraftsStreamName, new DataStream(this, DraftsStreamName, GetDraftEntities));
+			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, GetPublishedEntities));
+			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, GetDraftEntities));
 
             ListDefaultRetentionTimeInSeconds = 60 * 60;
 		}

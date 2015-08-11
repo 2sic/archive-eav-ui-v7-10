@@ -7,14 +7,14 @@ namespace ToSic.Eav.Data
     /// Note: seems to be a helper class with tools 
     /// todo: probably refactor to fit into some "normal" object 
     /// </summary>
-    internal class AttributeHelperTools
+    public class AttributeHelperTools
     {
         private static readonly Value<EntityRelationship> EntityRelationshipDefaultValue = new Value<EntityRelationship>(new EntityRelationship(null)) { Languages = new Dimension[0] };
 
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        internal static Dictionary<string, IAttribute> GetTypedDictionaryForSingleLanguage(IDictionary<string, object> attributes, string titleAttributeName)
+        public static Dictionary<string, IAttribute> GetTypedDictionaryForSingleLanguage(IDictionary<string, object> attributes, string titleAttributeName)
         {
             var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Data
         /// Get Attribute for specified Typ
         /// </summary>
 		/// <returns><see cref="Attribute{ValueType}"/></returns>
-        internal static IAttributeManagement GetAttributeManagementModel(AttributeBase definition)
+        public static IAttributeManagement GetAttributeManagementModel(AttributeBase definition)
         {
             switch (definition.Type)
             {
