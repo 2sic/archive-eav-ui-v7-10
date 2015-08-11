@@ -361,7 +361,7 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object ClonePipeline(int appId, int id)
 		{
-			var clonePipelineEntity = DataPipeline.CopyDataPipeline(appId, id, _userName);
+			var clonePipelineEntity = DbPipelineCommands.CopyDataPipeline(appId, id, _userName);
 			return new { EntityId = clonePipelineEntity.EntityID };
 		}
 

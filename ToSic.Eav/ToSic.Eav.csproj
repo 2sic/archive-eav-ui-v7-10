@@ -72,13 +72,10 @@
     <Compile Include="DataSources\Caches\CacheAllStreams.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSources\Configuration.cs" />
-    <Compile Include="DataSources\DeferredPipelineQuery.cs" />
-    <Compile Include="DataSources\Pipeline\DataPipeline.cs" />
-    <Compile Include="DataSources\Pipeline\DataPipelineFactory.cs" />
-    <Compile Include="DataSources\Pipeline\DataPipelineWiring.cs" />
     <Compile Include="DataSources\Caches\BaseCache.cs" />
     <Compile Include="DataSources\Caches\QuickCache.cs" />
     <Compile Include="DataSources\Helpers.cs" />
+    <Compile Include="Persistence\DbPipelineCommands.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="Data\AttributeWithMetaInfo.cs" />
     <Compile Include="Events.cs" />
