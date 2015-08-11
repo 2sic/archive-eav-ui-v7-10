@@ -54,6 +54,7 @@
     <Compile Include="Debug\PipelineInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
+    <Compile Include="DsFactory.cs" />
     <Compile Include="IDataSource.cs" />
     <Compile Include="IDataStream.cs" />
     <Compile Include="IDataTarget.cs" />

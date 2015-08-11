@@ -1,7 +1,6 @@
 ﻿using System.Configuration;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
-using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav
 {
@@ -24,7 +23,7 @@ namespace ToSic.Eav
 				if (_container == null)
 				{
 					_container = new UnityContainer();
-					_container = ConfigureDefaultMappings(_container);
+				    new DataSources.Configuration().ConfigureDefaultMappings(_container);
 
 
 					var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
@@ -35,18 +34,5 @@ namespace ToSic.Eav
 			}
 		}
 
-		/// <summary>
-		/// Register Types in Unity Container
-		/// </summary>
-		/// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
-		private static IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
-		{
-			cont.RegisterType<DataSources.Caches.ICache, DataSources.Caches.QuickCache>();
-			cont.RegisterType<DataSources.RootSources.IRootSource, DataSources.SqlSources.EavSqlStore>();
-			// register some Default Constructors
-			_container.RegisterType<SqlDataSource>(new InjectionConstructor());
-		    _container.RegisterType<DataTableDataSource>(new InjectionConstructor());
-            return cont;
-		}
 	}
 }

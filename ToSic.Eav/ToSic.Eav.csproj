@@ -70,6 +70,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="DataSources\Caches\CacheAllStreams.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
+    <Compile Include="DataSources\Configuration.cs" />
     <Compile Include="DataSources\DeferredPipelineQuery.cs" />
     <Compile Include="DataSources\ExternalDataDataSource.cs" />
     <Compile Include="DataSources\Paging.cs" />
