@@ -52,7 +52,7 @@ namespace ToSic.Eav
 			//	.Invoke(null, new object[] { zoneId, appId, upstream, ConfigurationProvider });
 			//return (IDataSource) ds;
 
-			var newDs = (BaseDataSource)DsFactory.Container.Resolve(Type.GetType(sourceName));
+			var newDs = (BaseDataSource)Factory.Container.Resolve(Type.GetType(sourceName));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
 			return newDs;
 		}
@@ -70,7 +70,7 @@ namespace ToSic.Eav
 		{
             if(upstream == null && valueCollectionProvider == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
-			var newDs = (BaseDataSource)DsFactory.Container.Resolve(typeof(T));
+			var newDs = (BaseDataSource)Factory.Container.Resolve(typeof(T));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
