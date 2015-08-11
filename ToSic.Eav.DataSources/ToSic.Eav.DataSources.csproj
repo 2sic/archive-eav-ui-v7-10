@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
     <Compile Include="BaseDataSource.cs" />
     <Compile Include="Caches\BaseCache.cs" />

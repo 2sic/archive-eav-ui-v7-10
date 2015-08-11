@@ -12,6 +12,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
     [TestClass]
     public class QuickCaches_Test
     {
+
         [TestMethod]
         public void QuickCache_AddListAndCheckIfIn()
         {

@@ -60,6 +60,7 @@
     <Compile Include="AppController.cs" />
     <Compile Include="ContentTypeController.cs" />
     <Compile Include="EntityPickerController.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Json\Helpers.cs" />
     <Compile Include="PipelineDesignerController.cs">
       <SubType>Code</SubType>

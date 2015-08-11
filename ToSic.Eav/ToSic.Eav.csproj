@@ -68,10 +68,8 @@
   <ItemGroup>
     <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSources\Configuration.cs" />
-    <Compile Include="DataSources\Helpers.cs" />
     <Compile Include="Persistence\DbPipelineCommands.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="Data\AttributeWithMetaInfo.cs" />
