@@ -149,12 +149,27 @@ namespace ToSic.Eav
 		#endregion
 
 
-		#region Update
+        #region Wrappers for ASCX Data Sources (temp till replaced with angular)
+
+	    public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
+	    {
+	        return DbS.GetAttributesWithMetaInfo(attributeSetId, dimensionIds);
+	    }
+
+        /// <summary>
+        /// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId
+        /// </summary>
+        public List<Dimension> GetDimensionChildren(string systemKey)
+        {
+            return new DbDimensions(this).GetDimensionChildren(systemKey);
+        }
+
+        #endregion
 
 
 
-		#region Update Values
-		/// <summary>
+        #region Update Values
+        /// <summary>
 		/// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
 		/// </summary>
 		internal object UpdateValueByImport(Entity currentEntity, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
@@ -374,7 +389,6 @@ namespace ToSic.Eav
 
 		#endregion
 
-        #endregion
 
         #region Save and check if to kill cache
 
