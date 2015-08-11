@@ -50,8 +50,11 @@
   <ItemGroup>
     <Compile Include="AttributeFilter.cs" />
     <Compile Include="BaseDataSource.cs" />
+    <Compile Include="Caches\BaseCache.cs" />
+    <Compile Include="Caches\CacheAllStreams.cs" />
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
+    <Compile Include="Caches\QuickCache.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
     <Compile Include="DataTableDataSource.cs" />
