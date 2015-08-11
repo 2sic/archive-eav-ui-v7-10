@@ -1,4 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="True" Inherits="ToSic.Eav.ManagementUI.Items" Codebehind="Items.ascx.cs" %>
+
 <asp:Panel ID="pnlNavigateBack" runat="server" Visible='<%# !IsDialog %>'>
 	<asp:HyperLink ID="hlnkNavigateBack" NavigateUrl='<%# ReturnUrl %>' runat="server" Text="Back" />
 </asp:Panel>
@@ -38,7 +39,7 @@
 	</EmptyDataTemplate>
 </asp:GridView>
 <asp:ObjectDataSource ID="dsrcItems" runat="server" SelectMethod="GetItemsTable"
-	TypeName="ToSic.Eav.ListForSomeAscx" 
+	TypeName="ToSic.Eav.EavContext" 
 	OnObjectCreating="dsrcItems_ObjectCreating" OnSelecting="dsrcItems_Selecting" OnDeleting="dsrcItems_Deleting" DeleteMethod="DeleteEntity" OnDeleted="dsrcItems_Deleted">
 	<SelectParameters>
 		<asp:Parameter Name="attributeSetId" Type="Int32" />

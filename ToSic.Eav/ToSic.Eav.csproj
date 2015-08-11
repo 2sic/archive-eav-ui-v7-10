@@ -140,7 +140,7 @@
     <Compile Include="Factory.cs" />
     <Compile Include="ImportExport\Import.cs" />
     <Compile Include="Persistence\DbDimensions.cs" />
-    <Compile Include="Persistence\EavContextRead.cs" />
+    <Compile Include="Persistence\ListsForSomeAscx.cs" />
     <Compile Include="Persistence\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serializers\Serializer.cs" />

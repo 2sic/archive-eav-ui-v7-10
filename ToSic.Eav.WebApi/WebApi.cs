@@ -13,85 +13,85 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class WebApi : ApiController
+	public class WebApi : Eav3WebApiBase
     {
 
-        #region Helpers
-        private IDataSource InitialDS 
-	    {
-            get { return DataSource.GetInitialDataSource(appId: AppId); }
-	    }
+        //#region Helpers
+        //private IDataSource InitialDS 
+        //{
+        //    get { return DataSource.GetInitialDataSource(appId: AppId); }
+        //}
 
-	    private IMetaDataSource MetaDS
-	    {
-	        get { return DataSource.GetMetaDataSource(appId: AppId); }
-	    }
+        //private IMetaDataSource MetaDS
+        //{
+        //    get { return DataSource.GetMetaDataSource(appId: AppId); }
+        //}
 
-	    private EavContext _context;
-	    private EavContext CurrentContext
-	    {
-	        get
-	        {
-	            if (_context == null)
-	                _context = EavContext.Instance(appId: AppId);
-	            return _context;
-	        }
-	    }
+        //private EavContext _context;
+        //private EavContext CurrentContext
+        //{
+        //    get
+        //    {
+        //        if (_context == null)
+        //            _context = EavContext.Instance(appId: AppId);
+        //        return _context;
+        //    }
+        //}
 
-        public DbShortcuts DbS
-        {
-            get
-            {
-                return new DbShortcuts(CurrentContext);
-            }
-        }
+        //public DbShortcuts DbS
+        //{
+        //    get
+        //    {
+        //        return new DbShortcuts(CurrentContext);
+        //    }
+        //}
 
-        // I must keep the serializer so it can be configured from outside if necessary
-	    private Serializer _serializer;
-	    public Serializer Serializer
-	    {
-	        get
-	        {
-	            if (_serializer == null)
-	            {
-	                _serializer = Factory.Container.Resolve<Serializer>();
-	                _serializer.IncludeGuid = true;
-	            }
-	            return _serializer;
-	        }
-	    }
+        //// I must keep the serializer so it can be configured from outside if necessary
+        //private Serializer _serializer;
+        //public Serializer Serializer
+        //{
+        //    get
+        //    {
+        //        if (_serializer == null)
+        //        {
+        //            _serializer = Factory.Container.Resolve<Serializer>();
+        //            _serializer.IncludeGuid = true;
+        //        }
+        //        return _serializer;
+        //    }
+        //}
 
-	    #endregion
+        //#endregion
 
-        #region
+        //#region App-ID helper
 
-	    private int _appId = -1;
+        //private int _appId = -1;
 
-	    public int AppId
-	    {
-	        get
-	        {
-	            if(_appId == -1)
-                    throw new Exception("AppId not initialized");
-	            return _appId;
-	        }
-	        set { _appId = value; }
-	    }
+        //public int AppId
+        //{
+        //    get
+        //    {
+        //        if(_appId == -1)
+        //            throw new Exception("AppId not initialized");
+        //        return _appId;
+        //    }
+        //    set { _appId = value; }
+        //}
 
-	    #endregion
+        //#endregion
 
-        #region Constructors
+        //#region Constructors
 
-	    public WebApi()
-	    {
+        //public WebApi()
+        //{
 	        
-	    }
+        //}
 
-	    public WebApi(int appId)
-	    {
-	        _appId = appId;
-	    }
-        #endregion
+        //public WebApi(int appId)
+        //{
+        //    _appId = appId;
+        //}
+        //#endregion
 
         #region GetOne GetAll calls
         public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)

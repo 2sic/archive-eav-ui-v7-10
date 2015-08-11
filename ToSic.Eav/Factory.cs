@@ -25,9 +25,7 @@ namespace ToSic.Eav
 				{
 					_container = new UnityContainer();
 					_container = ConfigureDefaultMappings(_container);
-					// register some Default Constructors
-					_container.RegisterType<SqlDataSource>(new InjectionConstructor());
-					_container.RegisterType<DataTableDataSource>(new InjectionConstructor());
+
 
 					var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
 					if (section != null && section.Containers["ToSic.Eav"] != null)
@@ -45,7 +43,10 @@ namespace ToSic.Eav
 		{
 			cont.RegisterType<DataSources.Caches.ICache, DataSources.Caches.QuickCache>();
 			cont.RegisterType<DataSources.RootSources.IRootSource, DataSources.SqlSources.EavSqlStore>();
-			return cont;
+			// register some Default Constructors
+			_container.RegisterType<SqlDataSource>(new InjectionConstructor());
+		    _container.RegisterType<DataTableDataSource>(new InjectionConstructor());
+            return cont;
 		}
 	}
 }
