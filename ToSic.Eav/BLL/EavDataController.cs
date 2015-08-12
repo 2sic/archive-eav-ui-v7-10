@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.BLL
 {
-    class EavDataController
+    public class EavDataController
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -57,10 +58,10 @@ namespace ToSic.Eav.BLL
         
         #region new stuff
 
-        public EavContext Context { get; private set; }
+        public EavContext SqlDb { get; private set; }
         private EavDataController(EavContext cntx)
         {
-            Context = cntx;
+            SqlDb = cntx;
         }
 
         #endregion
@@ -74,14 +75,14 @@ namespace ToSic.Eav.BLL
             var connectionString = Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
             var dataController = new EavDataController(context);
-            dataController.DbS = new DbShortcuts(context);
-            dataController.Versioning = new DbVersioning(context);
-            dataController.EntCommands = new DbEntityCommands(context);
-            dataController.ValCommands = new DbValueCommands(context);
-            dataController.AttrCommands = new DbAttributeCommands(context);
-            dataController.RelCommands = new DbRelationshipCommands(context);
-            dataController.AttSetCommands = new DbAttributeSetCommands(context);
-            dataController.PubCommands = new DbPublishing(context);
+            dataController.DbS = new DbShortcuts(dataController);
+            dataController.Versioning = new DbVersioning(dataController);
+            dataController.EntCommands = new DbEntityCommands(dataController);
+            dataController.ValCommands = new DbValueCommands(dataController);
+            dataController.AttrCommands = new DbAttributeCommands(dataController);
+            dataController.RelCommands = new DbRelationshipCommands(dataController);
+            dataController.AttSetCommands = new DbAttributeSetCommands(dataController);
+            dataController.PubCommands = new DbPublishing(dataController);
             return dataController;
         }
 
@@ -112,7 +113,7 @@ namespace ToSic.Eav.BLL
             // If only AppId is supplied, look up it's zone and use that
             if (!zoneId.HasValue && appId.HasValue)
             {
-                var zoneIdOfApp = Context.Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
+                var zoneIdOfApp = SqlDb.Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
                 _appId = appId.Value;
@@ -128,14 +129,14 @@ namespace ToSic.Eav.BLL
 
             if (appId.HasValue)
             {
-                var foundApp = Context.Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
+                var foundApp = SqlDb.Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
                 if (foundApp == null)
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
                 _appId = appId.Value;
             }
             else
                 //_appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
-                _appId = Context.Apps.First(a => a.Name == Constants.DefaultAppName).AppID;
+                _appId = SqlDb.Apps.First(a => a.Name == Constants.DefaultAppName).AppID;
 
             #region code before refactoring 2015-08-12 - 2dm wanted to get rid of depenedncy on the the DataSource - Cache
 

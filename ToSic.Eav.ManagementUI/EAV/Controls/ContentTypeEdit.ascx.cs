@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class ContentTypeEdit : System.Web.UI.UserControl
 	{
-		protected EavContext DB = EavContext.Instance();
+	    protected EavDataController DB;// = EavContext.Instance();
 		public int? AttributeSetId { get; set; }
 		public bool IsDialog { get; set; }
 		public string ReturnUrl { get; set; }
@@ -58,9 +59,9 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void dsrcAttributeSet_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
 		{
-			var context = EavContext.Instance(appId: AppId);
+			var context = EavDataController.Instance(appId: AppId);
 			context.UserName = System.Web.HttpContext.Current.User.Identity.Name;
-			e.Context = context;
+			e.Context = context.SqlDb;
 		}
 
 		protected void dsrcAttributeSet_Inserting(object sender, EntityDataSourceChangingEventArgs e)

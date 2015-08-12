@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToSic.Eav.AscxHelpers;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbShortcuts
+    public class DbShortcuts: BllCommandBase
     {
-        public EavContext Context { get; set; }
-
-        public DbShortcuts(EavContext context)
-        {
-            Context = context;
-        }
+        public DbShortcuts(EavDataController c) : base(c) { }
 
         #region Entity Reading
         
@@ -25,7 +21,7 @@ namespace ToSic.Eav.Persistence
         /// <returns>Entity or throws InvalidOperationException</returns>
         public Entity GetEntity(int entityId)
         {
-            return Context.Entities.Single(e => e.EntityID == entityId);
+            return Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
         }
 
         /// <summary>
@@ -42,7 +38,7 @@ namespace ToSic.Eav.Persistence
         internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
         {
             return
-                Context.Entities.Where(
+                Context.SqlDb.Entities.Where(
                     e =>
                         e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue &&
                         !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);// ref:extract _appId);
@@ -86,7 +82,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal IQueryable<Entity> GetEntitiesInternal(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
         {
-            return from e in Context.Entities
+            return from e in Context.SqlDb.Entities
                    where e.AssignmentObjectTypeID == assignmentObjectTypeId
                    && (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
                    && e.ChangeLogIDDeleted == null
@@ -111,7 +107,7 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         public AssignmentObjectType GetAssignmentObjectType(string name)
         {
-            return Context.AssignmentObjectTypes.Single(a => a.Name == name);
+            return Context.SqlDb.AssignmentObjectTypes.Single(a => a.Name == name);
         }
 
         /// <summary>
@@ -119,7 +115,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public Dictionary<int, string> GetAssignmentObjectTypes()
         {
-            return (from a in Context.AssignmentObjectTypes
+            return (from a in Context.SqlDb.AssignmentObjectTypes
                     select new { a.AssignmentObjectTypeID, a.Name }).ToDictionary(a => a.AssignmentObjectTypeID, a => a.Name);
         }
 
@@ -149,7 +145,7 @@ namespace ToSic.Eav.Persistence
             //                                         Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),
             //                                         DefaultAppId = z.DefaultAppId
             //                                     });
-            var zones = Context.Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
+            var zones = Context.SqlDb.Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
                         z.ZoneID,
                         z.Apps.FirstOrDefault(a => a.Name == Constants.DefaultAppName).AppID,
                         z.Apps.ToDictionary(a => a.AppID, a => a.Name)));
@@ -162,7 +158,7 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         public List<Zone> GetZones()
         {
-            return Context.Zones.ToList();
+            return Context.SqlDb.Zones.ToList();
         }
 
         /// <summary>
@@ -171,7 +167,7 @@ namespace ToSic.Eav.Persistence
         /// <returns>Zone or null</returns>
         public Zone GetZone(int zoneId)
         {
-            return Context.Zones.SingleOrDefault(z => z.ZoneID == zoneId);
+            return Context.SqlDb.Zones.SingleOrDefault(z => z.ZoneID == zoneId);
         }
 
 
@@ -182,13 +178,13 @@ namespace ToSic.Eav.Persistence
         public Tuple<Zone, App> AddZone(string name)
         {
             var newZone = new Zone { Name = name };
-            Context.AddToZones(newZone);
+            Context.SqlDb.AddToZones(newZone);
 
             new DbDimensions(Context).AddDimension(Constants.CultureSystemKey, "Culture Root", newZone);
 
             var newApp = AddApp(newZone);
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
 
             return Tuple.Create(newZone, newApp);
         }
@@ -198,10 +194,10 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public void UpdateZone(int zoneId, string name)
         {
-            var zone = Context.Zones.Single(z => z.ZoneID == zoneId);
+            var zone = Context.SqlDb.Zones.Single(z => z.ZoneID == zoneId);
             zone.Name = name;
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
         }
         #endregion
 
@@ -220,9 +216,9 @@ namespace ToSic.Eav.Persistence
                 Name = name,
                 Zone = zone
             };
-            Context.AddToApps(newApp);
+            Context.SqlDb.AddToApps(newApp);
 
-            Context.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
+            Context.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
             Context.AttSetCommands.EnsureSharedAttributeSets(newApp);
 
@@ -258,7 +254,7 @@ namespace ToSic.Eav.Persistence
                 Context.Versioning.GetChangeLogId(Context.UserName);
 
             // Delete app using StoredProcedure
-            Context.DeleteAppInternal(appId);
+            Context.SqlDb.DeleteAppInternal(appId);
 
             // Remove App from Global Cache
             PurgeGlobalCache(Context.ZoneId, Context.AppId);
@@ -270,7 +266,7 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         public List<App> GetApps()
         {
-            return Context.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
+            return Context.SqlDb.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
         }
 
 

@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbValueCommands : DbExtensionCommandsBase
+    public class DbValueCommands : BllCommandBase
     {
-        public DbValueCommands(EavContext cntx) : base(cntx)
+        public DbValueCommands(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -29,7 +30,7 @@ namespace ToSic.Eav.Persistence
             // Add all Values with Dimensions
             foreach (var eavValue in source.Values.ToList())
             {
-                var value = eavValue.CopyEntity(Context);
+                var value = eavValue.CopyEntity(Context.SqlDb);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ValuesDimensions)
                     value.ValuesDimensions.Add(new ValueDimension
@@ -66,9 +67,9 @@ namespace ToSic.Eav.Persistence
                 ChangeLogIDCreated = changeId
             };
 
-            Context.AddToValues(newValue);
+            Context.SqlDb.AddToValues(newValue);
             if (autoSave)
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
             return newValue;
         }
 
@@ -87,7 +88,7 @@ namespace ToSic.Eav.Persistence
             currentValue.ChangeLogIDDeleted = null;
 
             if (autoSave)
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
         }
 
         #region Update Values
@@ -210,7 +211,7 @@ namespace ToSic.Eav.Persistence
                 }
 
                 // remove old dimensions
-                valueDimensionsToDelete.ForEach(Context.DeleteObject);
+                valueDimensionsToDelete.ForEach(Context.SqlDb.DeleteObject);
             }
             // Update Dimensions as specified on the whole Entity
             else if (dimensionIds != null)

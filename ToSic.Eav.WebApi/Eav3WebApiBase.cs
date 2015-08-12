@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.Persistence;
@@ -27,13 +28,13 @@ namespace ToSic.Eav.WebApi
 	        get { return DataSource.GetMetaDataSource(appId: AppId); }
 	    }
 
-	    internal EavContext _context;
-	    internal EavContext CurrentContext
+	    internal EavDataController _context;
+	    internal EavDataController CurrentContext
 	    {
 	        get
 	        {
 	            if (_context == null)
-	                _context = EavContext.Instance(appId: AppId);
+	                _context = EavDataController.Instance(appId: AppId);
 	            return _context;
 	        }
 	    }

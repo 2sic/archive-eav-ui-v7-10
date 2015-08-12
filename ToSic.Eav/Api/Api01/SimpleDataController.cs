@@ -13,8 +13,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController
     {
-        private readonly EavContext Context;
-        private readonly DbShortcuts DbS;
+        private readonly EavDataController Context;
 
         private readonly string _defaultLanguageCode;
 
@@ -39,8 +38,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
-            Context = EavContext.Instance(zoneId, appId);
-            DbS = new DbShortcuts(Context);
+            Context = EavDataController.Instance(zoneId, appId);
         }
 
 
@@ -83,7 +81,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values)
         {
-            var entity = DbS.GetEntity(entityId);
+            var entity = Context.DbS.GetEntity(entityId);
             Update(entity, values);
         }
 
@@ -100,7 +98,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values)
         {
-            var entity = DbS.GetEntity(entityGuid);
+            var entity = Context.DbS.GetEntity(entityGuid);
             Update(entity, values);
         }
 
@@ -138,7 +136,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = DbS.GetEntity(entityGuid);
+            var entity = Context.DbS.GetEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -173,7 +171,7 @@ namespace ToSic.Eav.Api.Api01
                     var guids = new List<Guid>();
                     foreach (var id in ids)
                     {
-                        var entity = DbS.GetEntity(id);
+                        var entity = Context.DbS.GetEntity(id);
                         guids.Add(entity.EntityGUID);
                     }
                     result.Add(value.Key, string.Join(",", guids));

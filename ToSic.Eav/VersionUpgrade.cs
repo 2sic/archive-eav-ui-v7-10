@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
@@ -8,7 +9,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class VersionUpgrade
 	{
-		private readonly EavContext _metaDataCtx = EavContext.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
+		private readonly EavDataController _metaDataCtx = EavDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
 		private readonly string _userName;
 
 		/// <summary>
@@ -114,7 +115,7 @@ namespace ToSic.Eav
 			foreach (var attributeSet in attributeSets)
 				new DbAttributeSetCommands(_metaDataCtx).GetAttributeSet(attributeSet.StaticName).AlwaysShareConfiguration = true;
 
-			_metaDataCtx.SaveChanges();
+			_metaDataCtx.SqlDb.SaveChanges();
 
 			new DbAttributeSetCommands(_metaDataCtx).EnsureSharedAttributeSets();
 			#endregion

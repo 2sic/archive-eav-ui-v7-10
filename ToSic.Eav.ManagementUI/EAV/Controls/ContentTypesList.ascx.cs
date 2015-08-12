@@ -1,9 +1,13 @@
 ﻿using System;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class ContentTypesList : System.Web.UI.UserControl
 	{
+
+	    public EavDataController TempController;
+
 		public bool UseDialogs { get; set; }
 		public string DesignFieldsUrl { get; set; }
 		public string ShowItemsUrl { get; set; }
@@ -41,17 +45,21 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void dsrcAttributeSets_ContextCreating(object sender, System.Web.UI.WebControls.EntityDataSourceContextCreatingEventArgs e)
 		{
-			e.Context = EavContext.Instance(appId: AppId);
+		    TempController = EavDataController.Instance(appId: AppId);
+			e.Context = TempController.SqlDb;//.Instance(appId: AppId);
 		}
 
 		protected void dsrcAttributeSets_Deleting(object sender, System.Web.UI.WebControls.EntityDataSourceChangingEventArgs e)
 		{
 			e.Cancel = true;
 			var setToDelete = (AttributeSet)e.Entity;
-			var db = (EavContext)e.Context;
-			setToDelete.ChangeLogIDDeleted = db.Versioning.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
-			db.SaveChanges();
-		}
+			//var db = (EavContext)e.Context;
+			setToDelete.ChangeLogIDDeleted = TempController.Versioning.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
+			TempController.SqlDb.SaveChanges();
+            //var db = (EavContext)e.Context;
+            //setToDelete.ChangeLogIDDeleted = db.Versioning.GetChangeLogId(System.Web.HttpContext.Current.User.Identity.Name);
+            //db.SaveChanges();
+        }
 
 		protected void dsrcAttributeSets_Selecting(object sender, System.Web.UI.WebControls.EntityDataSourceSelectingEventArgs e)
 		{

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 
@@ -12,13 +13,13 @@ namespace ToSic.Eav.ImportExport
 	/// </summary>
 	public class XmlExport
 	{
-		private readonly EavContext _ctx;
+		private readonly EavDataController _ctx;
 	    private readonly DbShortcuts DbS;
 
 		/// <summary>
 		/// Initializes a new instance of the XmlExport class.
 		/// </summary>
-		public XmlExport(EavContext ctx)
+		public XmlExport(EavDataController ctx)
 		{
 			_ctx = ctx;
             DbS = new DbShortcuts(ctx);

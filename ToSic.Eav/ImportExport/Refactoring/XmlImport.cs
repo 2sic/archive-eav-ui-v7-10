@@ -106,7 +106,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             _appId = applicationId;
             _zoneId = zoneId;
-            _contentType = new DbAttributeSetCommands(EavContext.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
+            _contentType = new DbAttributeSetCommands(EavDataController.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
             _languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;
@@ -300,7 +300,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 foreach(var entityGuid in entityDeleteGuids)
                 {
                     var entityId = _contentType.GetEntity(entityGuid).EntityID;
-                    var context = EavContext.Instance(_zoneId, _appId);
+                    var context = EavDataController.Instance(_zoneId, _appId);
                     if (new EntityBLL().CanDeleteEntity(context,entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
                         context.EntCommands.DeleteEntity(entityId);
                 }

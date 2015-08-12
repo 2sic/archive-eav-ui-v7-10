@@ -2,13 +2,14 @@
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class ItemHistory : UserControl
 	{
-		private EavContext _eavContext;
+		private EavDataController _eavContext;
 		protected int? DraftRepositoryId;
 
 		#region Properties
@@ -21,7 +22,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			_eavContext = EavContext.Instance(appId: AppId);
+			_eavContext = EavDataController.Instance(appId: AppId);
 			var entityDraft = new DbLoadIntoEavDataStructure(_eavContext).GetEavEntity(EntityId).GetDraft();
 			if (entityDraft != null)
 				DraftRepositoryId = entityDraft.RepositoryId;

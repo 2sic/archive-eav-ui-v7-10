@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -35,9 +36,9 @@ namespace ToSic.Eav.ManagementUI
 			var keyNumber = key as int?;
 			var keyGuid = key as Guid?;
 
-			var db = EavContext.Instance();
+			var db = EavDataController.Instance();
 
-			var existingEntity = db.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == assignmentObjectTypeId && ((keyNumber.HasValue && e.KeyNumber == keyNumber) || (keyGuid.HasValue && e.KeyGuid == keyGuid)) && e.AttributeSetID == attributeSetId);
+			var existingEntity = db.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == assignmentObjectTypeId && ((keyNumber.HasValue && e.KeyNumber == keyNumber) || (keyGuid.HasValue && e.KeyGuid == keyGuid)) && e.AttributeSetID == attributeSetId);
 
 			string result;
 			// NewItem URL

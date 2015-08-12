@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbVersioning: DbExtensionCommandsBase
+    public class DbVersioning: BllCommandBase
     {
-        public DbVersioning(EavContext cntx) : base(cntx)
+        public DbVersioning(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -26,9 +27,9 @@ namespace ToSic.Eav.Persistence
         {
             if (MainChangeLogId == 0)
             {
-                if (Context.Connection.State != ConnectionState.Open)
-                    Context.Connection.Open();	// make sure same connection is used later
-                MainChangeLogId = Context.AddChangeLog(userName).Single().ChangeID;
+                if (Context.SqlDb.Connection.State != ConnectionState.Open)
+                    Context.SqlDb.Connection.Open();	// make sure same connection is used later
+                MainChangeLogId = Context.SqlDb.AddChangeLog(userName).Single().ChangeID;
             }
 
             return MainChangeLogId;
@@ -52,8 +53,8 @@ namespace ToSic.Eav.Persistence
                 throw new Exception("ChangeLogID was already set");
 
 
-            Context.Connection.Open();	// make sure same connection is used later
-            Context.SetChangeLogIdInternal(changeLogId);
+            Context.SqlDb.Connection.Open();	// make sure same connection is used later
+            Context.SqlDb.SetChangeLogIdInternal(changeLogId);
             MainChangeLogId = changeLogId;
         }
 
@@ -77,9 +78,9 @@ namespace ToSic.Eav.Persistence
                 SysLogID = GetChangeLogId(),
                 SysCreatedDate = DateTime.Now
             };
-            Context.AddToDataTimeline(timelineItem);
+            Context.SqlDb.AddToDataTimeline(timelineItem);
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace ToSic.Eav.Persistence
             string timelineItem;
             try
             {
-                timelineItem = Context.DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
+                timelineItem = Context.SqlDb.DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
             }
             catch (InvalidOperationException ex)
             {
@@ -136,8 +137,8 @@ namespace ToSic.Eav.Persistence
         public DataTable GetEntityVersions(int entityId)
         {
             // get Versions from DataTimeline
-            var entityVersions = (from d in Context.DataTimeline
-                                  join c in Context.ChangeLogs on d.SysLogID equals c.ChangeID
+            var entityVersions = (from d in Context.SqlDb.DataTimeline
+                                  join c in Context.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
                                   where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
                                   orderby c.Timestamp descending
                                   select new { d.SysCreatedDate, c.User, c.ChangeID }).ToList();

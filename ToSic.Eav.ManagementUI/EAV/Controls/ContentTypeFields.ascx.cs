@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web;
 using ToSic.Eav.AscxHelpers;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 
@@ -13,8 +14,7 @@ namespace ToSic.Eav.ManagementUI
 {
 	public partial class ContentTypeFields : UserControl
 	{
-		protected EavContext Db;
-	    protected DbShortcuts DbS;
+        protected EavDataController Db;
 
 		#region Properties
 		public int AttributeSetId { get; set; }
@@ -36,8 +36,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Init(object sender, EventArgs e)
 		{
-			Db = EavContext.Instance(appId: AppId);
-            DbS = new DbShortcuts(Db);
+            Db = EavDataController.Instance(appId: AppId);
 			Db.UserName = HttpContext.Current.User.Identity.Name;
 		}
 
@@ -114,7 +113,7 @@ namespace ToSic.Eav.ManagementUI
 					break;
 				case "EditAllTypeMetaData":
 				case "EditTypeMetaData":
-					var metaDataAttributeSetStaticName = e.CommandName == "EditAllTypeMetaData" ? "@All" : "@" + Db.Attributes.Single(a => a.AttributeID == attributeId).Type;
+					var metaDataAttributeSetStaticName = e.CommandName == "EditAllTypeMetaData" ? "@All" : "@" + Db.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
 					var metaDataAttributeSetId = Db.AttSetCommands.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
 
 			        var returnUrl = MetaDataReturnUrl == null ? null : MetaDataReturnUrl.Replace("[AttributeSetId]", AttributeSetId.ToString(CultureInfo.InvariantCulture));
@@ -164,21 +163,21 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void dsrcAttributeTypes_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
 		{
-			var context = EavContext.Instance(appId: AppId);
+			var context = EavDataController.Instance(appId: AppId);
 			context.UserName = HttpContext.Current.User.Identity.Name;
-			e.Context = context;
+			e.Context = context.SqlDb;
 		}
 
 		protected void dsrcAttributeSet_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
 		{
-			var context = EavContext.Instance(appId: AppId);
+			var context = EavDataController.Instance(appId: AppId);
 			context.UserName = HttpContext.Current.User.Identity.Name;
-			e.Context = context;
+			e.Context = context.SqlDb;
 		}
 
 		protected void dsrcAttributes_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-            var context = new ListForSomeAscx(EavContext.Instance(appId: AppId), HttpContext.Current.User.Identity.Name);// EavContext.Instance(appId: AppId);
+            var context = new ListForSomeAscx(EavDataController.Instance(appId: AppId), HttpContext.Current.User.Identity.Name);// EavContext.Instance(appId: AppId);
 			//context.UserName = HttpContext.Current.User.Identity.Name;
 			e.ObjectInstance = context;
 		}
@@ -196,7 +195,7 @@ namespace ToSic.Eav.ManagementUI
 			#region Add MetaData for @All
 			var values = new Dictionary<string, ValueViewModel> { { "Name", new ValueViewModel { Value = insertedAttribute.StaticName } } };
 
-			var dbMetaData = EavContext.Instance(Db.ZoneId, Db.AppId);
+			var dbMetaData = EavDataController.Instance(Db.ZoneId, Db.AppId);
 			dbMetaData.Versioning.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);
 			dbMetaData.UserName = HttpContext.Current.User.Identity.Name;
 			dbMetaData.AttrCommands.UpdateAttributeAdditionalProperties(insertedAttribute.AttributeID, true, values);

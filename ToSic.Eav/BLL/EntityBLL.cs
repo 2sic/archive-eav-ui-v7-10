@@ -15,7 +15,7 @@ namespace ToSic.Eav.BLL
         /// Test whehter Entity can be deleted safe if it has no relationships
         /// </summary>
         /// <returns>Item1: Indicates whether Entity can be deleted. Item2: Messages why Entity can't be deleted safe.</returns>
-        public Tuple<bool, string> CanDeleteEntity(EavContext Context, int entityId)
+        public Tuple<bool, string> CanDeleteEntity(EavDataController Context, int entityId)
         {
             var messages = new List<string>();
             var entityModel = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
@@ -23,7 +23,7 @@ namespace ToSic.Eav.BLL
             if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
                 return new Tuple<bool, string>(true, null);
 
-            var entityChild = Context.EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
+            var entityChild = Context.SqlDb.EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
             if (entityChild.Any())
                 messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
 

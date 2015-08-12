@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbRelationshipCommands: DbExtensionCommandsBase
+    public class DbRelationshipCommands: BllCommandBase
     {
         
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Persistence
             new List<EntityRelationshipQueueItem>();
 
 
-        public DbRelationshipCommands(EavContext cntx) : base(cntx)
+        public DbRelationshipCommands(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -31,7 +32,7 @@ namespace ToSic.Eav.Persistence
 
             // Delete all existing relationships
             foreach (var relationToDelete in existingRelationships)
-                Context.EntityRelationships.DeleteObject(relationToDelete);
+                Context.SqlDb.EntityRelationships.DeleteObject(relationToDelete);
 
             // Create new relationships
             for (int i = 0; i < newEntityIds.Count; i++)

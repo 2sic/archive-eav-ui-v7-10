@@ -2,14 +2,15 @@
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.AscxHelpers
 {
     [DataObject(true)]
-	public class ListForSomeAscx : DbExtensionCommandsBase // : EavContext
+	public class ListForSomeAscx : BllCommandBase // DbExtensionCommandsBase // : EavContext
 	{
-        public ListForSomeAscx(EavContext cntx, string username = null) : base(cntx)
+        public ListForSomeAscx(EavDataController cntx, string username = null) : base(cntx)
         {
             if(username != null)
                 cntx.UserName = username;
@@ -28,7 +29,7 @@ namespace ToSic.Eav.AscxHelpers
         /// </summary>
         public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
         {
-            var attributesInSet = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+            var attributesInSet = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
 
             var systemScope = AttributeScope.System.ToString();
 
@@ -42,7 +43,7 @@ namespace ToSic.Eav.AscxHelpers
                         Name = metaData.ContainsKey("Name") && metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
                         Notes = metaData.ContainsKey("Notes") && metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
                         Type = a.Attribute.Type,
-                        HasTypeMetaData = Context.AttributesInSets.Any(s => s.Set == Context.AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
+                        HasTypeMetaData = Context.SqlDb.AttributesInSets.Any(s => s.Set == Context.SqlDb.AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
                         MetaData = metaData
                     }).ToList();
         }
@@ -60,7 +61,7 @@ namespace ToSic.Eav.AscxHelpers
 		/// <returns>A DataTable with all Columns defined in the AttributeSet</returns>
 		public DataTable GetItemsTable(int attributeSetId, int[] dimensionIds = null, int? maxValueLength = null, string columnNames = null)
 		{
-			var entityIds = Context.Entities.Where(e => e.AttributeSetID == attributeSetId && e.ChangeLogIDDeleted == null).Select(e => e.EntityID).ToArray();
+			var entityIds = Context.SqlDb.Entities.Where(e => e.AttributeSetID == attributeSetId && e.ChangeLogIDDeleted == null).Select(e => e.EntityID).ToArray();
 			if (!entityIds.Any())
 				return null;
 			var publishedEntities = DataSource.GetInitialDataSource(Context.ZoneId, Context.AppId).List.Where(e => entityIds.Contains(e.Key));

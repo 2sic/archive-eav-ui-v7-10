@@ -37,8 +37,7 @@ namespace ToSic.Eav.WebApi
         }
 
         #endregion
-        private EavContext Context;
-	    private DbShortcuts DbS;
+        private EavDataController Context;
 		private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
 
@@ -159,8 +158,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			Context = EavContext.Instance(appId: appId);
-            DbS = new DbShortcuts(Context);
+			Context = EavDataController.Instance(appId: appId);
 			Context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
@@ -372,7 +370,7 @@ namespace ToSic.Eav.WebApi
 		public object DeletePipeline(int appId, int id)
 		{
 			if (Context == null)
-				Context = EavContext.Instance(appId: appId);
+				Context = EavDataController.Instance(appId: appId);
 
 		    var canDeleteResult = (new EntityBLL().CanDeleteEntity(Context, id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)

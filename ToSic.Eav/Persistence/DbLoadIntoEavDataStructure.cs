@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
@@ -8,9 +9,9 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbLoadIntoEavDataStructure: DbExtensionCommandsBase
+    public class DbLoadIntoEavDataStructure: BllCommandBase
     {
-        public DbLoadIntoEavDataStructure(EavContext cntx) : base(cntx)
+        public DbLoadIntoEavDataStructure(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Persistence
             if (!Context.AttSetCommands.ContentTypes.ContainsKey(appId))
             {
                 // Load from DB
-                var contentTypes = from set in Context.AttributeSets
+                var contentTypes = from set in Context.SqlDb.AttributeSets
                                    where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
                                    select new
                                    {
@@ -47,7 +48,7 @@ namespace ToSic.Eav.Persistence
                                                          a.IsTitle
                                                      }),
                                        set.UsesConfigurationOfAttributeSet,
-                                       SharedAttributes = (from a in Context.AttributesInSets
+                                       SharedAttributes = (from a in Context.SqlDb.AttributesInSets
                                                            where a.AttributeSetID == set.UsesConfigurationOfAttributeSet
                                                            select new
                                                            {
@@ -93,14 +94,14 @@ namespace ToSic.Eav.Persistence
 
             // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
             if (filterByEntityIds)
-                entityIds = entityIds.Union(from e in Context.Entities
+                entityIds = entityIds.Union(from e in Context.SqlDb.Entities
                                             where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
                                             select e.PublishedEntityId.Value).ToArray();
             #endregion
 
             #region Get Entities with Attribute-Values from Database
 
-            var entitiesValues = from e in Context.Entities
+            var entitiesValues = from e in Context.SqlDb.Entities
                                  where
                                      !e.ChangeLogIDDeleted.HasValue &&
                                      e.Set.AppID == appId &&
@@ -275,7 +276,7 @@ namespace ToSic.Eav.Persistence
             #endregion
 
             #region Populate Entity-Relationships (after all EntityModels are created)
-            var relationshipsRaw = from r in Context.EntityRelationships
+            var relationshipsRaw = from r in Context.SqlDb.EntityRelationships
                                    where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || (!r.ChildEntityID.HasValue || entityIds.Contains(r.ChildEntityID.Value)) || entityIds.Contains(r.ParentEntityID)))
                                    orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
                                    select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };

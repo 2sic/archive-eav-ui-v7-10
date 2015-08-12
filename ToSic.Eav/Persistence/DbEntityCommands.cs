@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbEntityCommands: DbExtensionCommandsBase
+    public class DbEntityCommands: BllCommandBase
     {
-        public DbEntityCommands(EavContext cntx) : base(cntx)
+        public DbEntityCommands(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -75,13 +76,13 @@ namespace ToSic.Eav.Persistence
             else
                 newEntity.AttributeSetID = attributeSetId;
 
-            Context.AddToEntities(newEntity);
+            Context.SqlDb.AddToEntities(newEntity);
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
 
             UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
 
             return newEntity;
         }
@@ -91,9 +92,9 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
         {
-            var clone = sourceEntity.CopyEntity(Context);
+            var clone = sourceEntity.CopyEntity(Context.SqlDb);
 
-            Context.AddToEntities(clone);
+            Context.SqlDb.AddToEntities(clone);
 
             Context.ValCommands.CloneEntityValues(sourceEntity, clone);
 
@@ -136,7 +137,7 @@ namespace ToSic.Eav.Persistence
         /// <returns>the updated Entity</returns>
         public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
         {
-            var entity = Context.Entities.Single(e => e.EntityID == entityId);
+            var entity = Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
             var draftEntityId = Context.EntCommands.GetDraftEntityId(entityId);
 
             #region Unpublished Save (Draft-Saves)
@@ -164,7 +165,7 @@ namespace ToSic.Eav.Persistence
 
             // Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
             var attributes = new DbAttributeCommands(Context).GetAttributes(entity.AttributeSetID).ToList();
-            var currentValues = entity.EntityID != 0 ? Context.Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
+            var currentValues = entity.EntityID != 0 ? Context.SqlDb.Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
             // Update Values from Import Model
             var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
@@ -184,7 +185,7 @@ namespace ToSic.Eav.Persistence
 
             entity.ChangeLogIDModified = Context.Versioning.GetChangeLogId();
 
-            Context.SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
+            Context.SqlDb.SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
             Context.Versioning.SaveEntityToDataTimeline(entity);
 
@@ -280,7 +281,7 @@ namespace ToSic.Eav.Persistence
         /// <param name="entityId">EntityId of the Published Entity</param>
         internal int? GetDraftEntityId(int entityId)
         {
-            return Context.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
+            return Context.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
         }
 
         /// <summary>
@@ -357,11 +358,11 @@ namespace ToSic.Eav.Persistence
             #region Delete Related Records (Values, Value-Dimensions, Relationships)
             // Delete all Value-Dimensions
             var valueDimensions = entity.Values.SelectMany(v => v.ValuesDimensions).ToList();
-            valueDimensions.ForEach(Context.DeleteObject);
+            valueDimensions.ForEach(Context.SqlDb.DeleteObject);
             // Delete all Values
-            entity.Values.ToList().ForEach(Context.DeleteObject);
+            entity.Values.ToList().ForEach(Context.SqlDb.DeleteObject);
             // Delete all Parent-Relationships
-            entity.EntityParentRelationships.ToList().ForEach(Context.DeleteObject);
+            entity.EntityParentRelationships.ToList().ForEach(Context.SqlDb.DeleteObject);
             #endregion
 
             // If entity was Published, set Deleted-Flag
@@ -377,12 +378,12 @@ namespace ToSic.Eav.Persistence
             else
             {
                 // Delete all Child-Relationships
-                entity.EntityChildRelationships.ToList().ForEach(Context.DeleteObject);
-                Context.DeleteObject(entity);
+                entity.EntityChildRelationships.ToList().ForEach(Context.SqlDb.DeleteObject);
+                Context.SqlDb.DeleteObject(entity);
             }
 
             if (autoSave)
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
 
             return true;
         }

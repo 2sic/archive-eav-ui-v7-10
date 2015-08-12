@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbAttributeCommands: DbExtensionCommandsBase
+    public class DbAttributeCommands: BllCommandBase
     {
-        public DbAttributeCommands(EavContext cntx) : base(cntx) {}
+        public DbAttributeCommands(EavDataController cntx) : base(cntx) {}
 
         /// <summary>
         /// Get Attributes of an AttributeSet
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Persistence
         {
             attributeSetId = new DbAttributeSetCommands(Context).ResolveAttributeSetId(attributeSetId);
 
-            return from ais in Context.AttributesInSets
+            return from ais in Context.SqlDb.AttributesInSets
                    where ais.AttributeSetID == attributeSetId
                    orderby ais.SortOrder
                    select ais.Attribute;
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Persistence
         /// <param name="includeTitleAttribute">Specify whether TitleAttribute should be included</param>
         public List<Attribute> GetAttributes(AttributeSet attributeSet, bool includeTitleAttribute = true)
         {
-            var items = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSet.AttributeSetID);
+            var items = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSet.AttributeSetID);
             if (!includeTitleAttribute)
                 items = items.Where(a => !a.IsTitle);
 
@@ -44,7 +45,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public Attribute GetTitleAttribute(int attributeSetId)
         {
-            return Context.AttributesInSets.Single(a => a.AttributeSetID == attributeSetId && a.IsTitle).Attribute;
+            return Context.SqlDb.AttributesInSets.Single(a => a.AttributeSetID == attributeSetId && a.IsTitle).Attribute;
         }
 
 
@@ -53,9 +54,8 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public List<AttributeInSet> GetAttributesInSet(int attributeSetId)
         {
-            return Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+            return Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
         }
-
 
         /// <summary>
         /// Change the sort order of an attribute - move up or down
@@ -63,15 +63,15 @@ namespace ToSic.Eav.Persistence
         /// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
         public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
         {
-            var attributeToMove = Context.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == setId);
+            var attributeToMove = Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == setId);
             var attributeToInterchange = direction == AttributeMoveDirection.Up ?
-                Context.AttributesInSets.OrderByDescending(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder < attributeToMove.SortOrder) :
-                Context.AttributesInSets.OrderBy(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder > attributeToMove.SortOrder);
+                Context.SqlDb.AttributesInSets.OrderByDescending(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder < attributeToMove.SortOrder) :
+                Context.SqlDb.AttributesInSets.OrderBy(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder > attributeToMove.SortOrder);
 
             var newSortOrder = attributeToInterchange.SortOrder;
             attributeToInterchange.SortOrder = attributeToMove.SortOrder;
             attributeToMove.SortOrder = newSortOrder;
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -79,14 +79,14 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public void SetTitleAttribute(int attributeId, int attributeSetId)
         {
-            Context.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).IsTitle = true;
+            Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).IsTitle = true;
 
             // unset other Attributes with isTitle=true
-            var oldTitleAttributes = Context.AttributesInSets.Where(s => s.AttributeSetID == attributeSetId && s.IsTitle);
+            var oldTitleAttributes = Context.SqlDb.AttributesInSets.Where(s => s.AttributeSetID == attributeSetId && s.IsTitle);
             foreach (var oldTitleAttribute in oldTitleAttributes)
                 oldTitleAttribute.IsTitle = false;
 
-            Context.SaveChanges();
+            Context.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public Attribute UpdateAttribute(int attributeId, string staticName, int? attributeSetId = null, bool isTitle = false)
         {
-            var attribute = Context.Attributes.Single(a => a.AttributeID == attributeId);
-            Context.SaveChanges();
+            var attribute = Context.SqlDb.Attributes.Single(a => a.AttributeID == attributeId);
+            Context.SqlDb.SaveChanges();
 
             if (isTitle)
                 SetTitleAttribute(attributeId, attributeSetId.Value);
@@ -130,7 +130,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, bool isTitle, bool autoSave)
         {
-            var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
+            var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
             if (!sortOrder.HasValue)
                 sortOrder = 0;
             else
@@ -153,7 +153,7 @@ namespace ToSic.Eav.Persistence
         private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
         {
             if (attributeSet == null)
-                attributeSet = Context.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
+                attributeSet = Context.SqlDb.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
             else if (attributeSetId != 0)
                 throw new Exception("Can only set attributeSet or attributeSetId");
 
@@ -161,7 +161,7 @@ namespace ToSic.Eav.Persistence
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
 
             // Prevent Duplicate Name
-            if (Context.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == Context.AppId /* _appId*/ ))
+            if (Context.SqlDb.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == Context.AppId /* _appId*/ ))
                 throw new ArgumentException("An Attribute with static name " + staticName + " already exists", "staticName");
 
             var newAttribute = new Attribute
@@ -178,8 +178,8 @@ namespace ToSic.Eav.Persistence
                 AttributeGroupID = attributeGroupId,
                 IsTitle = isTitle
             };
-            Context.AddToAttributes(newAttribute);
-            Context.AddToAttributesInSets(setAssignment);
+            Context.SqlDb.AddToAttributes(newAttribute);
+            Context.SqlDb.AddToAttributesInSets(setAssignment);
 
             // Set Attribute as Title if there's no title field in this set
             if (!attributeSet.AttributesInSets.Any(a => a.IsTitle))
@@ -194,7 +194,7 @@ namespace ToSic.Eav.Persistence
             }
 
             if (autoSave)
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
             return newAttribute;
         }
 
@@ -203,13 +203,13 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public Entity UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
         {
-            var fieldPropertyEntity = Context.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
+            var fieldPropertyEntity = Context.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
                 return Context.EntCommands.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
 
-            var metaDataSetName = isAllProperty ? "@All" : "@" + Context.Attributes.Single(a => a.AttributeID == attributeId).Type;
+            var metaDataSetName = isAllProperty ? "@All" : "@" + Context.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
-            var attributeSetId = Context.AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/).AttributeSetID;
+            var attributeSetId = Context.SqlDb.AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/).AttributeSetID;
 
             return Context.EntCommands.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }

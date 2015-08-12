@@ -131,12 +131,12 @@ namespace ToSic.Eav.ManagementUI
 
         protected void dsrcAttributeSet_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
         {
-            e.Context = EavContext.Instance(appId: AppId);
+            e.Context = EavDataController.Instance(appId: AppId).SqlDb;
         }
 
 		protected void dsrcItems_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-            e.ObjectInstance = new ListForSomeAscx(EavContext.Instance(appId: AppId));// EavContext.Instance(appId: AppId);
+            e.ObjectInstance = new ListForSomeAscx(EavDataController.Instance(appId: AppId));// EavContext.Instance(appId: AppId);
 		}
 
 		protected void dsrcItems_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)
@@ -150,7 +150,7 @@ namespace ToSic.Eav.ManagementUI
 		{
 			// init
 			var repositoryId = Convert.ToInt32(e.InputParameters["RepositoryId"]);
-			var ctx = EavContext.Instance(appId: AppId);
+			var ctx = EavDataController.Instance(appId: AppId);
 			var deleteArgs = new EntityDeletingEventArgs { EntityId = repositoryId };
 
 			// test if entity can be deleted

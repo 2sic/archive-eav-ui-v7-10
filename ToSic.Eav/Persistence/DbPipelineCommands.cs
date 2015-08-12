@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.Persistence
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public static Entity CopyDataPipeline(int appId, int pipelineEntityId, string userName)
         {
-            var ctx = EavContext.Instance(appId: appId);
+            var ctx = EavDataController.Instance(appId: appId);
             var dbs = new DbShortcuts(ctx);
             ctx.UserName = userName;
 
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Persistence
             streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
             #endregion
 
-            ctx.SaveChanges();
+            ctx.SqlDb.SaveChanges();
 
             return pipelineEntityClone;
         }

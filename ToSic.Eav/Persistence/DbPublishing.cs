@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbPublishing: DbExtensionCommandsBase
+    public class DbPublishing: BllCommandBase
     {
-        public DbPublishing(EavContext cntx) : base(cntx)
-        {
-        }
+        //public DbPublishing(EavDataController dc) : base(dc) { }
+        public DbPublishing(EavDataController c) : base(c) { }
 
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Persistence
             }
 
             if (autoSave)
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
 
             return publishedEntity;
         }

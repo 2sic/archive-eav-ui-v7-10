@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Import
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Import
     public class Import
     {
         #region Private Fields
-        private readonly EavContext Context;
+        private readonly EavDataController Context;
         private readonly DbShortcuts DbS;
         private readonly int _zoneId;
         private readonly int _appId;
@@ -38,7 +39,7 @@ namespace ToSic.Eav.Import
         /// </summary>
         public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true)
         {
-            Context = EavContext.Instance(zoneId, appId);
+            Context = EavDataController.Instance(zoneId, appId);
             DbS = new DbShortcuts(Context);
 
             Context.UserName = userName;
@@ -54,16 +55,16 @@ namespace ToSic.Eav.Import
         public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities, bool commitTransaction = true, bool purgeCache = true)
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
-            Context.PurgeAppCacheOnSave = false;
+            Context.SqlDb.PurgeAppCacheOnSave = false;
 
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
-            if (Context.Connection.State != ConnectionState.Open)
-                Context.Connection.Open();
+            if (Context.SqlDb.Connection.State != ConnectionState.Open)
+                Context.SqlDb.Connection.Open();
 
-            var transaction = Context.Connection.BeginTransaction();
+            var transaction = Context.SqlDb.Connection.BeginTransaction();
 
 			// Enhance the SQL timeout for imports
-			Context.CommandTimeout = 3600;
+			Context.SqlDb.CommandTimeout = 3600;
 
             // import AttributeSets if any were included
             if (newAttributeSets != null)
@@ -75,7 +76,7 @@ namespace ToSic.Eav.Import
 
 				Context.AttSetCommands.EnsureSharedAttributeSets();
 
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
             }
 
             // import Entities
@@ -86,14 +87,14 @@ namespace ToSic.Eav.Import
 
                 Context.RelCommands.ImportEntityRelationshipsQueue();
 
-                Context.SaveChanges();
+                Context.SqlDb.SaveChanges();
             }
 
             // Commit DB Transaction
             if (commitTransaction)
             {
                 transaction.Commit();
-                Context.Connection.Close();
+                Context.SqlDb.Connection.Close();
             }
 
             // Purge Cache
@@ -128,7 +129,7 @@ namespace ToSic.Eav.Import
 	        {
 		        Context.AttSetCommands.EnsureSharedAttributeSets();
 	        }
-	        Context.SaveChanges();
+	        Context.SqlDb.SaveChanges();
 
             // append all Attributes
             foreach (var importAttribute in importAttributeSet.Attributes)
@@ -157,7 +158,7 @@ namespace ToSic.Eav.Import
 
                         // Set KeyNumber
                         if (destinationAttribute.AttributeID == 0)
-                            Context.SaveChanges();
+                            Context.SqlDb.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeID;
 
                         PersistOneImportEntity(entity);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav;
+using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using ToSic.Eav.Persistence;
@@ -123,7 +124,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         private static AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
         {
             // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-            var contentContext = EavContext.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
+            var contentContext = EavDataController.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
             return new DbAttributeSetCommands(contentContext).GetAttributeSet(contentTypeId);
         }
 

@@ -3,13 +3,14 @@ using System.Data;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
 {
 	public partial class ItemVersionDetails : UserControl
 	{
-		private EavContext _ctx;
+		private EavDataController _ctx;
 		private IEntity _currentEntity;
 		private int[] DimensionIds
 		{
@@ -28,7 +29,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			_ctx = EavContext.Instance(null, AppId);
+			_ctx = EavDataController.Instance(null, AppId);
 			_currentEntity = new DbLoadIntoEavDataStructure(_ctx).GetEavEntity(EntityId);
 
 			// Set Control Heading Text
