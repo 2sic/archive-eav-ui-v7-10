@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Persistence;
 
@@ -7,9 +6,9 @@ namespace ToSic.Eav
 {
 	public partial class EavContext
     {
-        #region Extracted, now externalized objects with actions and private fields
 
-	    private DbShortcuts _dbs;
+
+        #region Extracted, now externalized objects with actions and private fields
 
 	    public DbShortcuts DbS { get; private set; }
 
@@ -49,21 +48,11 @@ namespace ToSic.Eav
 		/// </summary>
 		public string UserName { get; set; }
 
-		/// <summary>
-		/// Get or seth whether SaveChanges() should automatically purge cache.
-		/// </summary>
-		/// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
-        internal bool PurgeAppCacheOnSavex = true;
+        #endregion
 
-	    public bool PurgeAppCacheOnSave
-		{
-			get { return PurgeAppCacheOnSavex; }
-			set { PurgeAppCacheOnSavex = value; }
-		}
-		#endregion
 
-		#region Constructor and Init
-		/// <summary>
+        #region Constructor and Init
+        /// <summary>
 		/// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
 		/// </summary>
 		private static EavContext Instance()
@@ -97,38 +86,85 @@ namespace ToSic.Eav
 		/// </summary>
 		public void InitZoneApp(int? zoneId = null, int? appId = null)
 		{
-			if (zoneId.HasValue)
-				_zoneId = zoneId.Value;
-			else
-			{
-				if (appId.HasValue)
-				{
-					var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
-					if (!zoneIdOfApp.HasValue)
-						throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-					_zoneId = zoneIdOfApp.Value;
-				}
-				else
-				{
-                    _zoneId = Constants.DefaultZoneId;
-                    _appId = Constants.MetaDataAppId;
-					return;
-				}
-			}
+            // If nothing is supplied, use defaults
+		    if (!zoneId.HasValue && !appId.HasValue)
+		    {
+		        _zoneId = Constants.DefaultZoneId;
+		        _appId = Constants.MetaDataAppId;
+		        return;
+		    }
 
-			var zone = ((DataSources.Caches.BaseCache)DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
-
-			if (appId.HasValue)
+		    // If only AppId is supplied, look up it's zone and use that
+			if (!zoneId.HasValue && appId.HasValue)
 			{
-				// Set AppId and validate AppId exists with specified ZoneId
-				var foundAppId = zone.Apps.Where(a => a.Key == appId.Value).Select(a => (int?)a.Key).SingleOrDefault();
-				if (!foundAppId.HasValue)
+				var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
+				if (!zoneIdOfApp.HasValue)
 					throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-				_appId = foundAppId.Value;
+			    _appId = appId.Value;
+				_zoneId = zoneIdOfApp.Value;
+				return;
 			}
-			else
-				_appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
 
+            // if only ZoneId was supplied, use that...
+            _zoneId = zoneId.Value;	
+            
+            // ...and try to find the best match for App-ID
+            // var zone = ((DataSources.Caches.BaseCache)DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
+
+		    if (appId.HasValue)
+		    {
+		        var foundApp = Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
+		        if (foundApp == null)
+		            throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+		        _appId = appId.Value;
+		    }
+		    else
+		        //_appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
+		        _appId = Apps.First(a => a.Name == Constants.DefaultAppName).AppID;
+
+		    #region code before refactoring 2015-08-12 - 2dm wanted to get rid of depenedncy on the the DataSource - Cache
+
+		    //// If nothing is supplied, use defaults
+		    //if (!zoneId.HasValue && !appId.HasValue)
+		    //{
+		    //    _zoneId = Constants.DefaultZoneId;
+		    //    _appId = Constants.MetaDataAppId;
+		    //    return;
+		    //}
+
+		    //// If only AppId is supplied, look up it's zone and use that
+		    //if (!zoneId.HasValue && appId.HasValue)
+		    //{
+		    //    var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
+		    //    if (!zoneIdOfApp.HasValue)
+		    //        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+		    //    _appId = appId.Value;
+		    //    _zoneId = zoneIdOfApp.Value;
+		    //    return;
+		    //}
+
+		    //// if only ZoneId was supplied, use that...
+		    //_zoneId = zoneId.Value;
+
+		    //// ...and try to find the best match for App-ID
+		    //var zone = ((DataSources.Caches.BaseCache)DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
+
+		    //if (appId.HasValue)
+		    //{
+		    //    // Set AppId and validate AppId exists with specified ZoneId
+		    //    //var foundAppId = zone.Apps.Where(a => a.Key == appId.Value).Select(a => (int?)a.Key).SingleOrDefault();
+		    //    //if (!foundAppId.HasValue)
+		    //    //    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+		    //    //_appId = foundAppId.Value;
+		    //    var foundApp = Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
+		    //    if (foundApp == null)
+		    //        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+		    //    _appId = foundApp.AppID;
+		    //}
+		    //else
+		    //    _appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
+
+		    #endregion
 		}
 
 		#endregion
@@ -137,6 +173,18 @@ namespace ToSic.Eav
 
         #region Save and check if to kill cache
 
+        /// <summary>
+        /// Get or seth whether SaveChanges() should automatically purge cache.
+        /// </summary>
+        /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
+        private bool _purgeAppCacheOnSave = true;
+
+        public bool PurgeAppCacheOnSave
+        {
+            get { return _purgeAppCacheOnSave; }
+            set { _purgeAppCacheOnSave = value; }
+        }
+        
         /// <summary>
 		/// Persists all updates to the data source and optionally resets change tracking in the object context.
 		/// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
