@@ -67,7 +67,7 @@ namespace ToSic.Eav.AscxHelpers
 			var draftEntities = DataSource.GetInitialDataSource(Context.ZoneId, Context.AppId, true).List.Where(e => entityIds.Contains(e.Key));
 			var entitiesModel = publishedEntities.Union(draftEntities);
 
-			var columnNamesArray = new DbShortcuts(Context).GetAttributes(attributeSetId).Select(a => a.StaticName);
+			var columnNamesArray = new DbAttributeCommands(Context).GetAttributes(attributeSetId).Select(a => a.StaticName);
 			if (columnNames != null)
 			{
 				var columNamesFilter = columnNames.Split(',');

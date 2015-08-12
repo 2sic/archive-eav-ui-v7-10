@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi
         }
 
         #endregion
-        private EavContext _context;
+        private EavContext Context;
 	    private DbShortcuts DbS;
 		private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
@@ -159,9 +159,9 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			_context = EavContext.Instance(appId: appId);
-            DbS = new DbShortcuts(_context);
-			_context.UserName = _userName;
+			Context = EavContext.Instance(appId: appId);
+            DbS = new DbShortcuts(Context);
+			Context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
 			// Get/Save Pipeline EntityGuid. Its required to assign Pipeline Parts to it.
@@ -182,7 +182,7 @@ namespace ToSic.Eav.WebApi
 				//id = entity.EntityID;
 			}
 
-			var pipelinePartAttributeSetId = DbS.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
+			var pipelinePartAttributeSetId = Context.AttSetCommands.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
 			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
 			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 
@@ -210,11 +210,11 @@ namespace ToSic.Eav.WebApi
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
-					_context.EntCommands.UpdateEntity((int)dataSource.EntityId, newValues);
+					Context.EntCommands.UpdateEntity((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
-					var entitiy = _context.EntCommands.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
+					var entitiy = Context.EntCommands.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
 					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
@@ -235,7 +235,7 @@ namespace ToSic.Eav.WebApi
 			newEntityGuids.AddRange(newDataSources.Values);
 
 			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-				_context.EntCommands.DeleteEntity(entityToDelet);
+				Context.EntCommands.DeleteEntity(entityToDelet);
 		}
 
 		/// <summary>
@@ -292,7 +292,7 @@ namespace ToSic.Eav.WebApi
 			if (pipelineEntity.Title.Values.Any())
 				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-			return _context.EntCommands.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
+			return Context.EntCommands.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
@@ -371,10 +371,10 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-			if (_context == null)
-				_context = EavContext.Instance(appId: appId);
+			if (Context == null)
+				Context = EavContext.Instance(appId: appId);
 
-		    var canDeleteResult = (new EntityBLL().CanDeleteEntity(_context, id));// _context.EntCommands.CanDeleteEntity(id);
+		    var canDeleteResult = (new EntityBLL().CanDeleteEntity(Context, id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)
 				throw new Exception(canDeleteResult.Item2);
 
@@ -391,13 +391,13 @@ namespace ToSic.Eav.WebApi
 				// Delete Configuration Entities (if any)
 				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
 				if (dataSourceConfig != null)
-					_context.EntCommands.DeleteEntity(dataSourceConfig.EntityId);
+					Context.EntCommands.DeleteEntity(dataSourceConfig.EntityId);
 
-				_context.EntCommands.DeleteEntity(dataSource.EntityId);
+				Context.EntCommands.DeleteEntity(dataSource.EntityId);
 			}
 
 			// Delete Pipeline
-			_context.EntCommands.DeleteEntity(id);
+			Context.EntCommands.DeleteEntity(id);
 
 			return new { Result = "Success" };
 		}

@@ -174,11 +174,11 @@ namespace ToSic.Eav.Persistence
                 foreach (var valueModel in attribute.Value)
                 {
                     var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
-                    result.Rows.Add(attribute.Key, firstLanguage, Context.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
+                    result.Rows.Add(attribute.Key, firstLanguage, Context.ValCommands.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
 
                     foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
                     {
-                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, Context.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
+                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, Context.ValCommands.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
                     }
                 }
             }

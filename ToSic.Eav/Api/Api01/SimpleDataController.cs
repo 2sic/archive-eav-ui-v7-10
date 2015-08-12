@@ -13,7 +13,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController
     {
-        private readonly EavContext _contentContext;
+        private readonly EavContext Context;
         private readonly DbShortcuts DbS;
 
         private readonly string _defaultLanguageCode;
@@ -39,8 +39,8 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
-            _contentContext = EavContext.Instance(zoneId, appId);
-            DbS = new DbShortcuts(_contentContext);
+            Context = EavContext.Instance(zoneId, appId);
+            DbS = new DbShortcuts(Context);
         }
 
 
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public void Create(string contentTypeName, Dictionary<string, object> values)
         {
-            var attributeSet = DbS.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
+            var attributeSet = Context.AttSetCommands.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
             {
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
@@ -106,7 +106,7 @@ namespace ToSic.Eav.Api.Api01
 
         private void Update(Entity entity, Dictionary<string, object> values)
         {
-            var attributeSet = DbS.GetAttributeSet(entity.AttributeSetID);
+            var attributeSet = Context.AttSetCommands.GetAttributeSet(entity.AttributeSetID);
             var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
             importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             importEntity.Import(_zoneId, _appId, _userName);
@@ -121,11 +121,11 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!new EntityBLL().CanDeleteEntity(_contentContext,entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+            if (!new EntityBLL().CanDeleteEntity(Context,entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }
-            _contentContext.EntCommands.DeleteEntity(entityId);
+            Context.EntCommands.DeleteEntity(entityId);
         }
 
 

@@ -115,7 +115,7 @@ namespace ToSic.Eav.ManagementUI
 				case "EditAllTypeMetaData":
 				case "EditTypeMetaData":
 					var metaDataAttributeSetStaticName = e.CommandName == "EditAllTypeMetaData" ? "@All" : "@" + Db.Attributes.Single(a => a.AttributeID == attributeId).Type;
-					var metaDataAttributeSetId = DbS.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
+					var metaDataAttributeSetId = Db.AttSetCommands.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
 
 			        var returnUrl = MetaDataReturnUrl == null ? null : MetaDataReturnUrl.Replace("[AttributeSetId]", AttributeSetId.ToString(CultureInfo.InvariantCulture));
 					var editMetaDataUrl = Forms.GetItemFormUrl(attributeId, metaDataAttributeSetId, Constants.AssignmentObjectTypeIdFieldProperties, NewItemUrl, EditItemUrl, returnUrl , IsDialog, DimensionIds.FirstOrDefault());

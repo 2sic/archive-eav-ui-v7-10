@@ -106,7 +106,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             _appId = applicationId;
             _zoneId = zoneId;
-            _contentType = new DbShortcuts(EavContext.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
+            _contentType = new DbAttributeSetCommands(EavContext.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
             _languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;

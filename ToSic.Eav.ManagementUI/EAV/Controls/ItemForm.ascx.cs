@@ -156,7 +156,7 @@ namespace ToSic.Eav.ManagementUI
             var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : zoneId;
 			var entityReadOnly = entityModel.GetDraft() != null;
 
-			foreach (var attribute in DbS.GetAttributes(entity.AttributeSetID))
+			foreach (var attribute in Db.AttrCommands.GetAttributes(entity.AttributeSetID))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 				var attributeModel = entityModel[attribute.StaticName];
@@ -229,13 +229,13 @@ namespace ToSic.Eav.ManagementUI
 		/// </summary>
 		private void AddFormControls(int attributeSetId)
 		{
-			var attributeSet = DbS.GetAttributeSet(attributeSetId);
+			var attributeSet = Db.AttSetCommands.GetAttributeSet(attributeSetId);
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
             var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Db.AppId;
             var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Db.ZoneId;
 
-			foreach (var attribute in DbS.GetAttributes(attributeSetId))
+			foreach (var attribute in Db.AttrCommands.GetAttributes(attributeSetId))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 

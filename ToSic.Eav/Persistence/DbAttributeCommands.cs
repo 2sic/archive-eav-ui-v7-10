@@ -12,6 +12,52 @@ namespace ToSic.Eav.Persistence
         public DbAttributeCommands(EavContext cntx) : base(cntx) {}
 
         /// <summary>
+        /// Get Attributes of an AttributeSet
+        /// </summary>
+        public IQueryable<Attribute> GetAttributes(int attributeSetId)
+        {
+            attributeSetId = new DbAttributeSetCommands(Context).ResolveAttributeSetId(attributeSetId);
+
+            return from ais in Context.AttributesInSets
+                   where ais.AttributeSetID == attributeSetId
+                   orderby ais.SortOrder
+                   select ais.Attribute;
+        }
+
+
+        /// <summary>
+        /// Get a List of all Attributes in specified AttributeSet
+        /// </summary>
+        /// <param name="attributeSet">Reference to an AttributeSet</param>
+        /// <param name="includeTitleAttribute">Specify whether TitleAttribute should be included</param>
+        public List<Attribute> GetAttributes(AttributeSet attributeSet, bool includeTitleAttribute = true)
+        {
+            var items = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSet.AttributeSetID);
+            if (!includeTitleAttribute)
+                items = items.Where(a => !a.IsTitle);
+
+            return items.Select(a => a.Attribute).ToList();
+        }
+
+        /// <summary>
+        /// Get Title Attribute for specified AttributeSetId
+        /// </summary>
+        public Attribute GetTitleAttribute(int attributeSetId)
+        {
+            return Context.AttributesInSets.Single(a => a.AttributeSetID == attributeSetId && a.IsTitle).Attribute;
+        }
+
+
+        /// <summary>
+        /// Get a list of all Attributes in Set for specified AttributeSetId
+        /// </summary>
+        public List<AttributeInSet> GetAttributesInSet(int attributeSetId)
+        {
+            return Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+        }
+
+
+        /// <summary>
         /// Change the sort order of an attribute - move up or down
         /// </summary>
         /// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>

@@ -163,7 +163,7 @@ namespace ToSic.Eav.Persistence
                 dimensionIds = new List<int>(0);
 
             // Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
-            var attributes = Context.DbS.GetAttributes(entity.AttributeSetID).ToList();
+            var attributes = new DbAttributeCommands(Context).GetAttributes(entity.AttributeSetID).ToList();
             var currentValues = entity.EntityID != 0 ? Context.Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
             // Update Values from Import Model
@@ -226,7 +226,7 @@ namespace ToSic.Eav.Persistence
                 {
                     try
                     {
-                        var updatedValue = Context.UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
+                        var updatedValue = Context.ValCommands.UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
 
                         var updatedEavValue = updatedValue as EavValue;
                         if (updatedEavValue != null)
@@ -293,7 +293,7 @@ namespace ToSic.Eav.Persistence
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-                Context.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
+                Context.ValCommands.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues

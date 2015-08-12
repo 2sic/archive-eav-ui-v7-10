@@ -108,7 +108,7 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void ImportAttributeSet(ImportAttributeSet importAttributeSet)
         {
-            var destinationSet = DbS.GetAttributeSet(importAttributeSet.StaticName);
+            var destinationSet = Context.AttSetCommands.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
                 destinationSet = Context.AttSetCommands.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
@@ -174,7 +174,7 @@ namespace ToSic.Eav.Import
             #region try to get AttributeSet or otherwise cancel & log error
 
             // todo: tag:optimize try to cache the attribute-set definition, because this causes DB calls for no reason on each and every entity
-            var attributeSet = DbS.GetAttributeSet(importEntity.AttributeSetStaticName);
+            var attributeSet = Context.AttSetCommands.GetAttributeSet(importEntity.AttributeSetStaticName);
             if (attributeSet == null)	// AttributeSet not Found
             {
                 _importLog.Add(new LogItem(EventLogEntryType.Error, "AttributeSet not found") { ImportEntity = importEntity, ImportAttributeSet = new ImportAttributeSet { StaticName = importEntity.AttributeSetStaticName } });

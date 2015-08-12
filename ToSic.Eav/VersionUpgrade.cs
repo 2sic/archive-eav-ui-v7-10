@@ -112,7 +112,7 @@ namespace ToSic.Eav
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps
 			foreach (var attributeSet in attributeSets)
-				new DbShortcuts(_metaDataCtx).GetAttributeSet(attributeSet.StaticName).AlwaysShareConfiguration = true;
+				new DbAttributeSetCommands(_metaDataCtx).GetAttributeSet(attributeSet.StaticName).AlwaysShareConfiguration = true;
 
 			_metaDataCtx.SaveChanges();
 

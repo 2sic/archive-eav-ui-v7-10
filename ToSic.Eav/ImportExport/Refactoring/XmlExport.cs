@@ -124,8 +124,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             // todo: changed by 2dm 2015-06-02, must be checked by 2tk
             var contentContext = EavContext.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
-            var DbS = new DbShortcuts(contentContext);
-            return DbS.GetAttributeSet(contentTypeId);
+            return new DbAttributeSetCommands(contentContext).GetAttributeSet(contentTypeId);
         }
 
         private static XDocument GetDocument(params object[] content)

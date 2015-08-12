@@ -11,6 +11,73 @@ namespace ToSic.Eav.Persistence
         {
         }
 
+
+        
+        /// <summary>
+        /// Get a List of all AttributeSets
+        /// </summary>
+        public List<AttributeSet> GetAllAttributeSets()
+        {
+            return Context.AttributeSets.Where(a => a.AppID == Context.AppId).ToList();
+        }
+
+        /// <summary>
+        /// Get a single AttributeSet
+        /// </summary>
+        public AttributeSet GetAttributeSet(int attributeSetId)
+        {
+            return Context.AttributeSets.SingleOrDefault(a => a.AttributeSetID == attributeSetId && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
+        }
+        /// <summary>
+        /// Get a single AttributeSet
+        /// </summary>
+        public AttributeSet GetAttributeSet(string staticName)
+        {
+            return Context.AttributeSets.SingleOrDefault(a => a.StaticName == staticName && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
+        }
+
+
+
+        /// <summary>
+        /// Get AttributeSetId by StaticName and Scope
+        /// </summary>
+        /// <param name="staticName">StaticName of the AttributeSet</param>
+        /// <param name="scope">Optional Filter by Scope</param>
+        /// <returns>AttributeSetId or Exception</returns>
+        public int GetAttributeSetId(string staticName, AttributeScope? scope)
+        {
+            var scopeFilter = scope.HasValue ? scope.ToString() : null;
+
+            try
+            {
+                return Context.AttributeSets.Single(s => s.AppID == Context.AppId /*_appId*/  && s.StaticName == staticName && (s.Scope == scopeFilter || scopeFilter == null)).AttributeSetID;
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in Scope \"" + scopeFilter + "\".", ex);
+            }
+        }
+
+        /// <summary>
+        /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.
+        /// </summary>
+        /// <param name="attributeSetId">AttributeSetId to resolve</param>
+        internal int ResolveAttributeSetId(int attributeSetId)
+        {
+            var usesConfigurationOfAttributeSet = Context.AttributeSets.Where(a => a.AttributeSetID == attributeSetId).Select(a => a.UsesConfigurationOfAttributeSet).Single();
+            return usesConfigurationOfAttributeSet.HasValue ? usesConfigurationOfAttributeSet.Value : attributeSetId;
+        }
+
+        /// <summary>
+        /// Test whether AttributeSet exists on specified App and is not deleted
+        /// </summary>
+        public bool AttributeSetExists(string staticName, int appId)
+        {
+            return Context.AttributeSets.Any(a => !a.ChangeLogIDDeleted.HasValue && a.AppID == appId && a.StaticName == staticName);
+        }
+
+
+
         /// <summary>
         /// Get AttributeSets
         /// </summary>
@@ -82,7 +149,7 @@ namespace ToSic.Eav.Persistence
             var targetAppId = appId.HasValue ? appId.Value : Context.AppId /* _appId*/;
 
             // ensure AttributeSet with StaticName doesn't exist on App
-            if (Context.DbS.AttributeSetExists(staticName, targetAppId))
+            if (Context.AttSetCommands.AttributeSetExists(staticName, targetAppId))
                 throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
 
             var newSet = new AttributeSet
