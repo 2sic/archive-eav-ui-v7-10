@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Api01\SimpleDataController.cs" />
+    <Compile Include="BLL\EavDataController.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DataSources\Configuration.cs" />
     <Compile Include="Persistence\DbPipelineCommands.cs" />

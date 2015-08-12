@@ -27,7 +27,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
         {
-            if (!Context._contentTypes.ContainsKey(appId))
+            if (!Context.AttSetCommands.ContentTypes.ContainsKey(appId))
             {
                 // Load from DB
                 var contentTypes = from set in Context.AttributeSets
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Persistence
                                                            })
                                    };
                 // Convert to ContentType-Model
-                Context._contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.UsesConfigurationOfAttributeSet)
+                Context.AttSetCommands.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.UsesConfigurationOfAttributeSet)
                 {
                     AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
                             ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Persistence
                 });
             }
 
-            return Context._contentTypes[appId];
+            return Context.AttSetCommands.ContentTypes[appId];
         }
 
         /// <summary>Get Data to populate ICache</summary>

@@ -11,6 +11,9 @@ namespace ToSic.Eav.Persistence
         {
         }
 
+        /// <summary>caches all AttributeSets for each App</summary>
+        internal readonly Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+
 
         
         /// <summary>
@@ -164,8 +167,8 @@ namespace ToSic.Eav.Persistence
 
             Context.AddToAttributeSets(newSet);
 
-            if (Context._contentTypes.ContainsKey(Context.AppId /* _appId*/))
-                Context._contentTypes.Remove(Context.AppId /* _appId*/);
+            if (Context.AttSetCommands.ContentTypes.ContainsKey(Context.AppId /* _appId*/))
+                Context.AttSetCommands.ContentTypes.Remove(Context.AppId /* _appId*/);
 
             if (autoSave)
                 Context.SaveChanges();

@@ -1,27 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Import;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav
 {
 	public partial class EavContext
     {
-        #region Extracted, now externalized objects with actions
+        #region Extracted, now externalized objects with actions and private fields
 
 	    private DbShortcuts _dbs;
 
-	    public DbShortcuts DbS
-	    {
-	        get
-	        {
-	            if(_dbs == null)
-                    _dbs = new DbShortcuts(this);
-	            return _dbs;
-	        }
-	    }
+	    public DbShortcuts DbS { get; private set; }
 
         public DbVersioning Versioning { get; private set; }
         public DbEntityCommands EntCommands { get; private set; }
@@ -31,14 +21,8 @@ namespace ToSic.Eav
         public DbAttributeSetCommands AttSetCommands { get; private set; }
         public DbPublishing PubCommands { get; private set; }
 
-	    #endregion
-
-		#region Private Fields
 		public int _appId;
 		internal int _zoneId;
-		/// <summary>caches all AttributeSets for each App</summary>
-		internal readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
-		/// <summary>SaveChanges() assigns all Changes to this ChangeLog</summary>
 		#endregion
 
 		#region Properties like AppId, ZoneId, UserName etc.
@@ -86,6 +70,7 @@ namespace ToSic.Eav
 		{
 			var connectionString = Configuration.GetConnectionString();
 			var x = new EavContext(connectionString);
+            x.DbS = new DbShortcuts(x);
             x.Versioning = new DbVersioning(x);
             x.EntCommands = new DbEntityCommands(x);
             x.ValCommands = new DbValueCommands(x);
