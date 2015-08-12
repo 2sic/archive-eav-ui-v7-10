@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web;
+using ToSic.Eav.AscxHelpers;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 
@@ -177,8 +178,8 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void dsrcAttributes_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-			var context = EavContext.Instance(appId: AppId);
-			context.UserName = HttpContext.Current.User.Identity.Name;
+            var context = new ListForSomeAscx(EavContext.Instance(appId: AppId), HttpContext.Current.User.Identity.Name);// EavContext.Instance(appId: AppId);
+			//context.UserName = HttpContext.Current.User.Identity.Name;
 			e.ObjectInstance = context;
 		}
 		#endregion

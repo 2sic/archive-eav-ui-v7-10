@@ -14,7 +14,7 @@ namespace ToSic.Eav.Import
     public class Import
     {
         #region Private Fields
-        private readonly EavContext _db;
+        private readonly EavContext Context;
         private readonly DbShortcuts DbS;
         private readonly int _zoneId;
         private readonly int _appId;
@@ -38,12 +38,12 @@ namespace ToSic.Eav.Import
         /// </summary>
         public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true)
         {
-            _db = EavContext.Instance(zoneId, appId);
-            DbS = new DbShortcuts(_db);
+            Context = EavContext.Instance(zoneId, appId);
+            DbS = new DbShortcuts(Context);
 
-            _db.UserName = userName;
-            _zoneId = _db.ZoneId;
-            _appId = _db.AppId;
+            Context.UserName = userName;
+            _zoneId = Context.ZoneId;
+            _appId = Context.AppId;
             _leaveExistingValuesUntouched = leaveExistingValuesUntouched;
             _preserveUndefinedValues = preserveUndefinedValues;
         }
@@ -54,16 +54,16 @@ namespace ToSic.Eav.Import
         public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities, bool commitTransaction = true, bool purgeCache = true)
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
-            _db.PurgeAppCacheOnSave = false;
+            Context.PurgeAppCacheOnSave = false;
 
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
-            if (_db.Connection.State != ConnectionState.Open)
-                _db.Connection.Open();
+            if (Context.Connection.State != ConnectionState.Open)
+                Context.Connection.Open();
 
-            var transaction = _db.Connection.BeginTransaction();
+            var transaction = Context.Connection.BeginTransaction();
 
 			// Enhance the SQL timeout for imports
-			_db.CommandTimeout = 3600;
+			Context.CommandTimeout = 3600;
 
             // import AttributeSets if any were included
             if (newAttributeSets != null)
@@ -71,11 +71,11 @@ namespace ToSic.Eav.Import
                 foreach (var attributeSet in newAttributeSets)
                     ImportAttributeSet(attributeSet);
 
-                _db.RelCommands.ImportEntityRelationshipsQueue();
+                Context.RelCommands.ImportEntityRelationshipsQueue();
 
-				DbS.EnsureSharedAttributeSets();
+				Context.AttSetCommands.EnsureSharedAttributeSets();
 
-                _db.SaveChanges();
+                Context.SaveChanges();
             }
 
             // import Entities
@@ -84,21 +84,21 @@ namespace ToSic.Eav.Import
                 foreach (var entity in newEntities)
                     PersistOneImportEntity(entity);
 
-                _db.RelCommands.ImportEntityRelationshipsQueue();
+                Context.RelCommands.ImportEntityRelationshipsQueue();
 
-                _db.SaveChanges();
+                Context.SaveChanges();
             }
 
             // Commit DB Transaction
             if (commitTransaction)
             {
                 transaction.Commit();
-                _db.Connection.Close();
+                Context.Connection.Close();
             }
 
             // Purge Cache
             if (purgeCache)
-                DataSource.GetCache(_db.ZoneId, _db.AppId).PurgeCache(_db.ZoneId, _db.AppId);
+                DataSource.GetCache(Context.ZoneId, Context.AppId).PurgeCache(Context.ZoneId, Context.AppId);
 
             return transaction;
         }
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Import
             var destinationSet = DbS.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = _db.AttSetCommands.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
+                destinationSet = Context.AttSetCommands.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
@@ -126,9 +126,9 @@ namespace ToSic.Eav.Import
 	        destinationSet.AlwaysShareConfiguration = importAttributeSet.AlwaysShareConfiguration;
 	        if (destinationSet.AlwaysShareConfiguration)
 	        {
-		        DbS.EnsureSharedAttributeSets();
+		        Context.AttSetCommands.EnsureSharedAttributeSets();
 	        }
-	        _db.SaveChanges();
+	        Context.SaveChanges();
 
             // append all Attributes
             foreach (var importAttribute in importAttributeSet.Attributes)
@@ -138,7 +138,7 @@ namespace ToSic.Eav.Import
                 try	// try to add new Attribute
                 {
                     var isTitle = importAttribute == importAttributeSet.TitleAttribute;
-                    destinationAttribute = _db.AttrCommands.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
+                    destinationAttribute = Context.AttrCommands.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
                     isNewAttribute = true;
                 }
 				catch (ArgumentException ex)	// Attribute already exists
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Import
 
                         // Set KeyNumber
                         if (destinationAttribute.AttributeID == 0)
-                            _db.SaveChanges();
+                            Context.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeID;
 
                         PersistOneImportEntity(entity);
@@ -217,11 +217,11 @@ namespace ToSic.Eav.Import
                 #endregion
 
                 #region Delete Draft-Entity (if any)
-                var draftEntityId = _db.EntCommands.GetDraftEntityId(existingEntity.EntityID);
+                var draftEntityId = Context.EntCommands.GetDraftEntityId(existingEntity.EntityID);
                 if (draftEntityId.HasValue)
                 {
                     _importLog.Add(new LogItem(EventLogEntryType.Information, "Draft-Entity deleted") { ImportEntity = importEntity, });
-                    _db.EntCommands.DeleteEntity(draftEntityId.Value);
+                    Context.EntCommands.DeleteEntity(draftEntityId.Value);
                 }
                 #endregion
 
@@ -229,12 +229,12 @@ namespace ToSic.Eav.Import
                 if (_leaveExistingValuesUntouched)	// Skip values that are already present in existing Entity
                     newValues = newValues.Where(v => existingEntity.Values.All(ev => ev.Attribute.StaticName != v.Key)).ToDictionary(v => v.Key, v => v.Value);
 
-                _db.EntCommands.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
+                Context.EntCommands.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
             }
             // Add new Entity
             else
             {
-                _db.EntCommands.AddEntity(attributeSet.AttributeSetID, importEntity, _importLog, importEntity.IsPublished);
+                Context.EntCommands.AddEntity(attributeSet.AttributeSetID, importEntity, _importLog, importEntity.IsPublished);
             }
         }
     }

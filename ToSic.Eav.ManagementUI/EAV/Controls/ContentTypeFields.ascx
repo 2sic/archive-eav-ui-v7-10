@@ -118,7 +118,7 @@
 	</EmptyDataTemplate>
 </asp:GridView>
 <asp:ObjectDataSource ID="dsrcAttributes" runat="server" SelectMethod="GetAttributesWithMetaInfo"
-	TypeName="ToSic.Eav.EavContext" OnObjectCreating="dsrcAttributes_ObjectCreating"
+	TypeName="ToSic.Eav.AscxHelpers.ListForSomeAscx" OnObjectCreating="dsrcAttributes_ObjectCreating"
 	InsertMethod="AppendAttribute" OnInserting="dsrcAttributes_Inserting"
 	DeleteMethod="RemoveAttributeInSet" OnDeleting="dsrcAttributes_Deleting"
 	UpdateMethod="UpdateAttribute" OnInserted="dsrcAttributes_Inserted" 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToSic.Eav.AscxHelpers;
 using ToSic.Eav.Data;
 
 
@@ -162,24 +163,6 @@ namespace ToSic.Eav.Persistence
         }
 
         /// <summary>
-        /// Get AttributeSets
-        /// </summary>
-        /// <param name="appId">Filter by AppId</param>
-        /// <param name="scope">optional Filter by Scope</param>
-        internal IQueryable<AttributeSet> GetAttributeSets(int appId, AttributeScope? scope)
-        {
-            var result = Context.AttributeSets.Where(a => a.AppID == appId && !a.ChangeLogIDDeleted.HasValue);
-
-            if (scope != null)
-            {
-                var scopeString = scope.ToString();
-                result = result.Where(a => a.Scope == scopeString);
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Get Attributes of an AttributeSet
         /// </summary>
         public IQueryable<Attribute> GetAttributes(int attributeSetId)
@@ -190,30 +173,6 @@ namespace ToSic.Eav.Persistence
                    where ais.AttributeSetID == attributeSetId
                    orderby ais.SortOrder
                    select ais.Attribute;
-        }
-
-        /// <summary>
-        /// Get a List of AttributeWithMetaInfo of specified AttributeSet and DimensionIds
-        /// </summary>
-        public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
-        {
-            var attributesInSet = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
-
-            var systemScope = AttributeScope.System.ToString();
-
-            return (from a in attributesInSet
-                    let metaData = new Metadata().GetAttributeMetaData(a.AttributeID, Context.ZoneId, Context.AppId)
-                    select new AttributeWithMetaInfo
-                    {
-                        AttributeID = a.AttributeID,
-                        IsTitle = a.IsTitle,
-                        StaticName = a.Attribute.StaticName,
-                        Name = metaData.ContainsKey("Name") && metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
-                        Notes = metaData.ContainsKey("Notes") && metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
-                        Type = a.Attribute.Type,
-                        HasTypeMetaData = Context.AttributesInSets.Any(s => s.Set == Context.AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
-                        MetaData = metaData
-                    }).ToList();
         }
 
 
@@ -239,23 +198,6 @@ namespace ToSic.Eav.Persistence
             return Context.AttributesInSets.Single(a => a.AttributeSetID == attributeSetId && a.IsTitle).Attribute;
         }
 
-        ///// <summary>
-        ///// Get Entities describing the Attribute (e.g. General and @String)
-        ///// </summary>
-        //public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId)
-        //{
-        //    return GetAttributeMetaData(attributeId, Context.ZoneId /*_zoneId*/, Context.AppId /*_appId*/);
-        //}
-        ///// <summary>
-        ///// Get Entities describing the Attribute (e.g. General and @String)
-        ///// </summary>
-        //public Dictionary<string, IAttribute> GetAttributeMetaData(int attributeId, int zoneId, int appId)
-        //{
-        //    // Get all EntityIds describing the Attribute (e.g. General and @String)
-        //    var entities = DataSource.GetMetaDataSource(zoneId, appId).GetAssignedEntities(DataSource.AssignmentObjectTypeIdFieldProperties, attributeId);
-        //    // Return all Attributes of all Entities with Value
-        //    return entities.SelectMany(e => e.Attributes).ToDictionary(a => a.Key, a => a.Value);
-        //}
 
         /// <summary>
         /// Get a list of all Attributes in Set for specified AttributeSetId
@@ -390,7 +332,7 @@ namespace ToSic.Eav.Persistence
 
             Context.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
-            EnsureSharedAttributeSets(newApp);
+            Context.AttSetCommands.EnsureSharedAttributeSets(newApp);
 
             PurgeGlobalCache(Context.ZoneId, Context.AppId);
 
@@ -439,42 +381,6 @@ namespace ToSic.Eav.Persistence
             return Context.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
         }
 
-        /// <summary>
-        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
-        /// </summary>
-        private void EnsureSharedAttributeSets(App app, bool autoSave = true)
-        {
-            if (app.AppID == 0)
-                throw new Exception("App must have a valid AppID");
-
-            // todo: bad - don't want data-sources here
-            var sharedAttributeSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
-            foreach (var sharedSet in sharedAttributeSets)
-            {
-                // Skip if attributeSet with StaticName already exists
-                if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
-                    continue;
-
-                // create new AttributeSet
-                var newAttributeSet = Context.AttSetCommands.AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
-                newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
-            }
-
-            // Ensure new AttributeSets are created and cache is refreshed
-            if (autoSave)
-                Context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
-        /// </summary>
-        internal void EnsureSharedAttributeSets()
-        {
-            foreach (var app in Context.Apps)
-                EnsureSharedAttributeSets(app, false);
-
-            Context.SaveChanges();
-        }
 
         #endregion
     }

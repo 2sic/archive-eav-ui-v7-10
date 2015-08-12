@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\ToSic.Eav\bin\Debug\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Unity">
       <HintPath>..\ToSic.Eav\bin\Debug\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
@@ -56,6 +59,7 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
+    <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
     <Compile Include="DataTableDataSource.cs" />

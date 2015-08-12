@@ -1,16 +1,51 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.AscxHelpers
 {
+    [DataObject(true)]
 	public class ListForSomeAscx : DbExtensionCommandsBase // : EavContext
 	{
-        public ListForSomeAscx(EavContext cntx) : base(cntx)
+        public ListForSomeAscx(EavContext cntx, string username = null) : base(cntx)
         {
+            if(username != null)
+                cntx.UserName = username;
         }
-        
+
+        /// <summary>
+        /// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId
+        /// </summary>
+        public List<Dimension> GetDimensionChildren(string systemKey)
+        {
+            return new DbDimensions(Context).GetDimensionChildren(systemKey);
+        }
+
+        /// <summary>
+        /// Get a List of AttributeWithMetaInfo of specified AttributeSet and DimensionIds
+        /// </summary>
+        public List<AttributeWithMetaInfo> GetAttributesWithMetaInfo(int attributeSetId, int[] dimensionIds)
+        {
+            var attributesInSet = Context.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+
+            var systemScope = AttributeScope.System.ToString();
+
+            return (from a in attributesInSet
+                    let metaData = new Metadata().GetAttributeMetaData(a.AttributeID, Context.ZoneId, Context.AppId)
+                    select new AttributeWithMetaInfo
+                    {
+                        AttributeID = a.AttributeID,
+                        IsTitle = a.IsTitle,
+                        StaticName = a.Attribute.StaticName,
+                        Name = metaData.ContainsKey("Name") && metaData["Name"].Values != null ? metaData["Name"][dimensionIds].ToString() : null,
+                        Notes = metaData.ContainsKey("Notes") && metaData["Notes"].Values != null ? metaData["Notes"][dimensionIds].ToString() : null,
+                        Type = a.Attribute.Type,
+                        HasTypeMetaData = Context.AttributesInSets.Any(s => s.Set == Context.AttributeSets.FirstOrDefault(se => se.StaticName == "@" + a.Attribute.Type && se.Scope == systemScope) && s.Attribute != null),
+                        MetaData = metaData
+                    }).ToList();
+        }
 
         // 2015-08-07 2dm: the only code left here is for an ASCX-view in the management-UI which will be replaced by angularjs soon
         // so I'm not refactoring this as it's not relevant

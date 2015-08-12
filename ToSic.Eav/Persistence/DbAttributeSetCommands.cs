@@ -12,6 +12,61 @@ namespace ToSic.Eav.Persistence
         }
 
         /// <summary>
+        /// Get AttributeSets
+        /// </summary>
+        /// <param name="appId">Filter by AppId</param>
+        /// <param name="scope">optional Filter by Scope</param>
+        internal IQueryable<AttributeSet> GetAttributeSets(int appId, AttributeScope? scope)
+        {
+            var result = Context.AttributeSets.Where(a => a.AppID == appId && !a.ChangeLogIDDeleted.HasValue);
+
+            if (scope != null)
+            {
+                var scopeString = scope.ToString();
+                result = result.Where(a => a.Scope == scopeString);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
+        /// </summary>
+        internal void EnsureSharedAttributeSets(App app, bool autoSave = true)
+        {
+            if (app.AppID == 0)
+                throw new Exception("App must have a valid AppID");
+
+            // todo: bad - don't want data-sources here
+            var sharedAttributeSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+            foreach (var sharedSet in sharedAttributeSets)
+            {
+                // Skip if attributeSet with StaticName already exists
+                if (app.AttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogIDDeleted.HasValue))
+                    continue;
+
+                // create new AttributeSet
+                var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
+                newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
+            }
+
+            // Ensure new AttributeSets are created and cache is refreshed
+            if (autoSave)
+                Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
+        /// </summary>
+        internal void EnsureSharedAttributeSets()
+        {
+            foreach (var app in Context.Apps)
+                EnsureSharedAttributeSets(app, false);
+
+            Context.SaveChanges();
+        }
+
+        /// <summary>
         /// Add a new AttributeSet
         /// </summary>
         public AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave = true)

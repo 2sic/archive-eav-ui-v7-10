@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.AscxHelpers
 {
     /// <summary>
     /// MetaData of an Attribute

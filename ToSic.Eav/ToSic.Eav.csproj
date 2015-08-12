@@ -68,11 +68,10 @@
   <ItemGroup>
     <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSources\Configuration.cs" />
     <Compile Include="Persistence\DbPipelineCommands.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
-    <Compile Include="Data\AttributeWithMetaInfo.cs" />
+    <Compile Include="AscxHelpers\AttributeWithMetaInfo.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="ImportExport\LogItem.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\AttributeExtension.cs" />
@@ -93,7 +92,7 @@
     <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="BLL\EntityBLL.cs" />
     <Compile Include="Persistence\AttributeSet_Partial.cs" />
-    <Compile Include="Persistence\DbAttributeSet.cs" />
+    <Compile Include="Persistence\DbAttributeSetCommands.cs" />
     <Compile Include="Persistence\DbAttributeCommands.cs" />
     <Compile Include="Persistence\DbPublishing.cs" />
     <Compile Include="Persistence\DbRelationshipCommands.cs" />
@@ -110,13 +109,11 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Persistence\EavContextCaching.cs" />
-    <Compile Include="Factory.cs" />
     <Compile Include="ImportExport\Import.cs" />
     <Compile Include="Persistence\DbDimensions.cs" />
-    <Compile Include="Persistence\ListsForSomeAscx.cs" />
+    <Compile Include="AscxHelpers\ListsForSomeAscx.cs" />
     <Compile Include="Persistence\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
@@ -124,7 +121,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DataSources\DataSourcesOverview.cd" />
     <None Include="packages.config" />
     <EntityDeploy Include="Persistence\EavContext.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -156,7 +152,9 @@
       <Name>ToSic.Eav.TokenEngine</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Persistence\EF4\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>

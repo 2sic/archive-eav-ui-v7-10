@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ToSic.Eav.AscxHelpers;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -19,7 +20,7 @@ namespace ToSic.Eav.ManagementUI
 
 		protected void dsrcCultureDimension_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-			e.ObjectInstance = EavContext.Instance(zoneId: ZoneId);
+            e.ObjectInstance = new ListForSomeAscx(EavContext.Instance(zoneId: ZoneId));//  EavContext.Instance(zoneId: ZoneId);
 		}
 
 		protected void ddlCultureDimension_DataBound(object sender, EventArgs e)

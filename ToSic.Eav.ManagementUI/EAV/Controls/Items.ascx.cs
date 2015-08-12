@@ -129,14 +129,14 @@ namespace ToSic.Eav.ManagementUI
 
 		#region DataSources Event Handlers
 
-		protected void dsrcAttributeSet_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
-		{
+        protected void dsrcAttributeSet_ContextCreating(object sender, EntityDataSourceContextCreatingEventArgs e)
+        {
             e.Context = EavContext.Instance(appId: AppId);
-		}
+        }
 
 		protected void dsrcItems_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
 		{
-            e.ObjectInstance = EavContext.Instance(appId: AppId);
+            e.ObjectInstance = new ListForSomeAscx(EavContext.Instance(appId: AppId));// EavContext.Instance(appId: AppId);
 		}
 
 		protected void dsrcItems_Selecting(object sender, ObjectDataSourceSelectingEventArgs e)

@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Eav3WebApiBase.cs" />
+    <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="ZoneController.cs" />
     <Compile Include="WebApi.cs" />
   </ItemGroup>
