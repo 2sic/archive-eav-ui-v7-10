@@ -55,7 +55,7 @@ namespace ToSic.Eav.Import
         public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities, bool commitTransaction = true, bool purgeCache = true)
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
-            Context.SqlDb.PurgeAppCacheOnSave = false;
+            Context.PurgeAppCacheOnSave = false;
 
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
             if (Context.SqlDb.Connection.State != ConnectionState.Open)

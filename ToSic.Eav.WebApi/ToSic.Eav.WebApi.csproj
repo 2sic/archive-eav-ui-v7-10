@@ -80,6 +80,10 @@
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
+      <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
+      <Name>ToSic.Eav.Persistence.EF4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
       <Name>ToSic.Eav.TokenEngine</Name>
