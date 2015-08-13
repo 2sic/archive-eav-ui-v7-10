@@ -6,7 +6,7 @@ namespace ToSic.Eav
 	public partial class EavContext
     {
 
-        #region new save delegate
+        #region new save delegates
 
 	    public delegate int OriginalSaveChangesEvent(SaveOptions options);
         public delegate int HandleSaveChangesEvent(SaveOptions options, OriginalSaveChangesEvent baseEvent);
@@ -16,11 +16,6 @@ namespace ToSic.Eav
         #endregion
 
         #region Save and check if to kill cache
-
-
-        
-
-
         /// <summary>
 		/// Persists all updates to the data source and optionally resets change tracking in the object context.
 		/// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
@@ -30,13 +25,10 @@ namespace ToSic.Eav
         {
             if (AlternateSaveHandler != null)
                 return AlternateSaveHandler(options, base.SaveChanges);
-
             throw new Exception("the save should never happen without an alternate save handler registered");
-
 		}
-
 		#endregion
 
-	}
+    }
 
 }

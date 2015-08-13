@@ -3,7 +3,7 @@ using System.Data;
 using System.Collections.Generic;
 using System.Data.Objects.DataClasses;
 using System.Linq;
-using System.Reflection;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav
 {
@@ -79,9 +79,10 @@ namespace ToSic.Eav
 		/// Clone an Entity in Entity Framework 4
 		/// </summary>
 		/// <remarks>Source: http://www.codeproject.com/Tips/474296/Clone-an-Entity-in-Entity-Framework </remarks>
-		public static T CopyEntity<T>(this T entity, EavContext ctx, bool copyKeys = false) where T : EntityObject
+		public static T CopyEntity<T>(this T entity, EavDataController ctx) where T : EntityObject
 		{
-			var clone = ctx.CreateObject<T>();
+		    bool copyKeys = false;
+			var clone = ctx.SqlDb.CreateObject<T>();
 			var pis = entity.GetType().GetProperties();
 
 			foreach (var pi in from pi in pis let attrs = (EdmScalarPropertyAttribute[])pi.GetCustomAttributes(typeof(EdmScalarPropertyAttribute), false) from attr in attrs where copyKeys || !attr.EntityKeyProperty select pi)
@@ -90,22 +91,5 @@ namespace ToSic.Eav
 			return clone;
 		}
 
-
-        // moved, only used once...
-        ///// <summary>
-        ///// Get Loadable Types from an assembly
-        ///// </summary>
-        ///// <remarks>Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes </remarks>
-        //public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
-        //{
-        //    try
-        //    {
-        //        return assembly.GetTypes();
-        //    }
-        //    catch (ReflectionTypeLoadException e)
-        //    {
-        //        return e.Types.Where(t => t != null);
-        //    }
-        //}
 	}
 }

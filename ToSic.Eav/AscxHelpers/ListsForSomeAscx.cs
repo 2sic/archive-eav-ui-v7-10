@@ -8,7 +8,7 @@ using ToSic.Eav.Persistence;
 namespace ToSic.Eav.AscxHelpers
 {
     [DataObject(true)]
-	public class ListForSomeAscx : BllCommandBase // DbExtensionCommandsBase // : EavContext
+	public class ListForSomeAscx : BllCommandBase 
 	{
         public ListForSomeAscx(EavDataController cntx, string username = null) : base(cntx)
         {

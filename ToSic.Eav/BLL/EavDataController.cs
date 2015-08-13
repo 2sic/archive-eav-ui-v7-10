@@ -61,10 +61,11 @@ namespace ToSic.Eav.BLL
         #region new stuff
 
         public EavContext SqlDb { get; private set; }
-        private EavDataController(EavContext cntx)
+
+        private EavDataController()
         {
-            SqlDb = cntx;
         }
+
 
         #endregion
 
@@ -76,7 +77,7 @@ namespace ToSic.Eav.BLL
         {
             var connectionString = Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
-            var dataController = new EavDataController(context);
+            var dataController = new EavDataController {SqlDb = context};
             dataController.DbS = new DbShortcuts(dataController);
             dataController.Versioning = new DbVersioning(dataController);
             dataController.EntCommands = new DbEntityCommands(dataController);

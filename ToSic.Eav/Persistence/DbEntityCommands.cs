@@ -93,7 +93,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
         {
-            var clone = sourceEntity.CopyEntity(Context.SqlDb);
+            var clone = sourceEntity.CopyEntity(Context);
 
             Context.SqlDb.AddToEntities(clone);
 

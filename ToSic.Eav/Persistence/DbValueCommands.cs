@@ -31,7 +31,7 @@ namespace ToSic.Eav.Persistence
             // Add all Values with Dimensions
             foreach (var eavValue in source.Values.ToList())
             {
-                var value = eavValue.CopyEntity(Context.SqlDb);
+                var value = eavValue.CopyEntity(Context);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ValuesDimensions)
                     value.ValuesDimensions.Add(new ValueDimension
