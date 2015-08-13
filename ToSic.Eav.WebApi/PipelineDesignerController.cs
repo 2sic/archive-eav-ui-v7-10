@@ -372,7 +372,7 @@ namespace ToSic.Eav.WebApi
 			if (Context == null)
 				Context = EavDataController.Instance(appId: appId);
 
-		    var canDeleteResult = (new EntityBLL().CanDeleteEntity(Context, id));// _context.EntCommands.CanDeleteEntity(id);
+		    var canDeleteResult = (Context.EntCommands.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)
 				throw new Exception(canDeleteResult.Item2);
 

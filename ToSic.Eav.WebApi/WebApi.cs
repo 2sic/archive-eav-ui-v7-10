@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi
             var found = InitialDS.List[id];
             if (found.Type.Name != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
-            if (!(new ToSic.Eav.BLL.EntityBLL().CanDeleteEntity(CurrentContext, id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
+            if (!(CurrentContext.EntCommands.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
                 throw new InvalidOperationException("The entity " + id  + " cannot be deleted because of it is referenced by another object.");
             CurrentContext.EntCommands.DeleteEntity(id);
         }

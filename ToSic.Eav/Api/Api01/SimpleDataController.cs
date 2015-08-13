@@ -118,7 +118,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!new EntityBLL().CanDeleteEntity(Context,entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+            if (!Context.EntCommands.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }

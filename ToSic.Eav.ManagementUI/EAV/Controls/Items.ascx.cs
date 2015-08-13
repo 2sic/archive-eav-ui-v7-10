@@ -154,7 +154,7 @@ namespace ToSic.Eav.ManagementUI
 			var deleteArgs = new EntityDeletingEventArgs { EntityId = repositoryId };
 
 			// test if entity can be deleted
-		    var canDeleteEntity = new EntityBLL().CanDeleteEntity(ctx, repositoryId); // ctx.EntCommands.CanDeleteEntity(repositoryId);
+		    var canDeleteEntity = ctx.EntCommands.CanDeleteEntity(repositoryId); 
 			// cancel if entity can't be deleted
 			if (!canDeleteEntity.Item1)
 			{
