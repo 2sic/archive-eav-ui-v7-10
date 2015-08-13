@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
         public int? UsesConfigurationOfAttributeSet { get; private set; }
 
         /// <summary>
-        /// Dictionary with all AttributeHelperTools Definitions
+		/// Dictionary with all Attribute Definitions
         /// </summary>
         public IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
         #endregion

@@ -34,7 +34,7 @@ namespace ToSic.Eav
 		/// </summary>
 		IContentType Type { get; }
 		/// <summary>
-		/// Gets the Title-AttributeHelperTools
+		/// Gets the Title-Attribute
 		/// </summary>
 		IAttribute Title { get; }
 		/// <summary>
@@ -42,9 +42,9 @@ namespace ToSic.Eav
 		/// </summary>
 		DateTime Modified { get; }
 		/// <summary>
-		/// Gets an AttributeHelperTools by its StaticName
+		/// Gets an Attribute by its StaticName
 		/// </summary>
-		/// <param name="attributeName">StaticName of the AttributeHelperTools</param>
+		/// <param name="attributeName">StaticName of the Attribute</param>
 		IAttribute this[string attributeName] { get; }
 		/// <summary>
 		/// Get Related entities
@@ -63,14 +63,15 @@ namespace ToSic.Eav
 		/// </summary>
 		IEntity GetPublished();
 
-	    /// <summary>
-	    /// Helper method to retrieve the most applicable value based on criteria like current language etc.
-	    /// </summary>
-	    /// <param name="attributeName"></param>
-	    /// <param name="propertyNotFound"></param>
-	    /// <returns>A string, int or even a EntityRelationship</returns>
-	    object GetBestValue(string attributeName);
-        object GetBestValue(string attributeName, string[] dimensions);
+		/// <summary>
+		/// Helper method to retrieve the most applicable value based on criteria like current language etc.
+		/// </summary>
+		/// <param name="attributeName"></param>
+		/// <param name="propertyNotFound"></param>
+		/// <param name="resolveHyperlinks"></param>
+		/// <returns>A string, int or even a EntityRelationship</returns>
+		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
+		object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false);
 	    //object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
 	}
 }

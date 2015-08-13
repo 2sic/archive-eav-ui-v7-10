@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Implementations.ValueConverter;
 
 namespace ToSic.Eav.Serializers
 {
@@ -100,10 +102,11 @@ namespace ToSic.Eav.Serializers
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-                var value = entity.GetBestValue(v.Name);
+				var value = entity.GetBestValue(v.Name, new[] { language }, true);
                 if (v.Type == "Entity" && value is Data.EntityRelationship)
                     return ((Data.EntityRelationship) value).Select(p => new {Id = p.EntityId, Title = p.GetBestValue("EntityTitle").ToString()}).ToList();
-                return value;
+				return value;
+				
             }, StringComparer.OrdinalIgnoreCase);
 
             // Add Id and Title
@@ -119,7 +122,7 @@ namespace ToSic.Eav.Serializers
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
-                    entityValues.Add("Title", entity.GetBestValue("EntityTitle"));
+                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", new []{language}, true));
                 }
                 catch
                 {

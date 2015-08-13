@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using ToSic.Eav.Implementations.ValueConverter;
+using Microsoft.Practices.Unity;
 
 namespace ToSic.Eav.Data
 {
@@ -86,7 +88,7 @@ namespace ToSic.Eav.Data
 			}
 			catch (KeyNotFoundException)
 			{
-				throw new KeyNotFoundException(string.Format("The Title AttributeHelperTools with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
+				throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
 			}
 			AssignmentObjectTypeId = EavContext.DefaultAssignmentObjectTypeId;
 			IsPublished = true;
@@ -146,33 +148,34 @@ namespace ToSic.Eav.Data
 			return PublishedEntity;
 		}
 
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Assumes default preferred language
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-        /// <returns></returns>
-	    public object GetBestValue(string attributeName)
+		/// <summary>
+		/// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+		/// Assumes default preferred language
+		/// </summary>
+		/// <param name="attributeName">Name of the attribute or virtual attribute</param>
+		/// <param name="resolveHyperlinks"></param>
+		/// <returns></returns>
+		public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
 	    {
-	        return GetBestValue(attributeName, new string[0]);
+	        return GetBestValue(attributeName, new string[0], resolveHyperlinks);
 	    }
 
-
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Automatically resolves the language-variations as well based on the list of preferred languages
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-        /// <param name="dimensions">List of languages</param>
-        /// <returns></returns>
-        public object GetBestValue(string attributeName, string[] dimensions) 
+		/// <summary>
+		/// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+		/// Automatically resolves the language-variations as well based on the list of preferred languages
+		/// </summary>
+		/// <param name="attributeName">Name of the attribute or virtual attribute</param>
+		/// <param name="dimensions">List of languages</param>
+		/// <param name="resolveHyperlinks"></param>
+		/// <returns></returns>
+		public object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false) 
         {
             object result = null;
-
+			IAttribute attribute = null;
 
             if (Attributes.ContainsKey(attributeName))
             {
-                var attribute = Attributes[attributeName];
+                attribute = Attributes[attributeName];
                 result = attribute[dimensions];
             }
             else
@@ -181,6 +184,7 @@ namespace ToSic.Eav.Data
                 {
                     case "EntityTitle":
                         result = Title[dimensions];
+		                attribute = Title;
                         break;
                     case "EntityId":
                         result = EntityId;
@@ -202,6 +206,12 @@ namespace ToSic.Eav.Data
                         break;
                 }
             }
+
+			if (resolveHyperlinks && attribute != null && result is string && attribute.Type == "Hyperlink")
+			{
+				var vc = Factory.Container.Resolve<IEavValueConverter>();
+				result = vc.Convert(ConversionScenario.GetFriendlyValue, "Hyperlink", (string)result);
+			}
 
             return result;
         }
