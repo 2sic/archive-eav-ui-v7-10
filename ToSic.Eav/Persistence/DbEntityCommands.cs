@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
 {
@@ -290,7 +291,7 @@ namespace ToSic.Eav.Persistence
         internal void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
         {
             var entityModel = entity.EntityID != 0 ? new DbLoadIntoEavDataStructure(Context).GetEavEntity(entity.EntityID) : null;
-            var newValuesTyped = Persistence.HelpersToRefactor.DictionaryToValuesViewModel(newValues);
+            var newValuesTyped = DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.Single(a => a.StaticName == newValue.Key);
@@ -329,6 +330,17 @@ namespace ToSic.Eav.Persistence
                 }
             }
             #endregion
+        }
+
+        /// <summary>
+        /// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
+        /// </summary>
+        private Dictionary<string, ValueToImport> DictionaryToValuesViewModel(IDictionary newValues)
+        {
+            if (newValues is Dictionary<string, ValueToImport>)
+                return (Dictionary<string, ValueToImport>)newValues;
+
+            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueToImport { ReadOnly = false, Value = newValues[key] });
         }
 
         /// <summary>

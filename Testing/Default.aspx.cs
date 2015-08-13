@@ -8,6 +8,7 @@ using System.Web.UI;
 using ToSic.Eav;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ValueProvider;
 using Entity = ToSic.Eav.Data.Entity;
 using EntityRelationship = ToSic.Eav.Data.EntityRelationship;
@@ -311,13 +312,13 @@ public partial class Default : Page
 		var context = EavContext.Instance(1, 1);
 		const string userName = "Testing 2dm";
 		context.UserName = userName;
-		var newValues = new Dictionary<string, ValueViewModel>
+		var newValues = new Dictionary<string, ValueToImport>
 		{
-			{"FirstName", new ValueViewModel {Value = "Andreas"}},
-			{"LastName", new ValueViewModel {Value = "Müller"}},
-			{"Address", new ValueViewModel {Value = "Räfiserhalde 34"}},
-			{"ZIP", new ValueViewModel {Value = "9470"}},
-			{"City", new ValueViewModel {Value = "Räfis"}}
+			{"FirstName", new ValueToImport {Value = "Andreas"}},
+			{"LastName", new ValueToImport {Value = "Müller"}},
+			{"Address", new ValueToImport {Value = "Räfiserhalde 34"}},
+			{"ZIP", new ValueToImport {Value = "9470"}},
+			{"City", new ValueToImport {Value = "Räfis"}}
 		};
 
 		context.AddEntity(37, newValues, null, null);

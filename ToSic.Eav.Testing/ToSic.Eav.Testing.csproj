@@ -83,10 +83,6 @@
       <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj">
-      <Project>{1c929025-5e2c-4671-9e71-c11d9c567b23}</Project>
-      <Name>ToSic.Eav.Persistence</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
       <Name>ToSic.Eav</Name>

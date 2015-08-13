@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -70,9 +71,9 @@ namespace ToSic.Eav.ManagementUI
 			_hfReadOnly.Value = ReadOnly.ToString().ToLower();
 		}
 
-		public void ExtractValues(IDictionary<string, ValueViewModel> dictionary)
+		public void ExtractValues(IDictionary<string, ValueToImport> dictionary)
 		{
-			dictionary[Attribute.StaticName] = new ValueViewModel { Value = Value, ValueId = ValueId, ReadOnly = ReadOnly };
+			dictionary[Attribute.StaticName] = new ValueToImport { Value = Value, ValueId = ValueId, ReadOnly = ReadOnly };
 		}
 
 		public abstract object Value { get; }

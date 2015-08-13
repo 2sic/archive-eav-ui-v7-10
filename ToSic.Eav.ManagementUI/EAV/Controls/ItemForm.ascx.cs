@@ -7,6 +7,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
@@ -317,7 +318,7 @@ namespace ToSic.Eav.ManagementUI
 			if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
 				return;
 
-			var values = new Dictionary<string, ValueViewModel>();
+			var values = new Dictionary<string, ValueToImport>();
 
 			// Extract Values
 			foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>())
@@ -346,7 +347,7 @@ namespace ToSic.Eav.ManagementUI
 
 		private void Update()
 		{
-			var values = new Dictionary<string, ValueViewModel>();
+			var values = new Dictionary<string, ValueToImport>();
 
 			#region Extract Values (only of enabled fields)
 			foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))

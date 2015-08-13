@@ -4,6 +4,7 @@ using NUnit.Framework;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.SqlSources;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Testing
@@ -87,13 +88,13 @@ namespace ToSic.Eav.Testing
 			var entityId = 280;
 			var userName = "Testing 2bg 17:51";
 			context.UserName = userName;
-			var newValues = new Dictionary<string, ValueViewModel>
+			var newValues = new Dictionary<string, ValueToImport>
 				{
-					{"FirstName", new ValueViewModel {Value = "Benjamin 17:51"}},
-					{"LastName", new ValueViewModel {Value = "Gemperle 17:51"}},
-					{"Address", new ValueViewModel {Value = "Churerstrasse 35 17:51"}},
-					{"ZIP", new ValueViewModel {Value = "9470 17:51"}},
-					{"City", new ValueViewModel {Value = "Buchs 17:51"}}
+					{"FirstName", new ValueToImport {Value = "Benjamin 17:51"}},
+					{"LastName", new ValueToImport {Value = "Gemperle 17:51"}},
+					{"Address", new ValueToImport {Value = "Churerstrasse 35 17:51"}},
+					{"ZIP", new ValueToImport {Value = "9470 17:51"}},
+					{"City", new ValueToImport {Value = "Buchs 17:51"}}
 				};
 
 			context.EntCommands.UpdateEntity(entityId, newValues);
@@ -105,13 +106,13 @@ namespace ToSic.Eav.Testing
 			var context = EavContext.Instance(1, 1);
 			var userName = "Testing 2bg 17:53";
 			context.UserName = userName;
-			var newValues = new Dictionary<string, ValueViewModel>
+			var newValues = new Dictionary<string, ValueToImport>
 				{
-					{"FirstName", new ValueViewModel {Value = "Benjamin 17:51"}},
-					{"LastName", new ValueViewModel {Value = "Gemperle 17:51"}},
-					{"Address", new ValueViewModel {Value = "Churerstrasse 35 17:51"}},
-					{"ZIP", new ValueViewModel {Value = "9470 17:51"}},
-					{"City", new ValueViewModel {Value = "Buchs 17:51"}}
+					{"FirstName", new ValueToImport {Value = "Benjamin 17:51"}},
+					{"LastName", new ValueToImport {Value = "Gemperle 17:51"}},
+					{"Address", new ValueToImport {Value = "Churerstrasse 35 17:51"}},
+					{"ZIP", new ValueToImport {Value = "9470 17:51"}},
+					{"City", new ValueToImport {Value = "Buchs 17:51"}}
 				};
 
 			context.EntCommands.AddEntity(37, newValues, null, null);
@@ -122,7 +123,7 @@ namespace ToSic.Eav.Testing
 		{
 			var context = EavContext.Instance(1, 1);
 			var entityId = 2372;
-			var newValues = new Dictionary<string, ValueViewModel>();
+			var newValues = new Dictionary<string, ValueToImport>();
 			context.EntCommands.UpdateEntity(entityId, newValues);
 		}
 
@@ -213,14 +214,14 @@ namespace ToSic.Eav.Testing
 			var attribute4 = db.AttrCommands.AppendAttribute(attributeSet, "Attribute4", "Entity");
 
 			// Add new Entities
-			var values = new Dictionary<string, ValueViewModel>
+			var values = new Dictionary<string, ValueToImport>
 			{
-				{"Attribute1", new ValueViewModel{ Value = "Sample Value 1"}},
-				{"Attribute2", new ValueViewModel{ Value = "Sample Value 2"}},
-				{"Attribute3", new ValueViewModel{ Value = "Sample Value 3"}},
+				{"Attribute1", new ValueToImport{ Value = "Sample Value 1"}},
+				{"Attribute2", new ValueToImport{ Value = "Sample Value 2"}},
+				{"Attribute3", new ValueToImport{ Value = "Sample Value 3"}},
 			};
 			var entity1 = db.EntCommands.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
-			values.Add("Attribute4", new ValueViewModel { Value = new[] { entity1.EntityID } });
+			values.Add("Attribute4", new ValueToImport { Value = new[] { entity1.EntityID } });
 			var entity2 = db.EntCommands.AddEntity(attributeSet, values, null, null, dimensionIds: new[] { 2 });
 
 			// Update existing Entity

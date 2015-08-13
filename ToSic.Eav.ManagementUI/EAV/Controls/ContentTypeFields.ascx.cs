@@ -8,6 +8,7 @@ using System.Web;
 using ToSic.Eav.AscxHelpers;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ManagementUI
@@ -193,7 +194,7 @@ namespace ToSic.Eav.ManagementUI
 			var insertedAttribute = e.ReturnValue as Attribute;
 
 			#region Add MetaData for @All
-			var values = new Dictionary<string, ValueViewModel> { { "Name", new ValueViewModel { Value = insertedAttribute.StaticName } } };
+			var values = new Dictionary<string, ValueToImport> { { "Name", new ValueToImport { Value = insertedAttribute.StaticName } } };
 
 			var dbMetaData = EavDataController.Instance(Db.ZoneId, Db.AppId);
 			dbMetaData.Versioning.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);

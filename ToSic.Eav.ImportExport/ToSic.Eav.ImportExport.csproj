@@ -78,6 +78,7 @@
     <Compile Include="Refactoring\Options\ResourceReferenceImportExtension.cs" />
     <Compile Include="ValueDimension.cs" />
     <Compile Include="ValueImportModel.cs" />
+    <Compile Include="ValueToImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Refactoring\ImportErrorCode.de-DE.resx">

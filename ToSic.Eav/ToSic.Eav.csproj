@@ -79,7 +79,6 @@
     <Compile Include="ImportExport\Refactoring\XmlImport.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ImportExport\UpdateDbFromImportModels.cs" />
     <Compile Include="ImportExport\XmlExport.cs" />
     <Compile Include="ImportExport\XmlImport.cs" />
     <Compile Include="BLL\EntityBLL.cs" />
@@ -91,7 +90,6 @@
     <Compile Include="Persistence\DbEntityCommands.cs" />
     <Compile Include="Persistence\DbLoadIntoEavDataStructure.cs" />
     <Compile Include="Persistence\DbShortcuts.cs" />
-    <Compile Include="Persistence\DbExtensionCommandsBase.cs" />
     <Compile Include="Persistence\DbVersioning.cs" />
     <Compile Include="ImportExport\Import.cs" />
     <Compile Include="Persistence\DbDimensions.cs" />
@@ -126,10 +124,6 @@
     <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj">
-      <Project>{1c929025-5e2c-4671-9e71-c11d9c567b23}</Project>
-      <Name>ToSic.Eav.Persistence</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

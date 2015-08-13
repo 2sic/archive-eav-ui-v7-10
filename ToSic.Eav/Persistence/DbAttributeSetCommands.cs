@@ -9,7 +9,6 @@ namespace ToSic.Eav.Persistence
     public class DbAttributeSetCommands : BllCommandBase
     {
         public DbAttributeSetCommands(EavDataController dc) : base(dc) { }
-        //public DbAttributeSetCommands(EavContext c) : base(c) {}
 
         /// <summary>caches all AttributeSets for each App</summary>
         internal readonly Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();

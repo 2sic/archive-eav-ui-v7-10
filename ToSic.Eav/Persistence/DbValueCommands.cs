@@ -6,6 +6,7 @@ using System.Text;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
 {
@@ -159,7 +160,7 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Update a Value when using ValueViewModel
         /// </summary>
-        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ValueViewModel newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ValueToImport newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {

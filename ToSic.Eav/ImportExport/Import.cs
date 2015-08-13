@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.BLL;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Import
 {
@@ -16,9 +15,6 @@ namespace ToSic.Eav.Import
     {
         #region Private Fields
         private readonly EavDataController Context;
-        private readonly DbShortcuts DbS;
-        private readonly int _zoneId;
-        private readonly int _appId;
         private readonly bool _leaveExistingValuesUntouched;
         private readonly bool _preserveUndefinedValues;
         private readonly List<LogItem> _importLog = new List<LogItem>();
@@ -40,11 +36,8 @@ namespace ToSic.Eav.Import
         public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true)
         {
             Context = EavDataController.Instance(zoneId, appId);
-            DbS = new DbShortcuts(Context);
 
             Context.UserName = userName;
-            _zoneId = Context.ZoneId;
-            _appId = Context.AppId;
             _leaveExistingValuesUntouched = leaveExistingValuesUntouched;
             _preserveUndefinedValues = preserveUndefinedValues;
         }
@@ -184,11 +177,11 @@ namespace ToSic.Eav.Import
             #endregion
 
             // Update existing Entity
-            if (importEntity.EntityGuid.HasValue && DbS.EntityExists(importEntity.EntityGuid.Value))
+            if (importEntity.EntityGuid.HasValue && Context.DbS.EntityExists(importEntity.EntityGuid.Value))
             {
                 #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
                 // Get existing, published Entity
-                var existingEntities = DbS.GetEntitiesByGuid(importEntity.EntityGuid.Value);
+                var existingEntities = Context.DbS.GetEntitiesByGuid(importEntity.EntityGuid.Value);
                 Entity existingEntity;
                 try
                 {

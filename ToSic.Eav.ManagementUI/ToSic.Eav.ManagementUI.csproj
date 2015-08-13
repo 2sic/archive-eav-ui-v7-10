@@ -139,7 +139,6 @@
     <Content Include="EAV\Dialogs\EditItem.aspx" />
     <Content Include="EAV\Dialogs\Items.aspx" />
     <Content Include="EAV\Dialogs\NewItem.aspx" />
-    <Content Include="EAV\API\WebAPI-ClassDiagram.cd" />
     <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
     <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
     <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
@@ -237,7 +236,6 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EAV\API\EntitiesController.cs" />
     <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
       <DependentUpon>PipelineManagement.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -266,8 +264,6 @@
     <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EAV\API\PipelineDesignerController.cs" />
-    <Compile Include="EAV\API\EntityPickerController.cs" />
     <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
       <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -463,10 +459,6 @@
     <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj">
-      <Project>{1c929025-5e2c-4671-9e71-c11d9c567b23}</Project>
-      <Name>ToSic.Eav.Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
