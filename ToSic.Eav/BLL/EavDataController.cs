@@ -83,6 +83,9 @@ namespace ToSic.Eav.BLL
             dataController.RelCommands = new DbRelationshipCommands(dataController);
             dataController.AttSetCommands = new DbAttributeSetCommands(dataController);
             dataController.PubCommands = new DbPublishing(dataController);
+
+            dataController.SqlDb.AlternateSaveHandler += dataController.SaveChanges;
+
             return dataController;
         }
 
@@ -184,5 +187,47 @@ namespace ToSic.Eav.BLL
         }
 
         #endregion
+
+        #region Save and check if to kill cache
+
+        /// <summary>
+        /// Get or seth whether SaveChanges() should automatically purge cache.
+        /// </summary>
+        /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
+        private bool _purgeAppCacheOnSave = true;
+
+        public bool PurgeAppCacheOnSave
+        {
+            get { return _purgeAppCacheOnSave; }
+            set { _purgeAppCacheOnSave = value; }
+        }
+
+
+
+        /// <summary>
+        /// Persists all updates to the data source and optionally resets change tracking in the object context.
+        /// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
+        /// If items were modified, Cache is purged on current Zone/App
+        /// </summary>
+        public int SaveChanges(System.Data.Objects.SaveOptions options, EavContext.OriginalSaveChangesEvent baseEvent)
+        {
+            if (_appId == 0)
+                throw new Exception("SaveChanges with AppId 0 not allowed.");
+
+            // enure changelog exists and is set to SQL CONTEXT_INFO variable
+            if (Versioning.MainChangeLogId == 0)
+                Versioning.GetChangeLogId(UserName);
+
+            var modifiedItems = baseEvent(options);
+
+            if (modifiedItems != 0 && PurgeAppCacheOnSave)
+                DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
+
+            return modifiedItems;
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }

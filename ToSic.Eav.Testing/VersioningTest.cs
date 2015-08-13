@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using NUnit.Framework;
+using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.Testing
 {
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Testing
 		[Test]
 		public void GetEntityVersions()
 		{
-			var ctx = EavContext.Instance(appId: 2);
+			var ctx = EavDataController.Instance(appId: 2);
 			var allVersioned = ctx.Versioning.GetEntityVersions(5449);
 
 			var unchanged = ctx.Versioning.GetEntityVersions(330);
