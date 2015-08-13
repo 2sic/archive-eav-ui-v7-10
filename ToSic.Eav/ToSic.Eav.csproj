@@ -94,7 +94,6 @@
     <Compile Include="AscxHelpers\ListsForSomeAscx.cs" />
     <Compile Include="AscxHelpers\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +101,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Notes for EAV on 2sxc 7.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

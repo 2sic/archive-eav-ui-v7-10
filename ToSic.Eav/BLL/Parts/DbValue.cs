@@ -27,7 +27,7 @@ namespace ToSic.Eav.BLL.Parts
             // Add all Values with Dimensions
             foreach (var eavValue in source.Values.ToList())
             {
-                var value = eavValue.CopyEntity(Context);
+                var value = Context.DbS.CopyEntity(eavValue);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ValuesDimensions)
                     value.ValuesDimensions.Add(new ValueDimension

@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web.Http;
-using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Serializers;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -15,6 +9,8 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class WebApi : Eav3WebApiBase
     {
+        public WebApi(int appId) : base(appId) { }
+        public WebApi() : base() { }
 
         #region GetOne GetAll calls
         public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)

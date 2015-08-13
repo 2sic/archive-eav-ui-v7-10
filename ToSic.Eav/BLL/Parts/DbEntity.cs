@@ -173,7 +173,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
         {
-            var clone = sourceEntity.CopyEntity(Context);
+            var clone = Context.DbS.CopyEntity(sourceEntity);
 
             Context.SqlDb.AddToEntities(clone);
 
