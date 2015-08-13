@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.Persistence;
@@ -38,14 +39,6 @@ namespace ToSic.Eav.WebApi
 	            return _context;
 	        }
 	    }
-
-        public DbShortcuts DbS
-        {
-            get
-            {
-                return new DbShortcuts(CurrentContext);
-            }
-        }
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;

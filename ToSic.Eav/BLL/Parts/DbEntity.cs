@@ -3,23 +3,100 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
-    public class DbEntityCommands: BllCommandBase
+    public class DbEntity: BllCommandBase
     {
-        public DbEntityCommands(EavDataController cntx) : base(cntx)
+        public DbEntity(EavDataController cntx) : base(cntx)
         {
         }
 
+        #region Get Commands
+
+        /// <summary>
+        /// Get a single Entity by EntityId
+        /// </summary>
+        /// <returns>Entity or throws InvalidOperationException</returns>
+        public Entity GetEntity(int entityId)
+        {
+            return Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
+        }
+
+        /// <summary>
+        /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
+        /// </summary>
+        /// <returns>Entity or throws InvalidOperationException</returns>
+        public Entity GetEntity(Guid entityGuid)
+        {
+            // GetEntity should never return a draft entity that has a published version
+            return GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
+        }
+
+
+        internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
+        {
+            return
+                Context.SqlDb.Entities.Where(
+                    e =>
+                        e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue &&
+                        !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);// ref:extract _appId);
+        }
+
+        /// <summary>
+        /// Test whether Entity exists on current App and is not deleted
+        /// </summary>
+        public bool EntityExists(Guid entityGuid)
+        {
+            return GetEntitiesByGuid(entityGuid).Any();
+        }
+
+
+        /// <summary>
+        /// Get a List of Entities with specified assignmentObjectTypeId and Key.
+        /// </summary>
+        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber)
+        {
+            return GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
+        }
+
+        /// <summary>
+        /// Get a List of Entities with specified assignmentObjectTypeId and Key.
+        /// </summary>
+        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, Guid keyGuid)
+        {
+            return GetEntitiesInternal(assignmentObjectTypeId, null, keyGuid);
+        }
+
+        /// <summary>
+        /// Get a List of Entities with specified assignmentObjectTypeId and Key.
+        /// </summary>
+        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString)
+        {
+            return GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
+        }
+
+        /// <summary>
+        /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
+        /// </summary>
+        internal IQueryable<Entity> GetEntitiesInternal(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+        {
+            return from e in Context.SqlDb.Entities
+                   where e.AssignmentObjectTypeID == assignmentObjectTypeId
+                   && (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
+                   && e.ChangeLogIDDeleted == null
+                   select e;
+        }
+        #endregion
+
+        #region Add Commands
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<LogItem> importLog, bool isPublished = true)
+        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<ImportLogItem> importLog, bool isPublished = true)
         {
             return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
         }
@@ -47,12 +124,12 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<LogItem> updateLog = null, bool isPublished = true)
+        private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true)
         {
             // Prevent duplicate add of FieldProperties
             if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
             {
-                if (Context.DbS.GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
+                if (GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
                     throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
             }
 
@@ -88,6 +165,9 @@ namespace ToSic.Eav.Persistence
             return newEntity;
         }
 
+        #endregion
+
+        #region Clone
         /// <summary>
         /// Clone an Entity with all Values
         /// </summary>
@@ -97,15 +177,16 @@ namespace ToSic.Eav.Persistence
 
             Context.SqlDb.AddToEntities(clone);
 
-            Context.ValCommands.CloneEntityValues(sourceEntity, clone);
+            Context.Values.CloneEntityValues(sourceEntity, clone);
 
             if (assignNewEntityGuid)
                 clone.EntityGUID = Guid.NewGuid();
 
             return clone;
         }
+        #endregion  
 
-
+        #region Update
         /// <summary>
         /// Update an Entity
         /// </summary>
@@ -117,9 +198,9 @@ namespace ToSic.Eav.Persistence
         /// <param name="updateLog">Update/Import Log List</param>
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <returns>the updated Entity</returns>
-        public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true)
+        public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true)
         {
-            var entity = Context.DbS.GetEntity(entityGuid);
+            var entity = GetEntity(entityGuid);
             return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
         }
 
@@ -136,10 +217,10 @@ namespace ToSic.Eav.Persistence
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <returns>the updated Entity</returns>
-        public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<LogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
+        public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
         {
             var entity = Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
-            var draftEntityId = Context.EntCommands.GetDraftEntityId(entityId);
+            var draftEntityId = Context.Publishing.GetDraftEntityId(entityId);
 
             #region Unpublished Save (Draft-Saves)
             // Current Entity is published but Update as a draft
@@ -150,7 +231,7 @@ namespace ToSic.Eav.Persistence
                     throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", entityId, draftEntityId));
 
                 // create a new Draft-Entity
-                entity = Context.EntCommands.CloneEntity(entity);
+                entity = CloneEntity(entity);
                 entity.IsPublished = false;
                 entity.PublishedEntityId = entityId;
             }
@@ -165,7 +246,7 @@ namespace ToSic.Eav.Persistence
                 dimensionIds = new List<int>(0);
 
             // Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
-            var attributes = new DbAttributeCommands(Context).GetAttributes(entity.AttributeSetID).ToList();
+            var attributes = Context.Attributes.GetAttributes(entity.AttributeSetID).ToList();
             var currentValues = entity.EntityID != 0 ? Context.SqlDb.Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
             // Update Values from Import Model
@@ -174,14 +255,14 @@ namespace ToSic.Eav.Persistence
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, currentValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
             else
-                Context.EntCommands.UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
+                UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
 
             // Update as Published but Current Entity is a Draft-Entity
             if (!entity.IsPublished && isPublished)
             {
                 if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
                     Context.Versioning.SaveEntityToDataTimeline(entity);
-                entity = Context.PubCommands.PublishEntity(entityId, false);
+                entity = Context.Publishing.PublishEntity(entityId, false);
             }
 
             entity.ChangeLogIDModified = Context.Versioning.GetChangeLogId();
@@ -196,7 +277,7 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<LogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool preserveUndefinedValues)
+        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool preserveUndefinedValues)
         {
             if (updateLog == null)
                 throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -211,7 +292,7 @@ namespace ToSic.Eav.Persistence
                 if (attribute == null) // Attribute not found
                 {
                     // Log Warning for all Values
-                    updateLog.AddRange(newValue.Value.Select(v => new LogItem(EventLogEntryType.Warning, "Attribute not found for Value")
+                    updateLog.AddRange(newValue.Value.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
                     {
                         ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
                         Value = v,
@@ -228,7 +309,7 @@ namespace ToSic.Eav.Persistence
                 {
                     try
                     {
-                        var updatedValue = Context.ValCommands.UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
+                        var updatedValue = Context.Values.UpdateValueByImport(currentEntity, attribute, currentValues, newSingleValue);
 
                         var updatedEavValue = updatedValue as EavValue;
                         if (updatedEavValue != null)
@@ -236,7 +317,7 @@ namespace ToSic.Eav.Persistence
                     }
                     catch (Exception ex)
                     {
-                        updateLog.Add(new LogItem(EventLogEntryType.Error, "Update Entity-Value failed")
+                        updateLog.Add(new ImportLogItem(EventLogEntryType.Error, "Update Entity-Value failed")
                         {
                             ImportAttribute = new ImportAttribute { StaticName = newValue.Key },
                             Value = newSingleValue,
@@ -276,14 +357,7 @@ namespace ToSic.Eav.Persistence
 
 
 
-        /// <summary>
-        /// Get Draft EntityId of a Published EntityId. Returns null if there's none.
-        /// </summary>
-        /// <param name="entityId">EntityId of the Published Entity</param>
-        internal int? GetDraftEntityId(int entityId)
-        {
-            return Context.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
-        }
+
 
         /// <summary>
         /// Update an Entity when not using the Import
@@ -295,7 +369,7 @@ namespace ToSic.Eav.Persistence
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-                Context.ValCommands.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
+                Context.Values.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
@@ -331,6 +405,7 @@ namespace ToSic.Eav.Persistence
             }
             #endregion
         }
+        #endregion
 
         /// <summary>
         /// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
@@ -343,12 +418,14 @@ namespace ToSic.Eav.Persistence
             return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueToImport { ReadOnly = false, Value = newValues[key] });
         }
 
+        #region Delete Commands
+
         /// <summary>
         /// Delete an Entity
         /// </summary>
         public bool DeleteEntity(int repositoryId)
         {
-            return DeleteEntity(Context.DbS.GetEntity(repositoryId));
+            return DeleteEntity(GetEntity(repositoryId));
         }
 
         /// <summary>
@@ -356,7 +433,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public bool DeleteEntity(Guid entityGuid)
         {
-            return DeleteEntity(Context.DbS.GetEntity(entityGuid));
+            return DeleteEntity(GetEntity(entityGuid));
         }
 
         /// <summary>
@@ -382,7 +459,7 @@ namespace ToSic.Eav.Persistence
             {
                 entity.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId();
                 // Also delete the Draft (if any)
-                var draftEntityId = GetDraftEntityId(entity.EntityID);
+                var draftEntityId = Context.Publishing.GetDraftEntityId(entity.EntityID);
                 if (draftEntityId.HasValue)
                     DeleteEntity(draftEntityId.Value);
             }
@@ -413,17 +490,18 @@ namespace ToSic.Eav.Persistence
             if (entityChild.Any())
                 messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
 
-            var assignedEntitiesFieldProperties = Context.DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
+            var assignedEntitiesFieldProperties = GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
             if (assignedEntitiesFieldProperties.Any())
                 messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
 
-            var assignedEntitiesDataPipeline = Context.DbS.GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
+            var assignedEntitiesDataPipeline = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
             if (assignedEntitiesDataPipeline.Any())
                 messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
 
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
         }
 
+        #endregion
 
     }
 }

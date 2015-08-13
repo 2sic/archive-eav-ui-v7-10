@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using ToSic.Eav.Persistence;
-using AttributeSet = ToSic.Eav.AttributeSet;
 
 namespace ToSic.Eav.ImportExport.Refactoring
 {
@@ -107,7 +104,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             _appId = applicationId;
             _zoneId = zoneId;
-            _contentType = new DbAttributeSetCommands(EavDataController.Instance(zoneId, applicationId)).GetAttributeSet(contentTypeId);
+            _contentType = EavDataController.Instance(zoneId, applicationId).AttribSet.GetAttributeSet(contentTypeId);
             _languages = languages;
             this.documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;
@@ -272,7 +269,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.   IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -302,8 +299,8 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     var entityId = _contentType.GetEntity(entityGuid).EntityID;
                     var context = EavDataController.Instance(_zoneId, _appId);
-                    if (context.EntCommands.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
-                        context.EntCommands.DeleteEntity(entityId);
+                    if (context.Entities.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+                        context.Entities.DeleteEntity(entityId);
                 }
             }
 

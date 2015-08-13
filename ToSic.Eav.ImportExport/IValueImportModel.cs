@@ -9,5 +9,8 @@ namespace ToSic.Eav.Import
         ImportEntity ParentEntity { get; }
 
         String StringValueForTesting { get; }
+
+        List<IValueImportModel> ToList();
+        void AppendLanguageReference(string language, bool readOnly);
     }
 }

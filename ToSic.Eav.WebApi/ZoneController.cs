@@ -14,13 +14,13 @@ namespace ToSic.Eav.WebApi
         /// <returns></returns>
 	    public IEnumerable<dynamic> Get()
 	    {
-	        var zones = CurrentContext.DbS.GetZones().OrderBy(z => z.ZoneID);
+	        var zones = CurrentContext.Zone.GetZones().OrderBy(z => z.ZoneID);
 	        return zones.Select(z => new {Id = z.ZoneID, z.Name});
 	    }
 
 	    public dynamic Get(int zoneId)
 	    {
-            var z = CurrentContext.DbS.GetZone(zoneId);
+            var z = CurrentContext.Zone.GetZone(zoneId);
 	        return new { Id = z.ZoneID, z.Name }; 
 	    }
 

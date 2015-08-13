@@ -101,21 +101,21 @@ namespace ToSic.Eav.ManagementUI
 			switch (e.CommandName)
 			{
 				case "MoveUp":
-					Db.AttrCommands.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Up);
+					Db.Attributes.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Up);
 					grdAttributesInSets.DataBind();
 					break;
 				case "MoveDown":
-					Db.AttrCommands.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Down);
+					Db.Attributes.ChangeAttributeOrder(attributeId, AttributeSetId, AttributeMoveDirection.Down);
 					grdAttributesInSets.DataBind();
 					break;
 				case "MakeTitle":
-					Db.AttrCommands.SetTitleAttribute(attributeId, AttributeSetId);
+					Db.Attributes.SetTitleAttribute(attributeId, AttributeSetId);
 					grdAttributesInSets.DataBind();
 					break;
 				case "EditAllTypeMetaData":
 				case "EditTypeMetaData":
 					var metaDataAttributeSetStaticName = e.CommandName == "EditAllTypeMetaData" ? "@All" : "@" + Db.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
-					var metaDataAttributeSetId = Db.AttSetCommands.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
+					var metaDataAttributeSetId = Db.AttribSet.GetAttributeSetId(metaDataAttributeSetStaticName, AttributeScope.System);
 
 			        var returnUrl = MetaDataReturnUrl == null ? null : MetaDataReturnUrl.Replace("[AttributeSetId]", AttributeSetId.ToString(CultureInfo.InvariantCulture));
 					var editMetaDataUrl = Forms.GetItemFormUrl(attributeId, metaDataAttributeSetId, Constants.AssignmentObjectTypeIdFieldProperties, NewItemUrl, EditItemUrl, returnUrl , IsDialog, DimensionIds.FirstOrDefault());
@@ -199,7 +199,7 @@ namespace ToSic.Eav.ManagementUI
 			var dbMetaData = EavDataController.Instance(Db.ZoneId, Db.AppId);
 			dbMetaData.Versioning.SetChangeLogId(insertedAttribute.ChangeLogIDCreated);
 			dbMetaData.UserName = HttpContext.Current.User.Identity.Name;
-			dbMetaData.AttrCommands.UpdateAttributeAdditionalProperties(insertedAttribute.AttributeID, true, values);
+			dbMetaData.Attributes.UpdateAttributeAdditionalProperties(insertedAttribute.AttributeID, true, values);
 			#endregion
 		}
 

@@ -40,7 +40,7 @@ namespace ToSic.Eav.WebApi
 			var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
 			typeFilter.TypeName = contentType;
 
-            return Serializer.Prepare(typeFilter.List);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
+            return Serializer.Prepare(typeFilter.LightList);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
 		}
         #endregion
 
@@ -65,9 +65,9 @@ namespace ToSic.Eav.WebApi
             var found = InitialDS.List[id];
             if (found.Type.Name != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
-            if (!(CurrentContext.EntCommands.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
+            if (!(CurrentContext.Entities.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
                 throw new InvalidOperationException("The entity " + id  + " cannot be deleted because of it is referenced by another object.");
-            CurrentContext.EntCommands.DeleteEntity(id);
+            CurrentContext.Entities.DeleteEntity(id);
         }
 
 	    /// <summary>
@@ -82,7 +82,7 @@ namespace ToSic.Eav.WebApi
         {
             if (appId.HasValue)
                 AppId = appId.Value;
-            var entity = DbS.GetEntity(entityGuid);
+            var entity = CurrentContext.Entities.GetEntity(entityGuid);
             Delete(contentType, entity.EntityID);
         }
 

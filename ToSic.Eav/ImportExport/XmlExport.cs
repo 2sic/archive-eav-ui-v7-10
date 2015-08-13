@@ -4,33 +4,22 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ImportExport
 {
 	/// <summary>
 	/// Export EAV Data in XML Format
 	/// </summary>
-	public class XmlExport
+	public class XmlExport: BllCommandBase
 	{
-		private readonly EavDataController _ctx;
-	    private readonly DbShortcuts DbS;
-
-		/// <summary>
-		/// Initializes a new instance of the XmlExport class.
-		/// </summary>
-		public XmlExport(EavDataController ctx)
-		{
-			_ctx = ctx;
-            DbS = new DbShortcuts(ctx);
-		}
+        public XmlExport(EavDataController c) : base(c) { }
 
 		/// <summary>
 		/// Returns an Entity XElement
 		/// </summary>
 		public XElement GetEntityXElement(int entityId)
 		{
-			var iEntity = new DbLoadIntoEavDataStructure(_ctx).GetEavEntity(entityId);
+			var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
 			return GetEntityXElement(iEntity);
 		}
 
@@ -39,7 +28,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(IEntity entity)
 		{
-			var eavEntity = DbS.GetEntity(entity.EntityId);
+			var eavEntity = Context.Entities.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
 
 			// Prepare Values
@@ -100,7 +89,7 @@ namespace ToSic.Eav.ImportExport
             var relationshipValue = value as Value<Data.EntityRelationship>;
             if (relationshipValue != null)
             {
-                var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? DbS.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+                var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
 
                 return string.Join(",", entityGuids);
             }

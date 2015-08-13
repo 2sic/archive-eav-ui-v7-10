@@ -20,6 +20,36 @@ namespace ToSic.Eav.Import
         {
             get { return Value.ToString(); }
         }
+
+        #region previously external stuff
+        public List<IValueImportModel> ToList()
+        {
+            var list = new List<IValueImportModel>();
+            list.Add(this);
+            return list;
+        }
+
+        /// <summary>
+        /// Append a language reference (ValueDimension) to this value (ValueImportModel).
+        /// </summary>
+        public void AppendLanguageReference(string language, bool readOnly)
+        {
+            var valueDimesnions = this.ValueDimensions as List<Import.ValueDimension>;
+            if (valueDimesnions == null)
+            {
+                valueDimesnions = new List<Import.ValueDimension>();
+                this.ValueDimensions = valueDimesnions;
+            }
+
+            if (!string.IsNullOrEmpty(language))
+            {
+                valueDimesnions.Add
+                (
+                    new Import.ValueDimension { DimensionExternalKey = language, ReadOnly = readOnly }
+                );
+            }
+        }
+        #endregion
     }
 
     public static class ValueImportModel
@@ -75,5 +105,7 @@ namespace ToSic.Eav.Import
 
             return valueModel;
         }
+
+
     }
 }

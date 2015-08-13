@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ToSic.Eav.BLL;
-using ToSic.Eav.Import;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
-    public class DbRelationshipCommands: BllCommandBase
+    public class DbRelationship: BllCommandBase
     {
         
 
@@ -16,7 +12,7 @@ namespace ToSic.Eav.Persistence
             new List<EntityRelationshipQueueItem>();
 
 
-        public DbRelationshipCommands(EavDataController cntx) : base(cntx)
+        public DbRelationship(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -67,13 +63,13 @@ namespace ToSic.Eav.Persistence
         {
             foreach (var relationship in _entityRelationshipsQueue)
             {
-                var entity = Context.DbS.GetEntity(relationship.ParentEntityGuid);
+                var entity = Context.Entities.GetEntity(relationship.ParentEntityGuid);
                 var childEntityIds = new List<int?>();
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
                     try
                     {
-                        childEntityIds.Add(childGuid.HasValue ? Context.DbS.GetEntity(childGuid.Value).EntityID : new int?());
+                        childEntityIds.Add(childGuid.HasValue ? Context.Entities.GetEntity(childGuid.Value).EntityID : new int?());
                     }
                     catch (InvalidOperationException)
                     {

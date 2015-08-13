@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbAttributeSetCommands : BllCommandBase
+    public class DbAttributeSet : BllCommandBase
     {
-        public DbAttributeSetCommands(EavDataController dc) : base(dc) { }
+        public DbAttributeSet(EavDataController dc) : base(dc) { }
 
         /// <summary>caches all AttributeSets for each App</summary>
         internal readonly Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
@@ -151,7 +150,7 @@ namespace ToSic.Eav.Persistence
             var targetAppId = appId.HasValue ? appId.Value : Context.AppId /* _appId*/;
 
             // ensure AttributeSet with StaticName doesn't exist on App
-            if (Context.AttSetCommands.AttributeSetExists(staticName, targetAppId))
+            if (Context.AttribSet.AttributeSetExists(staticName, targetAppId))
                 throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
 
             var newSet = new AttributeSet
@@ -166,8 +165,8 @@ namespace ToSic.Eav.Persistence
 
             Context.SqlDb.AddToAttributeSets(newSet);
 
-            if (Context.AttSetCommands.ContentTypes.ContainsKey(Context.AppId /* _appId*/))
-                Context.AttSetCommands.ContentTypes.Remove(Context.AppId /* _appId*/);
+            if (Context.AttribSet.ContentTypes.ContainsKey(Context.AppId /* _appId*/))
+                Context.AttribSet.ContentTypes.Remove(Context.AppId /* _appId*/);
 
             if (autoSave)
                 Context.SqlDb.SaveChanges();

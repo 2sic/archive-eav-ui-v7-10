@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav;
 using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.ImportExport.Refactoring
 {
@@ -125,7 +123,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             // todo: changed by 2dm 2015-06-02, must be checked by 2tk
             var contentContext = EavDataController.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
-            return new DbAttributeSetCommands(contentContext).GetAttributeSet(contentTypeId);
+            return contentContext.AttribSet.GetAttributeSet(contentTypeId);
         }
 
         private static XDocument GetDocument(params object[] content)

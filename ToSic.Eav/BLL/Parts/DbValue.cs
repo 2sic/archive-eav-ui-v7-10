@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ToSic.Eav.BLL;
-using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
-    public class DbValueCommands : BllCommandBase
+    public class DbValue : BllCommandBase
     {
-        public DbValueCommands(EavDataController cntx) : base(cntx)
+        public DbValue(EavDataController cntx) : base(cntx)
         {
         }
 
@@ -103,9 +99,9 @@ namespace ToSic.Eav.Persistence
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     if (newValue is ValueImportModel<List<Guid>>)
-                        Context.RelCommands.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), currentEntity.EntityGUID);
+                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), currentEntity.EntityGUID);
                     if (newValue is ValueImportModel<List<Guid?>>)
-                        Context.RelCommands.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value, currentEntity.EntityGUID);
+                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value, currentEntity.EntityGUID);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -150,7 +146,7 @@ namespace ToSic.Eav.Persistence
             var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
             foreach (var entityGuid in guidIds.ToList())
             {
-                var firstEntityId = Context.DbS.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
+                var firstEntityId = Context.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
                 if (firstEntityId != null)
                     guidIds[entityGuid.Key] = firstEntityId;
             }
@@ -167,7 +163,7 @@ namespace ToSic.Eav.Persistence
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
-                    Context.RelCommands.UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
+                    Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:
@@ -197,7 +193,7 @@ namespace ToSic.Eav.Persistence
                 foreach (var valueDimension in valueDimensions)
                 {
                     // ToDo: 2bg Log Error but continue
-                    var dimensionId = new DbDimensions(Context).GetDimensionId(null, valueDimension.DimensionExternalKey);
+                    var dimensionId = Context.Dimensions.GetDimensionId(null, valueDimension.DimensionExternalKey);
                     if (dimensionId == 0)
                         throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
 

@@ -5,7 +5,6 @@ using System.Web;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
-using AttributeSet = ToSic.Eav.AttributeSet;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
@@ -139,32 +138,6 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
             valueModel.AppendLanguageReference(valueLanguage, valueRedOnly);
             return valueModel;
         }
-
-        //private static string GetFileReference(string filePath, string fallbackValue = null)
-        //{
-        //    var portalInfo = PortalController.GetCurrentPortalSettings();
-        //    var fileInfo = FileManager.Instance.GetFile(portalInfo.PortalId, filePath);
-        //    if (fileInfo != null)
-        //    {
-        //        return "File:" + fileInfo.FileId;
-        //    }
-        //    return fallbackValue;
-        //}
-
-        //private static string GetTabReference(string tabPath, string fallbackValue = null)
-        //{
-        //    var portalInfo = PortalController.GetCurrentPortalSettings();
-        //    var tabController = new TabController();
-        //    var tabCollection = tabController.GetTabsByPortal(portalInfo.PortalId);
-        //    var tabInfo = tabCollection.Select(tab => tab.Value)
-        //                               .Where(tab => tab.TabPath == tabPath)
-        //                               .FirstOrDefault();
-        //    if (tabInfo != null)
-        //    {
-        //        return "Page:" + tabInfo.TabID;
-        //    }
-        //    return fallbackValue;
-        //}
 
 
         public static void Import(this Import.ImportEntity importEntity, int zoneId, int appId, string userName)

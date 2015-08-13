@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL
 {
     public class DbLoadIntoEavDataStructure: BllCommandBase
     {
@@ -28,7 +26,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
         {
-            if (!Context.AttSetCommands.ContentTypes.ContainsKey(appId))
+            if (!Context.AttribSet.ContentTypes.ContainsKey(appId))
             {
                 // Load from DB
                 var contentTypes = from set in Context.SqlDb.AttributeSets
@@ -59,7 +57,7 @@ namespace ToSic.Eav.Persistence
                                                            })
                                    };
                 // Convert to ContentType-Model
-                Context.AttSetCommands.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.UsesConfigurationOfAttributeSet)
+                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.UsesConfigurationOfAttributeSet)
                 {
                     AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
                             ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
@@ -67,7 +65,7 @@ namespace ToSic.Eav.Persistence
                 });
             }
 
-            return Context.AttSetCommands.ContentTypes[appId];
+            return Context.AttribSet.ContentTypes[appId];
         }
 
         /// <summary>Get Data to populate ICache</summary>

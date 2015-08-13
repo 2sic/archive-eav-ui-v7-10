@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence;
@@ -118,7 +119,7 @@ namespace ToSic.Eav.ManagementUI
 
 					break;
 				case FormViewMode.Edit:
-					var entity = Db.DbS.GetEntity(EntityId);
+					var entity = Db.Entities.GetEntity(EntityId);
 					var entityModel = new DbLoadIntoEavDataStructure(Db).GetEavEntity(EntityId);
 					AttributeSetId = entity.AttributeSetID;
 					AddFormControls(entity, entityModel, Db.ZoneId, Db.AppId);
@@ -144,7 +145,7 @@ namespace ToSic.Eav.ManagementUI
 			if (entityModel.GetDraft() != null)
 			{
 				entityModel = entityModel.GetDraft();
-				entity = Db.DbS.GetEntity(entityModel.RepositoryId);
+				entity = Db.Entities.GetEntity(entityModel.RepositoryId);
 			}
 			_repositoryId = entityModel.RepositoryId;
 			#region Set JSON Data/Models
@@ -158,7 +159,7 @@ namespace ToSic.Eav.ManagementUI
             var metaDataZoneId = entity.Set.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : zoneId;
 			var entityReadOnly = entityModel.GetDraft() != null;
 
-			foreach (var attribute in Db.AttrCommands.GetAttributes(entity.AttributeSetID))
+			foreach (var attribute in Db.Attributes.GetAttributes(entity.AttributeSetID))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 				var attributeModel = entityModel[attribute.StaticName];
@@ -210,7 +211,7 @@ namespace ToSic.Eav.ManagementUI
 
 		private void SetJsonGeneralData()
 		{
-			litJsonDimensionsModel.Text = GetJsonString(new DbDimensions(Db).GetLanguages().Select(l => new { DimensionId = l.DimensionID, l.ExternalKey, l.Name }));
+			litJsonDimensionsModel.Text = GetJsonString(Db.Dimensions.GetLanguages().Select(l => new { DimensionId = l.DimensionID, l.ExternalKey, l.Name }));
 			pnlEditForm.Attributes["data-defaultculturedimension"] = DefaultCultureDimension.ToString();
 			pnlEditForm.Attributes["data-activeculturedimension"] = DimensionIds.SingleOrDefault().ToString();
 			pnlEditForm.Attributes["data-applicationpath"] = Request.ApplicationPath;
@@ -231,13 +232,13 @@ namespace ToSic.Eav.ManagementUI
 		/// </summary>
 		private void AddFormControls(int attributeSetId)
 		{
-			var attributeSet = Db.AttSetCommands.GetAttributeSet(attributeSetId);
+			var attributeSet = Db.AttribSet.GetAttributeSet(attributeSetId);
 
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
             var metaDataAppId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Db.AppId;
             var metaDataZoneId = attributeSet.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Db.ZoneId;
 
-			foreach (var attribute in Db.AttrCommands.GetAttributes(attributeSetId))
+			foreach (var attribute in Db.Attributes.GetAttributes(attributeSetId))
 			{
 				var fieldTemplate = Forms.GetFieldTemplate(this, FieldTemplatesPath, attribute.Type);
 
@@ -332,9 +333,9 @@ namespace ToSic.Eav.ManagementUI
 			Entity result;
             var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : Constants.DefaultAssignmentObjectTypeId;
 			if (!KeyGuid.HasValue)
-				result = Db.EntCommands.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+				result = Db.Entities.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 			else
-				result = Db.EntCommands.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+				result = Db.Entities.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
 
 			RedirectToListItems();
 
@@ -360,7 +361,7 @@ namespace ToSic.Eav.ManagementUI
 			}
 			#endregion
 
-			var result = Db.EntCommands.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
+			var result = Db.Entities.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
 
 			RedirectToListItems();
 

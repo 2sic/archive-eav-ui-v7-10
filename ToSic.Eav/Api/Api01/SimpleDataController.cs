@@ -54,7 +54,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public void Create(string contentTypeName, Dictionary<string, object> values)
         {
-            var attributeSet = Context.AttSetCommands.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
+            var attributeSet = Context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
             {
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values)
         {
-            var entity = Context.DbS.GetEntity(entityId);
+            var entity = Context.Entities.GetEntity(entityId);
             Update(entity, values);
         }
 
@@ -97,13 +97,13 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values)
         {
-            var entity = Context.DbS.GetEntity(entityGuid);
+            var entity = Context.Entities.GetEntity(entityGuid);
             Update(entity, values);
         }
 
         private void Update(Entity entity, Dictionary<string, object> values)
         {
-            var attributeSet = Context.AttSetCommands.GetAttributeSet(entity.AttributeSetID);
+            var attributeSet = Context.AttribSet.GetAttributeSet(entity.AttributeSetID);
             var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
             importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             importEntity.Import(_zoneId, _appId, _userName);
@@ -118,11 +118,11 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!Context.EntCommands.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+            if (!Context.Entities.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }
-            Context.EntCommands.DeleteEntity(entityId);
+            Context.Entities.DeleteEntity(entityId);
         }
 
 
@@ -135,7 +135,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = Context.DbS.GetEntity(entityGuid);
+            var entity = Context.Entities.GetEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -170,7 +170,7 @@ namespace ToSic.Eav.Api.Api01
                     var guids = new List<Guid>();
                     foreach (var id in ids)
                     {
-                        var entity = Context.DbS.GetEntity(id);
+                        var entity = Context.Entities.GetEntity(id);
                         guids.Add(entity.EntityGUID);
                     }
                     result.Add(value.Key, string.Join(",", guids));

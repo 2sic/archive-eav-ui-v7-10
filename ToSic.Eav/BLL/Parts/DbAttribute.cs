@@ -2,20 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
-    public class DbAttributeCommands: BllCommandBase
+    public class DbAttribute: BllCommandBase
     {
-        public DbAttributeCommands(EavDataController cntx) : base(cntx) {}
+        public DbAttribute(EavDataController cntx) : base(cntx) {}
 
         /// <summary>
         /// Get Attributes of an AttributeSet
         /// </summary>
         public IQueryable<Attribute> GetAttributes(int attributeSetId)
         {
-            attributeSetId = new DbAttributeSetCommands(Context).ResolveAttributeSetId(attributeSetId);
+            attributeSetId = Context.AttribSet.ResolveAttributeSetId(attributeSetId);
 
             return from ais in Context.SqlDb.AttributesInSets
                    where ais.AttributeSetID == attributeSetId
@@ -203,13 +202,13 @@ namespace ToSic.Eav.Persistence
         {
             var fieldPropertyEntity = Context.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
-                return Context.EntCommands.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
+                return Context.Entities.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
 
             var metaDataSetName = isAllProperty ? "@All" : "@" + Context.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
             var attributeSetId = Context.SqlDb.AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/).AttributeSetID;
 
-            return Context.EntCommands.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
+            return Context.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }
     }
 }

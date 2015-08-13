@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
-using ToSic.Eav.Persistence;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.BLL.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{

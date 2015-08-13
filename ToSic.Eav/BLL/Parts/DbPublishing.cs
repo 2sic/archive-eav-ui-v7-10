@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ToSic.Eav.BLL;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
     public class DbPublishing: BllCommandBase
     {
-        //public DbPublishing(EavDataController dc) : base(dc) { }
         public DbPublishing(EavDataController c) : base(c) { }
 
 
@@ -29,7 +25,7 @@ namespace ToSic.Eav.Persistence
         /// <returns>The published Entity</returns>
         internal Entity PublishEntity(int entityId, bool autoSave = true)
         {
-            var unpublishedEntity = Context.DbS.GetEntity(entityId);
+            var unpublishedEntity = Context.Entities.GetEntity(entityId);
             if (unpublishedEntity.IsPublished)
                 throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
 
@@ -44,17 +40,26 @@ namespace ToSic.Eav.Persistence
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
-                publishedEntity = Context.DbS.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-                Context.ValCommands.CloneEntityValues(unpublishedEntity, publishedEntity);
+                publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
+                Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
-                Context.EntCommands.DeleteEntity(unpublishedEntity, false);
+                Context.Entities.DeleteEntity(unpublishedEntity, false);
             }
 
             if (autoSave)
                 Context.SqlDb.SaveChanges();
 
             return publishedEntity;
+        }
+
+        /// <summary>
+        /// Get Draft EntityId of a Published EntityId. Returns null if there's none.
+        /// </summary>
+        /// <param name="entityId">EntityId of the Published Entity</param>
+        internal int? GetDraftEntityId(int entityId)
+        {
+            return Context.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
         }
     }
 }

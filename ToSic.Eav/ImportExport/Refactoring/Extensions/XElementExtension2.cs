@@ -68,7 +68,8 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 return;
             }
 
-            var valueLanguage = value.GetLanguage(language);
+            var valueLanguage = value.ValuesDimensions.Select(reference => reference.Dimension.ExternalKey)
+                                         .FirstOrDefault(l => l == language); // value.GetLanguage(language);
             if (valueLanguage == null)
             {   // If no language is found, serialize the plain value
                 element.AppendValue(valueName, value, resourceReferenceOption);

@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using ToSic.Eav;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.BLL
@@ -16,12 +17,15 @@ namespace ToSic.Eav.BLL
         public DbShortcuts DbS { get; private set; }
 
         public DbVersioning Versioning { get; private set; }
-        public DbEntityCommands EntCommands { get; private set; }
-        public DbValueCommands ValCommands { get; private set; }
-        public DbAttributeCommands AttrCommands { get; private set; }
-        public DbRelationshipCommands RelCommands { get; private set; }
-        public DbAttributeSetCommands AttSetCommands { get; private set; }
-        public DbPublishing PubCommands { get; private set; }
+        public DbEntity Entities { get; private set; }
+        public DbValue Values { get; private set; }
+        public DbAttribute Attributes { get; private set; }
+        public DbRelationship Relationships { get; private set; }
+        public DbAttributeSet AttribSet { get; private set; }
+        public DbPublishing Publishing { get; private set; }
+        public DbDimensions Dimensions { get; private set; }
+        public DbZone Zone { get; private set; }
+        public DbApp App { get; private set; }
 
         public int _appId;
         internal int _zoneId;
@@ -77,19 +81,22 @@ namespace ToSic.Eav.BLL
         {
             var connectionString = Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
-            var dataController = new EavDataController {SqlDb = context};
-            dataController.DbS = new DbShortcuts(dataController);
-            dataController.Versioning = new DbVersioning(dataController);
-            dataController.EntCommands = new DbEntityCommands(dataController);
-            dataController.ValCommands = new DbValueCommands(dataController);
-            dataController.AttrCommands = new DbAttributeCommands(dataController);
-            dataController.RelCommands = new DbRelationshipCommands(dataController);
-            dataController.AttSetCommands = new DbAttributeSetCommands(dataController);
-            dataController.PubCommands = new DbPublishing(dataController);
+            var dc = new EavDataController {SqlDb = context};
+            dc.DbS = new DbShortcuts(dc);
+            dc.Versioning = new DbVersioning(dc);
+            dc.Entities = new DbEntity(dc);
+            dc.Values = new DbValue(dc);
+            dc.Attributes = new DbAttribute(dc);
+            dc.Relationships = new DbRelationship(dc);
+            dc.AttribSet = new DbAttributeSet(dc);
+            dc.Publishing = new DbPublishing(dc);
+            dc.Dimensions = new DbDimensions(dc);
+            dc.Zone = new DbZone(dc);
+            dc.App = new DbApp(dc);
 
-            dataController.SqlDb.AlternateSaveHandler += dataController.SaveChanges;
+            dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 
-            return dataController;
+            return dc;
         }
 
         /// <summary>

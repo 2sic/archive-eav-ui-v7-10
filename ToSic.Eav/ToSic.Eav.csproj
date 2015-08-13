@@ -59,19 +59,18 @@
     <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="BLL\BllCommandBase.cs" />
     <Compile Include="BLL\EavDataController.cs" />
+    <Compile Include="BLL\Parts\DbApp.cs" />
+    <Compile Include="BLL\Parts\DbZone.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="DataSources\Configuration.cs" />
-    <Compile Include="Persistence\DbPipelineCommands.cs" />
+    <Compile Include="BLL\Parts\DbPipeline.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="AscxHelpers\AttributeWithMetaInfo.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="ImportExport\LogItem.cs" />
-    <Compile Include="ImportExport\Refactoring\Extensions\AttributeExtension.cs" />
+    <Compile Include="ImportExport\ImportLogItem.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\AttributeSetExtension.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\EavValueExtension.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\EntityExtension.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\EntityImportExtension.cs" />
-    <Compile Include="ImportExport\Refactoring\Extensions\IValueImportModelExtension.cs" />
     <Compile Include="ImportExport\Refactoring\Extensions\XElementExtension2.cs" />
     <Compile Include="ImportExport\Refactoring\XmlExport.cs">
       <SubType>Code</SubType>
@@ -81,19 +80,19 @@
     </Compile>
     <Compile Include="ImportExport\XmlExport.cs" />
     <Compile Include="ImportExport\XmlImport.cs" />
-    <Compile Include="Persistence\DbAttributeSetCommands.cs" />
-    <Compile Include="Persistence\DbAttributeCommands.cs" />
-    <Compile Include="Persistence\DbPublishing.cs" />
-    <Compile Include="Persistence\DbRelationshipCommands.cs" />
-    <Compile Include="Persistence\DbValueCommands.cs" />
-    <Compile Include="Persistence\DbEntityCommands.cs" />
-    <Compile Include="Persistence\DbLoadIntoEavDataStructure.cs" />
-    <Compile Include="Persistence\DbShortcuts.cs" />
-    <Compile Include="Persistence\DbVersioning.cs" />
+    <Compile Include="BLL\Parts\DbAttributeSet.cs" />
+    <Compile Include="BLL\Parts\DbAttribute.cs" />
+    <Compile Include="BLL\Parts\DbPublishing.cs" />
+    <Compile Include="BLL\Parts\DbRelationship.cs" />
+    <Compile Include="BLL\Parts\DbValue.cs" />
+    <Compile Include="BLL\Parts\DbEntity.cs" />
+    <Compile Include="BLL\DbLoadIntoEavDataStructure.cs" />
+    <Compile Include="BLL\Parts\DbShortcuts.cs" />
+    <Compile Include="BLL\Parts\DbVersioning.cs" />
     <Compile Include="ImportExport\Import.cs" />
-    <Compile Include="Persistence\DbDimensions.cs" />
+    <Compile Include="BLL\Parts\DbDimensions.cs" />
     <Compile Include="AscxHelpers\ListsForSomeAscx.cs" />
-    <Compile Include="Persistence\Metadata.cs" />
+    <Compile Include="AscxHelpers\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="VersionUpgrade.cs" />
@@ -125,9 +124,7 @@
       <Name>ToSic.Eav.Persistence.EF4</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BLL\Parts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>

@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 	    public Dictionary<int, Data.Zone> GetAllZones()
 		{
-			return Context.DbS.GetAllZones();
+			return Context.Zone.GetAllZones();
 		}
 
 		public Dictionary<int, string> GetAssignmentObjectTypes()

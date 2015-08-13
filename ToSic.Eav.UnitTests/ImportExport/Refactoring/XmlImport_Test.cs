@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring;
@@ -258,8 +259,7 @@ On all your devices.</PreviewContent>
             // 4. Re-export and compare with import file
 
             var db = EavDataController.Instance(ZoneId, AppId);
-            var DbS = new DbShortcuts(db);
-            var dbEntity = DbS.GetEntitiesByGuid(SingleItemGuid).First();
+            var dbEntity = db.Entities.GetEntitiesByGuid(SingleItemGuid).First();
 
             // Assert.AreEqual(5, dbEntity.Values.Count);
 

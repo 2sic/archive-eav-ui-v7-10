@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav;
-using Attribute = ToSic.Eav.Attribute;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {

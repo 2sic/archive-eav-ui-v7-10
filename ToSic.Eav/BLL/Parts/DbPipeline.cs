@@ -1,42 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Persistence;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.BLL.Parts
 {
-    public class DbPipelineCommands
+    public class DbPipeline: BllCommandBase
     {
+        public DbPipeline(EavDataController c) : base(c) { }
+
         /// <summary>
         /// Copy an existing DataPipeline by copying all Entities and uptdate their GUIDs
         /// </summary>
-        public static Entity CopyDataPipeline(int appId, int pipelineEntityId, string userName)
+        public Entity CopyDataPipeline(int appId, int pipelineEntityId, string userName)
         {
-            var ctx = EavDataController.Instance(appId: appId);
-            var dbs = new DbShortcuts(ctx);
-            ctx.UserName = userName;
+            Context.UserName = userName;
 
             // Clone Pipeline Entity with a new new Guid
-            var sourcePipelineEntity = dbs.GetEntity(pipelineEntityId);
+            var sourcePipelineEntity = Context.Entities.GetEntity(pipelineEntityId);
             if (sourcePipelineEntity.Set.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
                 throw new ArgumentException("Entity is not an DataPipeline Entity", "pipelineEntityId");
-            var pipelineEntityClone = ctx.EntCommands.CloneEntity(sourcePipelineEntity, true);
+            var pipelineEntityClone = Context.Entities.CloneEntity(sourcePipelineEntity, true);
 
             // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
-            var pipelineParts = dbs.GetEntities(Constants.AssignmentObjectTypeEntity, sourcePipelineEntity.EntityGUID);
+            var pipelineParts = Context.Entities.GetEntities(Constants.AssignmentObjectTypeEntity, sourcePipelineEntity.EntityGUID);
             var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
             foreach (var pipelinePart in pipelineParts)
             {
-                var pipelinePartClone = ctx.EntCommands.CloneEntity(pipelinePart, true);
+                var pipelinePartClone = Context.Entities.CloneEntity(pipelinePart, true);
                 pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGUID;
                 pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
 
                 // Copy Configuration Entity, assign KeyGuid of the Clone
-                var configurationEntity = dbs.GetEntities(Constants.AssignmentObjectTypeEntity, pipelinePart.EntityGUID).SingleOrDefault();
+                var configurationEntity = Context.Entities.GetEntities(Constants.AssignmentObjectTypeEntity, pipelinePart.EntityGUID).SingleOrDefault();
                 if (configurationEntity != null)
                 {
-                    var configurationClone = ctx.EntCommands.CloneEntity(configurationEntity, true);
+                    var configurationClone = Context.Entities.CloneEntity(configurationEntity, true);
                     configurationClone.KeyGuid = pipelinePartClone.EntityGUID;
                 }
             }
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Persistence
             streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
             #endregion
 
-            ctx.SqlDb.SaveChanges();
+            Context.SqlDb.SaveChanges();
 
             return pipelineEntityClone;
         }

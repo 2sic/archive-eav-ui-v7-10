@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.SqlSources;
@@ -44,7 +46,7 @@ namespace ToSic.Eav.Testing
 		public void DimensionsCacheTest()
 		{
 			var Context = new EavContext();
-		    var dim = new DbDimensions(Context);
+		    var dim = Context.DimCommands;
 			var Entity1 = dim.GetLanguages();
 			var Entity2 = dim.GetLanguages();
 			var Entity3 = dim.GetLanguages();

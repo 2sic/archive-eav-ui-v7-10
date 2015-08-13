@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
@@ -112,12 +113,12 @@ namespace ToSic.Eav.Persistence
             // Prepare source and target-Languages
             if (!defaultCultureDimension.HasValue)
                 throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
-            var dim = new DbDimensions(Context);
-            var defaultLanguage = dim.GetDimension(defaultCultureDimension.Value).ExternalKey;
-            var targetDimensions = dim.GetLanguages();
+
+            var defaultLanguage = Context.Dimensions.GetDimension(defaultCultureDimension.Value).ExternalKey;
+            var targetDimensions = Context.Dimensions.GetLanguages();
             var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionID")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
             var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
-            var sourceDimensions = dim.GetDimensions(allSourceDimensionIdsDistinct).ToList();
+            var sourceDimensions = Context.Dimensions.GetDimensions(allSourceDimensionIdsDistinct).ToList();
             int sourceDefaultDimensionId;
             if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension.Value))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
                 sourceDefaultDimensionId = defaultCultureDimension.Value;
@@ -175,11 +176,11 @@ namespace ToSic.Eav.Persistence
                 foreach (var valueModel in attribute.Value)
                 {
                     var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
-                    result.Rows.Add(attribute.Key, firstLanguage, Context.ValCommands.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
+                    result.Rows.Add(attribute.Key, firstLanguage, Context.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
 
                     foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
                     {
-                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, Context.ValCommands.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
+                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, Context.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
                     }
                 }
             }
@@ -202,7 +203,7 @@ namespace ToSic.Eav.Persistence
             // Delete Draft (if any)
             var entityDraft = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId).GetDraft();
             if (entityDraft != null)
-                Context.EntCommands.DeleteEntity(entityDraft.RepositoryId);
+                Context.Entities.DeleteEntity(entityDraft.RepositoryId);
         }
 
     }

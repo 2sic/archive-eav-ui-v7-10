@@ -19,7 +19,7 @@ namespace ToSic.Eav.ManagementUI
                 routeTemplate: "api/EAV/{controller}/{action}"
             );
 
-            new ToSic.Eav.DataSources.Configuration().ConfigureDefaultMappings(ToSic.Eav.Factory.Container);
+            new Configuration().ConfigureDefaultMappings(ToSic.Eav.Factory.Container);
         }
 
         protected void Session_Start(object sender, EventArgs e)

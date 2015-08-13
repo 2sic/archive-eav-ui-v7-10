@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.AscxHelpers
@@ -21,7 +22,7 @@ namespace ToSic.Eav.AscxHelpers
         /// </summary>
         public List<Dimension> GetDimensionChildren(string systemKey)
         {
-            return new DbDimensions(Context).GetDimensionChildren(systemKey);
+            return Context.Dimensions.GetDimensionChildren(systemKey);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace ToSic.Eav.AscxHelpers
 			var draftEntities = DataSource.GetInitialDataSource(Context.ZoneId, Context.AppId, true).List.Where(e => entityIds.Contains(e.Key));
 			var entitiesModel = publishedEntities.Union(draftEntities);
 
-			var columnNamesArray = new DbAttributeCommands(Context).GetAttributes(attributeSetId).Select(a => a.StaticName);
+			var columnNamesArray = Context.Attributes.GetAttributes(attributeSetId).Select(a => a.StaticName);
 			if (columnNames != null)
 			{
 				var columNamesFilter = columnNames.Split(',');

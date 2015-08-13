@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Persistence;
@@ -180,7 +181,7 @@ namespace ToSic.Eav.WebApi
 				//id = entity.EntityID;
 			}
 
-			var pipelinePartAttributeSetId = Context.AttSetCommands.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
+			var pipelinePartAttributeSetId = Context.AttribSet.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
 			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
 			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
 
@@ -208,11 +209,11 @@ namespace ToSic.Eav.WebApi
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
-					Context.EntCommands.UpdateEntity((int)dataSource.EntityId, newValues);
+					Context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
-					var entitiy = Context.EntCommands.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
+					var entitiy = Context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
 					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
@@ -233,7 +234,7 @@ namespace ToSic.Eav.WebApi
 			newEntityGuids.AddRange(newDataSources.Values);
 
 			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-				Context.EntCommands.DeleteEntity(entityToDelet);
+				Context.Entities.DeleteEntity(entityToDelet);
 		}
 
 		/// <summary>
@@ -290,7 +291,7 @@ namespace ToSic.Eav.WebApi
 			if (pipelineEntity.Title.Values.Any())
 				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-			return Context.EntCommands.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
+			return Context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
@@ -359,7 +360,7 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object ClonePipeline(int appId, int id)
 		{
-			var clonePipelineEntity = DbPipelineCommands.CopyDataPipeline(appId, id, _userName);
+			var clonePipelineEntity = new DbPipeline(Context).CopyDataPipeline(appId, id, _userName);
 			return new { EntityId = clonePipelineEntity.EntityID };
 		}
 
@@ -372,7 +373,7 @@ namespace ToSic.Eav.WebApi
 			if (Context == null)
 				Context = EavDataController.Instance(appId: appId);
 
-		    var canDeleteResult = (Context.EntCommands.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
+		    var canDeleteResult = (Context.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)
 				throw new Exception(canDeleteResult.Item2);
 
@@ -389,13 +390,13 @@ namespace ToSic.Eav.WebApi
 				// Delete Configuration Entities (if any)
 				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
 				if (dataSourceConfig != null)
-					Context.EntCommands.DeleteEntity(dataSourceConfig.EntityId);
+					Context.Entities.DeleteEntity(dataSourceConfig.EntityId);
 
-				Context.EntCommands.DeleteEntity(dataSource.EntityId);
+				Context.Entities.DeleteEntity(dataSource.EntityId);
 			}
 
 			// Delete Pipeline
-			Context.EntCommands.DeleteEntity(id);
+			Context.Entities.DeleteEntity(id);
 
 			return new { Result = "Success" };
 		}
