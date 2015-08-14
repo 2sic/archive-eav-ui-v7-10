@@ -107,6 +107,7 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="EAV\js\eav.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
@@ -210,6 +211,7 @@
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
     <Content Include="Scripts\toaster.css" />
     <Content Include="Scripts\toaster.js" />
+    <Content Include="EAV\js\TestingMlJson.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
