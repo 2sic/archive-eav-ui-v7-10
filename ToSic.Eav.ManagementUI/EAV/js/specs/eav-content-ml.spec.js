@@ -14,10 +14,10 @@
         });
     });
 
-    var ee = enhanceEntity(testMlE);
+    var ee = enhanceEntity(testMlE); 
 
     it("Properly returns enhanced entity", function () {
-        expect(ee).toBeDefined();
+        expect(ee).toBeDefined();  
     });
 
     describe("Entity extended with enhancements", function () {
@@ -29,17 +29,42 @@
             it("intro has 2 values", function () {
                 expect(intro.vs.length).toBe(2);
             });
-            var vCH = intro.getVsWithLanguage("de-ch");
-            describe("the value for CH", function () {
+            
+            var vsCH = intro.getVsWithLanguage("de-ch");
+            describe("the value for de-ch", function () {
                 it("intro had a value for CH", function () {
-                    expect(vCH).toBeDefined();
+                    expect(vsCH).toBeDefined();
+                });
+                it("shouldn't work for caps like DE-ch", function () {
+                    expect(intro.getVsWithLanguage("DE-ch")).toBeNull();
                 });
                 xit("the value has 3 dimensions", function () {
-                    expect(vCH.d.length).toBe(3);
+                    expect(vsCH.d.length).toBe(3);
                 });
             });
 
-            describe
+            describe("changes to languages - adding a language should work", function () {
+                it("shouldn't be definet at first", function () {
+                    expect(vsCH.d["en-uk"]).toBeUndefined(); 
+                });
+                it("ch should now map to en-uk as well", function () {
+                    intro.setLanguageToVs(vsCH, "en-uk", "rw");
+                    expect(vsCH.d["en-uk"]).toBeDefined();
+                });
+            });
+            
+            describe("moving a language to another value", function () {
+                describe("should simply move en-en from the first to the second", function () {
+                    it("should have en in the fr-set before...", function () {
+                        expect(intro.getVsWithLanguage("fr-fr").d["en-en"]).toBeDefined();
+                    })
+                    it("...but not afterwards, when it's on de-ch", function () {
+                        intro.setLanguageToVs(vsCH, "en-en", "r");
+                        expect(intro.getVsWithLanguage("fr-fr").d["en-en"]).toBeUndefined();
+                        expect(intro.getVsWithLanguage("de-ch").d["en-en"]).toBeDefined();
+                    })
+                })
+            })
         });
 
 
