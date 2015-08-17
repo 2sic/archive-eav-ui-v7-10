@@ -1,5 +1,5 @@
 ﻿
-var e = {
+var testMlE = {
     "Id": 17,
     "Guid": "{2151c7fa-db22-45b4-b139-db5b91e0b08e}",
     "Type": "Product",
@@ -17,7 +17,7 @@ var e = {
                 { v: "Versuchen Sie das jetzt", d: { "de-de": "rw", "de-ch": "r" } }
             ]
         },
-        { k: "Longo", vs: [] }
+        { k: "Longo", vs: [] } 
     ]
 };
 
@@ -25,7 +25,7 @@ var e = {
 // Note: the entity-reader is meant for admin-purposes. 
 // It does not try to do fallback, because the admin-UI MUST know the real data
 function enhanceEntity(entity) {
-    var enhancer = this;
+    var enhancer = this; 
 
     // this will enhance a ValueSet with necessary methods
     enhancer.enhanceVs = function (vs) {

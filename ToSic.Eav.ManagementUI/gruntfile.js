@@ -2,15 +2,23 @@ module.exports = function(grunt) {
 
   // Project configuration.
     grunt.initConfig({
-        // pkg: grunt.file.readJSON('package.json'),
+        pkg: grunt.file.readJSON('package.json'),
 
         jasmine: {
-            // Your project's source files
-            src: 'eav/js/src/**/*.js',
-            // Your Jasmine spec files
-            specs: 'eav/js/specs/**/*spec.js',
-            // Your spec helper files
-            helpers: 'eav/js/specs/helpers/*.js'
+            default: {
+                // Your project's source files
+                src: "<%= pkg.scripts.eav.src %>",
+                options: {
+                    // Your Jasmine spec files
+                    specs: "<%= pkg.scripts.eav.specs %>",
+                    // Your spec helper files
+                    helpers: 'eav/js/specs/helpers/*.js'
+                }
+            }
+        },
+        watch: { 
+            files: ["gruntfile.js", "<%= pkg.scripts.eav.src %>", "<%= pkg.scripts.eav.specs %>"],
+            tasks: ['jasmine']
         }
 
     });
@@ -24,6 +32,7 @@ module.exports = function(grunt) {
 
     // Register tasks.
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
 
     // Default task.
