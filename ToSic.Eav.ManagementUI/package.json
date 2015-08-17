@@ -1,0 +1,31 @@
+﻿{
+  "name": "...",
+  "description": "eav...",
+  "version": "3...",
+  "keywords": [
+    "eav",
+    "..."
+  ],
+  "homepage": "http://github.com/2sic/eav",
+  "author": {
+    "name": "Daniel Mettler",
+    "email": "...",
+    "url": "..."
+  },
+/*  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/velesin/jasmine-jquery.git"
+  },
+  "bugs": {
+    "url": "http://github.com/velesin/jasmine-jquery/issues"
+  },*/
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "0.4.5",
+    //"grunt-contrib-jshint": "0.10.0",
+    "grunt-contrib-jasmine": "git://github.com/travisjeffery/grunt-contrib-jasmine#9d5874dd592cf41e8268918fe9baeb261afd75b2"
+  }
+}

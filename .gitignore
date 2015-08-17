@@ -163,3 +163,5 @@ Testing/Bin
 **/ToSic.Eav.dll
 **/ToSic.Eav.pdb
 /packages
+ToSic.Eav.ManagementUI/node_modules/
+ToSic.Eav.ManagementUI/.grunt/
