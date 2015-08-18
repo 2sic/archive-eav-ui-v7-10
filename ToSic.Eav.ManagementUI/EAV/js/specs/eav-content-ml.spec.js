@@ -1,26 +1,79 @@
 
+// Manually created test-object
 var testMlE = {
     "Id": 17,
     "Guid": "{2151c7fa-db22-45b4-b139-db5b91e0b08e}",
-    "Type": "Product",
+    "Type": { Name: "Product", StaticName: "c95030592039" },
     "TitleAttributeName": "Name",
     "Attributes": [
-        {
-            Key: "Name",
-            Values: [{ Value: "Cambucha" }]
-        },
+        { Key: "Name", Values: [{ Value: "Cambucha" }] },
         { Key: "Image", Values: [{ Value: "company-logo.jpg" }] },
-        {
-            Key: "Intro",
-            Values: [
+        { Key: "Intro", Values: [
                 { Value: "Try this product", Dimensions: { "en-en": true, "fr-fr": false, "it-it": false } },
                 { Value: "Versuchen Sie das jetzt", Dimensions: { "de-de": true, "de-ch": false } }
-            ]
-        },
+            ] },
         { Key: "Longo", Values: [] } 
     ]
 };
 
+var compareValues = {
+    Id: 17
+}
+
+// Test-Object #6494 based on WebService 2015-08-18 16:45 --> /api/EAV/EavContent/GetOne?appId=1&contentType=Store&id=6494&format=multi-language
+var wsEntity = {
+    "Id": 6494,
+    "Guid": "cc5a4abf-ccf0-4d48-8d4f-84bb6b07979e",
+    "Type": { "Name": "Store", "StaticName": "c9666f4a-40a0-4956-baf1-209a26c29d55" },
+    "TitleAttributeName": "Name",
+    "Attributes": [
+        { "Key": "Tags", "Values": [{ "Value": "f7cf33e7-6c0d-4cdf-9c7a-8e112c7f4dfe", "Dimensions": {} }] },
+        { "Key": "Name", "Values": [{ "Value": "mettlers home", "Dimensions": { "en-us": false } }] },
+        { "Key": "Address", "Values": [{ "Value": "räfiserhalde 34", "Dimensions": { "en-us": false } }] },
+        { "Key": "Zip", "Values": [{ "Value": "9470", "Dimensions": { "en-us": false } }] },
+        { "Key": "City", "Values": [{ "Value": "Buchs sg", "Dimensions": { "en-us": false } }] },
+        { "Key": "Latitude", "Values": [{ "Value": "47.1483808", "Dimensions": { "en-us": false } }] },
+        { "Key": "Longitude", "Values": [{ "Value": "9.478604099999984", "Dimensions": { "en-us": false } }] },
+        { "Key": "Latitude2", "Values": [{ "Value": "47.1483808", "Dimensions": { "en-us": false } }] },
+        { "Key": "Longitude2", "Values": [{ "Value": "9.478604099999984", "Dimensions": { "en-us": false } }] }
+    ]
+}
+
+// Test object #280 --> /api/EAV/EavContent/GetOne?appId=1&contentType=Person ML&id=280&format=multi-language
+var ws280 = {
+    "Id": 280,
+    "Guid": "a4cec726-8035-4b67-9702-ab80eae253bc",
+    "Type": { "Name": "Person ML", "StaticName": "5277aaa7-aac0-4190-9ecb-48e8bfc6a741" },
+    "TitleAttributeName": "LastName",
+    "Attributes": [ 
+        {
+            "Key": "LastName", "Values": [
+              { "Value": "Gemperle 17:51", "Dimensions": { "en-us": false } },
+              { "Value": "Gemperle DE", "Dimensions": { "de-de": false } }]
+        }, {
+            "Key": "FirstName", "Values": [
+                { "Value": "Benjamin 17:51", "Dimensions": { "en-us": false } },
+                { "Value": "Benjamin DE", "Dimensions": { "de-de": false } }]
+        }, {
+            "Key": "Address", "Values": [
+                { "Value": "Churerstrasse 35 17:51 EN", "Dimensions": { "en-us": false } },
+                { "Value": "Churerstrasse 35 DE\r\n23.05.2014 10:19", "Dimensions": { "de-de": false } }]
+        }, {
+            "Key": "ZIP", "Values": [
+                { "Value": "9470 17:51", "Dimensions": { "en-us": false } },
+                { "Value": "9470 DE", "Dimensions": { "de-de": false } }]
+        }, {
+            "Key": "City", "Values": [
+                { "Value": "Buchs 17:51", "Dimensions": { "en-us": false } }]
+        }, {
+            "Key": "Manager", "Values": [
+                { "Value": "33027abe-d3ed-4ca1-9b4c-aa1f08667624", "Dimensions": {} }]
+        }]
+}
+
+var compareValues6494 = {
+    Id: 6494
+}
 
 describe("EAV Multilanguage Content", function () {
     it("Exists", function () {
@@ -32,8 +85,8 @@ describe("EAV Multilanguage Content", function () {
             expect(testMlE).toBeDefined();
         });
         it("is 17 and a product", function () {
-            expect(testMlE.Id).toBe(17);
-            expect(testMlE.Type).toBe("Product");
+            expect(testMlE.Id).toBe(compareValues.Id);
+            expect(testMlE.Type.Name).toBe("Product");
         });
     });
 
