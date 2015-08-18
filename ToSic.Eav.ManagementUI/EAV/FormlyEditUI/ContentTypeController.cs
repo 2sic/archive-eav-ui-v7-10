@@ -41,8 +41,6 @@ namespace ToSic.Eav.ManagementUI.FormlyEditUI
 
 			var eavContext = EavContext.Instance(zoneId, appId);
 
-			//var attributeSet = eavContext.GetAttributeSet(result.AttributeSetId);
-
 			// Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
 			var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? DataSource.MetaDataAppId : eavContext.AppId;
 			var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? DataSource.DefaultZoneId : eavContext.ZoneId;
