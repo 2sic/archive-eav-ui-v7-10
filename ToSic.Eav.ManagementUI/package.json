@@ -1,41 +1,37 @@
 {
-    "name": "eav",
-    "description": "eav...",
-    "version": "3.0.0",
-    "keywords": [
-        "eav",
-        "..."
-    ],
-    "homepage": "http://github.com/2sic/eav",
-    "author": {
-        "name": "Daniel Mettler",
-        "email": "info@2sxc.org",
-        "url": "http://2sxc.org"
-    },
-    "scripts": {
-        "eav": {
-            "src": "eav/js/src/**/*.js",
-            "specs": "eav/js/specs/**/*spec.js",
-            "helpers": "eav/js/specs/helpers/*.js"
-        },
-        "test": "grunt test"
-    },
-      "comment": {
+  "name": "eav",
+  "description": "eav...",
+  "version": "3.0.0",
+  "keywords": [
+    "eav",
+    "2sxc"
+  ],
+  "homepage": "http://github.com/2sic/eav",
+  "author": {
+    "name": "Daniel Mettler",
+    "email": "info@2sxc.org",
+    "url": "http://2sxc.org"
+  },
+  "scripts": {
+    "test": "grunt jasmine"
+  },
+  "comment": {
     "scripts": {
       "test": "grunt test"
     },
     "repository": {
       "type": "git",
-      "url": "https://github.com/velesin/jasmine-jquery.git"
+      "url": "https://github.com/2sic/eav/"
     },
     "bugs": {
-      "url": "http://github.com/velesin/jasmine-jquery/issues"
+      "url": "https://github.com/2sic/eav/issues"
     }
   },
   "license": "MIT",
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-contrib-jasmine": "^0.9.1",
+    "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-watch": "^0.6.1"
   }
 }

@@ -1,37 +1,28 @@
 ﻿
-var testMlE = {
-    "Id": 17,
-    "Guid": "{2151c7fa-db22-45b4-b139-db5b91e0b08e}",
-    "Type": "Product",
-    "_TitleField": "Name",
-    "Att": [
-        {
-            k: "Name",
-            vs: [{ v: "Cambucha" }]
-        },
-        { k: "Image", vs: [{ v: "company-logo.jpg" }] },
-        {
-            k: "Intro",
-            vs: [
-                { v: "Try this product", d: { "en-en": "rw", "fr-fr": "r", "it-it": "r" } },
-                { v: "Versuchen Sie das jetzt", d: { "de-de": "rw", "de-ch": "r" } }
-            ]
-        },
-        { k: "Longo", vs: [] } 
-    ]
-};
-
 
 // Note: the entity-reader is meant for admin-purposes. 
 // It does not try to do fallback, because the admin-UI MUST know the real data
 function enhanceEntity(entity) {
     var enhancer = this; 
 
-    // this will enhance a ValueSet with necessary methods
+    enhancer.enhanceWithCount = function (obj) {
+        obj.count = function () {
+            var key, count = 0;
+            for (key in this)
+                if (this.hasOwnProperty(key) && typeof this[key] != 'function')
+                    count++;
+            return count;
+        };
+    }; 
+
+    // this will enhance a Values with necessary methods
     enhancer.enhanceVs = function (vs) {
-        vs.hasLanguage = function (language) { return this.d.hasOwnProperty(language); };
-        vs.setLanguage = function (language, shareMode) { this.d[language] = shareMode; };
-        vs.languageMode = function (language) { return (this.hasLanguage(language)) ? this.d[language] : ""; }
+        vs.hasLanguage = function (language) { return this.Dimensions.hasOwnProperty(language); };
+        vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
+        vs.languageMode = function (language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : ""; }
+
+        if(typeof vs.Dimensions != "undefined")
+            enhancer.enhanceWithCount(vs.Dimensions);
         return vs;
     };
 
@@ -39,85 +30,83 @@ function enhanceEntity(entity) {
     enhancer.enhanceAtt = function (att) {
         att.getVsWithLanguage = function (language) {
             // try to find it based on the language - it then has a property matching the language
-            for (var v = 0; v < this.vs.length; v++)
-                if (this.vs[v].hasLanguage(language))
-                    return this.vs[v];
+            for (var v = 0; v < this.Values.length; v++)
+                if (this.Values[v].hasLanguage(language))
+                    return this.Values[v];
 
             // if we don't find it, we must report it back as such
             return null;
         };
 
-        att.setLanguageToVs = function (valueSet, language, shareMode) {
+        att.setLanguageToVs = function (vs, language, shareMode) {
             // check if it's already there, if yes, just ensure shareMode, then done
-            if (valueSet.hasLanguage(language))
-                return valueSet.setLanguage(language, shareMode);
+            if (vs.hasLanguage(language))
+                return vs.setLanguage(language, shareMode);
 
             // otherwise find the language if it's anywhere else and remove that first; 
             // note that this might delete a value set, so we should only do it after checking if it wasn't already right
             this.removeLanguage(language);
 
             // now set it anew
-            return valueSet.setLanguage(language, shareMode);
+            return vs.setLanguage(language, shareMode);
         };
-
 
         att.removeLanguage = function (language) {
-            var vs = this.getVsWithLanguage(language);
-            if (vs === null)
+            var value = this.getVsWithLanguage(language);
+            if (value === null)
                 return;
-            delete vs.d[language];
+            delete value.Dimensions[language];
 
             // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
-            if (vs.d.length == 0 && this.vs.length > 0)
-                this.removeVs(attribute, vs);
+            //if (value.Dimensions.length == 0 && this.Values.length > 0)
+            if (value.Dimensions.count() == 0 && this.Values.length > 0)
+                this.removeVs(value);
         };
 
-        att.removeVs = function (valueSet) {
-            for (var v = 0; v < this.vs.length; v++)
-                if (this.vs[v] === valueSet)
-                    delete this.vs[v];
+        att.removeVs = function (vs) {
+            for (var v = 0; v < this.Values.length; v++)
+                if (this.Values[v] === vs)
+                    this.Values.splice(v, 1);
         };
 
         // todo: when adding VS - ensure the events are added too...
         att.addVs = function (value, language) {
-            var dimensions = new {};
-            dimensions[language] = "rw";
-            var newVs = { "v": value, "d": dimensions };
-            this.vs.push(enhancer.enhanceVs(newVs));
+            var dimensions = {};
+            dimensions[language] = true;
+            var newVs = { "Value": value, "Dimensions": dimensions };
+            enhancer.enhanceWithCount(newVs.Dimensions);
+            this.Values.push(enhancer.enhanceVs(newVs));
         };
 
-        // Now go through the ValueSets and give them more commands
-        for (var v = 0; v < att.vs.length; v++)
-            enhancer.enhanceVs(att.vs[v]);
+        // Now go through the Values and give them more commands
+        for (var v = 0; v < att.Values.length; v++)
+            enhancer.enhanceVs(att.Values[v]);
 
         return att;
     }
 
     // this will enhance an entity
     enhancer.enhanceEntity = function (ent) {
-
-
         ent.getTitle = function () {
-            ent.getAttribute(e._TitleField);
+            ent.getAttribute(e.TitleAttributeName);
         };
 
         ent.hasAttribute = function (attrName) {
-            for (var c = 0; c < ent.Att.length; c++)
-                if (ent.Att[c].k == attrName)
+            for (var c = 0; c < ent.Attributes.length; c++)
+                if (ent.Attributes[c].Key == attrName)
                     return true;
             return false;
         };
 
         ent.getAttribute = function (attrName) {
-            for (var c = 0; c < ent.Att.length; c++)
-                if (ent.Att[c].k == attrName)
-                    return ent.Att[c];
+            for (var c = 0; c < ent.Attributes.length; c++)
+                if (ent.Attributes[c].Key == attrName)
+                    return ent.Attributes[c];
             return null;
         };
 
-
-        for (var attCount = 0; attCount < ent.Att.length; attCount++)
-            enhancer.enhanceAtt(ent.Att[attCount]);
+        for (var attCount = 0; attCount < ent.Attributes.length; attCount++)
+            enhancer.enhanceAtt(ent.Attributes[attCount]);
 
         return ent;
     }

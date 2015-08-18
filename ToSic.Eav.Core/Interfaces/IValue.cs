@@ -2,15 +2,16 @@
 
 namespace ToSic.Eav
 {
-	/// <summary>
-	/// Represents a Value
-	/// </summary>
-	public interface IValue
-	{
-		/// <summary>
-		/// Gets the Languages assigned to this Value
-		/// </summary>
-		IEnumerable<ILanguage> Languages { get; }
+    /// <summary>
+    /// Represents a Value
+    /// </summary>
+    public interface IValue
+    {
+        /// <summary>
+        /// Gets the Languages assigned to this Value
+        /// </summary>
+        IEnumerable<ILanguage> Languages { get; }
+        string Serialized {get;}
 	}
 
 	/// <summary>

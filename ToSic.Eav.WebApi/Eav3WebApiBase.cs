@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
-	/// <summary>
-	/// Web API Controller for the Pipeline Designer UI
-	/// </summary>
-	public class Eav3WebApiBase : ApiController
+    /// <summary>
+    /// Web API Controller for the Pipeline Designer UI
+    /// </summary>
+    public class Eav3WebApiBase : ApiController
     {
 
         #region Helpers

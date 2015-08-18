@@ -60,6 +60,7 @@
     <Compile Include="AppController.cs" />
     <Compile Include="ContentTypeController.cs" />
     <Compile Include="EntityPickerController.cs" />
+    <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Json\Helpers.cs" />
     <Compile Include="PipelineDesignerController.cs">
@@ -68,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Eav3WebApiBase.cs" />
     <Compile Include="Serializers\Serializer.cs" />
+    <Compile Include="EavContentController.cs" />
     <Compile Include="ZoneController.cs" />
     <Compile Include="WebApi.cs" />
   </ItemGroup>
@@ -98,6 +100,7 @@
     <None Include="packages.config" />
     <None Include="TestFormats\DemoFormats.json" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

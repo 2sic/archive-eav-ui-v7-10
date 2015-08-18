@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.WebApi
 {
 	/// <summary>
-	/// Web API Controller for the Pipeline Designer UI
+	/// Web API Controller for various actions
 	/// </summary>
 	public class WebApi : Eav3WebApiBase
     {
@@ -13,16 +14,22 @@ namespace ToSic.Eav.WebApi
         public WebApi() : base() { }
 
         #region GetOne GetAll calls
-        public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
-	    {
+        internal IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
+        {
             if (appId.HasValue)
                 AppId = appId.Value;
 
             var found = InitialDS.List[id];
-            if (found.Type.Name == contentType)
-                return Serializer.Prepare(found);
-	        throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
+            if (found.Type.Name != contentType)
+                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
+            return found;
+        }
+        public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
+	    {
+            var found = GetEntityOrThrowError(contentType, id, appId);
+            return Serializer.Prepare(found);
 	    }
+
 
         /// <summary>
 		/// Get all Entities of specified Type

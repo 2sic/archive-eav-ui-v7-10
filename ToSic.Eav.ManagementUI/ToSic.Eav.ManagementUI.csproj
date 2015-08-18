@@ -164,6 +164,7 @@
     <Content Include="Pages\PipelineDesigner.aspx" />
     <Content Include="Pages\Permissions.aspx" />
     <Content Include="Pages\PipelineManagement.aspx" />
+    <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-resource.min.js" />
     <Content Include="Scripts\angular-ui-tree.min.css" />

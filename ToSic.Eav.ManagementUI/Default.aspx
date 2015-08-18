@@ -19,6 +19,10 @@
 			<li><a href="Pages/PipelineManagement.aspx?AppId=1">Pipeline Management</a></li>
 			<li><a href="Pages/PipelineDesigner.aspx?AppId=1&PipelineId=347">Pipeline Designer</a></li>
 		</ul>
+        <h1>webservice</h1>
+        <ul>
+            <li><a href="Pages/WebApiQuickTests.html">Test web api</a></li>
+        </ul>
 	</form>
 </body>
 </html>
