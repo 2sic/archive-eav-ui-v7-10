@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
@@ -10,13 +11,13 @@ namespace ToSic.Eav.ManagementUI.API
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
         [HttpGet]
-        public IEnumerable<dynamic> GetAvailableEntities(int zoneId, int appId, int? attributeSetId = null, int? dimensionId = null)
+        public IEnumerable<dynamic> GetAvailableEntities(int zoneId, int appId, string entityType = null, int? dimensionId = null)
         {
             var dimensionIds = (dimensionId.HasValue ? dimensionId : 0).Value;
 
             IContentType contentType = null;
-            if (attributeSetId.HasValue)
-                contentType = DataSource.GetCache(zoneId, appId).GetContentType(attributeSetId.Value);
+            if (!String.IsNullOrEmpty(entityType))
+                contentType = DataSource.GetCache(zoneId, appId).GetContentType(entityType);
 
             var dsrc = DataSource.GetInitialDataSource(zoneId, appId);
             var entities = (from l in dsrc["Default"].List
