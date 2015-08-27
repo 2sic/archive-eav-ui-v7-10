@@ -26,6 +26,10 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
                     .then(svc.updateLiveAll); 
             };
 
+            svc.resetList = function resetList() {
+                        svc._all = [];
+            }
+
             //svc.save = function save(item) {
             //    return $http.post('eav/contenttype/save/', item, { params: { appid: svc.appId } })
             //        .then(svc.getAll);

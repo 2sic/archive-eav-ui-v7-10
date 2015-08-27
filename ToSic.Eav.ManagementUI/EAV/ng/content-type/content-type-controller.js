@@ -1,4 +1,4 @@
-﻿(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
@@ -108,10 +108,11 @@
 
     function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, $modalInstance) {
         var vm = this;
-
+        debugger;
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
         vm.contentType = contentTypeFieldSvc.contentType = contentType;
 
+        contentTypeFieldSvc.resetList();
         vm.items = contentTypeFieldSvc.allLive();
         //vm.ok = function () {
         //    $modalInstance.close(vm.contentType);
