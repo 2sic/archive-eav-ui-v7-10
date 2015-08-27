@@ -1,4 +1,4 @@
-(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+﻿(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
@@ -61,10 +61,15 @@
             contentTypeSvc.getAll();
         }
 
-        vm.create = function create() {
-            alert('todo');
-        }
+        //vm.create = function create() {
+        //    alert('todo');
+        //}
 
+        vm.tryToDelete = function tryToDelete(item) {
+            if (confirm("Delete?")) {
+                contentTypeSvc.delete(item);
+            }
+        }
     };
 
     function ContentTypeEditController(contentTypeSvc, item, $modalInstance) {

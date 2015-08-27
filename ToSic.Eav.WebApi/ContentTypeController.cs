@@ -47,25 +47,22 @@ namespace ToSic.Eav.WebApi
 	    }
 
 	    [HttpDelete]
-	    public bool Delete(int zoneId, int appId, int contentTypeId)
-	    {
-	        return false;
-	    }
-
-	    [HttpPost]
-	    public bool Save(int appId, Dictionary<string, object> item)
+	    public bool Delete(int appId, string staticName)
 	    {
             AppId = appId;
-            CurrentContext.ContentType.AddOrUpdate(item["StaticName"].ToString(), item["Name"].ToString(), item["Description"].ToString(), null, false);
+            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            CurrentContext.ContentType.Delete(staticName);
 	        return true;
 	    }
 
 	    [HttpPost]
-	    public bool CreateShadow(int zoneId, int appId, int sourceAppId, string sourceContentTypeId)
+	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
-	        return false;
+            AppId = appId;
+            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false);
+	        return true;
 	    }
-
 
     }
 }

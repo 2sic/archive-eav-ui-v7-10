@@ -30,8 +30,8 @@ angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
             };
 
             svc.save = function save(item) {
-                alert('saving ' + item.Name);
-                return $http.post('eav/contenttype/save/', item, { params: { appid: svc.appId }});
+                return $http.post('eav/contenttype/save/', item, { params: { appid: svc.appId } })
+                    .then(svc.getAll);
             };
 
         svc.newItem = function newItem() {
@@ -50,8 +50,8 @@ angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
 
 
         
-        svc.delete = function del(guid) {
-            return $http.delete('eav/contenttype/' + guid)
+        svc.delete = function del(item) {
+            return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, staticName: item.StaticName }})
                 .then(svc.getAll);
         };
         

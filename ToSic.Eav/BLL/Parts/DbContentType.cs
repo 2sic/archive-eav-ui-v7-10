@@ -11,47 +11,43 @@ namespace ToSic.Eav.BLL.Parts
 
 
 
-        public void AddOrUpdate(string staticName, string name, string description, int? usesConfigurationOfOtherSet = null, bool alwaysShareConfig = false)
+        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet = null, bool alwaysShareConfig = false)
         {
-            var ct = Context.SqlDb.AttributeSets.FirstOrDefault(a => 
-                a.AppID == Context.AppId && a.StaticName == staticName
-                );
+            var ct = GetAttributeSetByStaticName(staticName);
 
             if (ct == null)
             {
-                Context.SqlDb.AddToAttributeSets(new AttributeSet() {
-                    Name = name,
+                ct = new AttributeSet()
+                {
                     AppID = Context.AppId,
-                    StaticName = staticName,
-                    Description = description,
+                    StaticName = Guid.NewGuid().ToString(),// staticName,
+                    Scope = scope == "" ? null : scope,
                     UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
                     AlwaysShareConfiguration = alwaysShareConfig
-                });
+                };
+                Context.SqlDb.AddToAttributeSets(ct);
             }
-            else
-            {
-                ct.Name = name;
-                ct.Description = description;
-            }
+
+            ct.Name = name;
+            ct.Description = description;
+            ct.ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName);
 
             Context.SqlDb.SaveChanges();
         }
 
-        /// <summary>
-        /// Delete an existing App with any Values and Attributes
-        /// </summary>
-        /// <param name="appId">AppId to delete</param>
-        public void Delete(int appId)
+        private AttributeSet GetAttributeSetByStaticName(string staticName)
         {
-            // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (Context.Versioning.MainChangeLogId == 0)
-                Context.Versioning.GetChangeLogId(Context.UserName);
+            return Context.SqlDb.AttributeSets.FirstOrDefault(a =>
+                a.AppID == Context.AppId && a.StaticName == staticName
+                );
+        }
 
-            // Delete app using StoredProcedure
-            Context.SqlDb.DeleteAppInternal(appId);
+        public void Delete(string staticName)
+        {
+            var setToDelete = GetAttributeSetByStaticName(staticName);
 
-            // Remove App from Global Cache
-            // PurgeGlobalCache(Context.ZoneId, Context.AppId);
+            setToDelete.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId(Context.UserName);
+            Context.SqlDb.SaveChanges();
         }
 
 
