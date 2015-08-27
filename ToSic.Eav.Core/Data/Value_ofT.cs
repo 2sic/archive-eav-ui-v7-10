@@ -28,7 +28,6 @@ namespace ToSic.Eav.Data
                 {
                     var entityGuids = relationshipValue.TypedContents.Select(e => e.EntityGuid);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
                     return string.Join(",", entityGuids);
-                    throw new NotSupportedException("not supported - todo");
                 }
 
                 var boolValue = value as Value<bool?>;

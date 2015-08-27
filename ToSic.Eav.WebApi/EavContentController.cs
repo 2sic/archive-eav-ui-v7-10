@@ -29,15 +29,14 @@ namespace ToSic.Eav.WebApi
                         Guid = found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         TitleAttributeName = found.Title.Name,
-                        Attributes = found.Attributes.Select(a => new Formats.Attribute()
+                        Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                         {
-                            Key = a.Key,
                             Values = a.Value.Values.Select(v => new Formats.ValueSet()
                             {
                                 Value = v.Serialized,
                                 Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
                             }).ToArray()
-                        }).ToArray()
+                        })
                     };
                     return ce;
                 default:
@@ -47,5 +46,7 @@ namespace ToSic.Eav.WebApi
 
 
 
+
     }
+
 }

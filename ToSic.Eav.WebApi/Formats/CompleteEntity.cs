@@ -9,12 +9,12 @@ namespace ToSic.Eav.WebApi.Formats
         public Guid Guid;
         public Type Type;
         public string TitleAttributeName;
-        public Attribute[] Attributes;
+        public Dictionary<string, Attribute> Attributes;
     }
 
     public class Attribute
     {
-        public string Key;
+        // public string Key;
         public ValueSet[] Values;
     }
 

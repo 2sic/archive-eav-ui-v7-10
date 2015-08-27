@@ -1,0 +1,58 @@
+﻿@using System.IO
+@using System.ServiceModel.Dispatcher
+@{
+    Layout = null;
+
+    var ng = Request.QueryString["ng"];
+
+    var path = "/eav/ng/" + ng + "/" + ng + "s.html";
+
+
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        @Html.Raw(File.ReadAllText(Server.MapPath(path)))
+    </div>
+
+    <link rel="stylesheet" href="../CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
+    <script src="../Scripts/jquery-1.9.1.min.js"></script>
+<script src="../Scripts/angular.min.js"></script>
+    <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css"/>
+    <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+    @if (ng == "pipeline")
+    {
+        <script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
+        <script src="../EAV/PipelineDesigner/PipelineService.js"></script>
+    }
+    <script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
+
+
+
+    <xscript src="/DesktopModules/ToSIC_SexyContent/Js/AngularJS/2sxc4ng.min.js" data-enableoptimizations="110"></xscript>
+    <script src="../EAV/AngularServices/eav4Ng.js"></script>
+    <script src="../EAV/AngularServices/eavNgSvcs.js"></script>
+
+    @if (ng == "permission")
+    {
+        <script src="../EAV/Security/PermissionsServices.js"></script>
+        <script src="../EAV/Security/PermissionsController.js"></script>
+    }
+
+    @if (ng == "content-type")
+    {
+        <script src="/EAV/ng/content-type/content-type-controller.js"></script>
+        <script src="/EAV/ng/content-type/content-type-services.js"></script>
+    }
+</body>
+</html>

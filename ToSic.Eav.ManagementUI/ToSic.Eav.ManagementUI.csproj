@@ -111,6 +111,9 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
+    <Content Include="EAV\ng\content-type\content-types.html" />
+    <Content Include="EAV\ng\content-type\content-type-controller.js" />
+    <Content Include="EAV\ng\content-type\content-type-services.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
@@ -228,6 +231,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="package.json" />
+    <Content Include="Pages\ngwrapper.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">
@@ -466,10 +470,6 @@
     <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
-      <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
-      <Name>ToSic.Eav.TokenEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj">
       <Project>{f93f5fb1-95a6-4c4b-bdcf-b001e82f766f}</Project>

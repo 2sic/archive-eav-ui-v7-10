@@ -26,6 +26,7 @@ namespace ToSic.Eav.BLL
         public DbDimensions Dimensions { get; private set; }
         public DbZone Zone { get; private set; }
         public DbApp App { get; private set; }
+        public DbContentType ContentType { get; private set; }
 
         public int _appId;
         internal int _zoneId;
@@ -93,6 +94,7 @@ namespace ToSic.Eav.BLL
             dc.Dimensions = new DbDimensions(dc);
             dc.Zone = new DbZone(dc);
             dc.App = new DbApp(dc);
+            dc.ContentType = new DbContentType(dc);
 
             dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 

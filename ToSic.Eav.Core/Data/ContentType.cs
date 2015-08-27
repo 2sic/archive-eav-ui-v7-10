@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ToSic.Eav.Data
 {
@@ -16,6 +17,9 @@ namespace ToSic.Eav.Data
         /// Static name - can be a GUID or a system-term for special types
         /// </summary>
         public string StaticName { get; set; }
+
+        public string Description { get; set;  }
+
         /// <summary>
         /// Internal Id of the attribute-set of this content-type. Don't worry about this one, you probably won't understand it and that's ok. 
         /// </summary>
@@ -38,11 +42,12 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(string name, string staticName, int attributeSetId, string scope, int? usesConfigurationOfAttributeSet)
+        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet)
         {
             Name = name;
             StaticName = staticName;
             AttributeSetId = attributeSetId;
+            Description = description;
             Scope = scope;
             UsesConfigurationOfAttributeSet = usesConfigurationOfAttributeSet;
         }

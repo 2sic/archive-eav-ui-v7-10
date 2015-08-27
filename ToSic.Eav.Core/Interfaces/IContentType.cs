@@ -13,6 +13,11 @@
 		/// Gets the Static Name of the Content Type
 		/// </summary>
 		string StaticName { get; }
+
+        /// <summary>
+        /// The content-type description
+        /// </summary>
+        string Description { get; }
         /// <summary>
         /// Get the id of the Content Type (AttributeSet)
         /// </summary>

@@ -6,7 +6,7 @@
 // they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
 var $eavUIConfig = {
     urls: {
-        managePermissions: function (appId, targetId) {
+        managePermissions: function(appId, targetId) {
             return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
         }
     }
@@ -72,6 +72,9 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 			},
 			testParameters: null
 		},
-		assignmentObjectTypeIdDataPipeline: 4
+		assignmentObjectTypeIdDataPipeline: 4,
+        contentType: {
+            defaultScope: null
+        }
 	}
 });
