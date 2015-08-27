@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav
+﻿using System.Collections.Generic;
+
+namespace ToSic.Eav
 {
 	/// <summary>
 	/// Represents a Content Type
@@ -22,6 +24,12 @@
         /// Get the id of the Content Type (AttributeSet)
         /// </summary>
         int AttributeSetId { get; }
+
+        /// <summary>
+        /// Dictionary with all Attribute Definitions
+        /// </summary>
+        IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
+
         /// <summary>
         /// Get the scope of the Content Type
         /// </summary>

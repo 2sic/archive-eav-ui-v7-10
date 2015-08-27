@@ -61,8 +61,8 @@ namespace ToSic.Eav.BLL
                 Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.UsesConfigurationOfAttributeSet)
                 {
                     AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
-                            ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
-                            : set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID))
+                            ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID) as IAttributeBase)
+                            : set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID) as IAttributeBase)
                 });
             }
 

@@ -36,7 +36,7 @@ namespace ToSic.Eav.Data
         /// <summary>
 		/// Dictionary with all Attribute Definitions
         /// </summary>
-        public IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
+        public IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
         #endregion
 
         /// <summary>

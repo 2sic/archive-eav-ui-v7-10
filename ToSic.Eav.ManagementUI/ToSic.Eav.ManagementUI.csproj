@@ -111,7 +111,9 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
-    <Content Include="EAV\ng\content-type\content-types.html" />
+    <Content Include="EAV\ng\content-type\content-type-fields.html" />
+    <Content Include="EAV\ng\content-type\content-type-field-services.js" />
+    <Content Include="EAV\ng\content-type\content-type.html" />
     <Content Include="EAV\ng\content-type\content-type-controller.js" />
     <Content Include="EAV\ng\content-type\content-type-services.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />

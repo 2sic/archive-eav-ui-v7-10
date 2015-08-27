@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.Persistence;
 
@@ -23,8 +25,8 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false)
         {
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var ds = DataSource.GetInitialDataSource(appId: appId).Cache as DataSources.Caches.BaseCache;
-            var allTypes = ds.GetContentTypes().Select(t => t.Value);
+            var cache = DataSource.GetCache(null, appId) as BaseCache; // DataSource.GetInitialDataSource(appId: appId).Cache as DataSources.Caches.BaseCache;
+            var allTypes = cache.GetContentTypes().Select(t => t.Value);
 
             var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => new {
                 t.Name,
@@ -33,8 +35,8 @@ namespace ToSic.Eav.WebApi
                 t.Description,
                 DefinitionSet = t.UsesConfigurationOfAttributeSet,
                 Ghost = t.UsesConfigurationOfAttributeSet == null,
-                Items = ds.LightList.Count(i => i.Type == t),
-                Fields = t.AttributeSetId
+                Items = cache.LightList.Count(i => i.Type == t),
+                Fields = (t as ContentType).AttributeDefinitions.Count //t.AttributeSetId
             });
 
             return filteredType;
@@ -63,6 +65,16 @@ namespace ToSic.Eav.WebApi
             CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false);
 	        return true;
 	    }
+
+        /// <summary>
+        /// Returns the configuration for a content type
+        /// </summary>
+        [HttpGet]
+        public IEnumerable<dynamic> GetFields(int appId, string staticName)
+        {
+            AppId = appId;
+            return CurrentContext.ContentType.GetContentTypeConfiguration(staticName);
+        }
 
     }
 }

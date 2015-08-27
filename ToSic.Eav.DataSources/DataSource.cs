@@ -137,7 +137,7 @@ namespace ToSic.Eav
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
 		/// <returns>A new ICache</returns>
-		public static ICache GetCache(int zoneId, int? appId = null)
+		public static ICache GetCache(int? zoneId, int? appId = null)
 		{
 			return (ICache)GetDataSource("ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", zoneId, appId);
 		}

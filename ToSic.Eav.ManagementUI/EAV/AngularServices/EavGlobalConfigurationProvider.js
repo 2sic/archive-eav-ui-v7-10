@@ -73,6 +73,8 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 			testParameters: null
 		},
 		assignmentObjectTypeIdDataPipeline: 4,
+
+        // now
         contentType: {
             defaultScope: null
         }

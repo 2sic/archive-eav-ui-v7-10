@@ -46,9 +46,9 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
                 case 'new':
                     return eavConf.itemForm.getNewItemUrl(svc.ctId, svc.EntityAssignment, { keyGuid: svc.PermissionTargetGuid }, false);
                 case 'edit':
-                    return eavGlobalConfigurationProvider.itemForm.getEditItemUrl(id, undefined, true);
+                    return eavConf.itemForm.getEditItemUrl(id, undefined, true);
                 case 'design':
-                    return eavGlobalConfigurationProvider.pipelineDesigner.getUrl(appId, id);
+                    return eavConf.pipelineDesigner.getUrl(appId, id);
                 default:
                     return null;
             }

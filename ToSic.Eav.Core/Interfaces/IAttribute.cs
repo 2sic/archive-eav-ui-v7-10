@@ -15,12 +15,18 @@ namespace ToSic.Eav
 		/// Type of the Attribute
 		/// </summary>
 		string Type { get; }
-	}
 
-	/// <summary>
-	/// Represents an Attribute with Values
-	/// </summary>
-	public interface IAttribute : IAttributeBase
+        bool IsTitle { get; }
+
+        // additional info for the persistence layer
+        int AttributeId { get; }
+
+    }
+
+    /// <summary>
+    /// Represents an Attribute with Values
+    /// </summary>
+    public interface IAttribute : IAttributeBase
 	{
 		/// <summary>
 		/// Gets a IEnumerable of all Values of this Entity's Attribute

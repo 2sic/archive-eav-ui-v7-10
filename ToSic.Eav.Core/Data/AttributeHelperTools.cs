@@ -56,7 +56,7 @@ namespace ToSic.Eav.Data
         /// Get Attribute for specified Typ
         /// </summary>
 		/// <returns><see cref="Attribute{ValueType}"/></returns>
-        public static IAttributeManagement GetAttributeManagementModel(AttributeBase definition)
+        public static IAttributeManagement GetAttributeManagementModel(IAttributeBase definition)
         {
             switch (definition.Type)
             {
