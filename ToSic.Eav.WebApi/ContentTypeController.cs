@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Http;
-using Microsoft.Practices.Unity;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Serializers;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -18,14 +13,12 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class ContentTypeController : Eav3WebApiBase
     {
-
-        // todo: commands I'll need
-
+        #region Content-Type Get, Delete, Save
         [HttpGet]
 	    public IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false)
         {
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = DataSource.GetCache(null, appId) as BaseCache; // DataSource.GetInitialDataSource(appId: appId).Cache as DataSources.Caches.BaseCache;
+            var cache = DataSource.GetCache(null, appId) as BaseCache;
             var allTypes = cache.GetContentTypes().Select(t => t.Value);
 
             var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => new {
@@ -37,7 +30,7 @@ namespace ToSic.Eav.WebApi
                 DefinitionSet = t.UsesConfigurationOfAttributeSet,
                 Ghost = t.UsesConfigurationOfAttributeSet == null,
                 Items = cache.LightList.Count(i => i.Type == t),
-                Fields = (t as ContentType).AttributeDefinitions.Count //t.AttributeSetId
+                Fields = (t as ContentType).AttributeDefinitions.Count 
             });
 
             return filteredType;
@@ -52,8 +45,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpDelete]
 	    public bool Delete(int appId, string staticName)
 	    {
-            AppId = appId;
-            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            SetAppIdAndUser(appId);
             CurrentContext.ContentType.Delete(staticName);
 	        return true;
 	    }
@@ -61,30 +53,61 @@ namespace ToSic.Eav.WebApi
 	    [HttpPost]
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
-            AppId = appId;
-            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            SetAppIdAndUser(appId);
             CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false);
 	        return true;
 	    }
+        #endregion
 
+        #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
         [HttpGet]
         public IEnumerable<dynamic> GetFields(int appId, string staticName)
         {
-            AppId = appId;
+            SetAppIdAndUser(appId);
             return CurrentContext.ContentType.GetContentTypeConfiguration(staticName);
         }
 
         [HttpGet]
         public bool Reorder(int appId, int contentTypeId, int attributeId, string direction)
         {
-            AppId = appId;
-            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            SetAppIdAndUser(appId);
             CurrentContext.ContentType.Reorder(contentTypeId, attributeId, direction);
             return true;
         }
 
+	    [HttpGet]
+	    public string[] DataTypes(int appId)
+	    {
+            SetAppIdAndUser(appId);
+	        return CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
+	    }
+
+        [HttpGet]
+	    public int AddField(int appId, int contentTypeId, string staticName, string type, int sortOrder)
+	    {
+            SetAppIdAndUser(appId);
+	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, sortOrder, 1, false, true).AttributeID;
+	        throw new HttpUnhandledException();
+	    }
+
+        [HttpDelete]
+	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
+	    {
+            SetAppIdAndUser(appId);
+            // todo: add security check if it really is in this app and content-type
+            return CurrentContext.Attributes.RemoveAttribute(attributeId);
+	    }
+
+        [HttpGet]
+	    public void SetTitle(int appId, int contentTypeId, int attributeId)
+	    {
+            SetAppIdAndUser(appId);
+            CurrentContext.Attributes.SetTitleAttribute(attributeId, contentTypeId);
+	    }
+
+        #endregion
     }
 }

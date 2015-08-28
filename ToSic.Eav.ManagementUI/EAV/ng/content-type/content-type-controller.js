@@ -115,19 +115,6 @@
         };
     }
 
-    function ContentTypeFieldEditController(contentTypeFieldSvc, item, $modalInstance) {
-        var vm = this;
-
-        vm.item = item;
-
-        vm.ok = function () {
-            $modalInstance.close(vm.item);
-        };
-
-        vm.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
-    }
 
     function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, $modalInstance, $modal) {
         var vm = this;
@@ -139,22 +126,22 @@
         vm.items = contentTypeFieldSvc.liveList();
 
         vm.add = function add() {
-            var item = contentTypeFieldSvc.newItem();
+            //var item = contentTypeFieldSvc.newItem();
             modalInstance = $modal.open({
                 animation: true,
                 templateUrl: 'content-type-field-edit.html',
                 controller: 'FieldEdit',
                 controllerAs: 'vm',
-                size: 'sm',
-                resolve: {
-                    item: function () {
-                        return item;
-                    }
-                }
+                size: 'sm'
             });
 
-            modalInstance.result.then(function (item) {
-                // contentTypeSvc.save(item);
+            modalInstance.result.then(function (items) {
+                // contentTypeFieldSvc.add(item);
+                var newList = [];
+                for (var c = 0; c < items.length; c++)
+                    if (items[c].StaticName)
+                        newList.push(items[c]);
+                contentTypeFieldSvc.addMany(newList, 0);
             });
 
         }
@@ -169,6 +156,35 @@
         vm.moveUp = contentTypeFieldSvc.moveUp;
         vm.moveDown = contentTypeFieldSvc.moveDown;
 
+        vm.tryToDelete = function tryToDelete(item) {
+            if (item.IsTitle)
+                return alert("Can't delete Title");
+            if (confirm("Delete?")) {
+                contentTypeFieldSvc.delete(item);
+            }
+        }
 
+        vm.setTitle = contentTypeFieldSvc.setTitle;
+
+
+    }
+
+    function ContentTypeFieldEditController(contentTypeFieldSvc, $modalInstance) {
+        var vm = this;
+
+        // todo: maybe do multiple?
+        var nw = contentTypeFieldSvc.newItem;
+        vm.items = [ nw(), nw(), nw(), nw(), nw() ]; // prepare 5
+
+        vm.item = contentTypeFieldSvc.newItem();
+        vm.types = contentTypeFieldSvc.types.liveList();
+
+        vm.ok = function () {
+            $modalInstance.close(vm.items);
+        };
+
+        vm.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
     }
 }());

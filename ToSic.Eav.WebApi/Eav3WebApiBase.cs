@@ -82,7 +82,11 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
-
+        public void SetAppIdAndUser(int appId)
+        {
+            _appId = appId;
+            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+        }
 
 
     }

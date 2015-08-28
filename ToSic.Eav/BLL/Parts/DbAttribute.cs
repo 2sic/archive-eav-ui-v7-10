@@ -210,5 +210,17 @@ namespace ToSic.Eav.BLL.Parts
 
             return Context.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }
+
+
+        public bool RemoveAttribute(int attributeId)
+        {
+            var attr = Context.SqlDb.Attributes.Where(a => a.AttributeID == attributeId).FirstOrDefault();
+
+            if (attr != null)
+                Context.SqlDb.Attributes.DeleteObject(attr);
+
+            Context.SqlDb.SaveChanges();
+            return true;
+        }
     }
 }

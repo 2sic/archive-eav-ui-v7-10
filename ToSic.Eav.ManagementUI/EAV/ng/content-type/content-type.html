@@ -9,7 +9,7 @@
         </button>
 
         <!-- Table of content types for editing -->
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
             <thead>
             <tr>
                 <th>Name</th>
@@ -49,6 +49,11 @@
         </button>
 
 
+
+
+
+
+
         <!-- Sub-Dialog for new / edit -->
         <script type="text/ng-template" id="content-type-edit.html">
             <div class="modal-header">
@@ -70,19 +75,29 @@
         </script>
 
 
+
+
+
+
+
         <!-- Sub-Dialog for field list -->
         <script type="text/ng-template" id="content-type-fields.html">
             <div class="modal-header">
                 <h3 class="modal-title">Content Type Fields</h3>
             </div>
             <div class="modal-body">
+                <h2>todo</h2>
+                <ol>
+                    <li>description and local-title missing</li>
+                    <li>edit of general/specific-type</li>
+                </ol>
                 <!-- Buttons on top -->
                 <a ng-click="vm.add()" class="btn btn-default">
                     <span class="glyphicon glyphicon-plus"></span> New
                 </a>
 
                 <!-- Table of content types for editing -->
-                <table class="table table-striped table-hover">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Static Name</th>
@@ -109,7 +124,11 @@
                             </td> 
                             <td>-</td>
                             <td>{{item.Notes}}</td>
-                            <td>{{item.IsTitle}}</td>
+                            <td>
+                                <button type="button" class="btn btn-xs" xng-class="{'btn-success': item.IsTitle }" ng-click="vm.setTitle(item)">
+                                    <span class="glyphicon" ng-class="{ 'glyphicon-star': item.IsTitle, 'glyphicon-star-empty': !item.IsTitle}" ng-style="(item.IsTitle ? '' : 'color: transparent !important')" ></span>
+                                </button>
+                            </td>
                             <td>
                                 <button type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)">
                                     <span class="glyphicon glyphicon-arrow-up"></span>
@@ -136,19 +155,30 @@
                 <button class="btn btn-primary" type="button" ng-click="vm.close()">OK</button>
             </div>
             
+            
+
             <!-- Sub-Dialog for new field / edit field -->
             <script type="text/ng-template" id="content-type-field-edit.html">
                 <div class="modal-header">
-                    <h3 class="modal-title">Add Field</h3>
+                    <h3 class="modal-title">Add Fields</h3>
                 </div>
                 <div class="modal-body">
-                    Name: <br />
-                    <input ng-model="vm.item.StaticName" />
-                    <br />
-                    Type (todo: drop-down): <br />
-                    <input ng-model="vm.item.Type" /><br />
-                    <!-- Input Type (todo - pending): <br />
-                    drop down -->
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Data Type</th>
+                                <!-- <th>Input Type</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in vm.items">
+                                <td><input ng-model="item.StaticName" ng-required="true" /></td>
+                                <td><select ng-model="item.Type" ng-options="o for o in vm.types track by o"></select></td>
+                                <!-- <td></td> -->
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="button" ng-click="vm.ok()">OK</button>
