@@ -77,9 +77,23 @@ namespace ToSic.Eav.BLL.Parts
                 StaticName = a.Value.Name,
                 a.Value.IsTitle,
                 a.Value.AttributeId,
-                MetaData = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
-                    .SelectMany(e => e.Attributes)
-                    .ToDictionary(ax => ax.Key, ax => ax.Value)
+
+                Metadata = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
+                    .ToDictionary(e => e.Type.StaticName,
+                        e => new {
+                            e.EntityId,
+                            e.EntityGuid,
+                            TypeName = e.Type.StaticName,
+                            e.AssignmentObjectTypeId,
+                            Attributes = e.Attributes.ToDictionary(ax => ax.Key, ax => ax.Value)
+                    })
+
+
+                //MetaData = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
+                //    .SelectMany(e => e.Attributes)
+                //    .ToDictionary(ax => ax.Key, ax => ax.Value)
+
+
                 // GetAttributeMetaData(a.Value.AttributeId, metaDataZoneId, metaDataAppId).ToDictionary(v => v.Key, e => e.Value[0])
             });
 

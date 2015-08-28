@@ -4,9 +4,9 @@
         <a ng-click="vm.edit()" class="btn btn-default">
             <span class="glyphicon glyphicon-plus"></span> New
         </a>
-        <button type="button" class="btn btn-default" ng-click="vm.refresh()">
+        <!--<button type="button" class="btn btn-default" ng-click="vm.refresh()">
             <span class="glyphicon glyphicon-repeat"></span> Refresh
-        </button>
+        </button>-->
 
         <!-- Table of content types for editing -->
         <table class="table table-hover">
@@ -26,7 +26,7 @@
                 <td><a ng-click="vm.editFields(item)">{{item.Fields}}</a></td>
                 <td>{{item.Items}}</td>
                 <td>
-                    <button type="button" class="btn btn-xs" ng-click="vm.goTo('permissions', item)">
+                    <button type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
                         <span class="glyphicon glyphicon-user"></span> Permissions
                     </button>&nbsp;<button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
                         <span class="glyphicon glyphicon-remove"></span>
@@ -113,12 +113,12 @@
                     <tbody>
                         <tr ng-repeat="item in vm.items | orderBy: 'SortOrder'">
                             <td>{{item.StaticName}}</td>
-                            <td>{{item.Title}}</td>
+                            <td>{{item.Metadata['@All'].Title}}</td>
                             <td>
-                                <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, 'All')">
                                     <span class="glyphicon glyphicon-pencil"></span>General
                                 </button>
-                                <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)">
                                     <span class="glyphicon glyphicon-pencil"></span>{{item.Type}}
                                 </button>
                             </td> 

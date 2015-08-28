@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('licence', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -11,7 +11,7 @@
 
 
 
-    function ContentTypeListController(contentTypeSvc, $modal, $location) {
+    function ContentTypeListController(contentTypeSvc, $modal, $location, eavGlobalConfigurationProvider) {
         var vm = this;
 
         contentTypeSvc.appId = $location.search().appid;
@@ -81,14 +81,20 @@
             }
         }
 
-        vm.goTo = function goTo(target, item) {
-            switch(target) {
-                case 'permissions':
-                    alert('todo');
-                default:
-                    alert("can't find target");
-            }
+        vm.isGuid = function isGuid(txtToTest) {
+            var patt = new RegExp(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i);
+            return patt.test(txtToTest); // note: can't use the txtToTest.match because it causes infinite digest cycles
         }
+
+        vm.permissions = function permissions(item) {
+            if (!vm.isGuid(item.StaticName))
+                return (alert('Permissions can only be set to Content-Types with Guid Identifiers'));
+            window.open(
+                eavGlobalConfigurationProvider.adminUrls.managePermissions(contentTypeSvc.appId, item.StaticName)
+            );
+        }
+
+
 
         vm.getUrl = function (mode, id) {
             alert('not implemented yet - should change dialog...');
@@ -116,7 +122,7 @@
     }
 
 
-    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, $modalInstance, $modal) {
+    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, $modalInstance, $modal) {
         var vm = this;
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
@@ -145,9 +151,7 @@
             });
 
         }
-        //vm.ok = function () {
-        //    $modalInstance.close(vm.contentType);
-        //};
+
 
         vm.close = function () {
             $modalInstance.dismiss('cancel');
@@ -166,6 +170,27 @@
 
         vm.setTitle = contentTypeFieldSvc.setTitle;
 
+        vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
+            // todo: first, check if this metadata exists - to decide if new or edit
+
+            metadataType = '@' + metadataType;
+            // this is just demo-code...
+            var exists = item.Metadata[metadataType] != null;
+
+            if (!exists)
+                window.open(vm.newUrl(item, metadataType))
+            else
+                window.open(vm.editUrl(item.Metadata[metadataType].id));
+        }
+
+        vm.newUrl = function newUrl(metadataType, item) {
+            return eavGlobalConfigurationProvider.itemForm
+                .getNewItemUrl('@' + metadataType, eavGlobalConfigurationProvider.metadataOfAttribute, { keyid: item.Id }, false);
+        }
+        vm.editUrl = function editUrl(id) {
+            return eavGlobalConfigurationProvider.itemForm
+                .getEditItemUrl(id, undefined, true);
+        }
 
     }
 

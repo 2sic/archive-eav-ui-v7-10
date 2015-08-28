@@ -69,9 +69,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Eav3WebApiBase.cs" />
     <Compile Include="Serializers\Serializer.cs" />
-    <Compile Include="EavContentController.cs" />
+    <Compile Include="MetadataController.cs" />
+    <Compile Include="EntitiesController.cs" />
     <Compile Include="ZoneController.cs" />
-    <Compile Include="WebApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

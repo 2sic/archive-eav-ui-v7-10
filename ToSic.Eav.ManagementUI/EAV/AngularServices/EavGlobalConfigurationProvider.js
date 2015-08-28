@@ -7,13 +7,15 @@
 var $eavUIConfig = {
     urls: {
         managePermissions: function(appId, targetId) {
-            return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
+            // return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
+            return "/pages/ngwrapper.cshtml?ng=permissions&appId=" + appId + "&Target=" + targetId;
         }
     }
 };
 
-if(angular) // needs if(angular) because the file is also included in older non-angulare dialogs
-angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigurationProvider', function ($location) {
+if(angular) // always check if(angular) because this file is also included in older non-angulare dialogs
+    angular.module('eavGlobalConfigurationProvider', [])
+        .factory('eavGlobalConfigurationProvider', function ($location) {
 
 	var getItemFormUrl = function (mode, params, preventRedirect) {
 		params.ManagementMode = mode + 'Item';
@@ -72,11 +74,13 @@ angular.module('eavGlobalConfigurationProvider', []).factory('eavGlobalConfigura
 			},
 			testParameters: null
 		},
-		assignmentObjectTypeIdDataPipeline: 4,
+		metadataOfEntity: 4,
+        metadataOfAttribute: 2,
+		assignmentObjectTypeIdDataPipeline: 4, // deprecated, don't use any more, will be removed in 2016
 
-        // now
+        // new
         contentType: {
-            defaultScope: null
+            defaultScope: null //todo: must change this for 2sxc
         }
 	}
 });

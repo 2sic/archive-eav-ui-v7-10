@@ -4,14 +4,14 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
             var svc = {};
             svc.appId = 0;
             svc.contentType = null;
-            svc.liveListRetrieve = function liveListRetrieve() {
-                return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
-            }
+
             svc.typeListRetrieve = function typeListRetrieve() {
                 return $http.get('eav/contenttype/datatypes/', { params: { "appid": svc.appId } });
             };
 
-            var svc = angular.extend(svc, svcCreator.implementLiveList(svc.liveListRetrieve));
+            svc = angular.extend(svc, svcCreator.implementLiveList(function liveListRetrieve() {
+                return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
+            }));
             
             svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
 

@@ -11,7 +11,8 @@ angular.module('eavNgSvcs', ['ng'])
     /// Provide state-information related to the current open dialog
     .factory('eavManagementDialog', function($location){
         var result = {};
-        result.appId = $location.search().AppId;
+        var srch = $location.search();
+        result.appId = srch.AppId || srch.appId || srch.appid;
         return result;
     })
 
@@ -21,12 +22,12 @@ angular.module('eavNgSvcs', ['ng'])
 
         // Retrieve extra content-type info
         svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
-            return $http.get('eav/Entities/GetContentType', { params: { appId: eavManagementDialog.appId, contentType: contentTypeName} });
+            return $http.get('eav/contenttype/get', { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
         }
 
         // Find all items assigned to a GUID
         svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
-            return $http.get('eav/entities/GetAssignedEntities', { params: {
+            return $http.get('eav/metadata/getassignedentities', { params: {
                 appId: eavManagementDialog.appId,
                 assignmentObjectTypeId: assignedToId,
                 keyGuid: keyGuid,
@@ -37,14 +38,16 @@ angular.module('eavNgSvcs', ['ng'])
         return svc;
     })
 
+    // This is a helper-factory to create services which manage one live list
+    // check examples with the permissions-service or the content-type-service how we use it
     .factory('svcCreator', function() {
         var creator = {};
 
         // construct a object which has liveListCache, liveListReload(), liveListReset(),  
         creator.implementLiveList = function(getLiveList) {
             var t = {};
-            // Cached list
-            t.liveListCache = [];
+
+            t.liveListCache = [];                   // this is the cached list
             t.liveList = function getAllLive() {
                 if (t.liveListCache.length == 0)
                     t.liveListReload();
@@ -82,12 +85,12 @@ angular.module('eavNgSvcs', ['ng'])
 
         svc.get = function get(contentType, id) {
             return id 
-                ? $http.get("eav/entities/GetOne", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId }})
-                : $http.get("eav/entities/GetEntities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
+                ? $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId }})
+                : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
         };
 
         svc.delete = function del(type, id) {
-            return $http.delete('eav/Entities/Delete', { params: { 
+            return $http.delete('eav/entities/delete', { params: { 
             'contentType': type, 
             'id': id,
             'appId': eavManagementDialog.appId }});

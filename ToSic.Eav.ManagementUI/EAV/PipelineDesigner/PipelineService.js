@@ -159,7 +159,7 @@ angular.module('pipelineService', [])
 		getPipelineUrl: function (mode, id) {
 			switch (mode) {
 				case 'new':
-					return eavGlobalConfigurationProvider.itemForm.getNewItemUrl(dataPipelineAttributeSetId, eavGlobalConfigurationProvider.assignmentObjectTypeIdDataPipeline, {}, false, { TestParameters: eavGlobalConfigurationProvider.pipelineDesigner.testParameters });
+				    return eavGlobalConfigurationProvider.itemForm.getNewItemUrl(dataPipelineAttributeSetId, eavGlobalConfigurationProvider.metadataOfEntity, {}, false, { TestParameters: eavGlobalConfigurationProvider.pipelineDesigner.testParameters });
 				case 'edit':
 					return eavGlobalConfigurationProvider.itemForm.getEditItemUrl(id, undefined, true);
 				case 'design':

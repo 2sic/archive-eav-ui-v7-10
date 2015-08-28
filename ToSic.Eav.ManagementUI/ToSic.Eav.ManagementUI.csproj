@@ -120,9 +120,9 @@
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
     <Content Include="EAV\AngularServices\eavNgSvcs.js" />
-    <Content Include="EAV\Security\Permissions.ascx" />
-    <Content Include="EAV\Security\PermissionsController.js" />
-    <Content Include="EAV\Security\PermissionsServices.js" />
+    <Content Include="EAV\ng\permissions\permissions.html" />
+    <Content Include="EAV\ng\permissions\permissions-controller.js" />
+    <Content Include="EAV\ng\permissions\permissions-services.js" />
     <Content Include="gruntfile.js" />
     <Content Include="Pages\ContentTypes.aspx" />
     <Content Include="CSS\bootstrap-theme.min.css" />
@@ -167,7 +167,6 @@
     <Content Include="EAV\PipelineDesigner\PipelineService.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\PipelineDesigner.aspx" />
-    <Content Include="Pages\Permissions.aspx" />
     <Content Include="Pages\PipelineManagement.aspx" />
     <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="Scripts\angular-animate.min.js" />

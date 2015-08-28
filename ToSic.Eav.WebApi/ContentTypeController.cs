@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -39,8 +38,11 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public dynamic Get(int appId, string contentTypeId, string scope = null)
 	    {
-            return new { Id = 17, Guid = "...", Name = "Some ContentType" };
-	    }
+            SetAppIdAndUser(appId);
+            // var source = InitialDS;
+            var cache = DataSource.GetCache(null, appId);
+            return cache.GetContentType(contentTypeId);
+        }
 
 	    [HttpDelete]
 	    public bool Delete(int appId, string staticName)

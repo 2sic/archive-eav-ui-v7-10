@@ -8,10 +8,10 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for various actions
 	/// </summary>
-	public class WebApi : Eav3WebApiBase
+	public class EntitiesController : Eav3WebApiBase
     {
-        public WebApi(int appId) : base(appId) { }
-        public WebApi() : base() { }
+        public EntitiesController(int appId) : base(appId) { }
+        public EntitiesController() : base() { }
 
         #region GetOne GetAll calls
         internal IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
@@ -24,6 +24,7 @@ namespace ToSic.Eav.WebApi
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
         }
+
         public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
 	    {
             var found = GetEntityOrThrowError(contentType, id, appId);
@@ -45,22 +46,47 @@ namespace ToSic.Eav.WebApi
 
             return Serializer.Prepare(typeFilter.LightList);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
 		}
+
+        public Formats.EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
+        {
+            switch (format)
+            {
+                case "multi-language":
+                    var found = GetEntityOrThrowError(contentType, id, appId);
+                    Formats.EntityWithLanguages ce = new Formats.EntityWithLanguages()
+                    {
+                        Id = found.EntityId,
+                        Guid = found.EntityGuid,
+                        Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
+                        TitleAttributeName = found.Title.Name,
+                        Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
+                        {
+                            Values = a.Value.Values.Select(v => new Formats.ValueSet()
+                            {
+                                Value = v.Serialized,
+                                Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
+                            }).ToArray()
+                        })
+                    };
+                    return ce;
+                default:
+                    throw new Exception("format: " + format + " unknown");
+            }
+        }
+
         #endregion
 
-        #region Todo: Create / Edit Calls
-
-        #endregion
 
         #region Delete calls
 
-	    /// <summary>
-	    /// Delete the entity specified by ID.
-	    /// </summary>
-	    /// <param name="contentType"></param>
-	    /// <param name="id">Entity ID</param>
-	    /// <param name="appId"></param>
-	    /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-	    public void Delete(string contentType, int id, int? appId = null)
+        /// <summary>
+        /// Delete the entity specified by ID.
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <param name="id">Entity ID</param>
+        /// <param name="appId"></param>
+        /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
+        public void Delete(string contentType, int id, int? appId = null)
 	    {
 	        if (appId.HasValue)
 	            AppId = appId.Value;
@@ -89,62 +115,8 @@ namespace ToSic.Eav.WebApi
             Delete(contentType, entity.EntityID);
         }
 
-        #endregion
-
-        #region AssignedEntities - these are entities which have been assigned to something else
-        /// <summary>
-		/// Get Entities with specified AssignmentObjectTypeId and Key
-		/// </summary>
-		public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, Guid keyGuid, string contentType, int? appId = null)
-		{
-            if (appId.HasValue)
-                AppId = appId.Value;
-            var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyGuid, contentType);
-		    return Serializer.Prepare(entityList);
-		}
-
-		/// <summary>
-		/// Get Entities with specified AssignmentObjectTypeId and Key
-		/// </summary>
-		public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyString, string contentType, int? appId = null)
-		{
-            if (appId.HasValue)
-                AppId = appId.Value; 
-            var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyString, contentType);
-		    return Serializer.Prepare(entityList);
-		}
-        #endregion
-
-
-        #region Content Type Information
-        /// <summary>
-		/// Get a ContentType by Name
-		/// </summary>
-		public IContentType GetContentType(string contentType, int? appId = null, bool detailed = false)
-        {
-            if (appId.HasValue)
-                AppId = appId.Value;
-
-            var source = InitialDS;
-			var cache = DataSource.GetCache(source.ZoneId, appId);
-			var result = cache.GetContentType(contentType);
-
-            // todo: implement abilty to deliver detailled infos
-
-            return result;
-		}
-
-        // Todo
-	    public List<IContentType> GetAllContentTypes(int? appId = null)
-	    {
-            if (appId.HasValue)
-                AppId = appId.Value;
-
-	        var source = InitialDS;
-	        var cache = DataSource.GetCache(source.ZoneId, appId);
-            throw new NotImplementedException("getcontentypes not implemented yet");
-	    }
 
         #endregion
+        
     }
 }
