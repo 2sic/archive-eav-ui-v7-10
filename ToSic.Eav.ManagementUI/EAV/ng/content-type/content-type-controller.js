@@ -6,6 +6,7 @@
         .controller("List", ContentTypeListController)
         .controller("Edit", ContentTypeEditController)
         .controller("FieldList", ContentTypeFieldListController)
+        .controller("FieldEdit", ContentTypeFieldEditController)
     ;
 
 
@@ -15,7 +16,7 @@
 
         contentTypeSvc.appId = $location.search().appid;
 
-        vm.items = contentTypeSvc.allLive();
+        vm.items = contentTypeSvc.liveList();
 
         vm.tryToDelete = function tryToDelete(title, entityId) {
             var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
@@ -46,7 +47,7 @@
         };
 
         vm.editFields = function editFields(item) {
-            // debugger;
+
             if (item === undefined)
                 return;
 
@@ -71,12 +72,21 @@
         
 
         vm.refresh = function refresh() {
-            contentTypeSvc.getAll();
+            contentTypeSvc.liveListReload();
         }
 
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete?")) {
                 contentTypeSvc.delete(item);
+            }
+        }
+
+        vm.goTo = function goTo(target, item) {
+            switch(target) {
+                case 'permissions':
+                    alert('todo');
+                default:
+                    alert("can't find target");
             }
         }
 
@@ -105,15 +115,49 @@
         };
     }
 
-
-    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, $modalInstance) {
+    function ContentTypeFieldEditController(contentTypeFieldSvc, item, $modalInstance) {
         var vm = this;
-        debugger;
+
+        vm.item = item;
+
+        vm.ok = function () {
+            $modalInstance.close(vm.item);
+        };
+
+        vm.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }
+
+    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, $modalInstance, $modal) {
+        var vm = this;
+
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
         vm.contentType = contentTypeFieldSvc.contentType = contentType;
 
-        contentTypeFieldSvc.resetList();
-        vm.items = contentTypeFieldSvc.allLive();
+        contentTypeFieldSvc.liveListReset();
+        vm.items = contentTypeFieldSvc.liveList();
+
+        vm.add = function add() {
+            var item = contentTypeFieldSvc.newItem();
+            modalInstance = $modal.open({
+                animation: true,
+                templateUrl: 'content-type-field-edit.html',
+                controller: 'FieldEdit',
+                controllerAs: 'vm',
+                size: 'sm',
+                resolve: {
+                    item: function () {
+                        return item;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (item) {
+                // contentTypeSvc.save(item);
+            });
+
+        }
         //vm.ok = function () {
         //    $modalInstance.close(vm.contentType);
         //};
@@ -121,6 +165,10 @@
         vm.close = function () {
             $modalInstance.dismiss('cancel');
         };
+
+        vm.moveUp = contentTypeFieldSvc.moveUp;
+        vm.moveDown = contentTypeFieldSvc.moveDown;
+
 
     }
 }());

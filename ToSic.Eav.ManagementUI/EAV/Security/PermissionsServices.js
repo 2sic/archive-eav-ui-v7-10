@@ -11,7 +11,7 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
         svc._all = [];
         svc.allLive = function getAllLive(){
             if(svc._all.length == 0)
-                svc.getAll();
+                svc.liveListReload();
             return svc._all;
         }
 
@@ -23,7 +23,7 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
             return result;
         }
 
-        svc.getAll = function getAll() {
+        svc.liveListReload = function getAll() {
             return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
         };
 
@@ -36,7 +36,7 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
         
         svc.delete = function del(id) {
             return entitiesSvc.delete(svc.ctName, id)
-                .then(svc.getAll);
+                .then(svc.liveListReload);
         };
         
         

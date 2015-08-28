@@ -29,6 +29,7 @@ namespace ToSic.Eav.WebApi
             var allTypes = cache.GetContentTypes().Select(t => t.Value);
 
             var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => new {
+                Id = t.AttributeSetId,
                 t.Name,
                 t.StaticName,
                 t.Scope,
@@ -74,6 +75,15 @@ namespace ToSic.Eav.WebApi
         {
             AppId = appId;
             return CurrentContext.ContentType.GetContentTypeConfiguration(staticName);
+        }
+
+        [HttpGet]
+        public bool Reorder(int appId, int contentTypeId, int attributeId, string direction)
+        {
+            AppId = appId;
+            CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
+            CurrentContext.ContentType.Reorder(contentTypeId, attributeId, direction);
+            return true;
         }
 
     }

@@ -37,6 +37,44 @@ angular.module('eavNgSvcs', ['ng'])
         return svc;
     })
 
+    .factory('svcCreator', function() {
+        var creator = {};
+
+        // construct a object which has liveListCache, liveListReload(), liveListReset(),  
+        creator.implementLiveList = function(getLiveList) {
+            var t = {};
+            // Cached list
+            t.liveListCache = [];
+            t.liveList = function getAllLive() {
+                if (t.liveListCache.length == 0)
+                    t.liveListReload();
+                return t.liveListCache;
+            };
+
+            // use a promise-result to re-fill the live list of all items, return the promise again
+            t._liveListUpdateWithResult = function updateLiveAll(result) {
+                t.liveListCache.length = 0; // clear
+                for (var i = 0; i < result.data.length; i++)
+                    t.liveListCache.push(result.data[i]);
+                return result;
+            };
+
+            t._liveListSourceRead = getLiveList;
+
+            t.liveListReload = function getAll() {
+                return t._liveListSourceRead()
+                    .then(t._liveListUpdateWithResult);
+            };
+
+            t.liveListReset = function resetList() {
+                t.liveListCache = [];
+            };
+
+            return t;
+        };
+        return creator;
+
+    })
 
     /// Standard entity commands like get one, many etc.
     .factory('entitiesSvc', function ($http, eavManagementDialog) {

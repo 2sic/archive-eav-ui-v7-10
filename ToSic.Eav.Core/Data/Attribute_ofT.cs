@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// <typeparam name="ValueType">Type of the Value</typeparam>
     public class Attribute<ValueType> : AttributeBase, IAttribute<ValueType>, IAttributeManagement
     {
-        public Attribute(string name, string type, bool isTitle) : base(name, type, isTitle) { }
+        public Attribute(string name, string type, bool isTitle, int attributeId, int sortOrder) : base(name, type, isTitle, attributeId, sortOrder) { }
 
         public IEnumerable<IValue> Values { get; set; }
         public IValueManagement DefaultValue { get; set; }

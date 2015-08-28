@@ -1,3 +1,5 @@
+using System;
+
 namespace ToSic.Eav.Data
 {
     /// <summary>
@@ -13,12 +15,14 @@ namespace ToSic.Eav.Data
         // additional info for the persistence layer
         public int AttributeId { get; set; }
 
-        public AttributeBase(string name, string type, bool isTitle)
-        {
-            Name = name;
-            Type = type;
-            IsTitle = isTitle;
-        }
+        public int SortOrder { get; internal set; }
+
+        //public AttributeBase(string name, string type, bool isTitle)
+        //{
+        //    Name = name;
+        //    Type = type;
+        //    IsTitle = isTitle;
+        //}
 
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
@@ -27,10 +31,16 @@ namespace ToSic.Eav.Data
         /// <param name="type"></param>
         /// <param name="isTitle"></param>
         /// <param name="attributeId"></param>
-        public AttributeBase(string name, string type, bool isTitle, int attributeId)
-			: this(name, type, isTitle)
+        /// <param name="sortOrder"></param>
+        public AttributeBase(string name, string type, bool isTitle, int attributeId, int sortOrder)
+			//: this(name, type, isTitle)
 		{
-			AttributeId = attributeId;
+            Name = name;
+            Type = type;
+            IsTitle = isTitle;
+
+            AttributeId = attributeId;
+            SortOrder = sortOrder;
 		}
 
     }

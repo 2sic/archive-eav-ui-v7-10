@@ -1,54 +1,46 @@
 angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
-    .factory('contentTypeFieldSvc', function ($http, eavGlobalConfigurationProvider, eavManagementSvc) {
-            var svc = {};
-            var eavConf = eavGlobalConfigurationProvider;
-            svc.appId = 0;
+    .factory('contentTypeFieldSvc', function ($http, eavGlobalConfigurationProvider, svcCreator, eavManagementSvc) {
+        // start with a basic service which implement the live-list functionality
+        var svc = svcCreator.implementLiveList(function liveListRetrieve() {
+            return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
+        });
+
+        svc.appId = 0;
             svc.contentType = null;
 
-            // Cached list
-            svc._all = [];
-            svc.allLive = function getAllLive() {
-                if (svc._all.length == 0)
-                    svc.getAll();
-                return svc._all;
+            svc.moveUp = function moveUp(item) {
+                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'up' } })
+                    .then(svc.liveListReload);
+            };
+            svc.moveDown = function moveDown(item) {
+                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'down' } })
+                    .then(svc.liveListReload);
             };
 
-            // use a promise-result to re-fill the live list of all items, return the promise again
-            svc.updateLiveAll = function updateLiveAll(result) {
-                svc._all.length = 0; // clear
-                for (var i = 0; i < result.data.length; i++)
-                    svc._all.push(result.data[i]);
-                return result;
-            };
-
-            svc.getAll = function getAll() {
-                return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } })
-                    .then(svc.updateLiveAll); 
-            };
-
-            svc.resetList = function resetList() {
-                        svc._all = [];
+            svc.delete = function del(item) {
+                return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                    .then(svc.liveListReload);
             }
 
-            //svc.save = function save(item) {
-            //    return $http.post('eav/contenttype/save/', item, { params: { appid: svc.appId } })
-            //        .then(svc.getAll);
-            //};
+            svc.add = function add(item) {
+                return $http.post('eav/contenttype/addfield/', item, { params: { appid: svc.appId, contentTypeId: svc.contentType.Id } })
+                    .then(svc.liveListReload);
+            };
 
-            //svc.newItem = function newItem() {
-            //    return {
-            //        StaticName: "",
-            //        Name: "",
-            //        Description: "",
-            //        Scope: eavConf.contentType.defaultScope
-            //    }
-            //};
+            svc.newItem = function newItem() {
+                return {
+                    Id: 0,
+                    Type: "String",
+                    StaticName: "",
+                    IsTitle: false
+                }
+            };
 
 
-            //svc.delete = function del(item) {
-            //    return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, staticName: item.StaticName } })
-            //        .then(svc.getAll);
-            //};
+            svc.delete = function del(item) {
+                return $http.delete('eav/contenttype/deletefield', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                    .then(svc.liveListReload);
+            };
 
 
             return svc;

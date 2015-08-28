@@ -21,6 +21,8 @@ namespace ToSic.Eav
         // additional info for the persistence layer
         int AttributeId { get; }
 
+        int SortOrder { get; }
+
     }
 
     /// <summary>

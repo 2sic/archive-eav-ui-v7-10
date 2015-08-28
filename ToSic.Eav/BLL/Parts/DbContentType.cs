@@ -71,6 +71,8 @@ namespace ToSic.Eav.BLL.Parts
 
             var config = (result as ContentType).AttributeDefinitions.Select(a => new
             {
+                Id = a.Value.AttributeId,
+                (a.Value as AttributeBase).SortOrder,
                 a.Value.Type,
                 StaticName = a.Value.Name,
                 a.Value.IsTitle,
@@ -82,6 +84,20 @@ namespace ToSic.Eav.BLL.Parts
             });
 
             return config;
+        }
+
+        public void Reorder(int contentTypeId, int attributeId, string direction)
+        {
+            if (direction == "up")
+            {
+                Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Up);
+                return;
+            }
+            else if (direction == "down")
+            {
+                Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Down);
+                return;
+            }
         }
     }
 }

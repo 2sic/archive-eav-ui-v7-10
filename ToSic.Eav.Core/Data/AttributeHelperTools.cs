@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data
             foreach (var attribute in attributes)
             {
                 var attributeType = GetAttributeTypeName(attribute.Value);
-                var baseModel = new AttributeBase(attribute.Key, attributeType, attribute.Key == titleAttributeName);
+                var baseModel = new AttributeBase(attribute.Key, attributeType, attribute.Key == titleAttributeName, attributeId: 0, sortOrder: 0);
                 var attributeModel = GetAttributeManagementModel(baseModel);
                 var valuesModelList = new List<IValue>();
                 if (attribute.Value != null)
@@ -61,15 +61,15 @@ namespace ToSic.Eav.Data
             switch (definition.Type)
             {
                 case "Boolean":
-                    return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle);
+                    return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
                 case "DateTime":
-                    return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle);
+                    return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
                 case "Number":
-                    return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle);
+                    return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
                 case "Entity":
-                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle) { Values = new IValue[] { EntityRelationshipDefaultValue } };
+                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { EntityRelationshipDefaultValue } };
                 default:
-                    return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle);
+                    return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
             }
         }
     }

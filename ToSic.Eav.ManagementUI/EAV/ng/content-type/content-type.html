@@ -26,8 +26,10 @@
                 <td><a ng-click="vm.editFields(item)">{{item.Fields}}</a></td>
                 <td>{{item.Items}}</td>
                 <td>
-                    <button type="button" class="btn btn-xs btn-danger" ng-click="vm.tryToDelete(item)">
-                        <span class="glyphicon glyphicon-remove"></span> Delete
+                    <button type="button" class="btn btn-xs" ng-click="vm.goTo('permissions', item)">
+                        <span class="glyphicon glyphicon-user"></span> Permissions
+                    </button>&nbsp;<button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                        <span class="glyphicon glyphicon-remove"></span>
                     </button>
                 </td>
             </tr>
@@ -38,7 +40,7 @@
         </table>
 
         <!-- import/export -->
-        <h3>TODO: Export/Import</h3>
+        <h3>TODO: linking Export/Import + permissions</h3>
         <button type="button" class="btn" ng-click="vm.goToUrl('export')">
             <span class="glyphicon glyphicon-export"></span> Export
         </button>
@@ -75,7 +77,7 @@
             </div>
             <div class="modal-body">
                 <!-- Buttons on top -->
-                <a ng-click="vm.edit()" class="btn btn-default">
+                <a ng-click="vm.add()" class="btn btn-default">
                     <span class="glyphicon glyphicon-plus"></span> New
                 </a>
 
@@ -89,29 +91,36 @@
                             <th>Input Type</th>
                             <th>Notes</th>
                             <th>Title</th>
-                            <th>Edit</th>
                             <th>Sort</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="item in vm.items | orderBy:'Name'">
+                        <tr ng-repeat="item in vm.items | orderBy: 'SortOrder'">
                             <td>{{item.StaticName}}</td>
                             <td>{{item.Title}}</td>
                             <td>
-                                <button type="button" class="btn btn-xs btn-danger" ng-click="vm.tryToDelete(item)">
-                                    <span class="glyphicon glyphicon-remove"></span>General
+                                <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                    <span class="glyphicon glyphicon-pencil"></span>General
                                 </button>
-                                <button type="button" class="btn btn-xs btn-danger" ng-click="vm.tryToDelete(item)">
-                                    <span class="glyphicon glyphicon-remove"></span>{{item.Type}}
+                                <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                    <span class="glyphicon glyphicon-pencil"></span>{{item.Type}}
                                 </button>
                             </td> 
                             <td>-</td>
                             <td>{{item.Notes}}</td>
                             <td>{{item.IsTitle}}</td>
                             <td>
-                                <button type="button" class="btn btn-xs btn-danger" ng-click="vm.tryToDelete(item)">
-                                    <span class="glyphicon glyphicon-remove"></span> Delete
+                                <button type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)">
+                                    <span class="glyphicon glyphicon-arrow-up"></span>
+                                </button>
+                                <button type="button" class="btn btn-xs"ng-disabled="$last" ng-click="vm.moveDown(item)">
+                                    <span class="glyphicon glyphicon-arrow-down"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                    <span class="glyphicon glyphicon-remove"></span>
                                 </button>
                             </td>
                         </tr>
@@ -126,6 +135,27 @@
             <div class="modal-footer">
                 <button class="btn btn-primary" type="button" ng-click="vm.close()">OK</button>
             </div>
+            
+            <!-- Sub-Dialog for new field / edit field -->
+            <script type="text/ng-template" id="content-type-field-edit.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add Field</h3>
+                </div>
+                <div class="modal-body">
+                    Name: <br />
+                    <input ng-model="vm.item.StaticName" />
+                    <br />
+                    Type (todo: drop-down): <br />
+                    <input ng-model="vm.item.Type" /><br />
+                    <!-- Input Type (todo - pending): <br />
+                    drop down -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="vm.ok()">OK</button>
+                    <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Cancel</button>
+                </div>
+            </script>
+
         </script>
     </div>
 
