@@ -122,7 +122,7 @@
     }
 
 
-    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, $modalInstance, $modal) {
+    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q) {
         var vm = this;
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
@@ -137,8 +137,8 @@
                 animation: true,
                 templateUrl: 'content-type-field-edit.html',
                 controller: 'FieldEdit',
-                controllerAs: 'vm',
-                size: 'sm'
+                controllerAs: 'vm'
+                //size: 'sm'
             });
 
             modalInstance.result.then(function (items) {
@@ -177,19 +177,31 @@
             // this is just demo-code...
             var exists = item.Metadata[metadataType] != null;
 
-            if (!exists)
-                window.open(vm.newUrl(item, metadataType))
-            else
-                window.open(vm.editUrl(item.Metadata[metadataType].id));
+            var promise = (!exists) 
+                ? vm.newUrl(metadataType, item)
+                : vm.editUrl(item.Metadata[metadataType].EntityId);
+
+            promise.then(function(url) {
+                window.open(url);
+            });
         }
 
         vm.newUrl = function newUrl(metadataType, item) {
-            return eavGlobalConfigurationProvider.itemForm
-                .getNewItemUrl('@' + metadataType, eavGlobalConfigurationProvider.metadataOfAttribute, { keyid: item.Id }, false);
+            return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
+                var attSetId = result.data.AttributeSetId;
+                var deferred = $q.defer();
+                var res = eavGlobalConfigurationProvider.itemForm
+                    .getNewItemUrl(attSetId, eavGlobalConfigurationProvider.metadataOfAttribute, { keyNumber: item.Id }, false);
+                deferred.resolve(res);
+                return deferred.promise;
+            });
         }
+
         vm.editUrl = function editUrl(id) {
-            return eavGlobalConfigurationProvider.itemForm
-                .getEditItemUrl(id, undefined, true);
+            var deferred = $q.defer();
+            var result = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(id, undefined, true);
+            deferred.resolve(result);
+            return deferred.promise;
         }
 
     }
@@ -197,9 +209,9 @@
     function ContentTypeFieldEditController(contentTypeFieldSvc, $modalInstance) {
         var vm = this;
 
-        // todo: maybe do multiple?
+        // prepare empty array of up to 10 new items to be added
         var nw = contentTypeFieldSvc.newItem;
-        vm.items = [ nw(), nw(), nw(), nw(), nw() ]; // prepare 5
+        vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
 
         vm.item = contentTypeFieldSvc.newItem();
         vm.types = contentTypeFieldSvc.types.liveList();

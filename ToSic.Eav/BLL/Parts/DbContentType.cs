@@ -100,6 +100,11 @@ namespace ToSic.Eav.BLL.Parts
             return config;
         }
 
+        //public IEnumerable<dynamic> GetAttributeMetadataTypes()
+        //{
+        //    var metaDataSource = DataSource.GetMetaDataSource(Zonei, metaDataAppId);
+        //}
+
         public void Reorder(int contentTypeId, int attributeId, string direction)
         {
             if (direction == "up")

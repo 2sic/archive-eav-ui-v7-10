@@ -23,8 +23,16 @@
             <tr ng-repeat="item in vm.items | orderBy:'Name'">
                 <td><a ng-click="vm.edit(item)" target="_self">{{item.Name}}</a></td>
                 <td>{{item.Description}}</td>
-                <td><a ng-click="vm.editFields(item)">{{item.Fields}}</a></td>
-                <td>{{item.Items}}</td>
+                <td>
+                    <button type="button" class="btn btn-xs" ng-click="vm.editFields(item)">
+                        <span class="glyphicon glyphicon-wrench" > {{item.Fields}}</span>
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-xs" ng-click="alert('todo')">
+                        <span class="glyphicon glyphicon-list"> {{item.Items}}</span>
+                    </button>
+                </td>
                 <td>
                     <button type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
                         <span class="glyphicon glyphicon-user"></span> Permissions
@@ -34,7 +42,7 @@
                 </td>
             </tr>
             <tr ng-if="!vm.items.length">
-                <td colspan="100">No Items</td>
+                <td colspan="100">Loading... or no items found</td>
             </tr>
             </tbody>
         </table>
@@ -59,6 +67,10 @@
             <div class="modal-header">
                 <h3 class="modal-title">Edit Content Type</h3>
             </div>
+            <h3>todo</h3>
+            <ol>
+                <li>get validators to work</li>
+            </ol>
             <div class="modal-body">
                 Name: <br />
                 <input ng-model="vm.item.Name" />
