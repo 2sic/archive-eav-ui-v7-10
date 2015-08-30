@@ -73,10 +73,10 @@ angular.module('eavNgSvcs', ['ng'])
                 return result;
             };
 
-            t._liveListSourceRead = getLiveList;
+            t.liveListSourceRead = getLiveList;
 
             t.liveListReload = function getAll() {
-                return t._liveListSourceRead()
+                return t.liveListSourceRead()
                     .then(t._liveListUpdateWithResult);
             };
 

@@ -23,14 +23,33 @@
                 .getEditItemUrl(item.Id));
         }
 
+        vm.refresh = contentItemsSvc.liveListReload;
+        vm.refresh();
         vm.items = contentItemsSvc.liveList();
-        
+
+        //contentTypeFieldSvc.appId = appId;
+
+        vm.dynamicColumns = [];
+        contentItemsSvc.getColumns().then(function (result) {
+            var cols = result.data;
+            for (var c = 0; c < cols.length; c++) {
+                if (!cols[c].IsTitle)
+                    vm.dynamicColumns.push(cols[c]);
+            }
+            // alert(result);
+        });
+
+
         vm.tryToDelete = function tryToDelete(item) {
             if(confirm("Delete '" + 'title-unkwonn-yet' + "' (" + item.Id + ") ?"))
                 contentItemsSvc.delete(item.Id)
         };
 
         vm.refresh = contentItemsSvc.liveListReload;
+
+        vm.gridOptions = {
+            showGridFooter: true
+        };
     };
 
 } ());

@@ -14,6 +14,8 @@ namespace ToSic.Eav.Serializers
         #region Configuration
         public bool IncludeGuid { get; set; }
         public bool IncludePublishingInfo { get; set; }
+
+        public bool IncludeAllEditingInfos { get; set; }
         #endregion
 
         #region Language

@@ -152,6 +152,7 @@
     <Content Include="EAV\Dialogs\EditItem.aspx" />
     <Content Include="EAV\Dialogs\Items.aspx" />
     <Content Include="EAV\Dialogs\NewItem.aspx" />
+    <Content Include="bower.json" />
     <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
     <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
     <None Include="EAV\FieldTemplates\Date_Edit.ascx" />

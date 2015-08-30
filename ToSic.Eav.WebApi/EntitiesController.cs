@@ -86,12 +86,17 @@ namespace ToSic.Eav.WebApi
 	    //    return typeFilter.LightList.Count();
 	    //}
 
-        public Formats.EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
+        public dynamic /* Formats.EntityWithLanguages */ GetOne(int appId, string contentType, int id, string format = "multi-language")
         {
             switch (format)
             {
                 case "multi-language":
+                    Serializer.IncludeAllEditingInfos = true;
+
                     var found = GetEntityOrThrowError(contentType, id, appId);
+
+                    return Serializer.Prepare(found);
+
                     Formats.EntityWithLanguages ce = new Formats.EntityWithLanguages()
                     {
                         Id = found.EntityId,
