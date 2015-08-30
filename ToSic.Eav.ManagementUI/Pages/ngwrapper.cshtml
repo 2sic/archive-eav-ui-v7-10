@@ -26,34 +26,34 @@
     <link rel="stylesheet" href="../CSS/bootstrap.min.css" />
     <link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
     <script src="../Scripts/jquery-1.9.1.min.js"></script>
-<script src="../Scripts/angular.min.js"></script>
-    <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css"/>
+    <script src="../Scripts/angular.min.js"></script>
+    <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
     @if (ng == "pipeline")
     {
-        <script src="../EAV/PipelineDesigner/PipelineManagement.js"></script>
-        <script src="../EAV/PipelineDesigner/PipelineService.js"></script>
+        <script src="../eav/PipelineDesigner/PipelineManagement.js"></script>
+        <script src="../eav/PipelineDesigner/PipelineService.js"></script>
     }
-    <script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 
+    <script src='../eav/AngularServices/eavGlobalConfigurationProvider.js'></script>
 
+    <script src="../eav/AngularServices/eav4Ng.js"></script>
+    <script src="../eav/AngularServices/eavNgSvcs.js"></script>
 
-    <xscript src="/DesktopModules/ToSIC_SexyContent/Js/AngularJS/2sxc4ng.min.js" data-enableoptimizations="110"></xscript>
-    <script src="../EAV/AngularServices/eav4Ng.js"></script>
-    <script src="../EAV/AngularServices/eavNgSvcs.js"></script>
-
-    @if (ng == "permissions")
+    @if (ng == "permissions" || ng == "content-types" || ng == "content-items")
     {
-        <script src="/EAV/ng/permissions/permissions-services.js"></script>
-        <script src="/EAV/ng/permissions/permissions-controller.js"></script>
+        <script src="/eav/ng/@ng/@ng-services.js"></script>
+        <script src="/eav/ng/@ng/@ng-controller.js"></script>
     }
 
-    @if (ng == "content-type")
+    @if (ng == "content-types")
     {
-        <script src="/EAV/ng/content-type/content-type-controller.js"></script>
-        <script src="/EAV/ng/content-type/content-type-services.js"></script>
-        <script src="/EAV/ng/content-type/content-type-field-services.js"></script>
+        <script src="/eav/ng/content-types/content-types-field-services.js"></script>
+        <script src="/eav/ng/content-items/content-items-controller.js"></script>
+        <script src="/eav/ng/content-items/content-items-services.js"></script>
     }
+
 </body>
+
 </html>

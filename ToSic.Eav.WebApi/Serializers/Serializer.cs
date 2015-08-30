@@ -13,6 +13,7 @@ namespace ToSic.Eav.Serializers
     {
         #region Configuration
         public bool IncludeGuid { get; set; }
+        public bool IncludePublishingInfo { get; set; }
         #endregion
 
         #region Language
@@ -117,6 +118,23 @@ namespace ToSic.Eav.Serializers
                 if (entityValues.ContainsKey("Guid")) entityValues.Remove("Guid");
                 entityValues.Add("Guid", entity.EntityGuid);
             }
+
+            if (IncludePublishingInfo)
+            {
+                entityValues.Add("RepositoryId", entity.RepositoryId);
+                entityValues.Add("IsPublished", entity.IsPublished);
+                if(entity.IsPublished && entity.GetDraft() != null)
+                    entityValues.Add("Draft", new
+                    {
+                        entity.GetDraft().RepositoryId,
+                    });
+                if(!entity.IsPublished & entity.GetPublished() != null)
+                    entityValues.Add("Published", new
+                    {
+                        entity.GetPublished().RepositoryId, 
+                    });
+            }
+
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {

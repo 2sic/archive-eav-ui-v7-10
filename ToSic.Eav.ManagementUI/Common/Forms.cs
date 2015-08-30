@@ -85,7 +85,7 @@ namespace ToSic.Eav.ManagementUI
 					"<script src='" + parent.ResolveClientUrl("ItemFormEntityModelCreator.js") + "' type='text/javascript'></script>" +
 					"<link rel='stylesheet' href='" + parent.ResolveClientUrl("ItemForm.css") + "'/>" +
 					"<script type='text/javascript' src='/EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>" +
-					"<script type='text/javascript' src='/EAV/AngularServices/EavApiService.js'></script>" +
+					//"<script type='text/javascript' src='/EAV/AngularServices/EavApiService.js'></script>" + 2015-08-30 2dm removing this - old $http workaround
 					"<script type='text/javascript' src='/EAV/AngularServices/EavDialogService.js'></script>"
 			});
 		}

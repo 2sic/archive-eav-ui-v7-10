@@ -21,17 +21,17 @@
         }
 
 
-        vm.permissions = permissionsSvc.liveList();
+        vm.items = permissionsSvc.liveList();
         
-        vm.tryToDelete = function tryToDelete(title, entityId) {
-            var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
-            if(ok)
-                permissionsSvc.delete(entityId)
+        vm.tryToDelete = function tryToDelete(item) {
+            if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?"))
+                permissionsSvc.delete(item.Id);
         };
 
-        vm.refresh = function refresh() {
-            permissionsSvc.getAll();
-        }
+        vm.refresh = svc.liveListReload;
+        //function refresh() {
+        //    permissionsSvc.getAll();
+        //}
     };
 
 } ());

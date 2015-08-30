@@ -1,0 +1,211 @@
+﻿<div sxc-app="ContentTypesApp" eav-app="ContentTypesApp">
+<div class="modal-header">
+    <h3 class="modal-title">Content-Types and Data</h3>
+</div>
+    <div class="modal-body">
+        <div  ng-controller="List as vm">
+            <!-- Buttons on top -->
+            <a ng-click="vm.edit()" class="btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span> New
+            </a>
+            <!--<button type="button" class="btn btn-default" ng-click="vm.refresh()">
+                <span class="glyphicon glyphicon-repeat"></span> Refresh
+            </button>-->
+            <!-- Table of content types for editing -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Fields</th>
+                        <th>Items</th>
+                        <th>Permissions</th>
+                        <th> {{vm.isLoaded()}} </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'">
+                        <td><a ng-click="vm.edit(item)" target="_self">{{item.Name}}</a></td>
+                        <td>{{item.Description}}</td>
+                        <td>
+                            <button type="button" class="btn btn-xs" ng-click="vm.editFields(item)">
+                                <span class="glyphicon glyphicon-wrench"> {{item.Fields}}</span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-xs" ng-click="vm.editItems(item)">
+                                <span class="glyphicon glyphicon-list"> {{item.Items}}</span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
+                                <span class="glyphicon glyphicon-user"></span> Permissions
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="!vm.items.length">
+                        <td colspan="100">Loading... or no items found</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- import/export -->
+            <h3>TODO: linking Export/Import + permission-dialog + items</h3>
+            <button type="button" class="btn" ng-click="vm.goToUrl('export')">
+                <span class="glyphicon glyphicon-export"></span> Export
+            </button>
+            <button type="button" class="btn" ng-click="vm.goToUrl('import')">
+                <span class="glyphicon glyphicon-import"></span> Import
+            </button>
+
+
+
+
+
+
+
+            <!-- Sub-Dialog for new / edit -->
+            <script type="text/ng-template" id="content-type-edit.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Content Type</h3>
+                </div>
+
+                <div class="modal-body">
+
+                    <h3>todo</h3>
+                    <ol>
+                        <li>get validators to work</li>
+                    </ol>                Name: <br />
+                    <input ng-model="vm.item.Name" />
+                    <br />
+                    Description: <br />
+                    <input ng-model="vm.item.Description" /><br />
+                    Scope: <br />
+                    <input disabled="true" ng-model="vm.item.Scope" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="vm.ok()">OK</button>
+                    <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Cancel</button>
+                </div>
+            </script>
+
+
+
+
+
+
+
+            <!-- Sub-Dialog for field list -->
+        <script type="text/ng-template" id="content-type-fields.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Content Type Fields</h3>
+                    <button class="btn btn-primary" type="button" ng-click="vm.close()">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>                </div>
+                <div class="modal-body">
+                    <h3>todo</h3>
+                    <ol>
+                        <li>edit of general/specific-type should be in modal dialog</li>
+                        <li>validators on the +new dialog</li>
+                    </ol>
+                    <!-- Buttons on top -->
+                    <a ng-click="vm.add()" class="btn btn-default">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+
+                    <!-- Table of content types for editing -->
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Static Name</th>
+                                <th>Label</th>
+                                <th>Edit & Data Type</th>
+                                <!--<th>Input Type</th>-->
+                                <th>Notes</th>
+                                <th>Title</th>
+                                <th>Sort</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in vm.items | orderBy: 'SortOrder'">
+                                <td>{{item.StaticName}}</td>
+                                <td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, 'All')">
+                                        <span class="glyphicon glyphicon-pencil"></span>General
+                                    </button>
+                                    <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)">
+                                        <span class="glyphicon glyphicon-pencil"></span>{{item.Type}}
+                                    </button>
+                                </td>
+                                <!--<td>-</td>-->
+                                <td>{{item.Metadata['@All'].Attributes.Notes.DefaultValue.TypedContents}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-xs" xng-class="{'btn-success': item.IsTitle }" ng-click="vm.setTitle(item)">
+                                        <span class="glyphicon" ng-class="{ 'glyphicon-star': item.IsTitle, 'glyphicon-star-empty': !item.IsTitle}" ng-style="(item.IsTitle ? '' : 'color: transparent !important')"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)">
+                                        <span class="glyphicon glyphicon-arrow-up"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-xs" ng-disabled="$last" ng-click="vm.moveDown(item)">
+                                        <span class="glyphicon glyphicon-arrow-down"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr ng-if="!vm.items.length">
+                                <td colspan="100">No Items</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+
+
+                <!-- Sub-Dialog for new field / edit field -->
+                <script type="text/ng-template" id="content-type-field-edit.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Add Fields</h3>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Data Type</th>
+                                    <!-- <th>Input Type</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in vm.items">
+                                    <td><input ng-model="item.StaticName" ng-required="true" /></td>
+                                    <td><select ng-model="item.Type" ng-options="o for o in vm.types track by o"></select></td>
+                                    <!-- <td></td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" ng-click="vm.ok()">OK</button>
+                        <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Cancel</button>
+                    </div>
+                </script>
+
+            </script>
+        </div>
+        </div>
+</div>

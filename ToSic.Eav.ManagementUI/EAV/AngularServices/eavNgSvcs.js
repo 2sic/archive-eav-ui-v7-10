@@ -1,3 +1,11 @@
+/*  this file contains various eav-angular services
+ *  1. the basic configuration enforcing html5 mode
+ *  2. a management-dialog which simply gets the appid if in the url
+ *  3. eavManagementSvc - provides some services to retrieve metadata and similar for eav-management dialogs
+ *  4. svcCreator - a helper to quickly create services
+ *  5. entitiesSvc - a service to get/delete entities
+ */
+
 angular.module('eavNgSvcs', ['ng'])
 
     /// Config to ensure that $location can work and give url-parameters
@@ -48,6 +56,8 @@ angular.module('eavNgSvcs', ['ng'])
             var t = {};
 
             t.liveListCache = [];                   // this is the cached list
+            t.liveListCache.isLoaded = false;
+
             t.liveList = function getAllLive() {
                 if (t.liveListCache.length == 0)
                     t.liveListReload();
@@ -59,6 +69,7 @@ angular.module('eavNgSvcs', ['ng'])
                 t.liveListCache.length = 0; // clear
                 for (var i = 0; i < result.data.length; i++)
                     t.liveListCache.push(result.data[i]);
+                t.liveListCache.isLoaded = true;
                 return result;
             };
 

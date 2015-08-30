@@ -40,12 +40,51 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-			var source = InitialDS;
-			var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
+			var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: InitialDS);
 			typeFilter.TypeName = contentType;
 
             return Serializer.Prepare(typeFilter.LightList);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
 		}
+
+	    public IEnumerable<Dictionary<string, object>> GetAllOfTypeForAdmin(int appId, string contentType)
+	    {
+	        SetAppIdAndUser(appId);
+	        var ds = InitialDS;
+
+            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: ds.Cache, valueCollectionProvider: ds.ConfigurationProvider); // need to go to cache, to include published & unpublished
+            typeFilter.TypeName = contentType;
+
+            Serializer.IncludeGuid = true;
+	        Serializer.IncludePublishingInfo = true;
+
+            return Serializer.Prepare(typeFilter.LightList);
+        }
+
+        //2015-08-29 2dm: these commands are kind of ready, but not in use yet
+        /// <summary>
+        /// Get all Entities of specified Type
+        /// </summary>
+     //   public IEnumerable<Dictionary<string, object>> GetEntitiesByType(int appId, string contentType, int pageSize = 1000, int pageNumber = 1)
+     //   {
+     //       AppId = appId;
+
+     //       var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: InitialDS);
+     //       typeFilter.TypeName = contentType;
+     //       var paging = DataSource.GetDataSource<Paging>(upstream: typeFilter);
+     //       paging.PageNumber = pageNumber;
+     //       paging.PageSize = pageSize;
+
+     //       return Serializer.Prepare(paging.LightList);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
+     //   }
+
+	    //public int CountEntitiesOfType(int appId, string contentType)
+	    //{
+     //       AppId = appId;
+
+     //       var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: InitialDS);
+     //       typeFilter.TypeName = contentType;
+	    //    return typeFilter.LightList.Count();
+	    //}
 
         public Formats.EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
         {
@@ -92,7 +131,7 @@ namespace ToSic.Eav.WebApi
 	            AppId = appId.Value;
 	        var finalAppId = appId ?? AppId;
             var found = InitialDS.List[id];
-            if (found.Type.Name != contentType)
+            if (found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             if (!(CurrentContext.Entities.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
                 throw new InvalidOperationException("The entity " + id  + " cannot be deleted because of it is referenced by another object.");

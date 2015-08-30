@@ -1,10 +1,10 @@
 ﻿<div sxc-app="PermissionsApp" eav-app="PermissionsApp">
     <div ng-controller="Admin as vm">
         <a ng-href="{{vm.newUrl()}}" target="_self" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus"></span> New
+            <span class="glyphicon glyphicon-plus"></span>
         </a>
-        <button type="button" class="btn btn-default" ng-click="refresh()">
-            <span class="glyphicon glyphicon-repeat"></span> Refresh
+        <button type="button" class="btn btn-default" ng-click="vm.refresh()">
+            <span class="glyphicon glyphicon-repeat"></span>
         </button>
         <a target="_self" class="btn btn-default" ng-if="returnUrl" ng-href="{{returnUrl}}">
             <span class="glyphicon glyphicon-arrow-left"></span> Back
@@ -21,18 +21,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="perm in vm.permissions | orderBy:'Title'">
-                    <td><a ng-href="{{ vm.editUrl(perm.Id) }}" target="_self">{{perm.Title}}</a></td>
-                    <td>{{perm.Id}}</td>
-                    <td>{{perm.Condition}}</td>
-                    <td>{{perm.Grant}}</td>
+                <tr ng-repeat="item in vm.items | orderBy:'Title'">
+                    <td><a ng-href="{{ vm.editUrl(item.Id) }}" target="_self">{{item.Title}}</a></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Condition}}</td>
+                    <td>{{item.Grant}}</td>
                     <td>
-                        <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(perm.Title, perm.Id)">
+                        <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
                     </td>
                 </tr>
-                <tr ng-if="!vm.permissions.length">
+                <tr ng-if="!vm.items.length">
                     <td colspan="100">No Items</td>
                 </tr>
             </tbody>

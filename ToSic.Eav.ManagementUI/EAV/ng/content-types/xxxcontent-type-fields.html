@@ -1,0 +1,19 @@
+﻿
+        <!-- Sub-Dialog for field list -->
+        <script type="text/ng-template" id="content-type-fields.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Content Type Fields</h3>
+            </div>
+            <div class="modal-body">
+                Name: <br />
+                <input ng-model="vm.item.Name" />
+                <br />
+                Description: <br />
+                <input ng-model="vm.item.Description" /><br />
+                Scope: <br />
+                <input disabled="true" ng-model="vm.item.Scope" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Close</button>
+            </div>
+        </script>

@@ -111,11 +111,14 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
-    <Content Include="EAV\ng\content-type\content-type-fields.html" />
-    <Content Include="EAV\ng\content-type\content-type-field-services.js" />
-    <Content Include="EAV\ng\content-type\content-type.html" />
-    <Content Include="EAV\ng\content-type\content-type-controller.js" />
-    <Content Include="EAV\ng\content-type\content-type-services.js" />
+    <Content Include="EAV\ng\content-items\content-items-controller.js" />
+    <Content Include="EAV\ng\content-items\content-items-services.js" />
+    <Content Include="EAV\ng\content-items\content-items.html" />
+    <Content Include="EAV\ng\content-types\xxxcontent-type-fields.html" />
+    <Content Include="EAV\ng\content-types\content-types-field-services.js" />
+    <Content Include="EAV\ng\content-types\content-types.html" />
+    <Content Include="EAV\ng\content-types\content-types-controller.js" />
+    <Content Include="EAV\ng\content-types\content-types-services.js" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
@@ -153,7 +156,6 @@
     <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
     <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
     <None Include="EAV\FieldTemplates\String_Edit.ascx" />
-    <Content Include="EAV\AngularServices\EavApiService.js" />
     <Content Include="EAV\AngularServices\EavDialogService.js" />
     <Content Include="EAV\AngularServices\EavGlobalConfigurationProvider.js" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />

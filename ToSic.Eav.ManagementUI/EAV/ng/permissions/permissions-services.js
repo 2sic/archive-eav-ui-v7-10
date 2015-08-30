@@ -22,18 +22,6 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
             return entitiesSvc.delete(svc.ctName, id)
                 .then(svc.liveListReload);
         };
-        
-        // Get New/Edit
-        //svc.getUrl = function (mode, id) {
-        //    switch (mode) {
-        //        case 'new':
-        //            return eavConf.itemForm.getNewItemUrl(svc.ctId, svc.EntityAssignment, { keyGuid: svc.PermissionTargetGuid }, false);
-        //        case 'edit':
-        //            return eavConf.itemForm.getEditItemUrl(id, undefined, true);
-        //        default:
-        //            return null;
-        //    }
-        //};
 
         return svc;
     })

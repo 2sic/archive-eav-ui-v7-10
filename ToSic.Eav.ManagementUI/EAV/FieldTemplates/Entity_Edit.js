@@ -1,4 +1,24 @@
-﻿(function () {
+﻿/* This file has 2 things
+1. An eavAPIService, which should be removed since it solves a problem which the bootstrapper solves
+2. The EntityEditCtrl - which I don't know what it does, but it uses this eavAPIService
+
+*/
+
+// The EavApiService wraps $http while making sure the base url is
+// correct and adding some default parameters to every web service call
+
+(function () {
+    angular.module('2sic-EAV')
+        .factory('eavApiService', function (eavGlobalConfigurationProvider, $http) {
+            return function (settings) {
+                settings.url = eavGlobalConfigurationProvider.api.baseUrl + settings.url;
+                settings.params = $.extend({}, eavGlobalConfigurationProvider.defaultApiParams, settings.params);
+                return $http(settings);
+            }
+        });
+})();
+
+(function () {
     angular.module('2sic-EAV')
         .controller('EntityEditCtrl', function ($scope, eavDialogService, eavApiService, $rootElement, $http, $element, $filter) {
 

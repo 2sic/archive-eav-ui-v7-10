@@ -11,8 +11,10 @@
 		<h1>EAV</h1>
 		<ul>
 			<li><a href="Pages/ContentTypes.aspx">Content Types (without EavManagement-Wrapper)</a></li>
-			<li><a href="Pages/EavManagement.aspx">EAV Management (AppId 1)</a> - <a href="/Pages/ngwrapper.cshtml?ng=content-type&appid=1"> angular </a></li>
-			<li><a href="Pages/EavManagementApp2.aspx">EAV Management (AppId 2)</a> - <a href="EAV/ng/content-type/content-types.html?appid=2"> angular </a></li>
+			<li><a href="Pages/EavManagement.aspx">EAV Management (AppId 1)</a> - <a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=1"> angular </a></li>
+			<li><a href="Pages/EavManagementApp2.aspx">EAV Management (AppId 2)</a> - <a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=2"> angular </a></li>
+            <li><a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=3"> app 3</a></li>
+            <li><a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=4"> app 4</a></li>
 		</ul>
 		<h1>Pipelines</h1>
 		<ul>

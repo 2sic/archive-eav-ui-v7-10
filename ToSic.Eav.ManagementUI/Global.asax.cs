@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Web.Http;
 using System.Web.Routing;
+using Microsoft.Practices.Unity;
+using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
 
 namespace ToSic.Eav.ManagementUI
 {
@@ -16,7 +19,8 @@ namespace ToSic.Eav.ManagementUI
 
 
 
-            new Configuration().ConfigureDefaultMappings(ToSic.Eav.Factory.Container);
+            new Configuration().ConfigureDefaultMappings(Factory.Container);
+            Factory.Container.RegisterType(typeof(IEavValueConverter), typeof(NeutralValueConverter), new InjectionConstructor());
         }
 
         protected void Session_Start(object sender, EventArgs e)

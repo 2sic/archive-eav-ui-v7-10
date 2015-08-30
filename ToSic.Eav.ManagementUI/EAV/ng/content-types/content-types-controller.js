@@ -1,22 +1,23 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('licence', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
         .controller("Edit", ContentTypeEditController)
         .controller("FieldList", ContentTypeFieldListController)
-        .controller("FieldEdit", ContentTypeFieldEditController)
+        .controller("FieldsAdd", ContentTypeFieldAddController)
     ;
 
 
-
+    /// Manage the list of content-types
     function ContentTypeListController(contentTypeSvc, $modal, $location, eavGlobalConfigurationProvider) {
         var vm = this;
 
         contentTypeSvc.appId = $location.search().appid;
 
         vm.items = contentTypeSvc.liveList();
+        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; }
 
         vm.tryToDelete = function tryToDelete(title, entityId) {
             var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
@@ -65,15 +66,40 @@
             });
 
             modalInstance.result.then(function (item) {
-                // contentTypeSvc.save(item);
+                vm.refresh();
             });            
         }
         
+        vm.editItems = function editItems(item) {
+            if (item === undefined)
+                return;
+
+            modalInstance = $modal.open({
+                animation: true,
+                templateUrl: '/eav/ng/content-items/content-items.html',
+                controller: 'ContentItemsList',
+                controllerAs: 'vm',
+                size: 'lg',
+                resolve: {
+                    appId: function() {
+                        return contentTypeSvc.appId;
+                    },
+                    contentType: function () {
+                        return item.StaticName;
+                    },
+                    contentTypeId: function() {
+                        return item.Id;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (item) {
+                vm.refresh();
+            });
+        }
         
 
-        vm.refresh = function refresh() {
-            contentTypeSvc.liveListReload();
-        }
+        vm.refresh = contentTypeSvc.liveListReload;
 
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete?")) {
@@ -94,19 +120,9 @@
             );
         }
 
-
-
-        vm.getUrl = function (mode, id) {
-            alert('not implemented yet - should change dialog...');
-            switch (mode) {
-                case 'export':
-                    return eavConf.itemForm.getNewItemUrl(svc.ctId, svc.EntityAssignment, { keyGuid: svc.PermissionTargetGuid }, false);
-                case 'import':
-                    return eavConf.itemForm.getEditItemUrl(id, undefined, true);
-            }
-        };
     };
 
+    /// Edit or add a content-type
     function ContentTypeEditController(contentTypeSvc, item, $modalInstance) {
         var vm = this;
         
@@ -121,28 +137,32 @@
         };
     }
 
-
+    /// The controller to manage the fields-list
     function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q) {
         var vm = this;
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
         vm.contentType = contentTypeFieldSvc.contentType = contentType;
 
+        // to close this dialog
+        vm.close = function () {
+            $modalInstance.dismiss('cancel');
+        };
+
+        // Reset & reload the list - initial reset important, because it could still have the previous list cached
         contentTypeFieldSvc.liveListReset();
         vm.items = contentTypeFieldSvc.liveList();
 
+        // Open an add-dialog, and add them if the dialog is closed
         vm.add = function add() {
-            //var item = contentTypeFieldSvc.newItem();
             modalInstance = $modal.open({
                 animation: true,
                 templateUrl: 'content-type-field-edit.html',
-                controller: 'FieldEdit',
+                controller: 'FieldsAdd',
                 controllerAs: 'vm'
-                //size: 'sm'
             });
 
             modalInstance.result.then(function (items) {
-                // contentTypeFieldSvc.add(item);
                 var newList = [];
                 for (var c = 0; c < items.length; c++)
                     if (items[c].StaticName)
@@ -153,12 +173,10 @@
         }
 
 
-        vm.close = function () {
-            $modalInstance.dismiss('cancel');
-        };
-
+        // Actions like moveUp, Down, Delete, Title
         vm.moveUp = contentTypeFieldSvc.moveUp;
         vm.moveDown = contentTypeFieldSvc.moveDown;
+        vm.setTitle = contentTypeFieldSvc.setTitle;
 
         vm.tryToDelete = function tryToDelete(item) {
             if (item.IsTitle)
@@ -168,13 +186,9 @@
             }
         }
 
-        vm.setTitle = contentTypeFieldSvc.setTitle;
-
+        // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-            // todo: first, check if this metadata exists - to decide if new or edit
-
             metadataType = '@' + metadataType;
-            // this is just demo-code...
             var exists = item.Metadata[metadataType] != null;
 
             var promise = (!exists) 
@@ -206,7 +220,9 @@
 
     }
 
-    function ContentTypeFieldEditController(contentTypeFieldSvc, $modalInstance) {
+    /// This is the main controller for adding a field
+    /// Add is a standalone dialog, showing 10 lines for new field names / types
+    function ContentTypeFieldAddController(contentTypeFieldSvc, $modalInstance) {
         var vm = this;
 
         // prepare empty array of up to 10 new items to be added

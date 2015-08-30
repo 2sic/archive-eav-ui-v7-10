@@ -7,7 +7,6 @@
 var $eavUIConfig = {
     urls: {
         managePermissions: function(appId, targetId) {
-            // return "/Pages/Permissions.aspx?AppId=" + appId + "&Target=" + targetId;
             return "/pages/ngwrapper.cshtml?ng=permissions&appId=" + appId + "&Target=" + targetId;
         }
     }
@@ -75,8 +74,8 @@ if(angular) // always check if(angular) because this file is also included in ol
 			testParameters: null
 		},
 		metadataOfEntity: 4,
-        metadataOfAttribute: 2,
-		assignmentObjectTypeIdDataPipeline: 4, // deprecated, don't use any more, will be removed in 2016
+		metadataOfAttribute: 2,
+		assignmentObjectTypeIdDataPipeline: 4, // deprecated, don't use any more, will be removed in january 2016
 
         // new
         contentType: {
