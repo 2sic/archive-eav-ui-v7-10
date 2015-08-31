@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUI'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('licence', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -11,7 +11,7 @@
 
 
     /// Manage the list of content-types
-    function ContentTypeListController(contentTypeSvc, $modal, $location, eavGlobalConfigurationProvider) {
+    function ContentTypeListController(contentTypeSvc, $location, adminDialogService, eavGlobalConfigurationProvider) {
         var vm = this;
 
         contentTypeSvc.appId = $location.search().appid;
@@ -28,74 +28,19 @@
         vm.edit = function edit(item) {
             if (item === undefined)
                 item = contentTypeSvc.newItem();
-
-            modalInstance = $modal.open({
-                animation: true, 
-                templateUrl: 'content-type-edit.html',
-                controller: 'Edit',
-                controllerAs: 'vm',
-                size: 'sm',
-                resolve: {
-                    item: function () {
-                        return item;
-                    }
-                }
-            });
-
-            modalInstance.result.then(function (item) {
-                contentTypeSvc.save(item);
-            });
+            adminDialogService.openContentTypeEdit(item, vm.refresh);
         };
 
         vm.editFields = function editFields(item) {
-
             if (item === undefined)
                 return;
-
-            modalInstance = $modal.open({
-                animation: true,
-                templateUrl: 'content-type-fields.html',
-                controller: 'FieldList',
-                controllerAs: 'vm',
-                size: 'lg',
-                resolve: {
-                    contentType: function () {
-                        return item;
-                    }
-                }
-            });
-
-            modalInstance.result.then(function (item) {
-                vm.refresh();
-            });            
+            adminDialogService.openContentTypeFields(item, vm.refresh);
         }
         
         vm.editItems = function editItems(item) {
             if (item === undefined)
                 return;
-
-            modalInstance = $modal.open({
-                animation: true,
-                templateUrl: '/eav/ng/content-items/content-items.html',
-                controller: 'ContentItemsList',
-                controllerAs: 'vm',
-                size: 'lg',
-                resolve: {
-                    appId: function() {
-                        return contentTypeSvc.appId;
-                    },
-                    contentType: function () {
-                        return item.StaticName;
-                    },
-                    contentTypeId: function() {
-                        return item.Id;
-                    }
-                }
-            });
-
-            modalInstance.result.then(function (item) {
-                vm.refresh();
-            });
+            adminDialogService.openContentItems(contentTypeSvc.appId, item.StaticName, item.Id, vm.refresh);
         }
         
 
@@ -129,6 +74,7 @@
         vm.item = item;
 
         vm.ok = function () {
+            contentTypeSvc.save(item);
             $modalInstance.close(vm.item);
         };
 
@@ -138,7 +84,7 @@
     }
 
     /// The controller to manage the fields-list
-    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q) {
+    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, adminDialogService) {
         var vm = this;
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
@@ -191,32 +137,17 @@
             metadataType = '@' + metadataType;
             var exists = item.Metadata[metadataType] != null;
 
-            var promise = (!exists) 
-                ? vm.newUrl(metadataType, item)
-                : vm.editUrl(item.Metadata[metadataType].EntityId);
+            if (exists) {
+                adminDialogService.openItemEditWithEntityId(
+                    item.Metadata[metadataType].EntityId,
+                    contentTypeFieldSvc.liveListReload);
+            } else {
+                adminDialogService.openMetadataNewOnId(metadataType, item.Id,
+                    contentTypeFieldSvc.liveListReload);
+            }
 
-            promise.then(function(url) {
-                window.open(url);
-            });
         }
 
-        vm.newUrl = function newUrl(metadataType, item) {
-            return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
-                var attSetId = result.data.AttributeSetId;
-                var deferred = $q.defer();
-                var res = eavGlobalConfigurationProvider.itemForm
-                    .getNewItemUrl(attSetId, eavGlobalConfigurationProvider.metadataOfAttribute, { keyNumber: item.Id }, false);
-                deferred.resolve(res);
-                return deferred.promise;
-            });
-        }
-
-        vm.editUrl = function editUrl(id) {
-            var deferred = $q.defer();
-            var result = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(id, undefined, true);
-            deferred.resolve(result);
-            return deferred.promise;
-        }
 
     }
 

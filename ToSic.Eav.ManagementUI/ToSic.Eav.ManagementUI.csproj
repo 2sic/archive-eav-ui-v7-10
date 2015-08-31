@@ -111,6 +111,7 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
+    <Content Include="EAV\ng\admin\eav-admin-ui-service.js" />
     <Content Include="EAV\ng\content-items\content-items-controller.js" />
     <Content Include="EAV\ng\content-items\content-items-services.js" />
     <Content Include="EAV\ng\content-items\content-items.html" />

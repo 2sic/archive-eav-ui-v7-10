@@ -6,9 +6,6 @@
     var ng = Request.QueryString["ng"];
 
     var path = "/eav/ng/" + ng + "/" + ng + ".html";
-
-
-
 }
 
 <!DOCTYPE html>
@@ -30,7 +27,9 @@
     <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
-    <!--
+<script src="/eav/ng/admin/eav-admin-ui-service.js"></script>
+    <script src="/bower_components/promise-window/dist/promise-window.min.js"></script>
+<!--
 <link rel="styleSheet" href="/bower_components/angular-ui-grid/ui-grid.min.css" />
     <script src="/bower_components/angular-ui-grid/ui-grid.min.js"></script>
     -->

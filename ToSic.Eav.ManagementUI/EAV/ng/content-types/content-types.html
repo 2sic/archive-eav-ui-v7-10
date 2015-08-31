@@ -1,12 +1,12 @@
 ﻿<div sxc-app="ContentTypesApp" eav-app="ContentTypesApp">
-<div class="modal-header">
-    <h3 class="modal-title">Content-Types and Data</h3>
-</div>
+    <div class="modal-header">
+        <h3 class="modal-title">Content-Types and Data</h3>
+    </div>
     <div class="modal-body">
-        <div  ng-controller="List as vm">
+        <div ng-controller="List as vm">
             <!-- Buttons on top -->
             <a ng-click="vm.edit()" class="btn btn-default">
-                <span class="glyphicon glyphicon-plus"></span> New
+                <span class="glyphicon glyphicon-plus"></span>
             </a>
             <!--<button type="button" class="btn btn-default" ng-click="vm.refresh()">
                 <span class="glyphicon glyphicon-repeat"></span> Refresh
@@ -20,7 +20,7 @@
                         <th>Fields</th>
                         <th>Items</th>
                         <th>Permissions</th>
-                        <th> {{vm.isLoaded()}} </th>
+                        <th> </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,10 +103,11 @@
             <!-- Sub-Dialog for field list -->
         <script type="text/ng-template" id="content-type-fields.html">
                 <div class="modal-header">
-                    <h3 class="modal-title">Content Type Fields</h3>
-                    <button class="btn btn-primary" type="button" ng-click="vm.close()">
+                    <button class="btn btn-primary pull-right" type="button" ng-click="vm.close()">
                         <span class="glyphicon glyphicon-remove"></span>
-                    </button>                </div>
+                    </button>
+                    <h3 class="modal-title">Content Type Fields</h3>
+                </div>
                 <div class="modal-body">
                     <h3>todo</h3>
                     <ol>
@@ -141,7 +142,7 @@
                                     <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, 'All')">
                                         <span class="glyphicon glyphicon-pencil"></span>General
                                     </button>
-                                    </td>
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)">
                                         <span class="glyphicon glyphicon-pencil"></span>{{item.Type}}
@@ -158,8 +159,8 @@
                                     <button type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)">
                                         <span class="glyphicon glyphicon-arrow-up"></span>
                                     </button>
-                                    </td>
-<td>
+                                </td>
+                                <td>
                                     <button type="button" class="btn btn-xs" ng-disabled="$last" ng-click="vm.moveDown(item)">
                                         <span class="glyphicon glyphicon-arrow-down"></span>
                                     </button>
@@ -212,5 +213,5 @@
 
             </script>
         </div>
-        </div>
+    </div>
 </div>
