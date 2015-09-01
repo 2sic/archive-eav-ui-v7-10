@@ -51,7 +51,7 @@ namespace ToSic.Eav
 				if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
 					builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
 
-				builder.Metadata = "res://ToSic.Eav/Persistence.EavContext.csdl|res://ToSic.Eav/Persistence.EavContext.ssdl|res://ToSic.Eav/Persistence.EavContext.msl";
+			    builder.Metadata = "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl";
 				builder.Provider = "System.Data.SqlClient";
 
 				return builder.ToString();
