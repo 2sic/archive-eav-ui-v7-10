@@ -120,6 +120,7 @@
     <Content Include="EAV\ng\content-types\content-types.html" />
     <Content Include="EAV\ng\content-types\content-types-controller.js" />
     <Content Include="EAV\ng\content-types\content-types-services.js" />
+    <Content Include="EAV\ng\permissions\permissions-standalone.html" />
     <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
     <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
