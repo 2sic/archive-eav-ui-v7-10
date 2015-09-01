@@ -1,30 +1,36 @@
-/*  this file contains various eav-angular services
- *  1....
- * todo
- * *** permissions
- * *** item edit with other parameters
- * *** metadat add with other params
- * *** 
- * How to use
- * call a command like openContentItems
+/*  this file contains a service to handle 
+ * How it works
+ * This service tries to open a modal dialog if it can, otherwise a new window returning a promise to allow
+ * ...refresh when the window close. 
  * 
- * the callbacks have the following structure
+ * In most cases there is a nice command to open something, like openItemEditWithEntityId(id, callback)
+ * ...and there is also a more advanced version where you could specify more closely what you wanted
+ * ...usually ending with an X, so like openItemEditWithEntityIdX(resolve, callbacks)
+ * 
+ * the simple callback is 1 function (usually to refresh the main list), the complex callbacks have the following structure
  * 1. .success (optional)
  * 2. .error (optional) 
  * 3. .notify (optional)
- * 4. .close (optional) --> this one is attached to all events if no primary handler is defined
+ * 4. .close (optional) --> this one is attached to all events if no primary handler is defined 
+ *  
+ * How to use
+ * 1. you must already include all js files in your main app - so the controllers you'll need must be preloaded
+ * 2. Your main app must also  declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
+ * 3. your main app must also need this ['EavAdminUI']
+ * 4. your controller must require eavAdminDialogs
+ * 5. Then you can call such a dialog
  */
 
-angular.module('EavAdminUI', ['ng'])
+
+// Todo
+// 1. Import / Export
+// 2. Pipeline Designer
+
+angular.module('EavAdminUi', ['ng'])
     .factory('eavAdminDialogs', function($modal, eavGlobalConfigurationProvider, eavManagementSvc) {
         var svc = {};
 
-        svc.dialogs = ["content-types", "content-items", "permissions"];
-
-        //svc.openContentTypesX = function octX(params, callbacks) {
-
-        //};
-
+        //#region Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 return svc.openContentItemsX({
                     appId: function() { return appId; },
@@ -46,7 +52,9 @@ angular.module('EavAdminUI', ['ng'])
                 return svc._attachCallbacks(modalInstance, callbacks);
             };
 
+        //#endregion
 
+        //#region ContentType dialogs
             svc.openContentTypeEdit = function octe(item, closeCallback) {
                 return svc.openContentTypeEditX({
                     item: function() { return item; }
@@ -83,16 +91,22 @@ angular.module('EavAdminUI', ['ng'])
                 });
                 return svc._attachCallbacks(modalInstance, callbacks);
             };
+        //#endregion
+
+        //#region Item - new, edit
+            svc.openItemNew = function oin(contentTypeId, closeCallback) {
+                var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+            };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
                 var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
                 return PromiseWindow.open(url).then(null, function(error) { if(error == 'closed') closeCallback(); });
             };
 
-            //svc.openItemEditX = function oieX(resolve, callbacks) {
+        //#endregion
 
-            //};
-
+        //#region Metadata - mainly new
             svc.openMetadataNew = function omdn(targetType, targetId, metadataType, closeCallback) {
                 var key = {}, assignmentType = 0;
                 switch (targetType) {
@@ -113,41 +127,10 @@ angular.module('EavAdminUI', ['ng'])
 
                     return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
                 });
-
-
-                //return svc.openMetadataNewX(metadataType, targetType, key, closeCallback);
             };
-            
-            //svc.openMetadataNewForId = function omdni(metadataType, mode, targetId, closeCallback) {
-            //    if (mode != 'attribute') throw 'mode must be attribute';
-            //    return svc.openMetadataNewX(metadataType, mode, { keyNumber: targetId }, closeCallback);
-            //    //return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
-            //    //    var attSetId = result.data.AttributeSetId;
-            //    //    var url = eavGlobalConfigurationProvider.itemForm
-            //    //        .getNewItemUrl(attSetId, eavGlobalConfigurationProvider.metadataOfAttribute, { keyNumber: targetId }, false);
+        //#endregion
 
-            //    //    return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
-            //    //});
-            //};
-
-            //svc.openMetadataNewForGuid = function omdng(metadataType, mode, targetGuid, closeCallback) {
-            //    if (mode != 'entity') throw 'mode must be entity';
-            //    return svc.openMetadataNewX(metadataType, mode, { keyGuid: targetGuid }, closeCallback);
-            //};
-
-            //svc.openMetadataNewX = function omdnX(metadataType, mode, key, closeCallback) {
-            //    var assignmentType = mode == 'attribute'
-            //        ? eavGlobalConfigurationProvider.metadataOfAttribute
-            //        : eavGlobalConfigurationProvider.metadataOfEntity;
-            //    return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
-            //        var attSetId = result.data.AttributeSetId;
-            //        var url = eavGlobalConfigurationProvider.itemForm
-            //            .getNewItemUrl(attSetId, assignmentType, key, false);
-
-            //        return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
-            //    });
-            //};
-
+        //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
                 return svc.openPermissionsForGuidX({
                     appId: function() { return appId },
@@ -171,14 +154,25 @@ angular.module('EavAdminUI', ['ng'])
                 });
                 return svc._attachCallbacks(modalInstance, callbacks);
             };
+        //#endregion
 
+        //#region Export / Import content Types
 
+        svc.openContentExport = function oce(appId, closeCallback) {
+            var url = eavGlobalConfigurationProvider.adminUrls.exportContent(appId);
+            window.open(url);
+        };
+        svc.openContentImport = function oci(appId, closeCallback) {
+            var url = eavGlobalConfigurationProvider.adminUrls.importContent(appId);
+            window.open(url);
+        };
+        //#endregion
 
-        // Internal helpers
+        //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
             };
-
+        //#endregion
 
 
         return svc;

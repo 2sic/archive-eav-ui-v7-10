@@ -1,4 +1,5 @@
-// AngularJS Controller for the Pipeline Designer
+// AngularJS Controller for the >>>> Pipeline Designer
+// todo: refactor the pipeline designer to use the new eavAdminUi service
 pipelineDesigner.controller('PipelineDesignerController',
 			['$scope', 'pipelineService', '$location', '$timeout', '$filter', 'uiNotification', 'eavDialogService', '$log', 'eavGlobalConfigurationProvider', '$q',
 	function ($scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider, $q) {

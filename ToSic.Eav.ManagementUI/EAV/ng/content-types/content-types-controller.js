@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUI', 'PermissionsApp'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUi', 'PermissionsApp'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -13,21 +13,21 @@
     /// Manage the list of content-types
     function ContentTypeListController(contentTypeSvc, $location, eavAdminDialogs, eavGlobalConfigurationProvider) {
         var vm = this;
+        var svc = contentTypeSvc;
+        svc.appId = $location.search().appid;
 
-        contentTypeSvc.appId = $location.search().appid;
-
-        vm.items = contentTypeSvc.liveList();
+        vm.items = svc.liveList();
         vm.isLoaded = function isLoaded() { return vm.items.isLoaded; }
 
         vm.tryToDelete = function tryToDelete(title, entityId) {
             var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
             if (ok)
-                contentTypeSvc.delete(entityId)
+                svc.delete(entityId)
         };
 
         vm.edit = function edit(item) {
             if (item === undefined)
-                item = contentTypeSvc.newItem();
+                item = svc.newItem();
             eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
         };
 
@@ -40,15 +40,15 @@
         vm.editItems = function editItems(item) {
             if (item === undefined)
                 return;
-            eavAdminDialogs.openContentItems(contentTypeSvc.appId, item.StaticName, item.Id, vm.refresh);
+            eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         }
         
 
-        vm.refresh = contentTypeSvc.liveListReload;
+        vm.refresh = svc.liveListReload;
 
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete?")) {
-                contentTypeSvc.delete(item);
+                svc.delete(item);
             }
         }
 
@@ -60,12 +60,15 @@
         vm.permissions = function permissions(item) {
             if (!vm.isGuid(item.StaticName))
                 return (alert('Permissions can only be set to Content-Types with Guid Identifiers'));
-            eavAdminDialogs.openPermissionsForGuid(contentTypeSvc.appId, item.StaticName, vm.refresh);
-            //window.open(
-            //    eavGlobalConfigurationProvider.adminUrls.managePermissions(contentTypeSvc.appId, item.StaticName)
-            //);
+            eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         }
 
+        vm.openExport = function openExport() {
+            eavAdminDialogs.openContentExport(svc.appId);
+        }
+        vm.openImport = function openImport() {
+            eavAdminDialogs.openContentImport(svc.appId);
+        }
     };
 
     /// Edit or add a content-type

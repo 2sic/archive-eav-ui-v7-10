@@ -46,6 +46,7 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
                     .then(svc.liveListReload);
             };
 
+            svc.newItemCount = 0;
             svc.newItem = function newItem() {
                 return {
                     AppId: svc.appId,
@@ -54,7 +55,7 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
                     Type: "String",
                     StaticName: "",
                     IsTitle: svc.liveList().length == 0,
-                    SortOrder: svc.liveList().length
+                    SortOrder: svc.liveList().length + svc.newItemCount++
                 }
             };
 

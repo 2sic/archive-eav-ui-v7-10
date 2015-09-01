@@ -60,10 +60,13 @@ namespace ToSic.Eav.BLL.Parts
         /// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
         public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
         {
-            var attributeToMove = Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == setId);
+            // todo 2dm: refactoring, causes some errors...
+            var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
+
+            var attributeToMove = attributeList.Single(a => a.AttributeID == attributeId);
             var attributeToInterchange = direction == AttributeMoveDirection.Up ?
-                Context.SqlDb.AttributesInSets.OrderByDescending(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder < attributeToMove.SortOrder) :
-                Context.SqlDb.AttributesInSets.OrderBy(a => a.SortOrder).First(a => a.AttributeSetID == setId && a.SortOrder > attributeToMove.SortOrder);
+                attributeList.OrderByDescending(a => a.SortOrder).First(a => a.SortOrder < attributeToMove.SortOrder) :
+                attributeList.OrderBy(a => a.SortOrder).First(a => a.SortOrder > attributeToMove.SortOrder);
 
             var newSortOrder = attributeToInterchange.SortOrder;
             attributeToInterchange.SortOrder = attributeToMove.SortOrder;
