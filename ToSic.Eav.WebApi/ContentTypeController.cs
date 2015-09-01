@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi
 	    }
 
         [HttpGet]
-	    public dynamic Get(int appId, string contentTypeId, string scope = null)
+	    public IContentType Get(int appId, string contentTypeId, string scope = null)
 	    {
             SetAppIdAndUser(appId);
             // var source = InitialDS;

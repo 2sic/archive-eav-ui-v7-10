@@ -81,7 +81,10 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
-                var modalInstance = $modal.open({
+                //resolve.close = function() {
+                //    alert('closing');
+                //}
+                resolve._modalInstance = $modal.open({
                     animation: true,
                     templateUrl: 'content-type-fields.html',
                     controller: 'FieldList',
@@ -89,7 +92,7 @@ angular.module('EavAdminUi', ['ng'])
                     size: 'lg',
                     resolve: resolve
                 });
-                return svc._attachCallbacks(modalInstance, callbacks);
+                return svc._attachCallbacks(resolve._modalInstance, callbacks);
             };
         //#endregion
 

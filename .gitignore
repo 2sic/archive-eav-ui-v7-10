@@ -165,3 +165,4 @@ Testing/Bin
 /packages
 ToSic.Eav.ManagementUI/node_modules/
 ToSic.Eav.ManagementUI/.grunt/
+ToSic.Eav.ManagementUI/bower_components/
