@@ -39,9 +39,5 @@ namespace ToSic.Eav
         /// Get the id of the source Content Type if configuration is used from another
         /// </summary>
         int? UsesConfigurationOfAttributeSet { get; }
-		/// <summary>
-		/// Dictionary with all Attribute Definitions
-		/// </summary>
-		IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
 	}
 }
