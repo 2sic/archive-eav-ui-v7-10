@@ -32,24 +32,15 @@ angular.module('EavAdminUi', ['ng'])
 
         //#region Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
-                return svc.openContentItemsX({
-                    appId: function() { return appId; },
-                    contentType: function() { return staticName; },
-                    contentTypeId: function() { return itemId; }
-                }, { close: closeCallback });
+                return svc.openContentItemsX(svc._createResolve('appId', appId, 'contentType', staticName, 'contentTypeId', itemId)
+                , { close: closeCallback });
+                //var resolve2 = svc._createResolve('appId', appId, 'contentType', staticName, 'contentTypeId', itemId);
+                //return svc.openContentItemsX(resolve2
             };
 
-            svc.openContentItemsX = function ociX(resolve, callbacks) {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: '/eav/ng/content-items/content-items.html',
-                    controller: 'ContentItemsList',
-                    controllerAs: 'vm',
-                    size: 'lg',
-                    resolve: resolve
-                });
 
-                return svc._attachCallbacks(modalInstance, callbacks);
+            svc.openContentItemsX = function ociX(resolve, callbacks) {
+                return svc._openModalWithCallback('~/content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
             };
 
         //#endregion
@@ -62,16 +53,7 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeEditX = function octeX(resolve, callbacks) {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: 'content-type-edit.html',
-                    controller: 'Edit',
-                    controllerAs: 'vm',
-                    size: 'sm',
-                    resolve: resolve
-                });
-
-                return svc._attachCallbacks(modalInstance, callbacks);
+                return svc._openModalWithCallback('content-type-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
@@ -81,18 +63,7 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
-                //resolve.close = function() {
-                //    alert('closing');
-                //}
-                resolve._modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: 'content-type-fields.html',
-                    controller: 'FieldList',
-                    controllerAs: 'vm',
-                    size: 'lg',
-                    resolve: resolve
-                });
-                return svc._attachCallbacks(resolve._modalInstance, callbacks);
+                return svc._openModalWithCallback('content-type-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
             };
         //#endregion
 
@@ -147,15 +118,16 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: '/eav/ng/permissions/permissions.html',
-                    controller: 'PermissionList',
-                    controllerAs: 'vm',
-                    size: 'lg',
-                    resolve: resolve
-                });
-                return svc._attachCallbacks(modalInstance, callbacks);
+                return svc._openModalWithCallback('~/permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+                //var modalInstance = $modal.open({
+                //    animation: true,
+                //    templateUrl: '/eav/ng/permissions/permissions.html',
+                //    controller: 'PermissionList',
+                //    controllerAs: 'vm',
+                //    size: 'lg',
+                //    resolve: resolve
+                //});
+                //return svc._attachCallbacks(modalInstance, callbacks);
             };
         //#endregion
 
@@ -174,6 +146,43 @@ angular.module('EavAdminUi', ['ng'])
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
+            };
+
+        // Will open a modal window. Has various specials, like
+        // 1. If the templateUrl begins with "~/" - this will be re-mapped to the ng-app root. Only use this for not-inline stuff
+        // 2. The controller can be written as "something as vm" and this will be split and configured corectly
+            svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
+                if (templateUrl.substring(0, 2) == "~/")
+                    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
+                var foundAs = controller.indexOf(' as '); 
+                var contAs = foundAs > 0
+                    ? controller.substring(foundAs + 4)
+                    : null;
+                if (foundAs > 0)
+                    controller = controller.substring(0, foundAs);
+
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: templateUrl,
+                    controller: controller,
+                    controllerAs: contAs,
+                    size: size,
+                    resolve: resolveValues
+                });
+
+                return svc._attachCallbacks(modalInstance, callbacks);
+            }
+
+
+            svc._createResolve = function createResolve() {
+                var fns = {}, list = arguments;
+                for (var i = 0; i < list.length; i = i + 2)
+                    fns[list[i]] = svc._create1Resolve(list[i + 1]);
+                return fns;
+            };
+
+            svc._create1Resolve = function (value) {
+                return function () { return value };
             };
         //#endregion
 

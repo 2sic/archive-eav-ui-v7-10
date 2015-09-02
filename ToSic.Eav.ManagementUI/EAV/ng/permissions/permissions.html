@@ -29,7 +29,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="item in vm.items | orderBy:'Title'">
-                <td><a ng-click="vm.edit(item.Id)">{{item.Title}}</a></td>
+                <td><a ng-click="vm.edit(item)">{{item.Title}}</a></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Condition}}</td>
                 <td>{{item.Grant}}</td>

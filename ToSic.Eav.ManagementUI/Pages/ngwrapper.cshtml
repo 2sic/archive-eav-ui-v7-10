@@ -13,17 +13,18 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title></title>
+    <title>EAV Management</title>
+    @*<base href="/eav/ng/" />*@
 </head>
 <body>
     <div>
         @Html.Raw(File.ReadAllText(Server.MapPath(path)))
     </div>
 
-    <link rel="stylesheet" href="../CSS/bootstrap.min.css" />
-    <link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
-    <script src="../Scripts/jquery-1.9.1.min.js"></script>
-    <script src="../Scripts/angular.min.js"></script>
+    <link rel="stylesheet" href="/CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="/CSS/bootstrap-theme.min.css" />
+    <script src="/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
     <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
@@ -35,14 +36,14 @@
     -->
 @if (ng == "pipeline")
     {
-        <script src="../eav/PipelineDesigner/PipelineManagement.js"></script>
-        <script src="../eav/PipelineDesigner/PipelineService.js"></script>
+        <script src="/eav/PipelineDesigner/PipelineManagement.js"></script>
+        <script src="/eav/PipelineDesigner/PipelineService.js"></script>
     }
 
-    <script src='../eav/AngularServices/eavGlobalConfigurationProvider.js'></script>
+    <script src='/eav/AngularServices/eavGlobalConfigurationProvider.js'></script>
 
-    <script src="../eav/AngularServices/eav4Ng.js"></script>
-    <script src="../eav/AngularServices/eavNgSvcs.js"></script>
+    <script src="/eav/AngularServices/eav4Ng.js"></script>
+    <script src="/eav/AngularServices/eavNgSvcs.js"></script>
 
     @if (ng == "permissions" || ng == "content-types" || ng == "content-items")
     {
@@ -58,7 +59,6 @@
 
         <script src="/eav/ng/permissions/permissions-services.js"></script>
         <script src="/eav/ng/permissions/permissions-controller.js"></script>
-
     }
 
 </body>

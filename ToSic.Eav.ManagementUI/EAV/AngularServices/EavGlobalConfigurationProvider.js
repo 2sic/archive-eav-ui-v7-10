@@ -14,6 +14,9 @@ var $eavUIConfig = {
         },
         importContent: function(appId) {
             return "/todo?appId=" + appId;
+        },
+        ngRoot: function() {
+            return "/eav/ng/";
         }
 
     }
