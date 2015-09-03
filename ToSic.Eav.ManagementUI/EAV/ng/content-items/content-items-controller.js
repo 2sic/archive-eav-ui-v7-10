@@ -15,11 +15,11 @@
 
         vm.add = function add() {
             eavAdminDialogs.openItemNew(svc.contentTypeId, svc.liveListReload);
-        }
+        };
 
         vm.edit = function(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
-        }
+        };
 
         vm.refresh = contentItemsSvc.liveListReload;
         vm.refresh();
@@ -35,11 +35,11 @@
         });
 
         vm.tryToDelete = function tryToDelete(item) {
-            if(confirm("Delete '" + 'title-unkwonn-yet' + "' (" + item.Id + ") ?"))
-                contentItemsSvc.delete(item.Id)
+            if (confirm("Delete '" + 'title-unkwonn-yet' + "' (" + item.Id + ") ?"))
+                contentItemsSvc.delete(item.Id);
         };
 
         vm.refresh = contentItemsSvc.liveListReload;
-    };
+    }
 
 } ());

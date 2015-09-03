@@ -267,7 +267,6 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\FormlyEditUI\EntityController.cs" />
-    <Compile Include="EAV\FormlyEditUI\ContentTypeController.cs" />
     <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
       <DependentUpon>PipelineManagement.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

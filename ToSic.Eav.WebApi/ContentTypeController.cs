@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -111,5 +114,38 @@ namespace ToSic.Eav.WebApi
 	    }
 
         #endregion
+
+
+        #region Raphaels Code - check if valid
+        /// <summary>
+         /// Returns the configuration for a content type
+         /// </summary>
+       //[HttpGet]
+       // public IEnumerable<dynamic> GetContentTypeConfiguration(int zoneId, int appId, string contentTypeName)
+       // {
+       //     var cache = DataSource.GetCache(zoneId, appId);
+       //     var result = cache.GetContentType(contentTypeName);
+
+       //     if (result == null)
+       //         throw new Exception("Content type " + contentTypeName + " not found.");
+
+       //     var eavContext = EavDataController.Instance(zoneId, appId);
+       //     var metaData = new Metadata();
+
+       //     // Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
+       //     var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : eavContext.AppId;
+       //     var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : eavContext.ZoneId;
+
+       //     var config = result.AttributeDefinitions.Select(a => new
+       //     {
+       //         a.Value.Type,
+       //         StaticName = a.Value.Name,
+       //         MetaData = metaData.GetAttributeMetaData(a.Value.AttributeId, metaDataZoneId, metaDataAppId).ToDictionary(v => v.Key, e => e.Value[0])
+       //     });
+
+       //     return config;
+       // }
+        #endregion
+
     }
 }

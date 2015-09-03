@@ -13,11 +13,11 @@
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, permissionsSvc.liveListReload);
-        }
+        };
 
         vm.add = function add() {
             eavAdminDialogs.openMetadataNew('entity', svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
-        }
+        };
 
         vm.items = permissionsSvc.liveList();
         
@@ -31,6 +31,6 @@
         vm.close = function () {
             $modalInstance.dismiss('cancel');
         };
-    };
+    }
 
 } ());

@@ -29,13 +29,13 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
             svc.delete = function del(item) {
                 return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
-            }
+            };
 
             svc.addMany = function add(items, count) {
                 return $http.get('eav/contenttype/addfield/', { params: items[count] })
                     .then(function() {
                         if (items.length == ++count)
-                            svc.liveListReload()
+                            svc.liveListReload();
                         else
                             svc.addMany(items, count);
                     });
@@ -54,9 +54,9 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
                     Id: 0,
                     Type: "String",
                     StaticName: "",
-                    IsTitle: svc.liveList().length == 0,
+                    IsTitle: svc.liveList().length === 0,
                     SortOrder: svc.liveList().length + svc.newItemCount++
-                }
+                };
             };
 
 
@@ -70,7 +70,7 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
             svc.setTitle = function setTitle(item) {
                 return $http.get('eav/contenttype/setTitle', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
-            }
+            };
 
 
             return svc;

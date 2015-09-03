@@ -14,7 +14,7 @@ angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
                 Name: "",
                 Description: "",
                 Scope: eavGlobalConfigurationProvider.contentType.defaultScope
-            }
+            };
         };
 
 

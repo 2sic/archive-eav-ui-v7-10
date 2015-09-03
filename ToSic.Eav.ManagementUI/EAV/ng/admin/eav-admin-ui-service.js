@@ -32,10 +32,7 @@ angular.module('EavAdminUi', ['ng'])
 
         //#region Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
-                return svc.openContentItemsX(svc._createResolve('appId', appId, 'contentType', staticName, 'contentTypeId', itemId)
-                , { close: closeCallback });
-                //var resolve2 = svc._createResolve('appId', appId, 'contentType', staticName, 'contentTypeId', itemId);
-                //return svc.openContentItemsX(resolve2
+                return svc.openContentItemsX(svc._createResolve({ appId: appId, contentType: staticName, contentTypeId: itemId }), { close: closeCallback });
             };
 
 
@@ -47,9 +44,7 @@ angular.module('EavAdminUi', ['ng'])
 
         //#region ContentType dialogs
             svc.openContentTypeEdit = function octe(item, closeCallback) {
-                return svc.openContentTypeEditX({
-                    item: function() { return item; }
-                }, { close: closeCallback });
+                return svc.openContentTypeEditX(svc._createResolve({ item: item }), { close: closeCallback });
             };
 
             svc.openContentTypeEditX = function octeX(resolve, callbacks) {
@@ -57,9 +52,8 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
-                return svc.openContentTypeFieldsX({
-                    contentType: function() { return item; }
-                }, { close: closeCallback });
+                return svc.openContentTypeFieldsX(
+                    svc._createResolve({contentType: item }), { close: closeCallback });
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
@@ -106,28 +100,12 @@ angular.module('EavAdminUi', ['ng'])
 
         //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
-                return svc.openPermissionsForGuidX({
-                    appId: function() { return appId },
-                    targetGuid: function() { return targetGuid }
-                }, { close: closeCallback });
-
-
-                // window-mode
-                //var url = eavGlobalConfigurationProvider.adminUrls.managePermissions(appId, contentTypeName);
-                //return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                return svc.openPermissionsForGuidX(
+                    svc._createResolve({ appId: appId, targetGuid: targetGuid }), { close: closeCallback });
             };
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
                 return svc._openModalWithCallback('~/permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
-                //var modalInstance = $modal.open({
-                //    animation: true,
-                //    templateUrl: '/eav/ng/permissions/permissions.html',
-                //    controller: 'PermissionList',
-                //    controllerAs: 'vm',
-                //    size: 'lg',
-                //    resolve: resolve
-                //});
-                //return svc._attachCallbacks(modalInstance, callbacks);
             };
         //#endregion
 
@@ -154,9 +132,9 @@ angular.module('EavAdminUi', ['ng'])
             svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
                 if (templateUrl.substring(0, 2) == "~/")
                     templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
-                var foundAs = controller.indexOf(' as '); 
-                var contAs = foundAs > 0
-                    ? controller.substring(foundAs + 4)
+                var foundAs = controller.indexOf(' as ');
+                var contAs = foundAs > 0 ?
+                    controller.substring(foundAs + 4)
                     : null;
                 if (foundAs > 0)
                     controller = controller.substring(0, foundAs);
@@ -171,18 +149,19 @@ angular.module('EavAdminUi', ['ng'])
                 });
 
                 return svc._attachCallbacks(modalInstance, callbacks);
-            }
+            };
 
-
+        /// This will create a resolve-object containing return function()... for each property in the array
             svc._createResolve = function createResolve() {
-                var fns = {}, list = arguments;
-                for (var i = 0; i < list.length; i = i + 2)
-                    fns[list[i]] = svc._create1Resolve(list[i + 1]);
+                var fns = {}, list = arguments[0];
+                for (var prop in list) 
+                    if (list.hasOwnProperty(prop))
+                        fns[prop] = svc._create1Resolve(list[prop]);
                 return fns;
             };
 
             svc._create1Resolve = function (value) {
-                return function () { return value };
+                return function () { return value; };
             };
         //#endregion
 

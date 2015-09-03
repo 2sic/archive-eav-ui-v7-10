@@ -17,12 +17,12 @@
         svc.appId = $location.search().appid;
 
         vm.items = svc.liveList();
-        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; }
+        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
 
         vm.tryToDelete = function tryToDelete(title, entityId) {
             var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
             if (ok)
-                svc.delete(entityId)
+                svc.delete(entityId);
         };
 
         vm.edit = function edit(item) {
@@ -35,13 +35,13 @@
             if (item === undefined)
                 return;
             eavAdminDialogs.openContentTypeFields(item, vm.refresh);
-        }
-        
+        };
+
         vm.editItems = function editItems(item) {
             if (item === undefined)
                 return;
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
-        }
+        };
         
 
         vm.refresh = svc.liveListReload;
@@ -50,26 +50,26 @@
             if (confirm("Delete?")) {
                 svc.delete(item);
             }
-        }
+        };
 
         vm.isGuid = function isGuid(txtToTest) {
             var patt = new RegExp(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i);
             return patt.test(txtToTest); // note: can't use the txtToTest.match because it causes infinite digest cycles
-        }
+        };
 
         vm.permissions = function permissions(item) {
             if (!vm.isGuid(item.StaticName))
                 return (alert('Permissions can only be set to Content-Types with Guid Identifiers'));
-            eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
-        }
+            return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
+        };
 
         vm.openExport = function openExport() {
-            eavAdminDialogs.openContentExport(svc.appId);
-        }
+            return eavAdminDialogs.openContentExport(svc.appId);
+        };
         vm.openImport = function openImport() {
-            eavAdminDialogs.openContentImport(svc.appId);
-        }
-    };
+            return eavAdminDialogs.openContentImport(svc.appId);
+        };
+    }
 
     /// Edit or add a content-type
     function ContentTypeEditController(contentTypeSvc, item, $modalInstance) {
@@ -112,7 +112,7 @@
                 controllerAs: 'vm'
             });
 
-            modalInstance.result.then(function (items) {
+            modalInstance.result.then(function(items) {
                 var newList = [];
                 for (var c = 0; c < items.length; c++)
                     if (items[c].StaticName)
@@ -120,7 +120,7 @@
                 contentTypeFieldSvc.addMany(newList, 0);
             });
 
-        }
+        };
 
 
         // Actions like moveUp, Down, Delete, Title
@@ -132,14 +132,14 @@
             if (item.IsTitle)
                 return alert("Can't delete Title");
             if (confirm("Delete?")) {
-                contentTypeFieldSvc.delete(item);
+                return contentTypeFieldSvc.delete(item);
             }
-        }
+        };
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
             metadataType = '@' + metadataType;
-            var exists = item.Metadata[metadataType] != null;
+            var exists = item.Metadata[metadataType] !== null;
 
             if (exists) {
                 eavAdminDialogs.openItemEditWithEntityId(
@@ -149,7 +149,7 @@
                 eavAdminDialogs.openMetadataNew('attribute', item.Id, metadataType,
                     contentTypeFieldSvc.liveListReload);
             }
-        }
+        };
     }
 
     /// This is the main controller for adding a field

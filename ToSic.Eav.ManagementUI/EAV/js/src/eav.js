@@ -19,7 +19,7 @@ function enhanceEntity(entity) {
     enhancer.enhanceVs = function (vs) {
         vs.hasLanguage = function (language) { return this.Dimensions.hasOwnProperty(language); };
         vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
-        vs.languageMode = function (language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : ""; }
+        vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : ""; };
 
         if(typeof vs.Dimensions != "undefined")
             enhancer.enhanceWithCount(vs.Dimensions);
@@ -27,8 +27,8 @@ function enhanceEntity(entity) {
     };
 
     // this will enhance an attribute
-    enhancer.enhanceAtt = function (att) {
-        att.getVsWithLanguage = function (language) {
+    enhancer.enhanceAtt = function(att) {
+        att.getVsWithLanguage = function(language) {
             // try to find it based on the language - it then has a property matching the language
             for (var v = 0; v < this.Values.length; v++)
                 if (this.Values[v].hasLanguage(language))
@@ -38,7 +38,7 @@ function enhanceEntity(entity) {
             return null;
         };
 
-        att.setLanguageToVs = function (vs, language, shareMode) {
+        att.setLanguageToVs = function(vs, language, shareMode) {
             // check if it's already there, if yes, just ensure shareMode, then done
             if (vs.hasLanguage(language))
                 return vs.setLanguage(language, shareMode);
@@ -51,7 +51,7 @@ function enhanceEntity(entity) {
             return vs.setLanguage(language, shareMode);
         };
 
-        att.removeLanguage = function (language) {
+        att.removeLanguage = function(language) {
             var value = this.getVsWithLanguage(language);
             if (value === null)
                 return;
@@ -59,18 +59,18 @@ function enhanceEntity(entity) {
 
             // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
             //if (value.Dimensions.length == 0 && this.Values.length > 0)
-            if (value.Dimensions.count() == 0 && this.Values.length > 0)
+            if (value.Dimensions.count() === 0 && this.Values.length > 0)
                 this.removeVs(value);
         };
 
-        att.removeVs = function (vs) {
+        att.removeVs = function(vs) {
             for (var v = 0; v < this.Values.length; v++)
                 if (this.Values[v] === vs)
                     this.Values.splice(v, 1);
         };
 
         // todo: when adding VS - ensure the events are added too...
-        att.addVs = function (value, language) {
+        att.addVs = function(value, language) {
             var dimensions = {};
             dimensions[language] = true;
             var newVs = { "Value": value, "Dimensions": dimensions };
@@ -83,22 +83,22 @@ function enhanceEntity(entity) {
             enhancer.enhanceVs(att.Values[v]);
 
         return att;
-    }
+    };
 
     // this will enhance an entity
-    enhancer.enhanceEntity = function (ent) {
-        ent.getTitle = function () {
+    enhancer.enhanceEntity = function(ent) {
+        ent.getTitle = function() {
             ent.getAttribute(e.TitleAttributeName);
         };
 
-        ent.hasAttribute = function (attrName) {
+        ent.hasAttribute = function(attrName) {
             for (var c = 0; c < ent.Attributes.length; c++)
                 if (ent.Attributes[c].Key == attrName)
                     return true;
             return false;
         };
 
-        ent.getAttribute = function (attrName) {
+        ent.getAttribute = function(attrName) {
             for (var c = 0; c < ent.Attributes.length; c++)
                 if (ent.Attributes[c].Key == attrName)
                     return ent.Attributes[c];
@@ -109,7 +109,7 @@ function enhanceEntity(entity) {
             enhancer.enhanceAtt(ent.Attributes[attCount]);
 
         return ent;
-    }
+    };
 
     return enhancer.enhanceEntity(entity);
-};
+}
