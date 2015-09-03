@@ -1,11 +1,12 @@
 ﻿@using System.IO
-@using System.ServiceModel.Dispatcher
 @{
     Layout = null;
 
     var ng = Request.QueryString["ng"];
 
     var path = "/eav/ng/" + ng + "/" + ng + ".html";
+
+    var useMinifiedAdmin = true;
 }
 
 <!DOCTYPE html>
@@ -45,20 +46,30 @@
     <script src="/eav/AngularServices/eav4Ng.js"></script>
     <script src="/eav/AngularServices/eavNgSvcs.js"></script>
 
-    @if (ng == "permissions" || ng == "content-types" || ng == "content-items")
+    @if (useMinifiedAdmin)
     {
-        <script src="/eav/ng/@ng/@ng-services.js"></script>
-        <script src="/eav/ng/@ng/@ng-controller.js"></script>
+        <script src="/tmp/ng/built/tosic-eav-admin.min.js"></script>
+
     }
-
-    @if (ng == "content-types")
+    else
     {
-        <script src="/eav/ng/content-types/content-types-field-services.js"></script>
-        <script src="/eav/ng/content-items/content-items-controller.js"></script>
-        <script src="/eav/ng/content-items/content-items-services.js"></script>
 
-        <script src="/eav/ng/permissions/permissions-services.js"></script>
-        <script src="/eav/ng/permissions/permissions-controller.js"></script>
+
+        if (ng == "permissions" || ng == "content-types" || ng == "content-items")
+         {
+             <script src="/eav/ng/@ng/@ng-services.js"></script>
+             <script src="/eav/ng/@ng/@ng-controller.js"></script>
+         }
+
+        if (ng == "content-types")
+         {
+             <script src="/eav/ng/content-types/content-types-field-services.js"></script>
+             <script src="/eav/ng/content-items/content-items-controller.js"></script>
+             <script src="/eav/ng/content-items/content-items-services.js"></script>
+
+             <script src="/eav/ng/permissions/permissions-services.js"></script>
+             <script src="/eav/ng/permissions/permissions-controller.js"></script>
+         }
     }
 
 </body>

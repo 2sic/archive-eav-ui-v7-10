@@ -115,8 +115,10 @@
     <Content Include="EAV\ng\content-items\content-items-controller.js" />
     <Content Include="EAV\ng\content-items\content-items-services.js" />
     <Content Include="EAV\ng\content-items\content-items.html" />
-    <Content Include="EAV\ng\content-types\xxxcontent-type-fields.html" />
+    <Content Include="EAV\ng\content-types\content-types-edit.html" />
+    <Content Include="EAV\ng\content-types\content-types-field-edit.html" />
     <Content Include="EAV\ng\content-types\content-types-field-services.js" />
+    <Content Include="EAV\ng\content-types\content-types-fields.html" />
     <Content Include="EAV\ng\content-types\content-types.html" />
     <Content Include="EAV\ng\content-types\content-types-controller.js" />
     <Content Include="EAV\ng\content-types\content-types-services.js" />

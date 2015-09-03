@@ -37,7 +37,7 @@ angular.module('EavAdminUi', ['ng'])
 
 
             svc.openContentItemsX = function ociX(resolve, callbacks) {
-                return svc._openModalWithCallback('~/content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback('content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
             };
 
         //#endregion
@@ -48,7 +48,7 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeEditX = function octeX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-type-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
+                return svc._openModalWithCallback('content-types/content-types-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
@@ -57,7 +57,7 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-type-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback('content-types/content-types-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
             };
         //#endregion
 
@@ -105,7 +105,7 @@ angular.module('EavAdminUi', ['ng'])
             };
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
-                return svc._openModalWithCallback('~/permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
             };
         //#endregion
 
@@ -130,8 +130,8 @@ angular.module('EavAdminUi', ['ng'])
         // 1. If the templateUrl begins with "~/" - this will be re-mapped to the ng-app root. Only use this for not-inline stuff
         // 2. The controller can be written as "something as vm" and this will be split and configured corectly
             svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
-                if (templateUrl.substring(0, 2) == "~/")
-                    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
+                //if (templateUrl.substring(0, 2) == "~/")
+                //    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
                 var foundAs = controller.indexOf(' as ');
                 var contAs = foundAs > 0 ?
                     controller.substring(foundAs + 4)

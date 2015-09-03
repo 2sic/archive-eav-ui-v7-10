@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUi', 'PermissionsApp'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUi', 'PermissionsApp', 'eavTemplates'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -107,7 +107,7 @@
         vm.add = function add() {
             modalInstance = $modal.open({
                 animation: true,
-                templateUrl: 'content-type-field-edit.html',
+                templateUrl: 'content-types/content-types-field-edit.html',
                 controller: 'FieldsAdd',
                 controllerAs: 'vm'
             });
