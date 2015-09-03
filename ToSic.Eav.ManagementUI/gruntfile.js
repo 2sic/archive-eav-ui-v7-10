@@ -1,10 +1,10 @@
 // "use strict";
 module.exports = function (grunt) {
-    var cwd = 'eav/ng';
-    var tmp = 'tmp/ng/';
-    var preBuiltDest = tmp + 'build-prep';
-    var builtDest = tmp + 'built';
-    var templatesFile = preBuiltDest + '/formly-templates.js';
+    var cwd = 'eav/ng';                             // the source application root
+    var tmp = 'tmp/ng/';                            // target for processing
+    var preBuiltDest = tmp + 'build-prep';          // pre-processing folder
+    var builtDest = tmp + 'built';                  // final folder
+    var templatesFile = preBuiltDest + '/html-templates.js';
     var targetFilename = 'tosic-eav-admin';
     var concatFile = builtDest + '/' + targetFilename + '.js';
     var annotated = builtDest + '/' + targetFilename + '.annotated.js';

@@ -20,6 +20,12 @@
 <body>
     <div>
         @Html.Raw(File.ReadAllText(Server.MapPath(path)))
+
+        @*<div eav-app="ContentTypesApp">
+            <div ng-include="content-types/content-types.html"></div>
+            x{{this}}y
+            <ng-include src="content-types/content-types.html"></ng-include>
+        </div>*@
     </div>
 
     <link rel="stylesheet" href="/CSS/bootstrap.min.css" />
@@ -29,7 +35,7 @@
     <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
-<script src="/eav/ng/admin/eav-admin-ui-service.js"></script>
+@*<script src="/eav/ng/admin/eav-admin-ui-service.js"></script>*@
     <script src="/bower_components/promise-window/dist/promise-window.min.js"></script>
 <!--
 <link rel="styleSheet" href="/bower_components/angular-ui-grid/ui-grid.min.css" />
