@@ -4,7 +4,7 @@
 
     var ng = Request.QueryString["ng"];
 
-    var path = "/eav/ng/" + ng + "/" + ng + ".html";
+    var path = "/src/ngAdmin/" + ng + "/" + ng + ".html";
 
     var useMinifiedAdmin = true;
 }
@@ -18,65 +18,55 @@
     @*<base href="/eav/ng/" />*@
 </head>
 <body>
-    <div>
-        @Html.Raw(File.ReadAllText(Server.MapPath(path)))
+<h2>try dynamic load</h2>
+<div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
 
-        @*<div eav-app="ContentTypesApp">
-            <div ng-include="content-types/content-types.html"></div>
-            x{{this}}y
-            <ng-include src="content-types/content-types.html"></ng-include>
-        </div>*@
-    </div>
 
-    <link rel="stylesheet" href="/CSS/bootstrap.min.css" />
-    <link rel="stylesheet" href="/CSS/bootstrap-theme.min.css" />
-    <script src="/Scripts/jquery-1.9.1.min.js"></script>
-    <script src="/bower_components/angular/angular.js"></script>
-    <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
-    <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<link rel="stylesheet" href="/CSS/bootstrap.min.css"/>
+<link rel="stylesheet" href="/CSS/bootstrap-theme.min.css"/>
+<script src="/Scripts/jquery-1.9.1.min.js"></script>
+<script src="/bower_components/angular/angular.js"></script>
+<link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css"/>
+<script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
-@*<script src="/eav/ng/admin/eav-admin-ui-service.js"></script>*@
-    <script src="/bower_components/promise-window/dist/promise-window.min.js"></script>
-<!--
-<link rel="styleSheet" href="/bower_components/angular-ui-grid/ui-grid.min.css" />
-    <script src="/bower_components/angular-ui-grid/ui-grid.min.js"></script>
-    -->
+<script src="/bower_components/promise-window/dist/promise-window.min.js"></script>
+
 @if (ng == "pipeline")
+{
+    <script src="/eav/PipelineDesigner/PipelineManagement.js"></script>
+    <script src="/eav/PipelineDesigner/PipelineService.js"></script>
+}
+
+<script src='/eav/AngularServices/eavGlobalConfigurationProvider.js'></script>
+
+<script src="/eav/AngularServices/eav4Ng.js"></script>
+<script src="/eav/AngularServices/eavNgSvcs.js"></script>
+
+@if (useMinifiedAdmin)
+{
+    <script src="/dist/admin/tosic-eav-admin.min.js"></script>
+
+}
+else
+{
+
+
+    if (ng == "permissions" || ng == "content-types" || ng == "content-items")
     {
-        <script src="/eav/PipelineDesigner/PipelineManagement.js"></script>
-        <script src="/eav/PipelineDesigner/PipelineService.js"></script>
+        <script src="/eav/ng/@ng/@ng-services.js"></script>
+        <script src="/eav/ng/@ng/@ng-controller.js"></script>
     }
 
-    <script src='/eav/AngularServices/eavGlobalConfigurationProvider.js'></script>
-
-    <script src="/eav/AngularServices/eav4Ng.js"></script>
-    <script src="/eav/AngularServices/eavNgSvcs.js"></script>
-
-    @if (useMinifiedAdmin)
+    if (ng == "content-types")
     {
-        <script src="/tmp/ng/built/tosic-eav-admin.min.js"></script>
+        <script src="/eav/ng/content-types/content-types-field-services.js"></script>
+        <script src="/eav/ng/content-items/content-items-controller.js"></script>
+        <script src="/eav/ng/content-items/content-items-services.js"></script>
 
+        <script src="/eav/ng/permissions/permissions-services.js"></script>
+        <script src="/eav/ng/permissions/permissions-controller.js"></script>
     }
-    else
-    {
-
-
-        if (ng == "permissions" || ng == "content-types" || ng == "content-items")
-         {
-             <script src="/eav/ng/@ng/@ng-services.js"></script>
-             <script src="/eav/ng/@ng/@ng-controller.js"></script>
-         }
-
-        if (ng == "content-types")
-         {
-             <script src="/eav/ng/content-types/content-types-field-services.js"></script>
-             <script src="/eav/ng/content-items/content-items-controller.js"></script>
-             <script src="/eav/ng/content-items/content-items-services.js"></script>
-
-             <script src="/eav/ng/permissions/permissions-services.js"></script>
-             <script src="/eav/ng/permissions/permissions-controller.js"></script>
-         }
-    }
+}
 
 </body>
 

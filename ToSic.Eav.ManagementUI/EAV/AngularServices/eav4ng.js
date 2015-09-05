@@ -10,6 +10,7 @@
 $eav4ng = {
     appAttribute: 'eav-app',
     ngAttrPrefixes: ['ng-', 'data-ng-', 'ng:', 'x-ng-'],
+    ngAttrDependencies: 'dependencies', // new 2015-09-25
 
     // bootstrap: an App-Start-Help; normally you won't call this manually as it will be auto-bootstrapped. 
     // All params optional except for 'element'
@@ -28,7 +29,11 @@ $eav4ng = {
         angular.forEach(allAppTags, function (appTag) {
             var ngModName = appTag.getAttribute($eav4ng.appAttribute);
             var configDependencyInjection = { strictDi: $eav4ng.getNgAttribute(appTag, "strict-di") !== null };
-            $eav4ng.bootstrap(appTag, ngModName, null, null, configDependencyInjection);
+
+            // new 2015-09-05
+            var dependencies = $eav4ng.getNgAttribute(appTag, $eav4ng.ngAttrDependencies);
+            if(dependencies) dependencies = dependencies.split(',');
+            $eav4ng.bootstrap(appTag, ngModName, null, dependencies, configDependencyInjection);
         });
     },
 

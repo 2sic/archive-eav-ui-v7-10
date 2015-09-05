@@ -1,9 +1,11 @@
-// "use strict";
-module.exports = function (grunt) {
-    var cwd = 'eav/ng';                             // the source application root
-    var tmp = 'tmp/ng/';                            // target for processing
-    var preBuiltDest = tmp + 'build-prep';          // pre-processing folder
-    var builtDest = tmp + 'built';                  // final folder
+module.exports = function(grunt) {
+    "use strict";
+    var ngaCwd = 'src/admin/', // the source application root
+        tmp = 'tmp/admin/', // target for processing
+        dst = 'dist/admin';
+    var cwdJs = [ngaCwd + "**/*.js", "!" + ngaCwd + "**/*.annotated.js"],
+        preBuiltDest = tmp + 'build-prep', // pre-processing folder
+        builtDest = dst;// tmp + 'built'; // final folder
     var templatesFile = preBuiltDest + '/html-templates.js';
     var targetFilename = 'tosic-eav-admin';
     var concatFile = builtDest + '/' + targetFilename + '.js';
@@ -12,23 +14,20 @@ module.exports = function (grunt) {
 
 
     var js = {
-        eav: { 
+        eav: {
             "src": "eav/js/src/**/*.js",
             "specs": "eav/js/specs/**/*spec.js",
             "helpers": "eav/js/specs/helpers/*.js"
-        },
-        ngadmin: {
-            allJs: ["eav/ng/**/*.js", "!**/*.annotated.js", "!eav/ng/dist/**"],
-            "annotated": "eav/ng/**/*.annotated.js"
         }
     };
 
-  // Project configuration.
+    // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
         jshint: {
-            all: ["gruntfile.js", js.eav.src, js.eav.specs, js.ngadmin.allJs]
+            ngUi: [cwdJs],
+            all: ["gruntfile.js", cwdJs, js.eav.specs, js.eav.src]
         },
 
         clean: {
@@ -41,7 +40,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: cwd,
+                        cwd: ngaCwd,
                         src: ['**', '!**/*Spec.js'],
                         dest: preBuiltDest
                     }
@@ -76,7 +75,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         cwd: preBuiltDest + '/',
-                        src: ['**/*.html'],//, 'wrappers/**/*.html', 'other/**/*.html'],
+                        src: ['**/*.html'], //, 'wrappers/**/*.html', 'other/**/*.html'],
                         dest: templatesFile
                     }
                 ]
@@ -93,9 +92,8 @@ module.exports = function (grunt) {
             default: {
                 expand: true,
                 src: concatFile,
-                // dest: annotated,
-                ext: '.annotated.js', // Dest filepaths will have this extension. 
-                extDot: 'last' // Extensions in filenames begin after the last dot 
+                ext: '.annotated.js',   // Dest filepaths will have this extension. 
+                extDot: 'last'          // Extensions in filenames begin after the last dot 
             }
         },
 
@@ -126,12 +124,18 @@ module.exports = function (grunt) {
         },
 
         watch: {
-            files: ["gruntfile.js", js.eav.src, js.eav.specs],
-            tasks: ['jasmine:default', 'jasmine:default:build']
+            ngUi: {
+                files: ["gruntfile.js", ngaCwd + "**"],
+                tasks: ['build']
+            },
+            devEavMlJson: {
+                files: ["gruntfile.js", js.eav.src, js.eav.specs],
+                tasks: ['jasmine:default', 'jasmine:default:build']                
+            }
         }
     });
 
-  // Load the plugin that provides the "uglify" task.
+    // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
@@ -150,8 +154,13 @@ module.exports = function (grunt) {
         'ngtemplates',
         'concat',
         'ngAnnotate',
-        'uglify']);
+        'uglify',
+        'watch:ngUi'
+    ]);
     grunt.registerTask('lint', 'jshint');
     grunt.registerTask('default', 'jasmine');
     grunt.registerTask('manualDebug', 'jasmine:default:build');
+    grunt.registerTask('quickDebug', 'quickly log a test', function(arg) {
+        grunt.log(cwdJs);
+    });
 };
