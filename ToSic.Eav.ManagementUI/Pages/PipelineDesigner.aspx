@@ -1,15 +1,15 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PipelineDesigner.aspx.cs" Inherits="ToSic.Eav.ManagementUI.Pages.PipelineDesigner" StylesheetTheme="" %>
 
-<%@ Register Src="~/EAV/PipelineDesigner/PipelineDesigner.ascx" TagPrefix="eav" TagName="PipelineDesigner" %>
-
 <!doctype html>
 
 <html>
 <head>
 	<meta charset="utf-8" />
 	<title>Pipeline Designer</title>
-	<link rel="stylesheet" href="../EAV/PipelineDesigner/PipelineDesigner.css">
-	<link rel="stylesheet" href="../Scripts/toaster.css" />
+	<link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+    
+
+
 	<link rel="stylesheet" href="../CSS/bootstrap.min.css" />
 	<link rel="stylesheet" href="../CSS/bootstrap-theme.min.css" />
 	<link rel="stylesheet" href="../Scripts/jquery-ui-1.10.3.css" />
@@ -18,16 +18,23 @@
 	<script src="../Scripts/angular.min.js"></script>
 	<script src="../Scripts/angular-resource.min.js"></script>
 	<script src="../Scripts/angular-animate.min.js"></script>
-	<script src="../Scripts/toaster.js"></script>
-	<script src="../EAV/PipelineDesigner/assets/jquery.jsPlumb-1.7.2-min.js"></script>
-	<script src="../EAV/PipelineDesigner/PipelineDesigner.js"></script>
-	<script src="../EAV/PipelineDesigner/PipelineDesignerController.js"></script>
-	<script src="../EAV/PipelineDesigner/PipelineService.js"></script>
-	<script src="../EAV/AngularServices/NotificationService.js"></script>
+    
+    <%--Toaster--%>
+	<link rel="stylesheet" href="/bower_components/angularjs-toaster/toaster.min.css" />
+    <script src="/bower_components/angularjs-toaster/toaster.min.js"></script>
+    
+    <%--jsPlumb--%>
+	<script src="/bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js"></script>
+
+    <script src="/dist/admin/tosic-eav-admin.annotated.js"></script>
+   
+
 	<script src='../EAV/AngularServices/EavGlobalConfigurationProvider.js'></script>
 	<script src='../EAV/AngularServices/EavDialogService.js'></script>
+    <script src='../EAV/AngularServices/eav4ng.js'></script>
 </head>
 <body>
-	<eav:PipelineDesigner runat="server" ID="PipelineDesigner1" />
+	<div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ></div>
+
 </body>
 </html>

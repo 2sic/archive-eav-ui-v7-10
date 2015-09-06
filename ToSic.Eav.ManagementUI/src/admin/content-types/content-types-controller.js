@@ -89,6 +89,8 @@
     /// The controller to manage the fields-list
     function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
         var vm = this;
+        // todo: must get appId in and 
+        // todo: change to contentTypeSvc(appId)
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
         vm.contentType = contentTypeFieldSvc.contentType = contentType;

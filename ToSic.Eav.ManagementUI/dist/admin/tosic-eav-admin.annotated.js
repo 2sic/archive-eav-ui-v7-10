@@ -1,0 +1,1687 @@
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+
+    angular.module("ContentItemsApp", ['ContentItemsAppServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
+        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
+        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+        .controller("ContentItemsList", ContentItemsListController)
+        ;
+
+    function ContentItemsListController(contentItemsSvc, eavGlobalConfigurationProvider, appId, contentType, contentTypeId, eavAdminDialogs) {
+        var vm = this;
+        var svc = contentItemsSvc;
+        svc.appId = appId;
+        svc.contentType = contentType;
+        svc.contentTypeId = contentTypeId;
+
+        vm.add = function add() {
+            eavAdminDialogs.openItemNew(svc.contentTypeId, svc.liveListReload);
+        };
+
+        vm.edit = function(item) {
+            eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
+        };
+
+        vm.refresh = contentItemsSvc.liveListReload;
+        vm.refresh();
+        vm.items = contentItemsSvc.liveList();
+
+        vm.dynamicColumns = [];
+        contentItemsSvc.getColumns().then(function (result) {
+            var cols = result.data;
+            for (var c = 0; c < cols.length; c++) {
+                if (!cols[c].IsTitle)
+                    vm.dynamicColumns.push(cols[c]);
+            }
+        });
+
+        vm.tryToDelete = function tryToDelete(item) {
+            if (confirm("Delete '" + 'title-unkwonn-yet' + "' (" + item.Id + ") ?"))
+                contentItemsSvc.delete(item.Id);
+        };
+
+        vm.refresh = contentItemsSvc.liveListReload;
+    }
+    ContentItemsListController.$inject = ["contentItemsSvc", "eavGlobalConfigurationProvider", "appId", "contentType", "contentTypeId", "eavAdminDialogs"];
+
+} ());
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
+        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
+        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+        .controller("List", ContentTypeListController)
+        .controller("Edit", ContentTypeEditController)
+        .controller("FieldList", ContentTypeFieldListController)
+        .controller("FieldsAdd", ContentTypeFieldAddController)
+    ;
+
+
+    /// Manage the list of content-types
+    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId) {
+        var vm = this;
+        var svc = contentTypeSvc(appId);
+
+        vm.items = svc.liveList();
+        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
+
+        vm.tryToDelete = function tryToDelete(title, entityId) {
+            var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
+            if (ok)
+                svc.delete(entityId);
+        };
+
+        vm.edit = function edit(item) {
+            if (item === undefined)
+                item = svc.newItem();
+            eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
+        };
+
+        vm.editFields = function editFields(item) {
+            eavAdminDialogs.openContentTypeFields(item, vm.refresh);
+        };
+
+        vm.editItems = function editItems(item) {
+            eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
+        };
+        
+
+        vm.refresh = svc.liveListReload;
+
+        vm.tryToDelete = function tryToDelete(item) {
+            if (confirm("Delete?")) 
+                svc.delete(item);
+        };
+        vm.liveEval = function admin() {
+            var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
+            if (inp)
+                eval(inp); // jshint ignore:line
+        };
+
+        vm.isGuid = function isGuid(txtToTest) {
+            var patt = new RegExp(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i);
+            return patt.test(txtToTest); // note: can't use the txtToTest.match because it causes infinite digest cycles
+        };
+
+        vm.permissions = function permissions(item) {
+            if (!vm.isGuid(item.StaticName))
+                return (alert('Permissions can only be set to Content-Types with Guid Identifiers'));
+            return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
+        };
+
+        vm.openExport = function openExport() {
+            return eavAdminDialogs.openContentExport(svc.appId);
+        };
+        vm.openImport = function openImport() {
+            return eavAdminDialogs.openContentImport(svc.appId);
+        };
+    }
+    ContentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId"];
+
+    /// Edit or add a content-type
+    function ContentTypeEditController(contentTypeSvc, item, $modalInstance) {
+        var vm = this;
+        
+        vm.item = item;
+
+        vm.ok = function () {
+            contentTypeSvc.save(item);
+            $modalInstance.close(vm.item);
+        };
+
+        vm.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }
+    ContentTypeEditController.$inject = ["contentTypeSvc", "item", "$modalInstance"];
+
+    /// The controller to manage the fields-list
+    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
+        var vm = this;
+        // todo: must get appId in and 
+        // todo: change to contentTypeSvc(appId)
+
+        contentTypeFieldSvc.appId = contentTypeSvc.appId;
+        vm.contentType = contentTypeFieldSvc.contentType = contentType;
+
+        // to close this dialog
+        vm.close = function () {
+            $modalInstance.dismiss('cancel');
+        };
+
+        // Reset & reload the list - initial reset important, because it could still have the previous list cached
+        contentTypeFieldSvc.liveListReset();
+        vm.items = contentTypeFieldSvc.liveList();
+
+        // Open an add-dialog, and add them if the dialog is closed
+        vm.add = function add() {
+            modalInstance = $modal.open({
+                animation: true,
+                templateUrl: 'content-types/content-types-field-edit.html',
+                controller: 'FieldsAdd',
+                controllerAs: 'vm'
+            });
+
+            modalInstance.result.then(function(items) {
+                var newList = [];
+                for (var c = 0; c < items.length; c++)
+                    if (items[c].StaticName)
+                        newList.push(items[c]);
+                contentTypeFieldSvc.addMany(newList, 0);
+            });
+
+        };
+
+
+        // Actions like moveUp, Down, Delete, Title
+        vm.moveUp = contentTypeFieldSvc.moveUp;
+        vm.moveDown = contentTypeFieldSvc.moveDown;
+        vm.setTitle = contentTypeFieldSvc.setTitle;
+
+        vm.tryToDelete = function tryToDelete(item) {
+            if (item.IsTitle)
+                return alert("Can't delete Title");
+            if (confirm("Delete?")) {
+                return contentTypeFieldSvc.delete(item);
+            }
+        };
+
+        // Edit / Add metadata to a specific fields
+        vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
+            metadataType = '@' + metadataType;
+            var exists = item.Metadata[metadataType] !== null;
+
+            if (exists) {
+                eavAdminDialogs.openItemEditWithEntityId(
+                    item.Metadata[metadataType].EntityId,
+                    contentTypeFieldSvc.liveListReload);
+            } else {
+                eavAdminDialogs.openMetadataNew('attribute', item.Id, metadataType,
+                    contentTypeFieldSvc.liveListReload);
+            }
+        };
+    }
+    ContentTypeFieldListController.$inject = ["contentTypeSvc", "contentTypeFieldSvc", "contentType", "eavGlobalConfigurationProvider", "eavManagementSvc", "$modalInstance", "$modal", "$q", "eavAdminDialogs"];
+
+    /// This is the main controller for adding a field
+    /// Add is a standalone dialog, showing 10 lines for new field names / types
+    function ContentTypeFieldAddController(contentTypeFieldSvc, $modalInstance) {
+        var vm = this;
+
+        // prepare empty array of up to 10 new items to be added
+        var nw = contentTypeFieldSvc.newItem;
+        vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
+
+        vm.item = contentTypeFieldSvc.newItem();
+        vm.types = contentTypeFieldSvc.types.liveList();
+
+        vm.ok = function () {
+            $modalInstance.close(vm.items);
+        };
+
+        vm.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }
+    ContentTypeFieldAddController.$inject = ["contentTypeFieldSvc", "$modalInstance"];
+}());
+angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache) {
+  'use strict';
+
+  $templateCache.put('content-items/content-items.html',
+    "<div><div class=modal-header><h3 class=modal-title>Manage Content / Data</h3></div><div class=modal-body><h3 .>todo</h3><ol><li>change entity-delivery of values ot be a serializer setting</li></ol><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button><div style=\"overflow: auto\"><table class=\"table table-striped table-hover\"><thead><tr><th>ID</th><th>Publ</th><th style=\"width: 200px\">Title</th><th>Del</th><th ng-repeat=\"col in vm.dynamicColumns\">{{col.StaticName}}</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td style=\"white-space: nowrap\"><button type=button class=\"btn btn-xs\" ng-click=vm.edit(item)><span class=\"glyphicon glyphicon-pencil\"></span></button> <span>{{item.Id}}</span></td><td style=\"white-space: nowrap\"><span class=glyphicon ng-class=\"{'glyphicon-ok-circle': item.IsPublished, 'glyphicon-ban-circle' : !item.IsPublished && !item.Published, 'glyphicon-record' : !item.IsPublished && item.Published }\" tooltip=\"{{ item.IsPublished ? 'Published and visible' : item.Published ? 'This is a draft for another item' : 'Not published at the moment' }}\"></span> <span class=glyphicon ng-class=\"{'glyphicon-paperclip':  item.Draft, 'glyphicon-export': item.Published}\" tooltip=\"{{ item.Draft ? 'Has draft:' + item.Draft.RepositoryId : '' }}{{ item.Published ? 'Will replace published:' + item.Published.RepositoryId : '' }}\"></span></td><td><div style=\"height: 20px; width: 200px; position: relative; overflow: hidden; white-space: nowrap; text-overflow: ellipsis\" tooltip={{item.Title}}><a ng-click=vm.edit(item) target=_self>{{item.Title}}{{ !item.Title ? 'no title on # ' + item.Id : '' }}</a></div></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td><td ng-repeat=\"col in vm.dynamicColumns\"><div style=\"height: 20px; max-width: 100px; position: relative; overflow: hidden; text-overflow: ellipsis\" tooltip={{item[col.StaticName]}}>{{item[col.StaticName].toString().substring(0,25)}}</div></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div></div>"
+  );
+
+
+  $templateCache.put('content-types/content-types-edit.html',
+    "<div class=modal-header><h3 class=modal-title>Edit Content Type external</h3></div><div class=modal-body><h3>todo</h3><ol><li>get validators to work</li></ol>Name:<br><input ng-model=\"vm.item.Name\"><br>Description:<br><input ng-model=\"vm.item.Description\"><br>Scope:<br><input disabled ng-model=\"vm.item.Scope\"></div><div class=modal-footer><button class=\"btn btn-primary\" type=button ng-click=vm.ok()>OK</button> <button class=\"btn btn-warning\" type=button ng-click=vm.cancel()>Cancel</button></div>"
+  );
+
+
+  $templateCache.put('content-types/content-types-field-edit.html',
+    "<div class=modal-header><h3 class=modal-title>Add Fields</h3></div><div class=modal-body><table class=\"table table-hover\"><thead><tr><th>Name</th><th>Data Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=\"true\"></td><td><select ng-model=item.Type ng-options=\"o for o in vm.types track by o\"></select></td></tr></tbody></table></div><div class=modal-footer><button class=\"btn btn-primary\" type=button ng-click=vm.ok()>OK</button> <button class=\"btn btn-warning\" type=button ng-click=vm.cancel()>Cancel</button></div>"
+  );
+
+
+  $templateCache.put('content-types/content-types-fields.html',
+    "<div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>Content Type Fields</h3></div><div class=modal-body><h3>todo</h3><ol><li>validators on the +new dialog</li></ol><a ng-click=vm.add() class=\"btn btn-default\"><span class=\"glyphicon glyphicon-plus\"></span></a><table class=\"table table-hover\"><thead><tr><th>Title</th><th>Static Name</th><th>Edit & Data Type</th><th>Label</th><th>Notes</th><th>Sort</th><th>Delete</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\"><td><button type=button class=\"btn btn-xs\" xng-class=\"{'btn-success': item.IsTitle }\" ng-click=vm.setTitle(item)><span class=glyphicon ng-class=\"{ 'glyphicon-star': item.IsTitle, 'glyphicon-star-empty': !item.IsTitle}\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\"></span></button></td><td><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td style=\"white-space: nowrap\"><button type=button class=\"btn btn-xs\" ng-click=\"vm.createOrEditMetadata(item, 'All')\"><span class=\"glyphicon glyphicon-pencil\"></span>General</button> <button type=button class=\"btn btn-xs\" ng-click=\"vm.createOrEditMetadata(item, item.Type)\"><span class=\"glyphicon glyphicon-pencil\"></span>{{item.Type}}</button></td><td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td><td>{{item.Metadata['@All'].Attributes.Notes.DefaultValue.TypedContents}}</td><td style=\"white-space: nowrap\"><button type=button class=\"btn btn-xs\" ng-disabled=$first ng-click=vm.moveUp(item)><span class=\"glyphicon glyphicon-arrow-up\"></span></button> <button type=button class=\"btn btn-xs\" ng-disabled=$last ng-click=vm.moveDown(item)><span class=\"glyphicon glyphicon-arrow-down\"></span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div>"
+  );
+
+
+  $templateCache.put('content-types/content-types.html',
+    "<div class=modal-header><h3 class=modal-title>Content-Types and Data</h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><a ng-click=vm.edit() class=\"btn btn-default\"><span class=\"glyphicon glyphicon-plus\"></span></a> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.liveEval()><span class=\"glyphicon glyphicon-flash\"></span></button><table class=\"table table-hover\"><thead><tr><th>Name</th><th>Description</th><th>Fields</th><th>Items</th><th>Permissions</th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.editFields(item)><span class=\"glyphicon glyphicon-cog\">&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.editItems(item)><span class=\"glyphicon glyphicon-list\">&nbsp;{{item.Items}}</span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)><span class=\"glyphicon glyphicon-user\"></span> Permissions</button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>Loading... or no items found</td></tr></tbody></table><h3>Export/Import</h3><button type=button class=btn ng-click=vm.openExport()><span class=\"glyphicon glyphicon-export\"></span> Export</button> xxx <button type=button class=btn ng-click=vm.openImport()><span class=\"glyphicon glyphicon-import\"></span> Import</button></div></div>"
+  );
+
+
+  $templateCache.put('permissions/permissions-standalone.html',
+    "<div sxc-app=PermissionsApp eav-app=PermissionsApp><div ng-controller=\"Admin as vm\"><h1>todo: include the other file here</h1></div></div>"
+  );
+
+
+  $templateCache.put('permissions/permissions.html',
+    "<div><div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>Permission</h3></div><div class=modal-body><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <a target=_self class=\"btn btn-default\" ng-if=returnUrl ng-href={{returnUrl}}><span class=\"glyphicon glyphicon-arrow-left\"></span> Back</a><table class=\"table table-striped table-hover\"><thead><tr><th>Name</th><th>ID</th><th>Condition</th><th>Grant</th><th>Delete</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy:'Title'\"><td><a ng-click=vm.edit(item)>{{item.Title}}</a></td><td>{{item.Id}}</td><td>{{item.Condition}}</td><td>{{item.Grant}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div>"
+  );
+
+
+  $templateCache.put('pipelines/pipeline-designer.html',
+    "<div class=ng-cloak><div ng-controller=PipelineDesignerController><div id=pipelineContainer><div ng-repeat=\"dataSource in pipelineData.DataSources\" datasource id=dataSource_{{dataSource.EntityGuid}} class=dataSource ng-attr-style=\"top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px\"><div class=configure ng-click=configureDataSource(dataSource) title=\"Configure this DataSource\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-list-alt\"></span></div><div class=name title=\"Click to edit the Name\" ng-click=editName(dataSource)>{{dataSource.Name || '(unnamed)'}}</div><br><div class=description title=\"Click to edit the Description\" ng-click=editDescription(dataSource)>{{dataSource.Description || '(no description)'}}</div><br><div class=typename ng-attr-title={{dataSource.PartAssemblyAndType}}>Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div><div class=ep title=\"Drag a new Out-Connection from here\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-plus-sign\"></span></div><div class=\"delete glyphicon glyphicon-remove\" title=\"Delete this DataSource\" ng-click=remove($index) ng-if=!dataSource.ReadOnly></div></div></div><div class=\"actions panel panel-default\"><div class=panel-heading><span class=pull-left>Actions</span> <a href=http://2sxc.org/help class=\"btn btn-info btn-xs pull-right\" target=_blank><span class=\"glyphicon glyphicon-question-sign\"></span> Help</a></div><div class=panel-body><button type=button class=\"btn btn-primary btn-block\" ng-disabled=readOnly ng-click=savePipeline()><span class=\"glyphicon glyphicon-floppy-save\"></span> Save</button><select class=form-control ng-model=addDataSourceType ng-disabled=readOnly ng-change=addDataSource() ng-options=\"d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'\"><option value=\"\">-- Add DataSource --</option></select><button type=button class=\"btn btn-default btn-sm\" title=\"Query the Data of this Pipeline\" ng-click=queryPipeline()><span class=\"glyphicon glyphicon-play\"></span> Query</button> <button type=button class=\"btn btn-default btn-sm\" title=\"Clone this Pipeline with all DataSources and Configurations\" ng-click=clonePipeline() ng-disabled=!PipelineEntityId><span class=\"glyphicon glyphicon-share-alt\"></span> Clone</button> <button type=button class=\"btn btn-default btn-sm\" ng-click=editPipelineEntity()><span class=\"glyphicon glyphicon-pencil\"></span> Test Parameters</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=toggleEndpointOverlays()><span class=\"glyphicon glyphicon-info-sign\"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=repaint()><span class=\"glyphicon glyphicon-repeat\"></span> Repaint</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=toogleDebug()><span class=\"glyphicon glyphicon-info-sign\"></span> {{debug ? 'Hide' : 'Show'}} Debug Info</button></div></div><toaster-container></toaster-container><pre ng-if=debug>{{pipelineData | json}}</pre></div></div>"
+  );
+
+
+  $templateCache.put('pipelines/pipelines.html',
+    "<div class=ng-cloak><div ng-controller=\"PipelineManagementController as vm\"><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.liveEval()><span class=\"glyphicon glyphicon-flash\"></span></button><table class=\"table table-striped table-hover\"><thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead><tbody><tr ng-repeat=\"pipeline in vm.pipelines | orderBy:'Name'\"><td>{{pipeline.Id}}</td><td><a ng-click=vm.edit(pipeline)>{{pipeline.Name}}</a></td><td>{{pipeline.Description}}</td><td><a class=\"btn btn-xs btn-default\" ng-click=vm.design(pipeline)><span class=\"glyphicon glyphicon-random\"></span>&nbsp;Design</a> <button type=button class=\"btn btn-xs\" ng-click=vm.permissions(pipeline)><span class=\"glyphicon glyphicon-user\"></span>&nbsp;Permissions</button> <button type=button class=\"btn btn-xs\" ng-click=vm.clone(pipeline)><span class=\"glyphicon glyphicon-share-alt\"></span>&nbsp;Clone</button> <button type=button class=\"btn btn-xs\" ng-click=vm.delete(pipeline)><span class=\"glyphicon glyphicon-remove\"></span>&nbsp;Delete</button></td></tr><tr ng-if=!vm.pipelines.length><td colspan=100>No Items</td></tr></tbody></table></div></div>"
+  );
+
+}]);
+
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+
+    angular.module("PermissionsApp", ['PermissionsServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
+        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
+        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+        .controller("PermissionList", PermissionListController)
+        ;
+
+    function PermissionListController(permissionsSvc, eavAdminDialogs, eavGlobalConfigurationProvider, appId, targetGuid, $modalInstance /* $location */) {
+        var vm = this;
+        var svc = permissionsSvc(appId, targetGuid);
+
+        vm.edit = function edit(item) {
+            eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
+        };
+
+        vm.add = function add() {
+            eavAdminDialogs.openMetadataNew('entity', svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
+        };
+
+        vm.items = svc.liveList();
+        
+        vm.tryToDelete = function tryToDelete(item) {
+            if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?"))
+                svc.delete(item.Id);
+        };
+
+        vm.refresh = svc.liveListReload;
+
+        vm.close = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }
+    PermissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavGlobalConfigurationProvider", "appId", "targetGuid", "$modalInstance"];
+
+} ());
+angular.module("PipelineDesigner", ["PipelineDesigner.filters", "ngResource", "toaster", "eavGlobalConfigurationProvider", "eavDialogService", "PipelineService", "eavTemplates"]) 
+
+// datasource directive makes an element a DataSource with jsPlumb
+    .directive("datasource", ["$timeout", function($timeout) {
+        return {
+            restrict: "A",
+            link: function(scope, element) {
+                // make this a DataSource when the DOM is ready
+                $timeout(function() {
+                    scope.makeDataSource(scope.dataSource, element);
+                });
+                if (scope.$last === true) {
+                    $timeout(function() {
+                        scope.$emit("ngRepeatFinished");
+                    });
+                }
+            }
+        };
+    }])
+
+// Show Notifications using toaster
+    .factory("uiNotification", [
+        "toaster", function(toaster) {
+            "use strict";
+
+            var showNote = function(type, title, body, autoHide) {
+                // wrap toaster in ready-Event because notes would't be show if teaster is used before
+                angular.element(document).ready(function() {
+                    toaster.clear();
+                    toaster.pop(type, title, body, autoHide ? null : 0);
+                });
+            };
+
+            return {
+                clear: function() {
+                    toaster.clear();
+                },
+                error: function(title, bodyOrError) {
+                    var message;
+                    // test whether bodyOrError is an Error from Web API
+                    if (bodyOrError && bodyOrError.data && bodyOrError.data.Message) {
+                        message = bodyOrError.data.Message;
+                        if (bodyOrError.data.ExceptionMessage)
+                            message += "\n" + bodyOrError.data.ExceptionMessage;
+                    } else
+                        message = bodyOrError;
+
+                    showNote("error", title, message);
+                },
+                note: function(title, body, autoHide) {
+                    showNote("note", title, body, autoHide);
+                },
+                success: function(title, body, autoHide) {
+                    showNote("success", title, body, autoHide);
+                },
+                wait: function(title) {
+                    showNote("note", title ? title : "Please wait ..", "This shouldn't take long", false);
+                }
+            };
+        }
+    ]);
+
+// Filters for "ClassName, AssemblyName"
+angular.module("PipelineDesigner.filters", []).filter("typename", function () {
+	return function (input, format) {
+		var globalParts = input.match(/[^,\s]+/g);
+
+		switch (format) {
+			case "classFullName":
+				if (globalParts)
+				    return globalParts[0];
+			    break;
+			case "className":
+				if (globalParts) {
+					var classFullName = globalParts[0].match(/[^\.]+/g);
+					return classFullName[classFullName.length - 1];
+				}
+		}
+
+		return input;
+	};
+});
+// AngularJS Controller for the >>>> Pipeline Designer
+// todo: refactor the pipeline designer to use the new eavAdminUi service
+
+/*jshint laxbreak:true */
+angular.module("PipelineDesigner")
+
+    .controller("PipelineDesignerController",
+			
+	["$scope", "pipelineService", "$location", "$timeout", "$filter", "uiNotification", "eavDialogService", "$log", "eavGlobalConfigurationProvider", "$q", function ($scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider, $q) {
+		"use strict";
+        
+		// Init
+		uiNotification.wait();
+		$scope.readOnly = true;
+		$scope.dataSourcesCount = 0;
+		$scope.dataSourceIdPrefix = "dataSource_";
+		$scope.debug = false;
+
+		// Load Pipeline Data
+		$scope.PipelineEntityId = $location.search().PipelineId;
+		// Stop if no AppId is set
+		if (!$location.search().AppId) {
+			$timeout(function () {
+				uiNotification.error("Please specify an AppId");
+			});
+			return;
+		}
+		pipelineService.setAppId($location.search().AppId);
+
+		// Get Data from PipelineService (Web API)
+		pipelineService.getPipeline($scope.PipelineEntityId).then(function (success) {
+			$scope.pipelineData = success;
+			$scope.readOnly = !success.Pipeline.AllowEdit;
+			uiNotification.note("Ready", $scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.", true);
+
+			// If a new Pipeline is made, init new Pipeline
+			if (!$scope.PipelineEntityId || $scope.pipelineData.DataSources.length == 1)
+				initNewPipeline();
+		}, function (reason) {
+			uiNotification.error("Loading Pipeline failed", reason);
+		});
+
+		// init new jsPlumb Instance
+		jsPlumb.ready(function () {
+			$scope.jsPlumbInstance = jsPlumb.getInstance({
+				Connector: ["Bezier", { curviness: 70 }],
+				HoverPaintStyle: {
+					lineWidth: 4,
+					strokeStyle: "#216477",
+					outlineWidth: 2,
+					outlineColor: "white"
+				},
+				PaintStyle: {
+					lineWidth: 4,
+					strokeStyle: "#61B7CF",
+					joinstyle: "round",
+					outlineColor: "white",
+					outlineWidth: 2
+				},
+				Container: "pipelineContainer"
+			});
+			// If connection on Out-DataSource was removed, remove custom Endpoint
+			$scope.jsPlumbInstance.bind("connectionDetached", function (info) {
+				if (info.targetId == $scope.dataSourceIdPrefix + "Out") {
+					var fixedEndpoints = angular.element(info.target).scope().dataSource.Definition().In;
+					var label = info.targetEndpoint.getOverlay("endpointLabel").label;
+					if (fixedEndpoints.indexOf(label) == -1) {
+						$timeout(function () {
+							$scope.jsPlumbInstance.deleteEndpoint(info.targetEndpoint);
+						});
+					}
+				}
+			});
+			// If a new connection is created, ask for a name of the In-Stream
+			$scope.jsPlumbInstance.bind("connection", function (info) {
+				if (!$scope.connectionsInitialized) return;
+
+				// Repeat until a valid Stream-Name is provided by the user
+				var repeatCount = 0;
+				var endpointHandling = function(endpoint) {
+				    var label = endpoint.getOverlay("endpointLabel").getLabel();
+				    if (label === labelPrompt && info.targetEndpoint.id !== endpoint.id && angular.element(endpoint.canvas).hasClass("targetEndpoint")) 
+				        targetEndpointHavingSameLabel = endpoint;
+				};
+				while (true) {
+					repeatCount++;
+
+					var promptMessage = "Please name the Stream";
+					if (repeatCount > 1)
+						promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
+
+					var endpointLabel = info.targetEndpoint.getOverlay("endpointLabel");
+					var labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
+					if (labelPrompt)
+						endpointLabel.setLabel(labelPrompt);
+					else
+						continue;
+
+					// Check if any other Target-Endpoint has the same Stream-Name (Label)
+					var endpoints = $scope.jsPlumbInstance.getEndpoints(info.target.id);
+					var targetEndpointHavingSameLabel = null;
+
+				    angular.forEach(endpoints, endpointHandling);
+					if (targetEndpointHavingSameLabel)
+						continue;
+
+					break;
+				}
+			});
+		});
+
+		// #region jsPlumb Endpoint Definitions
+	    var getEndpointOverlays = function(isSource) {
+	        return [
+	            [
+	                "Label", {
+	                    id: "endpointLabel",
+	                    location: [0.5, isSource ? -0.5 : 1.5],
+	                    label: "Default",
+	                    cssClass: isSource ? "endpointSourceLabel" : "endpointTargetLabel",
+	                    events: {
+	                        dblclick: function(labelOverlay) {
+	                            if ($scope.readOnly) return;
+
+	                            var newLabel = prompt("Rename Stream", labelOverlay.label);
+	                            if (newLabel)
+	                                labelOverlay.setLabel(newLabel);
+	                        }
+	                    }
+	                }
+	            ]
+	        ];
+	    };
+
+		// the definition of source endpoints (the small blue ones)
+		var sourceEndpoint = {
+			paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+			cssClass: "sourceEndpoint",
+			maxConnections: -1,
+			isSource: true,
+			anchor: ["Continuous", { faces: ["top"] }],
+			overlays: getEndpointOverlays(true)
+		};
+
+		// the definition of target endpoints (will appear when the user drags a connection) 
+		var targetEndpoint = {
+			paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+			cssClass: "targetEndpoint",
+			maxConnections: 1,
+			isTarget: true,
+			anchor: ["Continuous", { faces: ["bottom"] }],
+			overlays: getEndpointOverlays(false),
+			dropOptions: { hoverClass: "hover", activeClass: "active" }
+		};
+		// #endregion
+
+		// make a DataSource with Endpoints, called by the datasource-Directive
+	    $scope.makeDataSource = function(dataSource, element) {
+	        // suspend drawing and initialise
+	        $scope.jsPlumbInstance.doWhileSuspended(function() {
+	            // Add Out- and In-Endpoints from Definition
+	            var dataSourceDefinition = dataSource.Definition();
+	            if (dataSourceDefinition !== null) {
+	                // Add Out-Endpoints
+	                angular.forEach(dataSourceDefinition.Out, function(name) {
+	                    addEndpoint(element, name, false);
+	                });
+	                // Add In-Endpoints
+	                angular.forEach(dataSourceDefinition.In, function(name) {
+	                    addEndpoint(element, name, true);
+	                });
+	                // make the DataSource a Target for new Endpoints (if .In is an Array)
+	                if (dataSourceDefinition.In) {
+	                    var targetEndpointUnlimited = targetEndpoint;
+	                    targetEndpointUnlimited.maxConnections = -1;
+	                    $scope.jsPlumbInstance.makeTarget(element, targetEndpointUnlimited);
+	                }
+
+	                $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon", });
+	            }
+
+	            // make DataSources draggable
+	            if (!$scope.readOnly) {
+	                $scope.jsPlumbInstance.draggable(element, {
+	                    grid: [20, 20],
+	                    drag: $scope.dataSourceDrag
+	                });
+	            }
+	        });
+
+	        $scope.dataSourcesCount++;
+	    };
+
+		// Add a jsPlumb Endpoint to an Element
+	    var addEndpoint = function(element, name, isIn) {
+	        if (!element.length) {
+	            $log.error({ message: "Element not found", selector: element.selector });
+	            return;
+	        }
+
+	        var dataSource = element.scope().dataSource;
+	        var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
+	        var params = {
+	            uuid: uuid,
+	            enabled: !dataSource.ReadOnly || dataSource.EntityGuid == "Out" // Endpoints on Out-DataSource must be always enabled
+	        };
+	        var endPoint = $scope.jsPlumbInstance.addEndpoint(element, (isIn ? targetEndpoint : sourceEndpoint), params);
+	        endPoint.getOverlay("endpointLabel").setLabel(name);
+	    };
+
+		// Initialize jsPlumb Connections once after all DataSources were created in the DOM
+		$scope.connectionsInitialized = false;
+		$scope.$on("ngRepeatFinished", function () {
+			if ($scope.connectionsInitialized) return;
+
+			// suspend drawing and initialise
+			$scope.jsPlumbInstance.doWhileSuspended(function () {
+				initWirings($scope.pipelineData.Pipeline.StreamWiring);
+			});
+			$scope.repaint();	// repaint so continuous connections are aligned correctly
+
+			$scope.connectionsInitialized = true;
+		});
+	    var initWirings = function(streamWiring) {
+	        angular.forEach(streamWiring, function(wire) {
+	            // read connections from Pipeline
+	            var sourceElementId = $scope.dataSourceIdPrefix + wire.From;
+	            var fromUuid = sourceElementId + "_out_" + wire.Out;
+	            var targetElementId = $scope.dataSourceIdPrefix + wire.To;
+	            var toUuid = targetElementId + "_in_" + wire.In;
+
+	            // Ensure In- and Out-Endpoint exist
+	            if (!$scope.jsPlumbInstance.getEndpoint(fromUuid))
+	                addEndpoint(jsPlumb.getSelector("#" + sourceElementId), wire.Out, false);
+	            if (!$scope.jsPlumbInstance.getEndpoint(toUuid))
+	                addEndpoint(jsPlumb.getSelector("#" + targetElementId), wire.In, true);
+
+	            try {
+	                $scope.jsPlumbInstance.connect({ uuids: [fromUuid, toUuid] });
+	            } catch (e) {
+	                $log.error({ message: "Connection failed", from: fromUuid, to: toUuid });
+	            }
+	        });
+	    };
+
+		// Init a new Pipeline with DataSources and Wirings from Configuration
+	    var initNewPipeline = function() {
+	        angular.forEach(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.dataSources, function(dataSource) {
+	            $scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, false, dataSource.entityGuid);
+	        });
+
+	        // Wait until all DataSources were created
+	        var initWiringsListener = $scope.$on("ngRepeatFinished", function() {
+	            $scope.connectionsInitialized = false;
+	            initWirings(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.streamWiring);
+	            $scope.connectionsInitialized = true;
+
+	            initWiringsListener(); // unbind the Listener
+	        });
+	    };
+
+		// Add new DataSource
+	    $scope.addDataSource = function(partAssemblyAndType, visualDesignerData, autoSave, entityGuid) {
+	        if (!partAssemblyAndType) {
+	            partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+	            $scope.addDataSourceType = null;
+	        }
+	        if (!visualDesignerData)
+	            visualDesignerData = { Top: 100, Left: 100 };
+
+	        var newDataSource = {
+	            VisualDesignerData: visualDesignerData,
+	            Name: $filter("typename")(partAssemblyAndType, "className"),
+	            Description: "",
+	            PartAssemblyAndType: partAssemblyAndType,
+	            EntityGuid: entityGuid || "unsaved" + ($scope.dataSourcesCount + 1)
+	        };
+	        // Extend it with a Property to it's Definition
+	        newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource($scope.pipelineData, newDataSource));
+
+	        $scope.pipelineData.DataSources.push(newDataSource);
+
+	        if (autoSave !== false)
+	            $scope.savePipeline();
+	    };
+
+		// Delete a DataSource
+	    $scope.remove = function(index) {
+	        var dataSource = $scope.pipelineData.DataSources[index];
+	        if (!confirm("Delete DataSource \"" + (dataSource.Name || "(unnamed)") + "\"?")) return;
+	        var elementId = $scope.dataSourceIdPrefix + dataSource.EntityGuid;
+	        $scope.jsPlumbInstance.selectEndpoints({ element: elementId }).remove();
+	        $scope.pipelineData.DataSources.splice(index, 1);
+	    };
+
+		// Edit name of a DataSource
+	    $scope.editName = function(dataSource) {
+	        if (dataSource.ReadOnly) return;
+
+	        var newName = prompt("Rename DataSource", dataSource.Name);
+	        if (newName !== undefined && newName.trim())
+	            dataSource.Name = newName;
+	    };
+
+		// Edit Description of a DataSource
+	    $scope.editDescription = function(dataSource) {
+	        if (dataSource.ReadOnly) return;
+
+	        var newDescription = prompt("Edit Description", dataSource.Description);
+	        if (newDescription !== undefined && newDescription.trim())
+	            dataSource.Description = newDescription;
+	    };
+
+		// Update DataSource Position on Drag
+	    $scope.dataSourceDrag = function() {
+	        var $this = $(this);
+	        var offset = $this.offset();
+	        var dataSource = $this.scope().dataSource;
+	        $scope.$apply(function() {
+	            dataSource.VisualDesignerData.Top = Math.round(offset.top);
+	            dataSource.VisualDesignerData.Left = Math.round(offset.left);
+	        });
+	    };
+
+		// Configure a DataSource
+	    $scope.configureDataSource = function(dataSource) {
+	        if (dataSource.ReadOnly) return;
+
+	        // Ensure dataSource Entity is saved
+	        if (!dataSourceIsPersisted(dataSource)) {
+	            $scope.savePipeline();
+	            return;
+	        }
+
+	        uiNotification.wait();
+
+	        pipelineService.getDataSourceConfigurationUrl(dataSource).then(function(url) {
+	            uiNotification.clear();
+	            eavDialogService.open({ url: url, title: "Configure DataSource " + dataSource.Name });
+	        }, function(error) {
+	            uiNotification.error("Open Configuration UI failed", error);
+	        });
+	    };
+
+		// Test wether a DataSource is persisted on the Server
+	    var dataSourceIsPersisted = function(dataSource) {
+	        return dataSource.EntityGuid.indexOf("unsaved") === -1;
+	    };
+
+		// Show/Hide Endpoint Overlays
+		$scope.showEndpointOverlays = true;
+	    $scope.toggleEndpointOverlays = function() {
+	        $scope.showEndpointOverlays = !$scope.showEndpointOverlays;
+
+	        var endpoints = $scope.jsPlumbInstance.selectEndpoints();
+	        if ($scope.showEndpointOverlays)
+	            endpoints.showOverlays();
+	        else
+	            endpoints.hideOverlays();
+	    };
+
+		// Edit Pipeline Entity
+	    $scope.editPipelineEntity = function() {
+	        // save Pipeline, then open Edit Dialog
+	        $scope.savePipeline().then(function() {
+	            eavDialogService.open({
+	                url: pipelineService.getPipelineUrl("edit", $scope.PipelineEntityId),
+	                title: "Edit Test Values",
+	                onClose: function() {
+	                    pipelineService.getPipeline($scope.PipelineEntityId).then(pipelineSaved);
+	                }
+	            });
+	        });
+	    };
+
+		// Sync jsPlumb Connections and StreamsOut to the pipelineData-Object
+	    var syncPipelineData = function() {
+	        var connectionInfos = [];
+	        angular.forEach($scope.jsPlumbInstance.getAllConnections(), function(connection) {
+	            connectionInfos.push({
+	                From: connection.sourceId.substr($scope.dataSourceIdPrefix.length),
+	                Out: connection.endpoints[0].getOverlay("endpointLabel").label,
+	                To: connection.targetId.substr($scope.dataSourceIdPrefix.length),
+	                In: connection.endpoints[1].getOverlay("endpointLabel").label
+	            });
+	        });
+	        $scope.pipelineData.Pipeline.StreamWiring = connectionInfos;
+
+	        var streamsOut = [];
+	        $scope.jsPlumbInstance.selectEndpoints({ target: $scope.dataSourceIdPrefix + "Out" }).each(function(endpoint) {
+	            streamsOut.push(endpoint.getOverlay("endpointLabel").label);
+	        });
+	        $scope.pipelineData.Pipeline.StreamsOut = streamsOut.join(",");
+	    };
+
+		// #region Save Pipeline
+		// Save Pipeline
+		// returns a Promise about the saving state
+	    $scope.savePipeline = function(successHandler) {
+	        uiNotification.wait("Saving...");
+	        $scope.readOnly = true;
+
+	        syncPipelineData();
+
+	        var deferred = $q.defer();
+
+	        if (typeof successHandler == "undefined") // set default success Handler
+	            successHandler = pipelineSaved;
+
+	        pipelineService.savePipeline($scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(successHandler, function(reason) {
+	            uiNotification.error("Save Pipeline failed", reason);
+	            $scope.readOnly = false;
+	            deferred.reject();
+	        }).then(function() {
+	            deferred.resolve();
+	        });
+
+	        return deferred.promise;
+	    };
+
+		// Handle Pipeline Saved, success contains the updated Pipeline Data
+		var pipelineSaved = function (success) {
+			// Update PipelineData with data retrieved from the Server
+			$scope.pipelineData.Pipeline = success.Pipeline;
+			$scope.PipelineEntityId = success.Pipeline.EntityId /*EntityId*/;
+			$location.search("PipelineId", success.Pipeline.EntityId /*EntityId*/);
+			$scope.readOnly = !success.Pipeline.AllowEdit;
+			$scope.pipelineData.DataSources = success.DataSources;
+			pipelineService.postProcessDataSources($scope.pipelineData);
+
+			uiNotification.success("Saved", "Pipeline " + success.Pipeline.EntityId /*EntityId*/ + " saved and loaded", true);
+
+			// Reset jsPlumb, re-Init Connections
+			$scope.jsPlumbInstance.reset();
+			$scope.connectionsInitialized = false;
+		};
+		// #endregion
+
+		// Repaint jsPlumb
+	    $scope.repaint = function() {
+	        $scope.jsPlumbInstance.repaintEverything();
+	    };
+
+		// Show/Hide Debug info
+	    $scope.toogleDebug = function() {
+	        $scope.debug = !$scope.debug;
+	    };
+
+		// Query the Pipeline
+	    $scope.queryPipeline = function() {
+	        var query = function() {
+	            // Query pipelineService for the result...
+	            uiNotification.wait("Running Query ...");
+
+	            pipelineService.queryPipeline($scope.PipelineEntityId).then(function(success) {
+	                // Show Result in a UI-Dialog
+	                uiNotification.clear();
+	                eavDialogService.open({
+	                    title: "Query result",
+	                    content: "<div><div>The Full result was logged to the Browser Console. Further down you'll find more debug-infos. </div>"
+	                        + "<h3>Parameters used</h3><div>" + ($scope.pipelineData.Pipeline.TestParameters.length > 5 ? $scope.pipelineData.Pipeline.TestParameters.replace("\n", "<br>") : "no test params specified") + "</div> "
+	                        + "<h3>Query result - executed in " + success.QueryTimer.Milliseconds + "ms (" + success.QueryTimer.Ticks + "tx)</h3><div> <pre id=\"pipelineQueryResult\">" + $filter("json")(success.Query) + "</pre>" + showConnectionTable(success) + "</div>"
+	                        + "</div"
+	                });
+	                $timeout(function() {
+	                    showEntityCountOnStreams(success);
+	                });
+	                $log.debug(success);
+	            }, function(reason) {
+	                uiNotification.error("Query failed", reason);
+	            });
+	        };
+
+	        // Create html-table with connection debug-info
+	        var showConnectionTable = function(result) {
+	            var srcTbl = "<h3>Sources</h3>" +
+	                "<table><tr><th>Guid</th><th>Type</th><th>Config</th></tr>";
+	            var src = result.Sources;
+	            for (var s in src) {
+	                if (s[0] != "$") {
+	                    srcTbl += "<tr><td><pre>" + s.substring(0, 13) + "...</pre></td><td>" + src[s].Type + "</td><td>";
+	                    var cnf = src[s].Configuration;
+	                    for (var c in cnf)
+	                        if (c[0] != "$")
+	                            srcTbl += "<b>" + c + "</b>" + "=" + cnf[c] + "</br>";
+	                    srcTbl += "</td></tr>";
+	                }
+	            }
+	            srcTbl += "</table>";
+
+
+	            srcTbl += "<h3>Streams</h3>" +
+	                "<table><tr><th>Source</th><th>Target</th><th>Items</th><th>Err</th></tr>";
+	            src = result.Streams;
+	            for (var sr in src) {
+	                if (sr[0] != "$") {
+	                    srcTbl += "<tr><td><pre>"
+	                        + src[sr].Source.substring(0, 13) + ":" + src[sr].SourceOut + "</pre></td><td><pre>"
+	                        + src[sr].Target.substring(0, 13) + ":" + src[sr].TargetIn + "</pre></td><td>"
+	                        + src[sr].Count + "</td><td>"
+	                        + src[sr].Error + "</td></tr>";
+	                }
+	            }
+	            srcTbl += "</table>";
+
+	            return srcTbl;
+	        };
+
+	        var showEntityCountOnStreams = function(result) {
+	            angular.forEach(result.Streams, function(stream) {
+	                // Find jsPlumb Connection for the current Stream
+	                var sourceElementId = $scope.dataSourceIdPrefix + stream.Source;
+	                var targetElementId = $scope.dataSourceIdPrefix + stream.Target;
+	                if (stream.Target === "00000000-0000-0000-0000-000000000000")
+	                    targetElementId = $scope.dataSourceIdPrefix + "Out";
+
+	                var fromUuid = sourceElementId + "_out_" + stream.SourceOut;
+	                var toUuid = targetElementId + "_in_" + stream.TargetIn;
+
+	                var sourceEndpoint = $scope.jsPlumbInstance.getEndpoint(fromUuid);
+	                var streamFound = false;
+	                if (sourceEndpoint) {
+	                    angular.forEach(sourceEndpoint.connections, function(connection) {
+	                        if (connection.endpoints[1].getUuid() === toUuid) {
+	                            // when connection found, update it's label with the Entities-Count
+	                            connection.setLabel({
+	                                label: stream.Count.toString(),
+	                                cssClass: "streamEntitiesCount"
+	                            });
+	                            streamFound = true;
+	                            return;
+	                        }
+	                    });
+	                }
+
+	                if (!streamFound)
+	                    $log.error("Stream not found", stream, sourceEndpoint);
+	            });
+	        };
+
+	        // Ensure the Pipeline is saved
+	        $scope.savePipeline().then(query);
+	    };
+
+		// Clone the Pipeline
+	    $scope.clonePipeline = function() {
+	        if (!confirm("Clone Pipeline " + $scope.PipelineEntityId + "?")) return;
+
+	        // Clone and get new PipelineEntityId
+	        var clone = function() {
+	            return pipelineService.clonePipeline($scope.PipelineEntityId);
+	        };
+	        // Get the new Pipeline (Pipeline and DataSources)
+	        var getClonePipeline = function(success) {
+	            return pipelineService.getPipeline(success.EntityId /*EntityId*/);
+	        };
+
+	        // Save, clone, get clone, load clone
+	        $scope.savePipeline(null).then(clone).then(getClonePipeline).then(pipelineSaved);
+	    };
+	}]);
+
+// Config and Controller for the Pipeline Management UI
+angular.module('PipelineManagement', ['PipelineService', 'eavGlobalConfigurationProvider', 'ngResource', 'eavNgSvcs', 'EavAdminUi']).
+	controller('PipelineManagementController', ["$rootScope", "$scope", "$location", "appId", "$window", "pipelineService", "eavAdminDialogs", function ($rootScope, $scope, $location, appId, $window, pipelineService, eavAdminDialogs) {
+	    var vm = this;
+        vm.appId = appId;
+	    // vm.AppId = appId;
+
+	    pipelineService.setAppId(appId);
+	    pipelineService.initContentTypes();
+	    // Make URL-Provider available to the scope
+	    vm.getPipelineUrl = pipelineService.getPipelineUrl;
+
+	    // Refresh List of Pipelines
+	    vm.refresh = function () {
+	        vm.pipelines = pipelineService.getPipelines(appId);
+	    };
+	    vm.refresh();
+
+	    // Delete a Pipeline
+        vm.delete = function(pipeline) {
+            if (!confirm('Delete Pipeline "' + pipeline.Name + '" (' + pipeline.Id + ')?'))
+                return;
+
+            pipelineService.deletePipeline(pipeline.Id).then(function() {
+                vm.refresh();
+            }, function(reason) {
+                alert(reason);
+            });
+        };
+
+	    // Clone a Pipeline
+        vm.clone = function(pipeline) {
+            pipelineService.clonePipeline(pipeline.Id).then(function() {
+                vm.refresh();
+            }, function(reason) {
+                alert(reason);
+            });
+        };
+
+        vm.permissions = function (item) {
+            return eavAdminDialogs.openPermissionsForGuid(appId, item.Guid);
+        };
+
+        vm.add = function add() {
+            eavAdminDialogs.openItemNew(pipelineService.dataPipelineAttributeSetId, vm.refresh);
+        };
+
+        vm.edit = function edit(item) {
+            eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
+        };
+
+        vm.design = function design(item) {
+            return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);
+        };
+        vm.liveEval = function admin() {
+            var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
+            if (inp)
+                eval(inp); // jshint ignore:line
+        };
+    }]);
+angular.module('ContentItemsAppServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
+    .factory('contentItemsSvc', ["$http", "entitiesSvc", "eavManagementSvc", "svcCreator", function ($http, entitiesSvc, eavManagementSvc, svcCreator) {
+        var svc = {};
+        svc.contentType = "";
+
+        svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+            return $http.get('eav/entities/GetAllOfTypeForAdmin', { params: { appId: svc.appId, contentType: svc.contentType }});
+        }));
+
+        // delete, then reload
+        svc.delete = function del(id) {
+            return entitiesSvc.delete(svc.contentType, id)
+                .then(svc.liveListReload);
+        };
+
+        svc.getColumns = function getColumns() {
+            return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType } });
+        };
+
+        return svc;
+    }])
+
+;
+angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
+    .factory('contentTypeFieldSvc', ["$http", "eavGlobalConfigurationProvider", "svcCreator", "eavManagementSvc", function($http, eavGlobalConfigurationProvider, svcCreator, eavManagementSvc) {
+        // start with a basic service which implement the live-list functionality
+            var svc = {};
+            svc.appId = 0;
+            svc.contentType = null;
+
+            svc.typeListRetrieve = function typeListRetrieve() {
+                return $http.get('eav/contenttype/datatypes/', { params: { "appid": svc.appId } });
+            };
+
+            svc = angular.extend(svc, svcCreator.implementLiveList(function liveListRetrieve() {
+                return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
+            }));
+            
+            svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
+
+
+
+            svc.moveUp = function moveUp(item) {
+                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'up' } })
+                    .then(svc.liveListReload);
+            };
+            svc.moveDown = function moveDown(item) {
+                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'down' } })
+                    .then(svc.liveListReload);
+            };
+
+            svc.delete = function del(item) {
+                return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                    .then(svc.liveListReload);
+            };
+
+            svc.addMany = function add(items, count) {
+                return $http.get('eav/contenttype/addfield/', { params: items[count] })
+                    .then(function() {
+                        if (items.length == ++count)
+                            svc.liveListReload();
+                        else
+                            svc.addMany(items, count);
+                    });
+            };
+
+            svc.add = function addOne(item) {
+                return $http.get('eav/contenttype/addfield/', { params: item })
+                    .then(svc.liveListReload);
+            };
+
+            svc.newItemCount = 0;
+            svc.newItem = function newItem() {
+                return {
+                    AppId: svc.appId,
+                    ContentTypeId: svc.contentType.Id,
+                    Id: 0,
+                    Type: "String",
+                    StaticName: "",
+                    IsTitle: svc.liveList().length === 0,
+                    SortOrder: svc.liveList().length + svc.newItemCount++
+                };
+            };
+
+
+            svc.delete = function del(item) {
+                if (item.IsTitle)
+                    throw "Can't delete Title";
+                return $http.delete('eav/contenttype/deletefield', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                    .then(svc.liveListReload);
+            };
+
+            svc.setTitle = function setTitle(item) {
+                return $http.get('eav/contenttype/setTitle', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                    .then(svc.liveListReload);
+            };
+
+
+            return svc;
+        }])
+
+;
+angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
+    .factory('contentTypeSvc', ["$http", "eavGlobalConfigurationProvider", "svcCreator", function ($http, eavGlobalConfigurationProvider, svcCreator) {
+        return function appSpecificContentTypeSvc(appId) {
+            var svc = {};
+            svc.scope = eavGlobalConfigurationProvider.contentType.defaultScope;
+            svc.appId = appId;
+
+            svc.retrieveContentTypes = function typeListRetrieve() {
+                return $http.get('eav/contenttype/get/', { params: { "appid": svc.appId, "scope": svc.scope } });
+            };
+
+            svc = angular.extend(svc, svcCreator.implementLiveList(svc.retrieveContentTypes));
+
+            svc.getDetails = function getDetails(contentTypeName) {
+                return $http.get('eav/contenttype/get/', { params: { "appid": svc.appId, "contentTypeId": contentTypeName } });
+            };
+
+            svc.newItem = function newItem() {
+                return {
+                    StaticName: "",
+                    Name: "",
+                    Description: "",
+                    Scope: eavGlobalConfigurationProvider.contentType.defaultScope
+                };
+            };
+
+            svc.save = function save(item) {
+                return $http.post('eav/contenttype/save/', item, { params: { appid: svc.appId } })
+                    .then(svc.liveListReload);
+            };
+
+            svc.delete = function del(item) {
+                return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, staticName: item.StaticName } })
+                    .then(svc.liveListReload);
+            };
+
+            svc.setScope = function setScope(newScope) {
+                svc.scope = newScope;
+                svc.liveListReload();
+            };
+            return svc;
+        };
+        //return svc;
+    }]);
+/*  this file contains a service to handle 
+ * How it works
+ * This service tries to open a modal dialog if it can, otherwise a new window returning a promise to allow
+ * ...refresh when the window close. 
+ * 
+ * In most cases there is a nice command to open something, like openItemEditWithEntityId(id, callback)
+ * ...and there is also a more advanced version where you could specify more closely what you wanted
+ * ...usually ending with an X, so like openItemEditWithEntityIdX(resolve, callbacks)
+ * 
+ * the simple callback is 1 function (usually to refresh the main list), the complex callbacks have the following structure
+ * 1. .success (optional)
+ * 2. .error (optional) 
+ * 3. .notify (optional)
+ * 4. .close (optional) --> this one is attached to all events if no primary handler is defined 
+ *  
+ * How to use
+ * 1. you must already include all js files in your main app - so the controllers you'll need must be preloaded
+ * 2. Your main app must also  declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
+ * 3. your main app must also need this ['EavAdminUI']
+ * 4. your controller must require eavAdminDialogs
+ * 5. Then you can call such a dialog
+ */
+
+
+// Todo
+// 1. Import / Export
+// 2. Pipeline Designer
+
+angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'PermissionsApp', 'ContentItemsApp'])
+    .factory('eavAdminDialogs', ["$modal", "eavGlobalConfigurationProvider", "eavManagementSvc", "$window", function($modal, eavGlobalConfigurationProvider, eavManagementSvc, $window) {
+        var svc = {};
+
+        //#region Content Items dialogs
+            svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
+                return svc.openContentItemsX(svc._createResolve({ appId: appId, contentType: staticName, contentTypeId: itemId }), { close: closeCallback });
+            };
+
+
+            svc.openContentItemsX = function ociX(resolve, callbacks) {
+                return svc._openModalWithCallback('content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
+            };
+
+        //#endregion
+
+        //#region ContentType dialogs
+            svc.openContentTypeEdit = function octe(item, closeCallback) {
+                return svc.openContentTypeEditX(svc._createResolve({ item: item }), { close: closeCallback });
+            };
+
+            svc.openContentTypeEditX = function octeX(resolve, callbacks) {
+                return svc._openModalWithCallback('content-types/content-types-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
+            };
+
+            svc.openContentTypeFields = function octf(item, closeCallback) {
+                return svc.openContentTypeFieldsX(
+                    svc._createResolve({contentType: item }), { close: closeCallback });
+            };
+
+            svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
+                return svc._openModalWithCallback('content-types/content-types-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
+            };
+        //#endregion
+
+        //#region Item - new, edit
+            svc.openItemNew = function oin(contentTypeId, closeCallback) {
+                var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+            };
+
+            svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
+                var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
+                return PromiseWindow.open(url).then(null, function(error) { if(error == 'closed') closeCallback(); });
+            };
+
+        //#endregion
+
+        //#region Metadata - mainly new
+            svc.openMetadataNew = function omdn(targetType, targetId, metadataType, closeCallback) {
+                var key = {}, assignmentType = 0;
+                switch (targetType) {
+                    case 'entity':
+                        key.keyGuid = targetId;
+                        assignmentType = eavGlobalConfigurationProvider.metadataOfEntity;
+                        break;
+                    case 'attribute':
+                        key.keyNumber = targetId;
+                        assignmentType = eavGlobalConfigurationProvider.metadataOfAttribute;
+                        break;
+                    default: throw 'targetType unknown, only accepts entity or attribute';
+                }
+                return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
+                    var attSetId = result.data.AttributeSetId;
+                    var url = eavGlobalConfigurationProvider.itemForm
+                        .getNewItemUrl(attSetId, assignmentType, key, false);
+
+                    return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                });
+            };
+        //#endregion
+
+        //#region Permissions Dialog
+            svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
+                return svc.openPermissionsForGuidX(
+                    svc._createResolve({ appId: appId, targetGuid: targetGuid }), { close: closeCallback });
+            };
+
+            svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
+                return svc._openModalWithCallback('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+            };
+        //#endregion
+
+        //#region Pipeline Designer
+            svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
+                var url = eavGlobalConfigurationProvider.pipelineDesigner.getUrl(appId, pipelineId);
+                $window.open(url);
+                return;
+            };
+        //#endregion
+
+        //#region Export / Import content Types
+
+        svc.openContentExport = function oce(appId, closeCallback) {
+            var url = eavGlobalConfigurationProvider.adminUrls.exportContent(appId);
+            window.open(url);
+        };
+        svc.openContentImport = function oci(appId, closeCallback) {
+            var url = eavGlobalConfigurationProvider.adminUrls.importContent(appId);
+            window.open(url);
+        };
+        //#endregion
+
+        //#region Internal helpers
+            svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
+                return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
+            };
+
+        // Will open a modal window. Has various specials, like
+        // 1. If the templateUrl begins with "~/" - this will be re-mapped to the ng-app root. Only use this for not-inline stuff
+        // 2. The controller can be written as "something as vm" and this will be split and configured corectly
+            svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
+                //if (templateUrl.substring(0, 2) == "~/")
+                //    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
+                var foundAs = controller.indexOf(' as ');
+                var contAs = foundAs > 0 ?
+                    controller.substring(foundAs + 4)
+                    : null;
+                if (foundAs > 0)
+                    controller = controller.substring(0, foundAs);
+
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: templateUrl,
+                    controller: controller,
+                    controllerAs: contAs,
+                    size: size,
+                    resolve: resolveValues
+                });
+
+                return svc._attachCallbacks(modalInstance, callbacks);
+            };
+
+        /// This will create a resolve-object containing return function()... for each property in the array
+            svc._createResolve = function createResolve() {
+                var fns = {}, list = arguments[0];
+                for (var prop in list) 
+                    if (list.hasOwnProperty(prop))
+                        fns[prop] = svc._create1Resolve(list[prop]);
+                return fns;
+            };
+
+            svc._create1Resolve = function (value) {
+                return function () { return value; };
+            };
+        //#endregion
+
+
+        return svc;
+    }])
+
+;
+/*  this file contains various eav-angular services
+ *  1. the basic configuration enforcing html5 mode
+ *  2. a management-dialog which simply gets the appid if in the url
+ *  3. eavManagementSvc - provides some services to retrieve metadata and similar for eav-management dialogs
+ *  4. svcCreator - a helper to quickly create services
+ *  5. entitiesSvc - a service to get/delete entities
+ */
+
+angular.module('eavNgSvcs', ['ng'])
+
+    /// Config to ensure that $location can work and give url-parameters
+    .config(['$locationProvider', function ($locationProvider) {
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            });
+        } ])
+
+    /// Provide state-information related to the current open dialog
+    .factory('eavManagementDialog', ["$location", function($location){
+        var result = {};
+        var srch = $location.search();
+        result.appId = srch.AppId || srch.appId || srch.appid;
+        return result;
+    }])
+
+    /// Management actions which are rather advanced metadata kind of actions
+    .factory('eavManagementSvc', ["$http", "eavManagementDialog", function($http, eavManagementDialog) {
+        var svc = {};
+
+        // Retrieve extra content-type info
+        svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
+            alert('using the wrong method - should use the content-type controller. Will work for now, change code please');
+            return $http.get('eav/contenttype/get', { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
+        };
+
+        // Find all items assigned to a GUID
+        svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
+            return $http.get('eav/metadata/getassignedentities', {
+                params: {
+                    appId: eavManagementDialog.appId,
+                    assignmentObjectTypeId: assignedToId,
+                    keyGuid: keyGuid,
+                    contentType: contentTypeName
+                }
+            });
+        };
+        return svc;
+    }])
+
+    // This is a helper-factory to create services which manage one live list
+    // check examples with the permissions-service or the content-type-service how we use it
+    .factory('svcCreator', function() {
+        var creator = {};
+
+        // construct a object which has liveListCache, liveListReload(), liveListReset(),  
+        creator.implementLiveList = function(getLiveList) {
+            var t = {};
+
+            t.liveListCache = [];                   // this is the cached list
+            t.liveListCache.isLoaded = false;
+
+            t.liveList = function getAllLive() {
+                if (t.liveListCache.length === 0)
+                    t.liveListReload();
+                return t.liveListCache;
+            };
+
+            // use a promise-result to re-fill the live list of all items, return the promise again
+            t._liveListUpdateWithResult = function updateLiveAll(result) {
+                t.liveListCache.length = 0; // clear
+                for (var i = 0; i < result.data.length; i++)
+                    t.liveListCache.push(result.data[i]);
+                t.liveListCache.isLoaded = true;
+                return result;
+            };
+
+            t.liveListSourceRead = getLiveList;
+
+            t.liveListReload = function getAll() {
+                return t.liveListSourceRead()
+                    .then(t._liveListUpdateWithResult);
+            };
+
+            t.liveListReset = function resetList() {
+                t.liveListCache = [];
+            };
+
+            return t;
+        };
+        return creator;
+
+    })
+
+    /// Standard entity commands like get one, many etc.
+    .factory('entitiesSvc', ["$http", "eavManagementDialog", function ($http, eavManagementDialog) {
+        var svc = {};
+
+        svc.get = function get(contentType, id) {
+            return id ?
+                $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId } })
+                : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
+        };
+
+        svc.delete = function del(type, id) {
+            return $http.delete('eav/entities/delete', {
+                params: {
+                    'contentType': type,
+                    'id': id,
+                    'appId': eavManagementDialog.appId
+                }
+            });
+        };
+        
+        return svc;
+    }])
+
+;
+// By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
+// but the "root" component must get it from the url
+// Since different objects could be the root object (this depends on the initial loader), the root-one must have
+// a connection to the Url, but only when it is the root
+// So the trick is to just include this file - which will provide values for the important attribute
+//
+// As of now, it only supplies
+// * appId
+(function () {
+    angular.module("InitParametersFromUrl", [])
+        .factory('appId', GetAppId)
+    ;
+
+    // this ties up the App-Id to the Url 
+    function GetAppId($location) {
+        return $location.search().appid;
+    }
+    GetAppId.$inject = ["$location"];
+}());
+angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
+    .factory('permissionsSvc', ["$http", "eavGlobalConfigurationProvider", "entitiesSvc", "eavManagementSvc", "svcCreator", "contentTypeSvc", function($http, eavGlobalConfigurationProvider, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
+        var eavConf = eavGlobalConfigurationProvider;
+
+        // Construct a service for this specific targetGuid
+        return function createSvc(appId, permissionTargetGuid) {
+            var svc = {
+                PermissionTargetGuid: permissionTargetGuid,
+                ctName: "PermissionConfiguration",
+                ctId: 0,
+                EntityAssignment: eavConf.metadataOfEntity,
+                ctSvc: contentTypeSvc(appId)
+            };
+
+            svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
+            }));
+
+            // Get ID of this content-type 
+            // todo refactor - this sholud be in the conetnttype conroller
+            //eavManagementSvc.getContentTypeDefinition(svc.ctName).then(function (result) {
+            svc.ctSvc.getDetails(svc.ctName).then(function (result) {
+                svc.ctId = result.data.AttributeSetId;
+            });
+
+            // delete, then reload
+            svc.delete = function del(id) {
+                return entitiesSvc.delete(svc.ctName, id)
+                    .then(svc.liveListReload);
+            };
+            return svc;
+        };
+    }]);
+// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
+angular.module('PipelineService', ['ContentTypeServices'])
+    .factory('pipelineService', ["$resource", "$q", "$filter", "eavGlobalConfigurationProvider", "$http", "contentTypeSvc", function($resource, $q, $filter, eavGlobalConfigurationProvider, $http, contentTypeSvc) {
+        'use strict';
+        var svc = {};
+        // Web API Service
+        svc.pipelineResource = $resource(eavGlobalConfigurationProvider.api.baseUrl + '/EAV/PipelineDesigner/:action');
+        svc.entitiesResource = $resource(eavGlobalConfigurationProvider.api.baseUrl + '/EAV/Entities/:action');
+
+        svc.dataPipelineAttributeSetId = 0;
+        svc.appId = 0;
+
+        // Get the Definition of a DataSource
+        svc.getDataSourceDefinitionProperty = function(model, dataSource) {
+            return $filter('filter')(model.InstalledDataSources, function(d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+        };
+
+        // todo refactor: why do we have 2 methods with same name?
+        // Extend Pipeline-Model retrieved from the Server
+        var postProcessDataSources = function(model) {
+            // Append Out-DataSource for the UI
+            model.DataSources.push({
+                Name: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.name,
+                Description: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.description,
+                EntityGuid: 'Out',
+                PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+                VisualDesignerData: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.visualDesignerData,
+                ReadOnly: true
+            });
+
+            // Extend each DataSource with Definition-Property and ReadOnly Status
+            angular.forEach(model.DataSources, function(dataSource) {
+                dataSource.Definition = function() { return svc.getDataSourceDefinitionProperty(model, dataSource); };
+                dataSource.ReadOnly = dataSource.ReadOnly || !model.Pipeline.AllowEdit;
+            });
+        };
+
+        angular.extend(svc, { 
+            
+            // get a Pipeline with Pipeline Info with Pipeline Parts and Installed DataSources
+            getPipeline: function(pipelineEntityId) {
+                var deferred = $q.defer();
+
+                var getPipeline = svc.pipelineResource.get({ action: 'GetPipeline', id: pipelineEntityId, appId: svc.appId });
+                var getInstalledDataSources = svc.pipelineResource.query({ action: 'GetInstalledDataSources' });
+
+                // Join and modify retrieved Data
+                $q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function(results) {
+                    var model = JSON.parse(angular.toJson(results[0])); // workaround to remove AngularJS Promise from the result-Objects
+                    model.InstalledDataSources = JSON.parse(angular.toJson(results[1]));
+
+                    // Init new Pipeline Object
+                    if (!pipelineEntityId) {
+                        model.Pipeline = {
+                            AllowEdit: 'True'
+                        };
+                    }
+
+                    // Add Out-DataSource for the UI
+                    model.InstalledDataSources.push({
+                        PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+                        ClassName: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
+                        In: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.in,
+                        Out: null,
+                        allowNew: false
+                    });
+
+                    postProcessDataSources(model);
+
+                    deferred.resolve(model);
+                }, function(reason) {
+                    deferred.reject(reason);
+                });
+
+                return deferred.promise;
+            },
+            // Ensure Model has all DataSources and they're linked to their Definition-Object
+            postProcessDataSources: function(model) {
+                // stop Post-Process if the model already contains the Out-DataSource
+                if ($filter('filter')(model.DataSources, function(d) { return d.EntityGuid == 'Out'; })[0])
+                    return;
+
+                postProcessDataSources(model);
+            },
+            // Get a JSON for a DataSource with Definition-Property
+            getNewDataSource: function(model, dataSourceBase) {
+                return {
+                    Definition: function() { return svc.getDataSourceDefinitionProperty(model, dataSourceBase); }
+                };
+            },
+            // Save whole Pipline
+            savePipeline: function(pipeline, dataSources) {
+                if (!svc.appId)
+                    return $q.reject('appId must be set to save a Pipeline');
+
+                // Remove some Properties from the DataSource before Saving
+                var dataSourcesPrepared = [];
+                angular.forEach(dataSources, function(dataSource) {
+                    var dataSourceClone = angular.copy(dataSource);
+                    delete dataSourceClone.ReadOnly;
+                    dataSourcesPrepared.push(dataSourceClone);
+                });
+
+                return svc.pipelineResource.save({
+                    action: 'SavePipeline',
+                    appId: svc.appId,
+                    Id: pipeline.EntityId /*id later EntityId */
+                }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
+            },
+            // clone a whole Pipeline
+            clonePipeline: function(pipelineEntityId) {
+                return svc.pipelineResource.get({ action: 'ClonePipeline', appId: svc.appId, Id: pipelineEntityId }).$promise;
+            },
+            // Get the URL to configure a DataSource
+            getDataSourceConfigurationUrl: function(dataSource) {
+                var dataSourceFullName = $filter('typename')(dataSource.PartAssemblyAndType, 'classFullName');
+                var contentTypeName = '|Config ' + dataSourceFullName; // todo refactor centralize
+                var assignmentObjectTypeId = 4; // todo refactor centralize
+                var keyGuid = dataSource.EntityGuid;
+                var preventRedirect = true;
+
+                var deferred = $q.defer();
+
+                // Query for existing Entity
+                svc.entitiesResource.query({ action: 'GetAssignedEntities', appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyGuid: keyGuid, contentType: contentTypeName }, function (success) {
+                    if (success.length) // Edit existing Entity
+                        deferred.resolve(eavGlobalConfigurationProvider.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
+                    else { // Create new Entity
+                        // todo: this is a get-content-type, it shouldn't be using the entitiesResource
+                        // todo: but I'm not sure when it is being used
+                        svc.entitiesResource.get({ action: 'GetContentType', appId: svc.appId, contentType: contentTypeName }, function (contentType) {
+                            // test for "null"-response
+                            if (contentType[0] == 'n' && contentType[1] == 'u' && contentType[2] == 'l' && contentType[3] == 'l')
+                                deferred.reject('Content Type ' + contentTypeName + ' not found.');
+                            else
+                                deferred.resolve(eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
+                        }, function(reason) {
+                            deferred.reject(reason);
+                        });
+                    }
+                }, function(reason) {
+                    deferred.reject(reason);
+                });
+
+                return deferred.promise;
+            },
+
+        });
+
+        angular.extend(svc, {
+            // Query the Data of a Pipeline
+            queryPipeline: function (id) {
+                return svc.pipelineResource.get({ action: 'QueryPipeline', appId: svc.appId, id: id }).$promise;
+            },
+            // set appId and init some dynamic configurations
+            setAppId: function (newAppId) {
+                svc.appId = newAppId;
+            },
+            // Init some Content Types, currently only used for getPipelineUrl('new', ...)
+            initContentTypes: function initContentTypes() {
+                return contentTypeSvc(svc.appId).getDetails('DataPipeline').then(function (result) {
+                    svc.dataPipelineAttributeSetId = result.data.AttributeSetId;
+                });
+            },
+            // Get all Pipelines of current App
+            getPipelines: function () {
+                return svc.entitiesResource.query({ action: 'GetEntities', appId: svc.appId, contentType: 'DataPipeline' });
+            },
+            // Delete a Pipeline on current App
+            deletePipeline: function (id) {
+                return svc.pipelineResource.get({ action: 'DeletePipeline', appId: svc.appId, id: id }).$promise;
+            }
+        });
+
+        return svc;
+    }]);

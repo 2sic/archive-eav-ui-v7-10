@@ -10,11 +10,11 @@ angular.module('eavNgSvcs', ['ng'])
 
     /// Config to ensure that $location can work and give url-parameters
     .config(['$locationProvider', function ($locationProvider) {
-        $locationProvider.html5Mode({
-            enabled: true,
-            requireBase: false
-        })
-    } ])
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            });
+        } ])
 
     /// Provide state-information related to the current open dialog
     .factory('eavManagementDialog', function($location){
@@ -32,18 +32,19 @@ angular.module('eavNgSvcs', ['ng'])
         svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
             alert('using the wrong method - should use the content-type controller. Will work for now, change code please');
             return $http.get('eav/contenttype/get', { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
-        }
+        };
 
         // Find all items assigned to a GUID
         svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
-            return $http.get('eav/metadata/getassignedentities', { params: {
-                appId: eavManagementDialog.appId,
-                assignmentObjectTypeId: assignedToId,
-                keyGuid: keyGuid,
-                contentType: contentTypeName
-            }
+            return $http.get('eav/metadata/getassignedentities', {
+                params: {
+                    appId: eavManagementDialog.appId,
+                    assignmentObjectTypeId: assignedToId,
+                    keyGuid: keyGuid,
+                    contentType: contentTypeName
+                }
             });
-        }
+        };
         return svc;
     })
 
@@ -60,7 +61,7 @@ angular.module('eavNgSvcs', ['ng'])
             t.liveListCache.isLoaded = false;
 
             t.liveList = function getAllLive() {
-                if (t.liveListCache.length == 0)
+                if (t.liveListCache.length === 0)
                     t.liveListReload();
                 return t.liveListCache;
             };
@@ -96,46 +97,22 @@ angular.module('eavNgSvcs', ['ng'])
         var svc = {};
 
         svc.get = function get(contentType, id) {
-            return id 
-                ? $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId }})
+            return id ?
+                $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId } })
                 : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
         };
 
         svc.delete = function del(type, id) {
-            return $http.delete('eav/entities/delete', { params: { 
-            'contentType': type, 
-            'id': id,
-            'appId': eavManagementDialog.appId }});
-        }
+            return $http.delete('eav/entities/delete', {
+                params: {
+                    'contentType': type,
+                    'id': id,
+                    'appId': eavManagementDialog.appId
+                }
+            });
+        };
         
         return svc;
     })
-
-
-    ///// Standard entity commands like get one, many etc.
-    //.factory('contentSvc', function ($http) {
-    //    var svc = {};
-
-    //    svc.get = function get(contentType, id) {
-    //        return id 
-    //            ? $http.get("app-content/" + contentType + '/' + id)
-    //            : $http.get("app-content/" + contentType);
-    //    };
-
-    //    // todo
-    //    svc.update = function update(contentType, id, values) {
-            
-    //    }
-
-    //    svc.delete = function del(contentType, id) {
-    //        return $http.delete('app-content/' + contentType + '/' + id);
-    //    }
-
-    //    svc.getQuery = function getQuery(name) {
-    //        return $http.get("app-query/" + name)
-    //    }
-        
-    //    return svc;
-    //})
 
 ;

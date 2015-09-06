@@ -11,14 +11,5 @@ namespace ToSic.Eav.ManagementUI.Pages {
     
     
     public partial class PipelineDesigner {
-        
-        /// <summary>
-        /// PipelineDesigner1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::ToSic.Eav.ManagementUI.EAV.PipelineDesigner.PipelineDesigner PipelineDesigner1;
     }
 }

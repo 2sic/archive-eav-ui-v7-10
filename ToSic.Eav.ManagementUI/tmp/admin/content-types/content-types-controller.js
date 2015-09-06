@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ui.bootstrap', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'ContentItemsApp', 'EavAdminUi', 'PermissionsApp', 'eavTemplates'])
+    angular.module("ContentTypesApp", ['ContentTypeServices', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -11,10 +11,9 @@
 
 
     /// Manage the list of content-types
-    function ContentTypeListController(contentTypeSvc, $location, eavAdminDialogs, eavGlobalConfigurationProvider) {
+    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId) {
         var vm = this;
-        var svc = contentTypeSvc;
-        svc.appId = $location.search().appid;
+        var svc = contentTypeSvc(appId);
 
         vm.items = svc.liveList();
         vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
@@ -32,14 +31,10 @@
         };
 
         vm.editFields = function editFields(item) {
-            if (item === undefined)
-                return;
             eavAdminDialogs.openContentTypeFields(item, vm.refresh);
         };
 
         vm.editItems = function editItems(item) {
-            if (item === undefined)
-                return;
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
         
@@ -47,9 +42,13 @@
         vm.refresh = svc.liveListReload;
 
         vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete?")) {
+            if (confirm("Delete?")) 
                 svc.delete(item);
-            }
+        };
+        vm.liveEval = function admin() {
+            var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
+            if (inp)
+                eval(inp); // jshint ignore:line
         };
 
         vm.isGuid = function isGuid(txtToTest) {
@@ -90,6 +89,8 @@
     /// The controller to manage the fields-list
     function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
         var vm = this;
+        // todo: must get appId in and 
+        // todo: change to contentTypeSvc(appId)
 
         contentTypeFieldSvc.appId = contentTypeSvc.appId;
         vm.contentType = contentTypeFieldSvc.contentType = contentType;

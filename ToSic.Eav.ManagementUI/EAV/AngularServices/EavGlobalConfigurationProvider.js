@@ -6,9 +6,6 @@
 // they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
 var $eavUIConfig = {
     urls: {
-        //managePermissions: function(appId, targetId) {
-        //    return "/pages/ngwrapper.cshtml?ng=permissions&appId=" + appId + "&Target=" + targetId;
-        //},
         exportContent: function (appId) {
             return "/todo?appId=" + appId;
         },
