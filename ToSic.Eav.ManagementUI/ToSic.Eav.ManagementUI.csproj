@@ -234,8 +234,6 @@
     <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.css" />
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
-    <Content Include="Scripts\toaster.css" />
-    <Content Include="Scripts\toaster.js" />
     <Content Include="src\admin\services\pipeline-services.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
