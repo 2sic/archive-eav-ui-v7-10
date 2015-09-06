@@ -200,6 +200,7 @@ module.exports = function(grunt) {
         "ngAnnotate",
         "uglify",
         "cssmin",
+        "clean:tmp",
         "watch:ngUi"
     ]);
     grunt.registerTask("lint", "jshint");
