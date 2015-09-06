@@ -13,12 +13,11 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
             };
 
             svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                // todo: refactor this - get out of the eavmanagemnetsvc
                 return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
             }));
 
             // Get ID of this content-type 
-            // todo refactor - this sholud be in the conetnttype conroller
-            //eavManagementSvc.getContentTypeDefinition(svc.ctName).then(function (result) {
             svc.ctSvc.getDetails(svc.ctName).then(function (result) {
                 svc.ctId = result.data.AttributeSetId;
             });

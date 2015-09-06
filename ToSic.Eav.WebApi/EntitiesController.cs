@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Http;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -161,6 +163,35 @@ namespace ToSic.Eav.WebApi
 
 
         #endregion
-        
+
+
+        #region History
+
+	    [HttpGet]
+	    public List<DbVersioning.EntityHistoryItem> History(int appId, int entityId)
+	    {
+            SetAppIdAndUser(appId);
+            var versions = CurrentContext.Versioning.GetEntityHistory(entityId);
+	        return versions;
+	    }
+
+	    [HttpGet]
+	    public dynamic HistoryDetails(int appId, int entityId, int changeId)
+	    {
+            SetAppIdAndUser(appId);
+            var result = CurrentContext.Versioning.GetEntityVersionValues(entityId, changeId, null, null);
+	        return result;
+	    }
+
+	    [HttpGet]
+	    public bool HistoryRestore(int appId, int entityId, int changeId)
+	    {
+	        int DefaultCultureDimension = 0;
+            throw  new Exception("this is not tested yet!");
+            SetAppIdAndUser(appId);
+            CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+	        return true;
+        }
+        #endregion
     }
 }

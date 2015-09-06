@@ -1,17 +1,40 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
+    angular.module("ContentEditApp", ['ContentItemsAppServices', 'EavAdminUi'])
+        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
+        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+        .controller("EditContentItem", EditContentItemController)
+        ;
+
+    function EditContentItemController(mode, entityId, contentType, eavAdminDialogs, $modalInstance) { //}, contentTypeId, eavAdminDialogs) {
+        var vm = this;
+        vm.mode = mode;
+        vm.entityId = entityId;
+        vm.contentType = contentType;
+        vm.TestMessage = "Test message the controller is binding correctly...";
+        // var svc = contentItemsSvc(appId, contentType, contentTypeId);
+
+        vm.history = function history() {
+            return eavAdminDialogs.openItemHistory(vm.entityId);
+        };
+
+        vm.close = function () { $modalInstance.dismiss("cancel"); };
+    }
+
+} ());
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+
     angular.module("ContentItemsApp", ['ContentItemsAppServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
         .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
         .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
         .controller("ContentItemsList", ContentItemsListController)
-        ;
+    ;
+
+    function ContentItemsListControllerX() { }
 
     function ContentItemsListController(contentItemsSvc, eavGlobalConfigurationProvider, appId, contentType, contentTypeId, eavAdminDialogs) {
         var vm = this;
-        var svc = contentItemsSvc;
-        svc.appId = appId;
-        svc.contentType = contentType;
-        svc.contentTypeId = contentTypeId;
+        var svc = contentItemsSvc(appId, contentType, contentTypeId);
 
         vm.add = function add() {
             eavAdminDialogs.openItemNew(svc.contentTypeId, svc.liveListReload);
@@ -21,12 +44,10 @@
             eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
         };
 
-        vm.refresh = contentItemsSvc.liveListReload;
-        vm.refresh();
-        vm.items = contentItemsSvc.liveList();
+        vm.items = svc.liveList();
 
         vm.dynamicColumns = [];
-        contentItemsSvc.getColumns().then(function (result) {
+        svc.getColumns().then(function (result) {
             var cols = result.data;
             for (var c = 0; c < cols.length; c++) {
                 if (!cols[c].IsTitle)
@@ -36,18 +57,59 @@
 
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete '" + 'title-unkwonn-yet' + "' (" + item.Id + ") ?"))
-                contentItemsSvc.delete(item.Id);
+                svc.delete(item.Id);
         };
-
-        vm.refresh = contentItemsSvc.liveListReload;
     }
 
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ['ContentTypeServices', 'ContentTypeFieldServices', 'eavGlobalConfigurationProvider', 'EavAdminUi'])
-        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
-        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+    angular.module("HistoryApp", ['ContentItemsAppServices', 'eavGlobalConfigurationProvider', 'HistoryServices', 'eavTemplates'])//, 'EavAdminUi'])
+        .controller("History", HistoryController)
+        .controller("HistoryDetails", HistoryDetailsController)
+        ;
+
+    function HistoryController(appId, entityId, historySvc, $modalInstance, $modal) {
+        var vm = this;
+        var svc = historySvc(appId, entityId);
+        vm.entityId = entityId;
+        vm.items = svc.liveList();
+
+        vm.close = function () { $modalInstance.dismiss("cancel"); };
+
+        vm.details = function(item) {
+            $modal.open({
+                animation: true,
+                templateUrl: "content-items/history-details.html",
+                controller: "HistoryDetails",
+                controllerAs: "vm",
+                resolve: {
+                    changeId: function() { return item.ChangeId; },
+                    dataSvc: function() { return svc; }
+                }
+            });
+        };
+    }
+
+    function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
+        var vm = this;
+        alert('not implemented yet');
+        var svc = dataSvc;
+
+        svc.getVersionDetails(changeId).then(function(result) {
+            alert(result.data);
+            vm.items = result.data;
+        });
+        // vm.items = svc.liveList();
+
+        vm.close = function () { $modalInstance.dismiss("cancel"); };
+    }
+} ());
+(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+
+    angular.module("ContentTypesApp", ["ContentTypeServices", "ContentTypeFieldServices", "eavGlobalConfigurationProvider", "EavAdminUi"])
+        .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
+        .constant("license", "MIT")             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
         .controller("Edit", ContentTypeEditController)
         .controller("FieldList", ContentTypeFieldListController)
@@ -61,6 +123,8 @@
         var svc = contentTypeSvc(appId);
 
         vm.items = svc.liveList();
+        vm.refresh = svc.liveListReload;
+
         vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
 
         vm.tryToDelete = function tryToDelete(title, entityId) {
@@ -84,12 +148,12 @@
         };
         
 
-        vm.refresh = svc.liveListReload;
 
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete?")) 
                 svc.delete(item);
         };
+
         vm.liveEval = function admin() {
             var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
             if (inp)
@@ -103,127 +167,139 @@
 
         vm.permissions = function permissions(item) {
             if (!vm.isGuid(item.StaticName))
-                return (alert('Permissions can only be set to Content-Types with Guid Identifiers'));
+                return (alert("Permissions can only be set to Content-Types with Guid Identifiers"));
             return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         };
 
         vm.openExport = function openExport() {
             return eavAdminDialogs.openContentExport(svc.appId);
         };
+
         vm.openImport = function openImport() {
             return eavAdminDialogs.openContentImport(svc.appId);
         };
     }
 
     /// Edit or add a content-type
-    function ContentTypeEditController(contentTypeSvc, item, $modalInstance) {
+    function ContentTypeEditController(appId, contentTypeSvc, item, $modalInstance) {
         var vm = this;
+        var svc = contentTypeSvc(appId);
         
         vm.item = item;
 
         vm.ok = function () {
-            contentTypeSvc.save(item);
+            svc.save(item);
             $modalInstance.close(vm.item);
         };
 
         vm.cancel = function () {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.dismiss("cancel");
         };
     }
 
     /// The controller to manage the fields-list
-    function ContentTypeFieldListController(contentTypeSvc, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
+    function ContentTypeFieldListController(appId, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
         var vm = this;
-        // todo: must get appId in and 
-        // todo: change to contentTypeSvc(appId)
-
-        contentTypeFieldSvc.appId = contentTypeSvc.appId;
-        vm.contentType = contentTypeFieldSvc.contentType = contentType;
+        var svc = contentTypeFieldSvc(appId, contentType);
 
         // to close this dialog
         vm.close = function () {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.dismiss("cancel");
         };
 
         // Reset & reload the list - initial reset important, because it could still have the previous list cached
-        contentTypeFieldSvc.liveListReset();
-        vm.items = contentTypeFieldSvc.liveList();
+        // svc.liveListReset();
+        vm.items = svc.liveList();
 
         // Open an add-dialog, and add them if the dialog is closed
         vm.add = function add() {
-            modalInstance = $modal.open({
+            $modal.open({
                 animation: true,
-                templateUrl: 'content-types/content-types-field-edit.html',
-                controller: 'FieldsAdd',
-                controllerAs: 'vm'
+                templateUrl: "content-types/content-types-field-edit.html",
+                controller: "FieldsAdd",
+                controllerAs: "vm",
+                resolve: {
+                    dataSvc: function() { return svc; }
+                }
             });
-
-            modalInstance.result.then(function(items) {
-                var newList = [];
-                for (var c = 0; c < items.length; c++)
-                    if (items[c].StaticName)
-                        newList.push(items[c]);
-                contentTypeFieldSvc.addMany(newList, 0);
-            });
-
         };
 
 
         // Actions like moveUp, Down, Delete, Title
-        vm.moveUp = contentTypeFieldSvc.moveUp;
-        vm.moveDown = contentTypeFieldSvc.moveDown;
-        vm.setTitle = contentTypeFieldSvc.setTitle;
+        vm.moveUp = svc.moveUp;
+        vm.moveDown = svc.moveDown;
+        vm.setTitle = svc.setTitle;
 
         vm.tryToDelete = function tryToDelete(item) {
             if (item.IsTitle)
                 return alert("Can't delete Title");
             if (confirm("Delete?")) {
-                return contentTypeFieldSvc.delete(item);
+                return svc.delete(item);
             }
         };
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-            metadataType = '@' + metadataType;
-            var exists = item.Metadata[metadataType] !== null;
+            metadataType = "@" + metadataType;
+            var exists = item.Metadata[metadataType] !== undefined;
 
             if (exists) {
                 eavAdminDialogs.openItemEditWithEntityId(
                     item.Metadata[metadataType].EntityId,
-                    contentTypeFieldSvc.liveListReload);
+                    svc.liveListReload);
             } else {
-                eavAdminDialogs.openMetadataNew('attribute', item.Id, metadataType,
-                    contentTypeFieldSvc.liveListReload);
+                eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, metadataType,
+                    svc.liveListReload);
             }
         };
     }
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function ContentTypeFieldAddController(contentTypeFieldSvc, $modalInstance) {
+    function ContentTypeFieldAddController(dataSvc, $modalInstance) {
         var vm = this;
+        var svc = dataSvc;// (appId, contentType);
 
         // prepare empty array of up to 10 new items to be added
-        var nw = contentTypeFieldSvc.newItem;
+        var nw = svc.newItem;
         vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
 
-        vm.item = contentTypeFieldSvc.newItem();
-        vm.types = contentTypeFieldSvc.types.liveList();
+        vm.item = svc.newItem();
+        vm.types = svc.types.liveList();
 
         vm.ok = function () {
-            $modalInstance.close(vm.items);
+            var items = vm.items;
+            var newList = [];
+            for (var c = 0; c < items.length; c++)
+                if (items[c].StaticName)
+                    newList.push(items[c]);
+            svc.addMany(newList, 0);
+            $modalInstance.close();//vm.items);
         };
 
-        vm.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
+        vm.cancel = function() { $modalInstance.dismiss("cancel"); };
     }
 }());
 angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('content-items/content-edit.html',
+    "<div class=modal-header><button type=button class=\"btn btn-default\" ng-click=vm.history()><span class=\"glyphicon glyphicon-time\">history / todo</span></button><h3 class=modal-title>Edit / New Content</h3></div><div class=modal-body>this is where the edit appears. Would edit entity {{vm.entityId}} or add a {{vm.contentType}} - depending on the mode: {{vm.mode}}</div>"
+  );
+
+
   $templateCache.put('content-items/content-items.html',
-    "<div><div class=modal-header><h3 class=modal-title>Manage Content / Data</h3></div><div class=modal-body><h3 .>todo</h3><ol><li>change entity-delivery of values ot be a serializer setting</li></ol><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button><div style=\"overflow: auto\"><table class=\"table table-striped table-hover\"><thead><tr><th>ID</th><th>Publ</th><th style=\"width: 200px\">Title</th><th>Del</th><th ng-repeat=\"col in vm.dynamicColumns\">{{col.StaticName}}</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td style=\"white-space: nowrap\"><button type=button class=\"btn btn-xs\" ng-click=vm.edit(item)><span class=\"glyphicon glyphicon-pencil\"></span></button> <span>{{item.Id}}</span></td><td style=\"white-space: nowrap\"><span class=glyphicon ng-class=\"{'glyphicon-ok-circle': item.IsPublished, 'glyphicon-ban-circle' : !item.IsPublished && !item.Published, 'glyphicon-record' : !item.IsPublished && item.Published }\" tooltip=\"{{ item.IsPublished ? 'Published and visible' : item.Published ? 'This is a draft for another item' : 'Not published at the moment' }}\"></span> <span class=glyphicon ng-class=\"{'glyphicon-paperclip':  item.Draft, 'glyphicon-export': item.Published}\" tooltip=\"{{ item.Draft ? 'Has draft:' + item.Draft.RepositoryId : '' }}{{ item.Published ? 'Will replace published:' + item.Published.RepositoryId : '' }}\"></span></td><td><div style=\"height: 20px; width: 200px; position: relative; overflow: hidden; white-space: nowrap; text-overflow: ellipsis\" tooltip={{item.Title}}><a ng-click=vm.edit(item) target=_self>{{item.Title}}{{ !item.Title ? 'no title on # ' + item.Id : '' }}</a></div></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td><td ng-repeat=\"col in vm.dynamicColumns\"><div style=\"height: 20px; max-width: 100px; position: relative; overflow: hidden; text-overflow: ellipsis\" tooltip={{item[col.StaticName]}}>{{item[col.StaticName].toString().substring(0,25)}}</div></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div></div>"
+    "<div class=modal-header><h3 class=modal-title>Manage Content / Data</h3></div><div class=modal-body><h3 .>todo</h3><ol><li>change entity-delivery of values ot be a serializer setting</li></ol><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button><div style=\"overflow: auto\"><table class=\"table table-striped table-hover\"><thead><tr><th>ID</th><th>Publ</th><th style=\"width: 200px\">Title</th><th>Del</th><th ng-repeat=\"col in vm.dynamicColumns\">{{col.StaticName}}</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td style=\"white-space: nowrap\"><button type=button class=\"btn btn-xs\" ng-click=vm.edit(item)><span class=\"glyphicon glyphicon-pencil\"></span></button> <span>{{item.Id}}</span></td><td style=\"white-space: nowrap\"><span class=glyphicon ng-class=\"{'glyphicon-ok-circle': item.IsPublished, 'glyphicon-ban-circle' : !item.IsPublished && !item.Published, 'glyphicon-record' : !item.IsPublished && item.Published }\" tooltip=\"{{ item.IsPublished ? 'Published and visible' : item.Published ? 'This is a draft for another item' : 'Not published at the moment' }}\"></span> <span class=glyphicon ng-class=\"{'glyphicon-paperclip':  item.Draft, 'glyphicon-export': item.Published}\" tooltip=\"{{ item.Draft ? 'Has draft:' + item.Draft.RepositoryId : '' }}{{ item.Published ? 'Will replace published:' + item.Published.RepositoryId : '' }}\"></span></td><td><div style=\"height: 20px; width: 200px; position: relative; overflow: hidden; white-space: nowrap; text-overflow: ellipsis\" tooltip={{item.Title}}><a ng-click=vm.edit(item) target=_self>{{item.Title}}{{ !item.Title ? 'no title on # ' + item.Id : '' }}</a></div></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td><td ng-repeat=\"col in vm.dynamicColumns\"><div style=\"height: 20px; max-width: 100px; position: relative; overflow: hidden; text-overflow: ellipsis\" tooltip={{item[col.StaticName]}}>{{item[col.StaticName].toString().substring(0,25)}}</div></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div>"
+  );
+
+
+  $templateCache.put('content-items/history-details.html',
+    "<div><div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>History Details {{vm.ChangeId}} of {{vm.entityId}}</h3></div><div class=modal-body><h1>todo</h1><table class=\"table table-striped table-hover\"><thead><tr><th>Field</th><th>Language</th><th>Value</th><th>SharedWith</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy:SysCreatedDate:reverse\"><td>{{item.Field}}</td><td>{{item.Language}}</td><td>{{item.Value}}</td><td>{{item.SharedWith}}</td></tr><tr ng-if=!vm.items.length><td colspan=100>No History</td></tr></tbody></table><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.restore()><span class=\"glyphicon glyphicon-ok\">todo restore</span></button></div></div>"
+  );
+
+
+  $templateCache.put('content-items/history.html',
+    "<div><div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>History of {{vm.entityId}}</h3></div><div class=modal-body><table class=\"table table-striped table-hover\"><thead><tr><th>#</th><th>When</th><th>User</th><th></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy:SysCreatedDate:reverse\"><td><span tooltip=\"ChangeId: {{item.ChangeId}}\">{{item.VirtualVersion}}</span></td><td>{{item.SysCreatedDate.replace(\"T\", \" \")}}</td><td>{{item.User}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.details(item)><span class=\"glyphicon glyphicon-search\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>No History</td></tr></tbody></table></div></div>"
   );
 
 
@@ -253,7 +329,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('permissions/permissions.html',
-    "<div><div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>Permission</h3></div><div class=modal-body><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <a target=_self class=\"btn btn-default\" ng-if=returnUrl ng-href={{returnUrl}}><span class=\"glyphicon glyphicon-arrow-left\"></span> Back</a><table class=\"table table-striped table-hover\"><thead><tr><th>Name</th><th>ID</th><th>Condition</th><th>Grant</th><th>Delete</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy:'Title'\"><td><a ng-click=vm.edit(item)>{{item.Title}}</a></td><td>{{item.Id}}</td><td>{{item.Condition}}</td><td>{{item.Grant}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div>"
+    "<div><div class=modal-header><button class=\"btn btn-primary pull-right\" type=button ng-click=vm.close()><span class=\"glyphicon glyphicon-remove\"></span></button><h3 class=modal-title>Permission</h3></div><div class=modal-body><button type=button class=\"btn btn-default\" ng-click=vm.add()><span class=\"glyphicon glyphicon-plus\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button><table class=\"table table-striped table-hover\"><thead><tr><th>Name</th><th>ID</th><th>Condition</th><th>Grant</th><th>Delete</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy:'Title'\"><td><a ng-click=vm.edit(item)>{{item.Title}}</a></td><td>{{item.Id}}</td><td>{{item.Condition}}</td><td>{{item.Grant}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>No Items</td></tr></tbody></table></div></div>"
   );
 
 
@@ -421,7 +497,7 @@ angular.module("PipelineDesigner")
 			uiNotification.note("Ready", $scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.", true);
 
 			// If a new Pipeline is made, init new Pipeline
-			if (!$scope.PipelineEntityId || $scope.pipelineData.DataSources.length == 1)
+			if (!$scope.PipelineEntityId || $scope.pipelineData.DataSources.length === 1)
 				initNewPipeline();
 		}, function (reason) {
 			uiNotification.error("Loading Pipeline failed", reason);
@@ -563,7 +639,7 @@ angular.module("PipelineDesigner")
 	                    $scope.jsPlumbInstance.makeTarget(element, targetEndpointUnlimited);
 	                }
 
-	                $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon", });
+	                $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon" });
 	            }
 
 	            // make DataSources draggable
@@ -1008,34 +1084,39 @@ angular.module('PipelineManagement', ['PipelineService', 'eavGlobalConfiguration
         };
     });
 angular.module('ContentItemsAppServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
-    .factory('contentItemsSvc', function ($http, entitiesSvc, eavManagementSvc, svcCreator) {
-        var svc = {};
-        svc.contentType = "";
+    .factory('contentItemsSvc', function($http, entitiesSvc, eavManagementSvc, svcCreator) {
+            return function createContentItemsSvc(appId, contentType, contentTypeId) {
+                var svc = {};
+                svc.contentType = contentType;
+                svc.contentTypeId = contentTypeId;
+                svc.appId = appId;
 
-        svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
-            return $http.get('eav/entities/GetAllOfTypeForAdmin', { params: { appId: svc.appId, contentType: svc.contentType }});
-        }));
+                svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                    return $http.get('eav/entities/GetAllOfTypeForAdmin', { params: { appId: svc.appId, contentType: svc.contentType } });
+                }));
 
-        // delete, then reload
-        svc.delete = function del(id) {
-            return entitiesSvc.delete(svc.contentType, id)
-                .then(svc.liveListReload);
-        };
+                // delete, then reload
+                svc.delete = function del(id) {
+                    return entitiesSvc.delete(svc.contentType, id)
+                        .then(svc.liveListReload);
+                };
 
-        svc.getColumns = function getColumns() {
-            return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType } });
-        };
+                // todo: should use the ContentTypeService instead
+                svc.getColumns = function getColumns() {
+                    return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType } });
+                };
 
-        return svc;
-    })
-
-;
+                return svc;
+            };
+        }
+    );
 angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
-    .factory('contentTypeFieldSvc', function($http, eavGlobalConfigurationProvider, svcCreator, eavManagementSvc) {
-        // start with a basic service which implement the live-list functionality
+    .factory('contentTypeFieldSvc', function($http, eavGlobalConfigurationProvider, svcCreator) {
+        return function createFieldsSvc(appId, contentType) {
+            // start with a basic service which implement the live-list functionality
             var svc = {};
-            svc.appId = 0;
-            svc.contentType = null;
+            svc.appId = appId;
+            svc.contentType = contentType;
 
             svc.typeListRetrieve = function typeListRetrieve() {
                 return $http.get('eav/contenttype/datatypes/', { params: { "appid": svc.appId } });
@@ -1044,9 +1125,8 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
             svc = angular.extend(svc, svcCreator.implementLiveList(function liveListRetrieve() {
                 return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
             }));
-            
-            svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
 
+            svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
 
 
             svc.moveUp = function moveUp(item) {
@@ -1106,9 +1186,8 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
 
 
             return svc;
-        })
-
-;
+        };
+    });
 angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
     .factory('contentTypeSvc', function ($http, eavGlobalConfigurationProvider, svcCreator) {
         return function appSpecificContentTypeSvc(appId) {
@@ -1181,8 +1260,19 @@ angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
 // 1. Import / Export
 // 2. Pipeline Designer
 
-angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'PermissionsApp', 'ContentItemsApp'])
-    .factory('eavAdminDialogs', function($modal, eavGlobalConfigurationProvider, eavManagementSvc, $window) {
+angular.module("EavAdminUi", ["ng",
+    "ui.bootstrap",         // for the $modal etc.
+    "eavTemplates",         // Provides all cached templates
+    "PermissionsApp",       // Permissions dialogs to manage permissions
+    "ContentItemsApp",      // Content-items dialog - not working atm?
+    "PipelineManagement",   // Manage pipelines
+    "ContentTypeServices",  // Needed to retrieve an Id in a special case
+    "ContentEditApp",       // the edit-app (doesn't work yet)
+    "HistoryApp"            // the item-history app
+])
+    .factory("eavAdminDialogs", function ($modal, eavGlobalConfigurationProvider, eavManagementSvc, contentTypeSvc, $window) {
+        var useDummyContentEditor = true;
+
         var svc = {};
 
         //#region Content Items dialogs
@@ -1192,7 +1282,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
 
 
             svc.openContentItemsX = function ociX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, callbacks);
             };
 
         //#endregion
@@ -1203,7 +1293,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openContentTypeEditX = function octeX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-types/content-types-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
+                return svc._openModalWithCallback("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, callbacks);
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
@@ -1212,43 +1302,71 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-types/content-types-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, callbacks);
             };
         //#endregion
-
+        
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
-                return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: 0, contentType: contentTypeId}), { close: closeCallback });
+                } else {
+                    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
+                }
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
-                return PromiseWindow.open(url).then(null, function(error) { if(error == 'closed') closeCallback(); });
+                if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "edit", entityId: entityId, contentType:"" }), { close: closeCallback });
+                } else {
+                    var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
+                    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                }
             };
+
+            svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
+                return svc._openModalWithCallback("content-items/content-edit.html", "EditContentItem as vm", "lg", resolve, callbacks);
+            };
+
+            svc.openItemHistory = function ioh(entityId, closeCallback) {
+                return svc._openModalWithCallback("content-items/history.html", "History as vm", "lg",
+                    svc._createResolve({ entityId: entityId }),
+                    { close: closeCallback });
+            };
+            
 
         //#endregion
 
         //#region Metadata - mainly new
-            svc.openMetadataNew = function omdn(targetType, targetId, metadataType, closeCallback) {
-                var key = {}, assignmentType = 0;
+            svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
+                var key = {}, assignmentType;
                 switch (targetType) {
-                    case 'entity':
+                    case "entity":
                         key.keyGuid = targetId;
                         assignmentType = eavGlobalConfigurationProvider.metadataOfEntity;
                         break;
-                    case 'attribute':
+                    case "attribute":
                         key.keyNumber = targetId;
                         assignmentType = eavGlobalConfigurationProvider.metadataOfAttribute;
                         break;
-                    default: throw 'targetType unknown, only accepts entity or attribute';
+                    default: throw "targetType unknown, only accepts entity or attribute";
                 }
-                return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
-                    var attSetId = result.data.AttributeSetId;
-                    var url = eavGlobalConfigurationProvider.itemForm
-                        .getNewItemUrl(attSetId, assignmentType, key, false);
+                // return eavManagementSvc.getContentTypeDefinition(metadataType)
+                return contentTypeSvc(appId).getDetails(metadataType)
+                    .then(function (result) {
+                    if (useDummyContentEditor) {
+                        var resolve = svc._createResolve({ mode: "new", entityId: 0, contentType: metadataType });
+                        angular.extend(resolve, key);
+                        return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
+                    } else {
 
-                    return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                        var attSetId = result.data.AttributeSetId;
+                        var url = eavGlobalConfigurationProvider.itemForm
+                            .getNewItemUrl(attSetId, assignmentType, key, false);
+
+                        return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                    }
                 });
             };
         //#endregion
@@ -1260,7 +1378,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
-                return svc._openModalWithCallback('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("permissions/permissions.html", "PermissionList as vm", "lg", resolve, callbacks);
             };
         //#endregion
 
@@ -1295,7 +1413,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
                 //if (templateUrl.substring(0, 2) == "~/")
                 //    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
-                var foundAs = controller.indexOf(' as ');
+                var foundAs = controller.indexOf(" as ");
                 var contAs = foundAs > 0 ?
                     controller.substring(foundAs + 4)
                     : null;
@@ -1451,6 +1569,35 @@ angular.module('eavNgSvcs', ['ng'])
     })
 
 ;
+angular.module('HistoryServices', ['ng', 'eavNgSvcs'])//, 'eavGlobalConfigurationProvider'])
+    .factory('historySvc', function($http, svcCreator) { //, eavGlobalConfigurationProvider, entitiesSvc, eavManagementSvc, contentTypeSvc) {
+        //var eavConf = eavGlobalConfigurationProvider;
+
+        // Construct a service for this specific targetGuid
+        return function createSvc(appId, entityId) {
+            var svc = {
+                appId: appId,
+                entityId: entityId
+            };
+
+            // When we get the list, reverse-number the results to give it a nice version number
+            svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                return $http.get('eav/entities/history', { params: { "appId": svc.appId, "entityId": svc.entityId } })
+                .then(function(result) {
+                    var list = result.data;
+                        for (var i = 0; i < list.length; i++)
+                            list[i].VirtualVersion = list.length - i;
+                        return result;
+                    });
+            }));
+
+            svc.getVersionDetails = function getVersionDetails(changeId) {
+                return $http.get('eav/entities/historydetails', { params: { "appId": svc.appId, "entityId": svc.entityId, "changeId": changeId } });
+            };
+
+            return svc;
+        };
+    });
 // By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
 // but the "root" component must get it from the url
 // Since different objects could be the root object (this depends on the initial loader), the root-one must have
@@ -1484,12 +1631,11 @@ angular.module('PermissionsServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
             };
 
             svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                // todo: refactor this - get out of the eavmanagemnetsvc
                 return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
             }));
 
             // Get ID of this content-type 
-            // todo refactor - this sholud be in the conetnttype conroller
-            //eavManagementSvc.getContentTypeDefinition(svc.ctName).then(function (result) {
             svc.ctSvc.getDetails(svc.ctName).then(function (result) {
                 svc.ctId = result.data.AttributeSetId;
             });

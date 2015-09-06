@@ -130,25 +130,25 @@ namespace ToSic.Eav.ManagementUI
 			#region Add Eav Controls dynamically
 			switch (Mode)
 			{
-				case ManagementMode.ContentTypeEdit:
-					var contentTypeEditControl = (ContentTypeEdit)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeEdit.ascx");
-					contentTypeEditControl.AppId = AppId;
-					contentTypeEditControl.AttributeSetId = AttributeSetId.Value;
-					contentTypeEditControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					contentTypeEditControl.Scope = Scope;
-					Controls.Add(contentTypeEditControl);
-					break;
-				case ManagementMode.ContentTypeFields:
-					var contentTypeFieldsControl = (ContentTypeFields)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeFields.ascx");
-					contentTypeFieldsControl.AppId = AppId;
-					contentTypeFieldsControl.DefaultCultureDimension = DefaultCultureDimension;
-					contentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
-					contentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
-					contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "keyGuid", "[KeyGuid]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
-					contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
-					Controls.Add(contentTypeFieldsControl);
-					break;
+				//case ManagementMode.ContentTypeEdit:
+				//	var contentTypeEditControl = (ContentTypeEdit)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeEdit.ascx");
+				//	contentTypeEditControl.AppId = AppId;
+				//	contentTypeEditControl.AttributeSetId = AttributeSetId.Value;
+				//	contentTypeEditControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
+				//	contentTypeEditControl.Scope = Scope;
+				//	Controls.Add(contentTypeEditControl);
+				//	break;
+				//case ManagementMode.ContentTypeFields:
+				//	var contentTypeFieldsControl = (ContentTypeFields)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypeFields.ascx");
+				//	contentTypeFieldsControl.AppId = AppId;
+				//	contentTypeFieldsControl.DefaultCultureDimension = DefaultCultureDimension;
+				//	contentTypeFieldsControl.AttributeSetId = AttributeSetId.Value;
+				//	contentTypeFieldsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
+				//	contentTypeFieldsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
+				//	contentTypeFieldsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "keyNumber", "[KeyNumber]", "keyGuid", "[KeyGuid]", "AssignmentObjectTypeId", "[AssignmentObjectTypeId]", "ReturnUrl", "[ReturnUrl]", "CultureDimension", cultureDimensionReplaceValue);
+				//	contentTypeFieldsControl.MetaDataReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	Controls.Add(contentTypeFieldsControl);
+				//	break;
 				case ManagementMode.NewItem:
 				case ManagementMode.EditItem:
 					var itemFormControl = (ItemForm)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemForm.ascx");
@@ -173,47 +173,47 @@ namespace ToSic.Eav.ManagementUI
 			        itemFormControl.PreventRedirect = Request.QueryString["PreventRedirect"] == "true";
 					Controls.Add(itemFormControl);
 					break;
-				case ManagementMode.Items:
-					var itemsControl = (Items)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/Items.ascx");
-					itemsControl.AppId = AppId;
-					itemsControl.DefaultCultureDimension = DefaultCultureDimension;
-					itemsControl.AttributeSetId = AttributeSetId.Value;
-					itemsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
-					itemsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", "[CultureDimension]");
-					itemsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
-					if (EntityDeleting != null)
-						itemsControl.EntityDeleting += EntityDeleting;
-					Controls.Add(itemsControl);
-					break;
-				case ManagementMode.ItemHistory:
-					var itemHistoryControl = (ItemHistory)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemHistory.ascx");
-					itemHistoryControl.AppId = AppId;
-					itemHistoryControl.EntityId = EntityId.Value;
-					itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", cultureDimensionReplaceValue);
-					itemHistoryControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
-					Controls.Add(itemHistoryControl);
-					break;
-				case ManagementMode.ItemVersionDetails:
-					var itemVersionDetails = (ItemVersionDetails)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemVersionDetails.ascx");
-					itemVersionDetails.AppId = AppId;
-					itemVersionDetails.DefaultCultureDimension = DefaultCultureDimension;
-					itemVersionDetails.EntityId = EntityId.Value;
-					itemVersionDetails.ChangeId = ChangeId.Value;
-					itemVersionDetails.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
-					itemVersionDetails.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
-					Controls.Add(itemVersionDetails);
-					break;
-				default:
-					var contentTypesListControl = (ContentTypesList)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypesList.ascx");
-					contentTypesListControl.AppId = AppId;
-					contentTypesListControl.DesignFieldsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]");
-					contentTypesListControl.ShowItemsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]");
-					contentTypesListControl.ConfigureContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString(), "AttributeSetId", "[AttributeSetId]");
-					contentTypesListControl.NewContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString());
-					contentTypesListControl.Scope = Scope;
-					contentTypesListControl.ShowPermissionsLink = ShowPermissionsLink;
-					Controls.Add(contentTypesListControl);
-					break;
+				//case ManagementMode.Items:
+				//	var itemsControl = (Items)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/Items.ascx");
+				//	itemsControl.AppId = AppId;
+				//	itemsControl.DefaultCultureDimension = DefaultCultureDimension;
+				//	itemsControl.AttributeSetId = AttributeSetId.Value;
+				//	itemsControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypesList.ToString());
+				//	itemsControl.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", "[CultureDimension]");
+				//	itemsControl.NewItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.NewItem.ToString(), "AttributeSetId", "[AttributeSetId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	if (EntityDeleting != null)
+				//		itemsControl.EntityDeleting += EntityDeleting;
+				//	Controls.Add(itemsControl);
+				//	break;
+				//case ManagementMode.ItemHistory:
+				//	var itemHistoryControl = (ItemHistory)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemHistory.ascx");
+				//	itemHistoryControl.AppId = AppId;
+				//	itemHistoryControl.EntityId = EntityId.Value;
+				//	itemHistoryControl.DetailsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemVersionDetails.ToString(), "EntityId", "[EntityId]", "ChangeId", "[ChangeId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	itemHistoryControl.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	Controls.Add(itemHistoryControl);
+				//	break;
+				//case ManagementMode.ItemVersionDetails:
+				//	var itemVersionDetails = (ItemVersionDetails)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ItemVersionDetails.ascx");
+				//	itemVersionDetails.AppId = AppId;
+				//	itemVersionDetails.DefaultCultureDimension = DefaultCultureDimension;
+				//	itemVersionDetails.EntityId = EntityId.Value;
+				//	itemVersionDetails.ChangeId = ChangeId.Value;
+				//	itemVersionDetails.ReturnUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ItemHistory.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	itemVersionDetails.EditItemUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.EditItem.ToString(), "EntityId", "[EntityId]", "CultureDimension", cultureDimensionReplaceValue);
+				//	Controls.Add(itemVersionDetails);
+				//	break;
+				//default:
+				//	var contentTypesListControl = (ContentTypesList)Page.LoadControl(TemplateControl.TemplateSourceDirectory + "/ContentTypesList.ascx");
+				//	contentTypesListControl.AppId = AppId;
+				//	contentTypesListControl.DesignFieldsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeFields.ToString(), "AttributeSetId", "[AttributeSetId]");
+				//	contentTypesListControl.ShowItemsUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.Items.ToString(), "AttributeSetId", "[AttributeSetId]");
+				//	contentTypesListControl.ConfigureContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString(), "AttributeSetId", "[AttributeSetId]");
+				//	contentTypesListControl.NewContentTypeUrl = GetCurrentUrlWithParameters(true, "ManagementMode", ManagementMode.ContentTypeEdit.ToString());
+				//	contentTypesListControl.Scope = Scope;
+				//	contentTypesListControl.ShowPermissionsLink = ShowPermissionsLink;
+				//	Controls.Add(contentTypesListControl);
+				//	break;
 			}
 			#endregion
 

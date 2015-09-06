@@ -26,8 +26,19 @@
 // 1. Import / Export
 // 2. Pipeline Designer
 
-angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'PermissionsApp', 'ContentItemsApp'])
-    .factory('eavAdminDialogs', function($modal, eavGlobalConfigurationProvider, eavManagementSvc, $window) {
+angular.module("EavAdminUi", ["ng",
+    "ui.bootstrap",         // for the $modal etc.
+    "eavTemplates",         // Provides all cached templates
+    "PermissionsApp",       // Permissions dialogs to manage permissions
+    "ContentItemsApp",      // Content-items dialog - not working atm?
+    "PipelineManagement",   // Manage pipelines
+    "ContentTypeServices",  // Needed to retrieve an Id in a special case
+    "ContentEditApp",       // the edit-app (doesn't work yet)
+    "HistoryApp"            // the item-history app
+])
+    .factory("eavAdminDialogs", function ($modal, eavGlobalConfigurationProvider, eavManagementSvc, contentTypeSvc, $window) {
+        var useDummyContentEditor = true;
+
         var svc = {};
 
         //#region Content Items dialogs
@@ -37,7 +48,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
 
 
             svc.openContentItemsX = function ociX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-items/content-items.html', 'ContentItemsList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, callbacks);
             };
 
         //#endregion
@@ -48,7 +59,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openContentTypeEditX = function octeX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-types/content-types-edit.html', 'Edit as vm', 'sm', resolve, callbacks);
+                return svc._openModalWithCallback("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, callbacks);
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
@@ -57,43 +68,71 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
-                return svc._openModalWithCallback('content-types/content-types-fields.html', 'FieldList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, callbacks);
             };
         //#endregion
-
+        
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
-                return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: 0, contentType: contentTypeId}), { close: closeCallback });
+                } else {
+                    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
+                }
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
-                return PromiseWindow.open(url).then(null, function(error) { if(error == 'closed') closeCallback(); });
+                if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "edit", entityId: entityId, contentType:"" }), { close: closeCallback });
+                } else {
+                    var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
+                    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                }
             };
+
+            svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
+                return svc._openModalWithCallback("content-items/content-edit.html", "EditContentItem as vm", "lg", resolve, callbacks);
+            };
+
+            svc.openItemHistory = function ioh(entityId, closeCallback) {
+                return svc._openModalWithCallback("content-items/history.html", "History as vm", "lg",
+                    svc._createResolve({ entityId: entityId }),
+                    { close: closeCallback });
+            };
+            
 
         //#endregion
 
         //#region Metadata - mainly new
-            svc.openMetadataNew = function omdn(targetType, targetId, metadataType, closeCallback) {
-                var key = {}, assignmentType = 0;
+            svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
+                var key = {}, assignmentType;
                 switch (targetType) {
-                    case 'entity':
+                    case "entity":
                         key.keyGuid = targetId;
                         assignmentType = eavGlobalConfigurationProvider.metadataOfEntity;
                         break;
-                    case 'attribute':
+                    case "attribute":
                         key.keyNumber = targetId;
                         assignmentType = eavGlobalConfigurationProvider.metadataOfAttribute;
                         break;
-                    default: throw 'targetType unknown, only accepts entity or attribute';
+                    default: throw "targetType unknown, only accepts entity or attribute";
                 }
-                return eavManagementSvc.getContentTypeDefinition(metadataType).then(function (result) {
-                    var attSetId = result.data.AttributeSetId;
-                    var url = eavGlobalConfigurationProvider.itemForm
-                        .getNewItemUrl(attSetId, assignmentType, key, false);
+                // return eavManagementSvc.getContentTypeDefinition(metadataType)
+                return contentTypeSvc(appId).getDetails(metadataType)
+                    .then(function (result) {
+                    if (useDummyContentEditor) {
+                        var resolve = svc._createResolve({ mode: "new", entityId: 0, contentType: metadataType });
+                        angular.extend(resolve, key);
+                        return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
+                    } else {
 
-                    return PromiseWindow.open(url).then(null, function (error) { if (error == 'closed') closeCallback(); });
+                        var attSetId = result.data.AttributeSetId;
+                        var url = eavGlobalConfigurationProvider.itemForm
+                            .getNewItemUrl(attSetId, assignmentType, key, false);
+
+                        return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                    }
                 });
             };
         //#endregion
@@ -105,7 +144,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             };
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
-                return svc._openModalWithCallback('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+                return svc._openModalWithCallback("permissions/permissions.html", "PermissionList as vm", "lg", resolve, callbacks);
             };
         //#endregion
 
@@ -140,7 +179,7 @@ angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'Permissions
             svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
                 //if (templateUrl.substring(0, 2) == "~/")
                 //    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
-                var foundAs = controller.indexOf(' as ');
+                var foundAs = controller.indexOf(" as ");
                 var contAs = foundAs > 0 ?
                     controller.substring(foundAs + 4)
                     : null;

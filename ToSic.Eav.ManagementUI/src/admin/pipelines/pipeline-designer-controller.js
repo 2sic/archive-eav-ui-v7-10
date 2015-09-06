@@ -34,7 +34,7 @@ angular.module("PipelineDesigner")
 			uiNotification.note("Ready", $scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.", true);
 
 			// If a new Pipeline is made, init new Pipeline
-			if (!$scope.PipelineEntityId || $scope.pipelineData.DataSources.length == 1)
+			if (!$scope.PipelineEntityId || $scope.pipelineData.DataSources.length === 1)
 				initNewPipeline();
 		}, function (reason) {
 			uiNotification.error("Loading Pipeline failed", reason);
@@ -176,7 +176,7 @@ angular.module("PipelineDesigner")
 	                    $scope.jsPlumbInstance.makeTarget(element, targetEndpointUnlimited);
 	                }
 
-	                $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon", });
+	                $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon" });
 	            }
 
 	            // make DataSources draggable

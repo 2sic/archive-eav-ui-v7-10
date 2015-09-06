@@ -137,12 +137,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         public DataTable GetEntityVersions(int entityId)
         {
-            // get Versions from DataTimeline
-            var entityVersions = (from d in Context.SqlDb.DataTimeline
-                                  join c in Context.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
-                                  where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
-                                  orderby c.Timestamp descending
-                                  select new { d.SysCreatedDate, c.User, c.ChangeID }).ToList();
+            var entityVersions = GetEntityHistory(entityId);
 
             // Generate DataTable with Version-Numbers
             var versionNumber = entityVersions.Count;	// add version number decrement to prevent additional sorting
@@ -152,9 +147,28 @@ namespace ToSic.Eav.Persistence
             result.Columns.Add("ChangeId", typeof(int));
             result.Columns.Add("VersionNumber", typeof(int));
             foreach (var version in entityVersions)
-                result.Rows.Add(version.SysCreatedDate, version.User, version.ChangeID, versionNumber--);	// decrement versionnumber
+                result.Rows.Add(version.SysCreatedDate, version.User, version.ChangeId, versionNumber--);	// decrement versionnumber
 
             return result;
+        }
+
+        public List<EntityHistoryItem> GetEntityHistory(int entityId)
+        {
+            // get Versions from DataTimeline
+            var entityVersions = (from d in Context.SqlDb.DataTimeline
+                join c in Context.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
+                where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
+                orderby c.Timestamp descending
+                select new EntityHistoryItem() { SysCreatedDate = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID}).ToList();
+            return entityVersions;
+        }
+
+        public class EntityHistoryItem
+        {
+            public DateTime SysCreatedDate { get; set; }
+            public string User { get; set; }
+            public int ChangeId { get; set; }
+
         }
 
 

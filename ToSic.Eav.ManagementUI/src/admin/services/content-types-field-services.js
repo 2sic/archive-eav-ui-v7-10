@@ -1,9 +1,10 @@
 angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
-    .factory('contentTypeFieldSvc', function($http, eavGlobalConfigurationProvider, svcCreator, eavManagementSvc) {
-        // start with a basic service which implement the live-list functionality
+    .factory('contentTypeFieldSvc', function($http, eavGlobalConfigurationProvider, svcCreator) {
+        return function createFieldsSvc(appId, contentType) {
+            // start with a basic service which implement the live-list functionality
             var svc = {};
-            svc.appId = 0;
-            svc.contentType = null;
+            svc.appId = appId;
+            svc.contentType = contentType;
 
             svc.typeListRetrieve = function typeListRetrieve() {
                 return $http.get('eav/contenttype/datatypes/', { params: { "appid": svc.appId } });
@@ -12,9 +13,8 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
             svc = angular.extend(svc, svcCreator.implementLiveList(function liveListRetrieve() {
                 return $http.get('eav/contenttype/getfields/', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
             }));
-            
-            svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
 
+            svc.types = svcCreator.implementLiveList(svc.typeListRetrieve);
 
 
             svc.moveUp = function moveUp(item) {
@@ -74,6 +74,5 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigu
 
 
             return svc;
-        })
-
-;
+        };
+    });
