@@ -8,22 +8,21 @@
 
     function PermissionListController(permissionsSvc, eavAdminDialogs, eavGlobalConfigurationProvider, appId, targetGuid, $modalInstance /* $location */) {
         var vm = this;
-        var svc = permissionsSvc;
-        permissionsSvc.PermissionTargetGuid = targetGuid; //$location.search().Target;
+        var svc = permissionsSvc(appId, targetGuid);
 
         vm.edit = function edit(item) {
-            eavAdminDialogs.openItemEditWithEntityId(item.Id, permissionsSvc.liveListReload);
+            eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
         };
 
         vm.add = function add() {
             eavAdminDialogs.openMetadataNew('entity', svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
         };
 
-        vm.items = permissionsSvc.liveList();
+        vm.items = svc.liveList();
         
         vm.tryToDelete = function tryToDelete(item) {
             if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?"))
-                permissionsSvc.delete(item.Id);
+                svc.delete(item.Id);
         };
 
         vm.refresh = svc.liveListReload;

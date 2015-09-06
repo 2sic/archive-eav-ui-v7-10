@@ -62,7 +62,7 @@ $eav4ng.autoRunBootstrap();
 angular.module('eav4ng', ['ng'])
     // Configure $http for DNN web services (security tokens etc.)
     .config(function ($httpProvider) {
-        // angular.extend($httpProvider.defaults.headers.common, HttpHeaders);
+        angular.extend($httpProvider.defaults.headers.common, { 'eavMarker': 'if you see this, eav headers were added' });
         $httpProvider.interceptors.push(function ($q) {
             return {
                 // Rewrite 2sxc-urls if necessary

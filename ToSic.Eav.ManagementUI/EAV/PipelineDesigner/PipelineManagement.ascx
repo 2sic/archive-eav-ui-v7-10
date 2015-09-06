@@ -2,10 +2,10 @@
 <div ng-app="pipelineManagement" class="ng-cloak">
 	<div ng-controller="PipelineManagementController">
 		<a ng-href="{{getPipelineUrl('new')}}" target="_self" class="btn btn-default">
-			<span class="glyphicon glyphicon-plus"></span> New
+			<span class="glyphicon glyphicon-plus"></span>
 		</a>
 		<button type="button" class="btn btn-default" ng-click="refresh()">
-			<span class="glyphicon glyphicon-repeat"></span> Refresh
+			<span class="glyphicon glyphicon-repeat"></span>
 		</button>
 		<a target="_self" class="btn btn-default" ng-if="returnUrl" ng-href="{{returnUrl}}">
 			<span class="glyphicon glyphicon-arrow-left"></span> Back

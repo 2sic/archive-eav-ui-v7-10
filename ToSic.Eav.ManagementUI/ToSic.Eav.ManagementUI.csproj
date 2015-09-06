@@ -114,6 +114,8 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
+    <Content Include="src\admin\pipelines\pipelines-controller.js" />
+    <Content Include="src\admin\pipelines\pipelines.html" />
     <Content Include="src\admin\services\init-parameters-from-url.js" />
     <Content Include="src\admin\services\eav-admin-ui-service.js" />
     <Content Include="src\admin\content-items\content-items-controller.js" />
@@ -242,6 +244,7 @@
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
     <Content Include="Scripts\toaster.css" />
     <Content Include="Scripts\toaster.js" />
+    <Content Include="src\admin\services\pipeline-services.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -26,8 +26,8 @@
 // 1. Import / Export
 // 2. Pipeline Designer
 
-angular.module('EavAdminUi', ['ng'])
-    .factory('eavAdminDialogs', function($modal, eavGlobalConfigurationProvider, eavManagementSvc) {
+angular.module('EavAdminUi', ['ng', 'ui.bootstrap', 'eavTemplates', 'PermissionsApp', 'ContentItemsApp'])
+    .factory('eavAdminDialogs', function($modal, eavGlobalConfigurationProvider, eavManagementSvc, $window) {
         var svc = {};
 
         //#region Content Items dialogs
@@ -106,6 +106,14 @@ angular.module('EavAdminUi', ['ng'])
 
             svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
                 return svc._openModalWithCallback('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, callbacks);
+            };
+        //#endregion
+
+        //#region Pipeline Designer
+            svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
+                var url = eavGlobalConfigurationProvider.pipelineDesigner.getUrl(appId, pipelineId);
+                $window.open(url);
+                return;
             };
         //#endregion
 

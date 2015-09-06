@@ -30,6 +30,7 @@ angular.module('eavNgSvcs', ['ng'])
 
         // Retrieve extra content-type info
         svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
+            alert('using the wrong method - should use the content-type controller. Will work for now, change code please');
             return $http.get('eav/contenttype/get', { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
         }
 
