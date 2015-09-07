@@ -7,6 +7,7 @@ using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Persistence;
+using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -72,7 +73,17 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<dynamic> GetFields(int appId, string staticName)
         {
             SetAppIdAndUser(appId);
-            return CurrentContext.ContentType.GetContentTypeConfiguration(staticName);
+	        return CurrentContext.ContentType.GetContentTypeConfiguration(staticName).Select(a =>
+		        new
+		        {
+			        Id = a.Item1.AttributeId,
+			        (a.Item1 as AttributeBase).SortOrder,
+					a.Item1.Type,
+					StaticName = a.Item1.Name,
+					a.Item1.IsTitle,
+					a.Item1.AttributeId,
+					Metadata = a.Item2.ToDictionary(e => e.Key, e => new Serializer().Prepare(e.Value))
+		        });
         }
 
         [HttpGet]

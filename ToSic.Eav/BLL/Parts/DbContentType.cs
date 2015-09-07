@@ -55,7 +55,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        public IEnumerable<dynamic> GetContentTypeConfiguration(string contentTypeStaticName)
+        public IEnumerable<Tuple<IAttributeBase, Dictionary<string, IEntity>>> GetContentTypeConfiguration(string contentTypeStaticName)
         {
             var cache = DataSource.GetCache(null, Context.AppId);
             var result = cache.GetContentType(contentTypeStaticName);
@@ -71,22 +71,26 @@ namespace ToSic.Eav.BLL.Parts
 
             var config = (result as ContentType).AttributeDefinitions.Select(a => new
             {
-                Id = a.Value.AttributeId,
-                (a.Value as AttributeBase).SortOrder,
-                a.Value.Type,
-                StaticName = a.Value.Name,
-                a.Value.IsTitle,
-                a.Value.AttributeId,
+				Attribute = a.Value,
+				//Id = a.Value.AttributeId,
+				//(a.Value as AttributeBase).SortOrder,
+				//a.Value.Type,
+				//StaticName = a.Value.Name,
+				//a.Value.IsTitle,
+				//a.Value.AttributeId,
 
                 Metadata = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
                     .ToDictionary(e => e.Type.StaticName.TrimStart(new [] {'@'}),
-                        e => new {
-                            e.EntityId,
-                            e.EntityGuid,
-                            TypeName = e.Type.StaticName,
-                            e.AssignmentObjectTypeId,
-                            Attributes = e.Attributes.ToDictionary(ax => ax.Key, ax => ax.Value)
-                    })
+                        e => e 
+						//new {
+						//	e.EntityId,
+						//	e.EntityGuid,
+						//	TypeName = e.Type.StaticName,
+						//	e.AssignmentObjectTypeId,
+						//	Attributes = e.Attributes.ToDictionary(ax => ax.Key, ax => ax.Value
+						// )
+						// }
+					)
 
 
                 //MetaData = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
@@ -97,7 +101,7 @@ namespace ToSic.Eav.BLL.Parts
                 // GetAttributeMetaData(a.Value.AttributeId, metaDataZoneId, metaDataAppId).ToDictionary(v => v.Key, e => e.Value[0])
             });
 
-            return config;
+            return config.Select(a => new Tuple<IAttributeBase, Dictionary<string, IEntity>>(a.Attribute, a.Metadata));
         }
 
         //public IEnumerable<dynamic> GetAttributeMetadataTypes()
