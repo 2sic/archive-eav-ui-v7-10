@@ -3,7 +3,7 @@
     angular.module("ContentTypesApp", [
         "ContentTypeServices",
         "ContentTypeFieldServices",
-        "eavGlobalConfigurationProvider",
+        // "eavGlobalConfigurationProvider",
         "EavAdminUi",
         "Eavi18n"])
         .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
@@ -88,7 +88,7 @@
     }
 
     /// The controller to manage the fields-list
-    function ContentTypeFieldListController(appId, contentTypeFieldSvc, contentType, eavGlobalConfigurationProvider, eavManagementSvc, $modalInstance, $modal, $q, eavAdminDialogs) {
+    function ContentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $translate) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
@@ -121,16 +121,19 @@
         vm.setTitle = svc.setTitle;
 
         vm.tryToDelete = function tryToDelete(item) {
-            if (item.IsTitle)
-                return alert("Can't delete Title");
-            if (confirm("Delete?")) {
-                return svc.delete(item);
-            }
+            if (item.IsTitle) 
+                return $translate(["General.Messages.CantDelete", "General.Terms.Title"], {target:"{0}"}).then(function (translations) {
+                    alert(translations["General.Messages.CantDelete"].replace("{0}", translations["General.Terms.Title"]));
+                });
+
+            $translate("General.Questions.Delete", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
+                if (confirm(msg))
+                    svc.delete(item);
+            });
         };
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-            metadataType = "@" + metadataType;
             var exists = item.Metadata[metadataType] !== undefined;
 
             if (exists) {
