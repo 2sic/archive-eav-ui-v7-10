@@ -79,7 +79,7 @@ namespace ToSic.Eav.BLL.Parts
                 a.Value.AttributeId,
 
                 Metadata = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
-                    .ToDictionary(e => e.Type.StaticName,
+                    .ToDictionary(e => e.Type.StaticName.TrimStart(new [] {'@'}),
                         e => new {
                             e.EntityId,
                             e.EntityGuid,
