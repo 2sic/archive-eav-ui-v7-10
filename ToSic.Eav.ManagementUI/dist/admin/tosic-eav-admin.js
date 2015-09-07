@@ -284,7 +284,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
   'use strict';
 
   $templateCache.put('content-items/content-edit.html',
-    "<div class=modal-header><button type=button class=\"btn btn-default\" ng-click=vm.history()><span class=\"glyphicon glyphicon-time\">history / todo</span></button><h3 class=modal-title>Edit / New Content</h3></div><div class=modal-body>this is where the edit appears. Would edit entity {{vm.entityId}} or add a {{vm.contentType}} - depending on the mode: {{vm.mode}}</div>"
+    "<div class=modal-header><button type=button class=\"btn btn-default\" ng-click=vm.history()><span class=\"glyphicon glyphicon-time\">history / todo</span></button><h3 class=modal-title>Edit / New Content</h3></div><div class=modal-body>this is where the edit appears. Would edit entity {{vm.entityId}} or add a {{vm.contentType}} - depending on the mode: {{vm.mode}}<h3>Use cases</h3><ol><li>Edit an existing entity with ID</li><li>Create a new entity of a certaint content-type, just save and done (like from a \"new\" button without content-group)</li><li>Create a new entity and put it into a content-group at the right place</li><li>Create a new entity of a certain type and assign it to a metadata thing (guid, int, string)</li><li>Edit an item + presentation</li><li>Edit multiple items with IDs</li></ol></div>"
   );
 
 
