@@ -108,6 +108,8 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="EAV\FormlyEditUI\edit-entity-wrapper.html" />
+    <Content Include="EAV\FormlyEditUI\edit-entity-wrapper.js" />
     <Content Include="EAV\FormlyEditUI\edit-entity.html" />
     <Content Include="EAV\FormlyEditUI\edit-entity.js" />
     <Content Include="EAV\FormlyEditUI\FieldTemplates\eav-fieldtemplates.js" />

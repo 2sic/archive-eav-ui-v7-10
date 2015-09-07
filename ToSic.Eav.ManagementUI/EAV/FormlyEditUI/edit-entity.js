@@ -38,7 +38,8 @@
 		};
 
 		// Register this control in the parent control
-		$scope.registerEditControl(vm.control);
+		if($scope.registerEditControl)
+			$scope.registerEditControl(vm.control);
 
 		vm.model = null;
 		vm.entity = null;
