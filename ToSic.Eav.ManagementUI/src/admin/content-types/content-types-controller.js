@@ -5,7 +5,6 @@
         "ContentTypeFieldServices",
         "eavGlobalConfigurationProvider",
         "EavAdminUi",
-        //"pascalprecht.translate",
         "Eavi18n"])
         .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
         .constant("license", "MIT")             // these wouldn't be necessary, just added for learning exprience
@@ -23,8 +22,6 @@
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
-
-        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
 
         vm.tryToDelete = function tryToDelete(item) {
             $translate("General.Questions.Delete", { target: "'" + item.Name + "' (" + item.Id + ")"}).then(function(msg) {
@@ -61,8 +58,6 @@
         };
 
         vm.permissions = function permissions(item) {
-            if (!vm.isGuid(item.StaticName))
-                return (alert("Permissions can only be set to Content-Types with Guid Identifiers"));
             return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         };
 
