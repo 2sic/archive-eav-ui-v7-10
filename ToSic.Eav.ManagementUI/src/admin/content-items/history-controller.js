@@ -1,6 +1,6 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("HistoryApp", ['ContentItemsAppServices', 'eavGlobalConfigurationProvider', 'HistoryServices', 'eavTemplates'])//, 'EavAdminUi'])
+    angular.module("HistoryApp", ["ContentItemsAppServices", "eavGlobalConfigurationProvider", "HistoryServices", "eavTemplates"])//, 'EavAdminUi'])
         .controller("History", HistoryController)
         .controller("HistoryDetails", HistoryDetailsController)
         ;
@@ -29,7 +29,7 @@
 
     function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
         var vm = this;
-        alert('not implemented yet');
+        alert("not implemented yet");
         var svc = dataSvc;
 
         svc.getVersionDetails(changeId).then(function(result) {

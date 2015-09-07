@@ -1,6 +1,12 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ["ContentTypeServices", "ContentTypeFieldServices", "eavGlobalConfigurationProvider", "EavAdminUi"])
+    angular.module("ContentTypesApp", [
+        "ContentTypeServices",
+        "ContentTypeFieldServices",
+        "eavGlobalConfigurationProvider",
+        "EavAdminUi",
+        //"pascalprecht.translate",
+        "Eavi18n"])
         .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
         .constant("license", "MIT")             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -11,7 +17,7 @@
 
 
     /// Manage the list of content-types
-    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId) {
+    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
@@ -20,10 +26,11 @@
 
         vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
 
-        vm.tryToDelete = function tryToDelete(title, entityId) {
-            var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
-            if (ok)
-                svc.delete(entityId);
+        vm.tryToDelete = function tryToDelete(item) {
+            $translate("General.Questions.Delete", { target: "'" + item.Name + "' (" + item.Id + ")"}).then(function(msg) {
+                if(confirm(msg))
+                    svc.delete(item);
+            });
         };
 
         vm.edit = function edit(item) {
@@ -39,18 +46,13 @@
         vm.editItems = function editItems(item) {
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
-        
-
-
-        vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete?")) 
-                svc.delete(item);
-        };
 
         vm.liveEval = function admin() {
-            var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
-            if (inp)
-                eval(inp); // jshint ignore:line
+            $translate("General.Questions.SystemInput").then(function (msg) {
+                var inp = prompt(msg);
+                if(inp)
+                    eval(inp); // jshint ignore:line
+            });
         };
 
         vm.isGuid = function isGuid(txtToTest) {

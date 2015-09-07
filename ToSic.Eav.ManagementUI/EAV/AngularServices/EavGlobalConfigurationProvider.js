@@ -13,14 +13,19 @@ var $eavUIConfig = {
             return "/todo?appId=" + appId;
         },
         ngRoot: function() {
-            return "/eav/ng/";
+            return "/dist/";
         }
-
+    },
+    languages: {
+        preferredLanguage: function () { return "en"; },
+        fallbackLanguage: function () { return "en"; },
+        i18nRoot: function () { return "/i18n/"; }
     }
 };
 
 if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
     angular.module('eavGlobalConfigurationProvider', [])
+        .constant("languages", $eavUIConfig.languages)
         .factory('eavGlobalConfigurationProvider', function($location) {
 
             var getItemFormUrl = function(mode, params, preventRedirect) {
@@ -50,9 +55,8 @@ if (angular) // always check if(angular) because this file is also included in o
                     }
                 },
                 adminUrls: $eavUIConfig.urls,
-                //    {
-                //    managePermissions:  $eavUIConfig.urls.managePermissions
-                //},
+                languages: $eavUIConfig.languages,
+
                 pipelineDesigner: {
                     getUrl: function(appId, pipelineId) {
                         return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;

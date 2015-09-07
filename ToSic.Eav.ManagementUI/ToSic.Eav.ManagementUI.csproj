@@ -125,6 +125,7 @@
     <Content Include="src\admin\pipelines\pipeline-designer.html" />
     <Content Include="src\admin\pipelines\pipelines-controller.js" />
     <Content Include="src\admin\pipelines\pipelines.html" />
+    <Content Include="src\admin\services\i18n.js" />
     <Content Include="src\admin\services\init-parameters-from-url.js" />
     <Content Include="src\admin\services\eav-admin-ui-service.js" />
     <Content Include="src\admin\content-items\content-items-controller.js" />
@@ -251,6 +252,7 @@
     <Content Include="EAV\FormlyEditUI\lib\formly.min.js.map" />
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.js.map" />
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.min.js.map" />
+    <Content Include="i18n\eav-core-en.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">
