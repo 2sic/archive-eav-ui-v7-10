@@ -108,6 +108,12 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="EAV\FormlyEditUI\edit-entity.html" />
+    <Content Include="EAV\FormlyEditUI\edit-entity.js" />
+    <Content Include="EAV\FormlyEditUI\FieldTemplates\eav-fieldtemplates.js" />
+    <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.css" />
+    <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.html" />
+    <Content Include="EAV\FormlyEditUI\services\defaultvalue-service.js" />
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
@@ -121,19 +127,14 @@
     <Content Include="EAV\ng\content-types\content-types-controller.js" />
     <Content Include="EAV\ng\content-types\content-types-services.js" />
     <Content Include="EAV\ng\permissions\permissions-standalone.html" />
-    <Content Include="EAV\FormlyEditUI\FieldTemplates\EavFieldTemplates.js" />
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.js" />
     <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.min.js" />
     <Content Include="EAV\FormlyEditUI\lib\api-check.js" />
-    <Content Include="EAV\FormlyEditUI\EditEntity.js" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.html" />
     <Content Include="EAV\FormlyEditUI\lib\formly.js" />
     <Content Include="EAV\FormlyEditUI\lib\formly.min.js" />
     <Content Include="EAV\FormlyEditUI\lib\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.js" />
-    <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
-    <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
     <Content Include="EAV\AngularServices\eavNgSvcs.js" />
     <Content Include="EAV\ng\permissions\permissions.html" />
     <Content Include="EAV\ng\permissions\permissions-controller.js" />
@@ -143,9 +144,6 @@
     <Content Include="CSS\bootstrap.min.css" />
     <Content Include="Pages\EavManagementApp2.aspx" />
     <Content Include="Pages\EavManagement.aspx" />
-    <Content Include="EAV\Controls\ContentTypeEdit.ascx" />
-    <Content Include="EAV\Controls\ContentTypeFields.ascx" />
-    <Content Include="EAV\Controls\ContentTypesList.ascx" />
     <Content Include="EAV\Controls\CultureSelector.ascx" />
     <Content Include="EAV\Controls\DimensionMenu.ascx" />
     <Content Include="EAV\Controls\EavManagement.ascx" />
@@ -154,14 +152,8 @@
     <Content Include="EAV\Controls\ItemForm.css" />
     <Content Include="EAV\Controls\Images\Locked.png" />
     <Content Include="EAV\Controls\Images\Unlocked.png" />
-    <Content Include="EAV\Controls\ItemHistory.ascx" />
-    <Content Include="EAV\Controls\Items.ascx" />
     <Content Include="EAV\Controls\ItemForm.js" />
-    <Content Include="EAV\Controls\ItemVersionDetails.ascx" />
-    <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
-    <Content Include="EAV\Dialogs\ContentTypeFields.aspx" />
     <Content Include="EAV\Dialogs\EditItem.aspx" />
-    <Content Include="EAV\Dialogs\Items.aspx" />
     <Content Include="EAV\Dialogs\NewItem.aspx" />
     <Content Include="bower.json" />
     <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
@@ -174,11 +166,6 @@
     <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
     <Content Include="EAV\AngularServices\NotificationService.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesignerController.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineService.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -293,14 +280,6 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EAV\FormlyEditUI\ContentTypeController.cs" />
-    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
-      <DependentUpon>PipelineManagement.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.designer.cs">
-      <DependentUpon>PipelineManagement.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Pages\EavManagement.aspx.designer.cs">
       <DependentUpon>EavManagement.aspx</DependentUpon>
     </Compile>
@@ -314,27 +293,6 @@
     </Compile>
     <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
       <DependentUpon>EavManagementApp2.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
-      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.designer.cs">
-      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeFields.ascx.cs">
-      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeFields.ascx.designer.cs">
-      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypesList.ascx.cs">
-      <DependentUpon>ContentTypesList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypesList.ascx.designer.cs">
-      <DependentUpon>ContentTypesList.ascx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Controls\CultureSelector.ascx.cs">
       <DependentUpon>CultureSelector.ascx</DependentUpon>
@@ -364,54 +322,12 @@
     <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
       <DependentUpon>ItemForm.ascx</DependentUpon>
     </Compile>
-    <Compile Include="EAV\Controls\ItemHistory.ascx.cs">
-      <DependentUpon>ItemHistory.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemHistory.ascx.designer.cs">
-      <DependentUpon>ItemHistory.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\Items.ascx.cs">
-      <DependentUpon>Items.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\Items.ascx.designer.cs">
-      <DependentUpon>Items.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.cs">
-      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.designer.cs">
-      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
-      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.designer.cs">
-      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.cs">
-      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.designer.cs">
-      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
-    </Compile>
     <Compile Include="EAV\Dialogs\EditItem.aspx.cs">
       <DependentUpon>EditItem.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EAV\Dialogs\EditItem.aspx.designer.cs">
       <DependentUpon>EditItem.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\Items.aspx.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\Items.aspx.designer.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
     </Compile>
     <Compile Include="EAV\Dialogs\NewItem.aspx.cs">
       <DependentUpon>NewItem.aspx</DependentUpon>
@@ -454,13 +370,6 @@
     </Compile>
     <Compile Include="EAV\FieldTemplates\String_Edit.ascx.designer.cs">
       <DependentUpon>String_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.cs">
-      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.designer.cs">
-      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
