@@ -137,10 +137,6 @@
     <Content Include="EAV\ng\permissions\permissions-standalone.html" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.html" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.js" />
-    <Content Include="EAV\AngularServices\eavNgSvcs.js" />
-    <Content Include="EAV\ng\permissions\permissions.html" />
-    <Content Include="EAV\ng\permissions\permissions-controller.js" />
-    <Content Include="EAV\ng\permissions\permissions-services.js" />
     <Content Include="gruntfile.js" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
@@ -167,7 +163,6 @@
     <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
     <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
-    <Content Include="EAV\AngularServices\NotificationService.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -248,6 +243,7 @@
     <Content Include="src\admin\services\eav-admin-ui-service.js" />
     <Content Include="src\admin\services\eavNgSvcs-todo-refactor.js" />
     <Content Include="src\admin\services\history-services.js" />
+    <Content Include="src\admin\services\i18n.js" />
     <Content Include="src\admin\services\init-parameters-from-url.js" />
     <Content Include="src\admin\services\permissions-services.js" />
     <Content Include="src\admin\services\pipeline-services.js" />
@@ -264,6 +260,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
+    <Content Include="i18n\eav-core-en.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">

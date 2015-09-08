@@ -66,7 +66,7 @@
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("HistoryApp", ['ContentItemsAppServices', 'eavGlobalConfigurationProvider', 'HistoryServices', 'eavTemplates'])//, 'EavAdminUi'])
+    angular.module("HistoryApp", ["ContentItemsAppServices", "eavGlobalConfigurationProvider", "HistoryServices", "eavTemplates"])//, 'EavAdminUi'])
         .controller("History", HistoryController)
         .controller("HistoryDetails", HistoryDetailsController)
         ;
@@ -96,7 +96,7 @@
 
     function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
         var vm = this;
-        alert('not implemented yet');
+        alert("not implemented yet");
         var svc = dataSvc;
 
         svc.getVersionDetails(changeId).then(function(result) {
@@ -111,7 +111,12 @@
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    angular.module("ContentTypesApp", ["ContentTypeServices", "ContentTypeFieldServices", "eavGlobalConfigurationProvider", "EavAdminUi"])
+    angular.module("ContentTypesApp", [
+        "ContentTypeServices",
+        "ContentTypeFieldServices",
+        "eavGlobalConfigurationProvider",
+        "EavAdminUi",
+        "Eavi18n"])
         .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
         .constant("license", "MIT")             // these wouldn't be necessary, just added for learning exprience
         .controller("List", ContentTypeListController)
@@ -122,19 +127,18 @@
 
 
     /// Manage the list of content-types
-    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId) {
+    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
 
-        vm.isLoaded = function isLoaded() { return vm.items.isLoaded; };
-
-        vm.tryToDelete = function tryToDelete(title, entityId) {
-            var ok = confirm("Delete '" + title + "' (" + entityId + ") ?");
-            if (ok)
-                svc.delete(entityId);
+        vm.tryToDelete = function tryToDelete(item) {
+            $translate("General.Questions.Delete", { target: "'" + item.Name + "' (" + item.Id + ")"}).then(function(msg) {
+                if(confirm(msg))
+                    svc.delete(item);
+            });
         };
 
         vm.edit = function edit(item) {
@@ -150,18 +154,13 @@
         vm.editItems = function editItems(item) {
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
-        
-
-
-        vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete?")) 
-                svc.delete(item);
-        };
 
         vm.liveEval = function admin() {
-            var inp = prompt("This is for very advanced operations. Only use this if you know what you're doing. \n\n Enter admin commands:");
-            if (inp)
-                eval(inp); // jshint ignore:line
+            $translate("General.Questions.SystemInput").then(function (msg) {
+                var inp = prompt(msg);
+                if(inp)
+                    eval(inp); // jshint ignore:line
+            });
         };
 
         vm.isGuid = function isGuid(txtToTest) {
@@ -170,8 +169,6 @@
         };
 
         vm.permissions = function permissions(item) {
-            if (!vm.isGuid(item.StaticName))
-                return (alert("Permissions can only be set to Content-Types with Guid Identifiers"));
             return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         };
 
@@ -183,7 +180,7 @@
             return eavAdminDialogs.openContentImport(svc.appId);
         };
     }
-    ContentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId"];
+    ContentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "$translate"];
 
     /// Edit or add a content-type
     function ContentTypeEditController(appId, contentTypeSvc, item, $modalInstance) {
@@ -327,7 +324,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types.html',
-    "<div class=modal-header><h3 class=modal-title>Content-Types and Data</h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><a ng-click=vm.edit() class=\"btn btn-default\"><span class=\"glyphicon glyphicon-plus\"></span></a> <button type=button class=\"btn btn-default\" ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <button type=button class=\"btn btn-default\" ng-click=vm.liveEval()><span class=\"glyphicon glyphicon-flash\"></span></button><table class=\"table table-hover\"><thead><tr><th>Name</th><th>Description</th><th>Fields</th><th>Items</th><th>Permissions</th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs\" ng-click=vm.editFields(item)><span class=\"glyphicon glyphicon-cog\">&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.editItems(item)><span class=\"glyphicon glyphicon-list\">&nbsp;{{item.Items}}</span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)><span class=\"glyphicon glyphicon-user\"></span> Permissions</button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>Loading... or no items found</td></tr></tbody></table><h3>Export/Import</h3><button type=button class=btn ng-click=vm.openExport()><span class=\"glyphicon glyphicon-export\"></span> Export</button> xxx <button type=button class=btn ng-click=vm.openImport()><span class=\"glyphicon glyphicon-import\"></span> Import</button></div></div>"
+    "<div class=modal-header><h3 class=modal-title>{{ 'ContentTypes.Title' | translate }}</h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><button title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()><span class=\"glyphicon glyphicon-plus\"></span></button> <button title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()><span class=\"glyphicon glyphicon-repeat\"></span></button> <button title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()><span class=\"glyphicon glyphicon-flash\"></span></button><table class=\"table table-hover\"><thead><tr><th>{{ 'ContentTypes.TypesTable.Name' | translate }}</th><th>{{ 'ContentTypes.TypesTable.Description' | translate }}</th><th>{{ 'ContentTypes.TypesTable.Fields' | translate }}</th><th>{{ 'ContentTypes.TypesTable.Items' | translate }}</th><th>{{ 'ContentTypes.TypesTable.Permissions' | translate }}</th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span class=\"glyphicon glyphicon-cog\">&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span class=\"glyphicon glyphicon-list\">&nbsp;{{item.Items}}</span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)><span class=\"glyphicon glyphicon-user\"></span>&nbsp;/&nbsp;<span class=\"glyphicon glyphicon-lock\"></span></button></td><td><button type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)><span class=\"glyphicon glyphicon-remove\"></span></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table><h3>{{ 'ContentTypes.TitleExportImport' | translate }}</h3><button type=button class=btn ng-click=vm.openExport()><span class=\"glyphicon glyphicon-export\"></span> {{ 'ContentTypes.Buttons.Export' | translate }}</button> <button type=button class=btn ng-click=vm.openImport()><span class=\"glyphicon glyphicon-import\"></span> {{ 'ContentTypes.Buttons.Import' | translate }}</button></div></div>"
   );
 
 
@@ -1607,6 +1604,23 @@ angular.module('HistoryServices', ['ng', 'eavNgSvcs'])//, 'eavGlobalConfiguratio
             return svc;
         };
     }]);
+(function () {
+    angular.module("Eavi18n", [
+        "pascalprecht.translate",
+        "eavGlobalConfigurationProvider"
+    ])
+
+    .config(["$translateProvider", "languages", function ($translateProvider, languages) {
+        $translateProvider
+          .preferredLanguage(languages.preferredLanguage())
+          .useSanitizeValueStrategy("escape")
+          .fallbackLanguage(languages.fallbackLanguage())
+          .useStaticFilesLoader({
+              prefix: languages.i18nRoot() + "eav-core-",
+              suffix: ".json"
+          });
+    }]);
+})();
 // By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
 // but the "root" component must get it from the url
 // Since different objects could be the root object (this depends on the initial loader), the root-one must have
