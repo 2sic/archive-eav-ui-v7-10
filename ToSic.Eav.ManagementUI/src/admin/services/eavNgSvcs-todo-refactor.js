@@ -102,6 +102,10 @@ angular.module('eavNgSvcs', ['ng'])
                 : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
         };
 
+		svc.getMultiLanguage = function getMultiLanguage(appId, contentType, id) {
+			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: 'multi-language' } });
+		};
+
         svc.delete = function del(type, id) {
             return $http.delete('eav/entities/delete', {
                 params: {
@@ -111,6 +115,17 @@ angular.module('eavNgSvcs', ['ng'])
                 }
             });
         };
+
+		svc.newEntity = function() {
+			return {
+				Id: null,
+				Guid: null,
+				Type: {
+					Name: $scope.contentTypeName
+				},
+				Attributes: {}
+			};
+		};
         
         return svc;
     })
