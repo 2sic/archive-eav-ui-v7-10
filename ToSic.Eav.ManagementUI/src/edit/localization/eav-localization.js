@@ -5,7 +5,7 @@
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module('eavLocalization', ['formly'], function (formlyConfigProvider) {
+	var eavLocalization = angular.module('eavLocalization', ['formly', 'eavGlobalConfigurationProvider'], function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([
@@ -21,20 +21,19 @@
 		return {
 			restrict: 'E',
 			templateUrl: 'localization/language-switcher.html',
-			controller: function($scope, eavLanguageService) {
-				$scope.langConf = eavLanguageService;
+			controller: function($scope, languages) {
+				$scope.languages = languages;
 			}
 		};
 	});
 
-	eavLocalization.factory('eavLanguageService', function () {
-		// ToDo: Load language configuration dynamically
-		return {
-			languages: ['en-us'],
-			defaultLanguage: 'en-us',
-			currentLanguage: 'en-us'
-		};
-	});
+	//eavLocalization.factory('eavLanguageService', function (languages) {
+		//return {
+		//	languages: [{ key: 'en-us', name: 'English (United States)' }],
+		//	defaultLanguage: 'en-us',
+		//	currentLanguage: 'en-us'
+		//};
+	//});
 
 	eavLocalization.directive('eavLocalizationScopeControl', function () {
 		return {
@@ -43,10 +42,10 @@
 			template: '',
 			link: function (scope, element, attrs) {
 			},
-			controller: function ($scope, $filter, eavDefaultValueService, eavLanguageService) { // Can't use controllerAs because of transcluded scope
+			controller: function ($scope, $filter, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
 
 				var scope = $scope;
-				var langConf = eavLanguageService;
+				var langConf = languages;
 
 				var initCurrentValue = function() {
 
@@ -128,19 +127,18 @@
 				fieldModel: '=fieldModel',
 				options: '=options'
 			},
-			templateUrl: 'localization-menu.html',
+			templateUrl: 'localization/localization-menu.html',
 			link: function (scope, element, attrs) { },
 			controllerAs: 'vm',
-			controller: function ($scope, eavLanguageService) {
+			controller: function ($scope, languages) {
 				var vm = this;
-				var langConf = eavLanguageService;
 				vm.fieldModel = $scope.fieldModel;
-				vm.isDefaultLanguage = function() { return langConf.currentLanguage != langConf.defaultLanguage; };
+				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 
 				vm.actions = {
 					translate: function () {
 						var value = { Value: 'New translated value!', Dimensions: {} };
-						value.Dimensions[langConf.currentLanguage] = true;
+						value.Dimensions[languages.currentLanguage] = true;
 						vm.fieldModel.Values.push(value);
 					}
 				};

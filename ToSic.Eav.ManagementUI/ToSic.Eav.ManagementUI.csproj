@@ -126,8 +126,6 @@
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
-    <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.html" />
-    <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.js" />
     <Content Include="gruntfile.js" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
@@ -375,9 +373,6 @@
     <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="EAV\FormlyEditUI\FieldTemplates\" />
-    <Folder Include="EAV\FormlyEditUI\localization\" />
-    <Folder Include="EAV\FormlyEditUI\services\" />
     <Folder Include="EAV\js\specs\helpers\" />
     <Folder Include="i18n\" />
   </ItemGroup>
