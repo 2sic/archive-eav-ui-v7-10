@@ -81,7 +81,10 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: "src/i18n/", //i18n.cwd,
                         src: ["**/*.json"],
-                        dest: "dist/i18n/"//  i18n.dist
+                        dest: "dist/i18n/", //  i18n.dist
+                        rename: function(dest, src) {
+                            return dest + src.replace(".json",".js");
+                        }
                     }
 
                 ]
