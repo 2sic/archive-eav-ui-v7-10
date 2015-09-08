@@ -8,11 +8,27 @@
 // * appId
 (function () {
     angular.module("InitParametersFromUrl", [])
-        .factory('appId', GetAppId)
-    ;
+        .factory('appId', function ($location) {
+        	// this ties up the App-Id to the Url 
+        	return $location.search().appid;
+		})
+		.factory('entityId', function($location) {
+			// ToDo: $location.search() returns null
+			return getQueryStringParam('entityid');
+		})
+		.factory('contentTypeName', function ($location) {
+		    // ToDo: $location.search() returns null
+			return getQueryStringParam('contenttypename');
+	    })
+	;
 
-    // this ties up the App-Id to the Url 
-    function GetAppId($location) {
-        return $location.search().appid;
-    }
+	/* Temp - until $location.search() does work again */
+	var getQueryStringParam = function(name) {
+		var url = location.href;
+		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+		var regexS = "[\\?&]" + name + "=([^&#]*)";
+		var regex = new RegExp(regexS);
+		var results = regex.exec(url);
+		return results === null ? null : results[1];
+	};
 }());

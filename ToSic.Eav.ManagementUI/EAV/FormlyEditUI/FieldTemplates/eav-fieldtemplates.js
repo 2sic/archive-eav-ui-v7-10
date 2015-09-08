@@ -17,7 +17,7 @@
 			template: '<select class="form-control" ng-model="value.Value"></select>',
 			wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
 			defaultOptions: function defaultOptions(options) {
-
+				
 				// DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 				if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 					var o = options.templateOptions.settings.String.DropdownValues;

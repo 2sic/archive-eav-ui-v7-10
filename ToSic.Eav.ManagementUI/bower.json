@@ -11,10 +11,9 @@
     "angular-translate-loader-static-files": "2.7.2",
     "angular-formly": "6.24.23",
     "angular-formly-templates-bootstrap": "6.0.0",
-    "api-check": "7.5.0",
+    "api-check": "~7.5.0",
     "promise-window": "1.0.0",
     "jsPlumb": "1.7.2",
-
     "angularjs-toaster": "0.4.15"
   },
   "private": true,
