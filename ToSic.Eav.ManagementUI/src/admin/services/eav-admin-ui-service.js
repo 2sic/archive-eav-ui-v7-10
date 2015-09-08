@@ -75,7 +75,7 @@ angular.module("EavAdminUi", ["ng",
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeId, closeCallback) {
                 //if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: 0, contentTypeName: contentTypeId}), { close: closeCallback });
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), { close: closeCallback });
                 //} else {
                 //    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
@@ -92,7 +92,7 @@ angular.module("EavAdminUi", ["ng",
             };
 
             svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
-            	return svc._openModalWithCallback("edit-entity.html", "EditEntityWrapperCtrl as vm", "lg", resolve, callbacks);
+            	return svc._openModalWithCallback("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, callbacks);
             };
 
             svc.openItemHistory = function ioh(entityId, closeCallback) {
@@ -122,7 +122,7 @@ angular.module("EavAdminUi", ["ng",
                 return contentTypeSvc(appId).getDetails(metadataType)
                     .then(function (result) {
                     //if (useDummyContentEditor) {
-                        var resolve = svc._createResolve({ mode: "new", entityId: 0, contentType: metadataType });
+                        var resolve = svc._createResolve({ mode: "new", entityId: 0, contentTypeName: metadataType });
                         angular.extend(resolve, key);
                         return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
                     //} else {

@@ -10,8 +10,8 @@
           .useSanitizeValueStrategy("escape")
           .fallbackLanguage(languages.defaultLanguage.split('-')[0])
           .useStaticFilesLoader({
-          	prefix: languages.i18nRoot + "eav-core-",
-              suffix: ".json"
+          	prefix: languages.i18nRoot + "admin-",
+              suffix: ".js"
           });
     });
 })();
