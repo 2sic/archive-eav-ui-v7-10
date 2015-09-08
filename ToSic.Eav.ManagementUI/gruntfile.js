@@ -21,7 +21,13 @@ module.exports = function(grunt) {
         dist: "dist/edit/",
         concatFile: "dist/edit/tosic-eav-edit.js",
         annotated: "dist/edit/tosic-eav-edit.annotated.js",
-        uglifyFile: "dist/edit/tosic-eav-edit.min.js"
+        uglifyFile: "dist/edit/tosic-eav-edit.min.js",
+        concatCss: "dist/edit/edit.css",
+        concatCssMin: "dist/edit/edit.min.css"
+    };
+    var i18n = {
+        cwd: "src/i18n/",
+        dist: "dist/i18n/"
     };
 
     var concatPipelineCss = "pipeline-designer.css";
@@ -52,6 +58,7 @@ module.exports = function(grunt) {
         },
 
         copy: {
+            xyz: {},
             build: {
                 files: [
                     {
@@ -66,18 +73,19 @@ module.exports = function(grunt) {
                         src: ["**", "!**/*Spec.js"],
                         dest: editUi.tmp
                     }
+                ]
+            },
+            i18n: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: "src/i18n/", //i18n.cwd,
+                        src: ["**/*.json"],
+                        dest: "dist/i18n/"//  i18n.dist
+                    }
 
                 ]
             }
-            //,
-            //dist: {
-            //    expand: true,
-            //    cwd: '.tmp/',
-            //    src: '**/built/**/*.*',
-            //    dest: 'dist/',
-            //    flatten: true,
-            //    filter: 'isFile'
-            //}
         },
         ngtemplates: {
             default: {
@@ -139,7 +147,12 @@ module.exports = function(grunt) {
             pipelineCss: {
                 src: [admin.tmp + "pipelines/pipeline-designer.css"],
                 dest: admin.dist + concatPipelineCss
+            },
+            editUiCss: {
+                src: [editUi.tmp + "**/*.css"],
+                dest: editUi.concatCss
             }
+
         },
         ngAnnotate: {
             default: {
@@ -169,9 +182,9 @@ module.exports = function(grunt) {
                 dest: admin.uglifyFile
             },
             editUi: {
-        src: editUi.annotated,
-        dest: editUi.uglifyFile
-    }
+                src: editUi.annotated,
+                dest: editUi.uglifyFile
+            }
     //,
             //pipelineCss: {
             //    src: [admin.tmp + "pipelines/pipeline-designer.css"],
@@ -187,11 +200,12 @@ module.exports = function(grunt) {
             target: {
                 files: [{
                     expand: true,
-                    cwd: admin.dist,
-                    src: [concatPipelineCss],
-                    dest: admin.dist,
+                    cwd: distRoot,
+                    src: ["**/*.css", "!**/*.min.css"],
+                    dest: distRoot,
                     ext: ".min.css"
-                }]
+                }
+                ]
             }
         },
 
