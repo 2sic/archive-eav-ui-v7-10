@@ -11,7 +11,7 @@
 		formlyConfigProvider.setWrapper([
 			{
 				name: 'eavLocalization',
-				templateUrl: '/EAV/FormlyEditUI/localization/formly-localization-wrapper.html'
+				templateUrl: 'localization/formly-localization-wrapper.html'
 			}
 		]);
 
@@ -58,7 +58,7 @@
 
 					// If current language = default language and there are no values, create an empty value object
 					if (langConf.currentLanguage == langConf.defaultLanguage) {
-						if (fieldModel.Values.length == 0) {
+						if (fieldModel.Values.length === 0) {
 							var defaultValue = eavDefaultValueService(scope.options);
 							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
 							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = true; // Assign default language dimension
@@ -70,17 +70,17 @@
 					// Decide which value to edit:
 					// 1. If there is a value with current dimension on it, use it
 					valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
-						return v.Dimensions[langConf.currentLanguage] != null;
+						return v.Dimensions[langConf.currentLanguage] !== undefined;
 					})[0];
 
 					// 2. Use default language value
-					if (valueToEdit == null)
+					if (valueToEdit === undefined)
 						valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
-							return v.Dimensions[langConf.defaultLanguage] != null;
+							return v.Dimensions[langConf.defaultLanguage] !== undefined;
 						})[0];
 
 					// 3. Use the first value if there is only one
-					if (valueToEdit == null) {
+					if (valueToEdit === undefined) {
 						if (fieldModel.Values.length > 1)
 							throw "Default language value not found, but found multiple values - can't handle editing";
 						// Use the first value
@@ -104,7 +104,7 @@
 				// Handle language switch
 				scope.langConf = langConf; // Watch does only work on scope variables
 				scope.$watch('langConf.currentLanguage', function (newValue, oldValue) {
-					if (oldValue == null || newValue == oldValue)
+					if (oldValue === undefined || newValue == oldValue)
 						return;
 					initCurrentValue();
 					console.log('switched language from ' + oldValue + ' to ' + newValue);
@@ -128,7 +128,7 @@
 				fieldModel: '=fieldModel',
 				options: '=options'
 			},
-			templateUrl: '/EAV/FormlyEditUI/localization/localization-menu.html',
+			templateUrl: 'localization-menu.html',
 			link: function (scope, element, attrs) { },
 			controllerAs: 'vm',
 			controller: function ($scope, eavLanguageService) {

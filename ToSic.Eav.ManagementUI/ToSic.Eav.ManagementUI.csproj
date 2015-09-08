@@ -108,19 +108,19 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
-    <Content Include="EAV\FormlyEditUI\edit-entity-wrapper.html" />
-    <Content Include="EAV\FormlyEditUI\edit-entity-wrapper.js" />
-    <Content Include="EAV\FormlyEditUI\edit-entity.html" />
-    <Content Include="EAV\FormlyEditUI\edit-entity.js" />
-    <Content Include="EAV\FormlyEditUI\FieldTemplates\eav-fieldtemplates.js" />
-    <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.css" />
-    <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.html" />
-    <Content Include="EAV\FormlyEditUI\localization\eav-localization.js" />
-    <Content Include="EAV\FormlyEditUI\localization\formly-localization-wrapper.html" />
-    <Content Include="EAV\FormlyEditUI\localization\images\locked.png" />
-    <Content Include="EAV\FormlyEditUI\localization\images\unlocked.png" />
-    <Content Include="EAV\FormlyEditUI\localization\localization-menu.css" />
-    <Content Include="EAV\FormlyEditUI\localization\localization-menu.html" />
+    <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
+    <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
+    <Content Include="src\edit\edit-entity.html" />
+    <Content Include="src\edit\edit-entity.js" />
+    <Content Include="src\edit\fields\eav-fieldtemplates.js" />
+    <Content Include="src\edit\fields\templates\entity-default.css" />
+    <Content Include="src\edit\fields\templates\entity-default.html" />
+    <Content Include="src\edit\localization\formly-localization-wrapper.html" />
+    <Content Include="src\edit\localization\images\locked.png" />
+    <Content Include="src\edit\localization\images\unlocked.png" />
+    <Content Include="src\edit\localization\localization-menu.css" />
+    <Content Include="src\edit\localization\eav-localization.js" />
+    <Content Include="src\edit\localization\localization-menu.html" />
     <Content Include="src\edit\services\defaultvalue-service.js" />
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
@@ -373,10 +373,10 @@
     <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="EAV\FormlyEditUI\FieldTemplates\" />
+    <Folder Include="EAV\FormlyEditUI\localization\" />
     <Folder Include="EAV\FormlyEditUI\services\" />
     <Folder Include="EAV\js\specs\helpers\" />
-    <Folder Include="src\edit\fields\" />
-    <Folder Include="src\edit\wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

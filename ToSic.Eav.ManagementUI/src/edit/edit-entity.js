@@ -7,7 +7,7 @@
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
 		return {
-			templateUrl: '/EAV/FormlyEditUI/edit-entity.html',
+			templateUrl: 'edit-entity.html',
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
@@ -54,7 +54,7 @@
 				// Transform EAV content type configuration to formFields (formly configuration)
 				angular.forEach(result.data, function (e, i) {
 
-					if (e.Metadata.All == null)
+					if (e.Metadata.All === undefined)
 						e.Metadata.All = {};
 
 					vm.formFields.push({
@@ -62,7 +62,7 @@
 						type: getType(e),
 						templateOptions: {
 							required: !!e.Metadata.All.Required,
-							label: e.Metadata.All.Name == null ? e.StaticName : e.Metadata.All.Name,
+							label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 							description: e.Metadata.All.Notes,
 							settings: e.Metadata
 						},
@@ -86,15 +86,15 @@
 		}
 
 		// Returns the field type for an attribute configuration
-		var getType = function (attributeConfiguration) {
+		var getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String != null ? e.Metadata.String.InputType : null;
+			var subType = e.Metadata.String !== undefined ? e.Metadata.String.InputType : null;
 
 			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (type == 'string' && e.Metadata.String != null && e.Metadata.String.RowCount > 1)
+			if (type === 'string' && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
 				subType = 'textarea';
 
 			// Use subtype 'default' if none is specified - or type does not exist
@@ -102,7 +102,7 @@
 				subType = 'default';
 
 			return (type + '-' + subType);
-		}
+		};
 	});
 
 	
