@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
+using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
@@ -97,9 +98,9 @@ namespace ToSic.Eav.WebApi
 
                     var found = GetEntityOrThrowError(contentType, id, appId);
 
-                    return Serializer.Prepare(found);
+                    //return Serializer.Prepare(found);
 
-                    Formats.EntityWithLanguages ce = new Formats.EntityWithLanguages()
+                    var ce = new Formats.EntityWithLanguages()
                     {
                         Id = found.EntityId,
                         Guid = found.EntityGuid,
@@ -107,7 +108,7 @@ namespace ToSic.Eav.WebApi
                         TitleAttributeName = found.Title.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                         {
-                            Values = a.Value.Values.Select(v => new Formats.ValueSet()
+							Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
                             {
                                 Value = v.Serialized,
                                 Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
