@@ -121,18 +121,18 @@ angular.module("EavAdminUi", ["ng",
                 // return eavManagementSvc.getContentTypeDefinition(metadataType)
                 return contentTypeSvc(appId).getDetails(metadataType)
                     .then(function (result) {
-                    if (useDummyContentEditor) {
+                    //if (useDummyContentEditor) {
                         var resolve = svc._createResolve({ mode: "new", entityId: 0, contentType: metadataType });
                         angular.extend(resolve, key);
                         return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
-                    } else {
+                    //} else {
 
-                        var attSetId = result.data.AttributeSetId;
-                        var url = eavGlobalConfigurationProvider.itemForm
-                            .getNewItemUrl(attSetId, assignmentType, key, false);
+                    //    var attSetId = result.data.AttributeSetId;
+                    //    var url = eavGlobalConfigurationProvider.itemForm
+                    //        .getNewItemUrl(attSetId, assignmentType, key, false);
 
-                        return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
-                    }
+                    //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                    //}
                 });
             };
         //#endregion

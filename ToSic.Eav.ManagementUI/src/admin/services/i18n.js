@@ -10,7 +10,7 @@
           .useSanitizeValueStrategy("escape")
           .fallbackLanguage(languages.defaultLanguage.split('-')[0])
           .useStaticFilesLoader({
-              prefix: languages.i18nRoot + "eav-core-",
+          	prefix: languages.i18nRoot + "eav-core-",
               suffix: ".json"
           });
     });
