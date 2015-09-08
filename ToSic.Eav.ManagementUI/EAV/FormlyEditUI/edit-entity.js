@@ -54,8 +54,6 @@
 				// Transform EAV content type configuration to formFields (formly configuration)
 				angular.forEach(result.data, function (e, i) {
 
-					console.log(e);
-
 					if (e.Metadata.All == null)
 						e.Metadata.All = {};
 
