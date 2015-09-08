@@ -33,11 +33,11 @@ angular.module("EavAdminUi", ["ng",
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentTypeServices",  // Needed to retrieve an Id in a special case
-    "ContentEditApp",       // the edit-app (doesn't work yet)
-    "HistoryApp"            // the item-history app
+    //"ContentEditApp",       // the edit-app (doesn't work yet)
+    "HistoryApp",            // the item-history app
+	"eavEditEntity"			// the edit-app
 ])
     .factory("eavAdminDialogs", function ($modal, eavGlobalConfigurationProvider, eavManagementSvc, contentTypeSvc, $window) {
-        var useDummyContentEditor = true;
 
         var svc = {};
 
@@ -74,25 +74,25 @@ angular.module("EavAdminUi", ["ng",
         
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeId, closeCallback) {
-                if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: 0, contentType: contentTypeId}), { close: closeCallback });
-                } else {
-                    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
-                    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
-                }
+                //if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: 0, contentTypeName: contentTypeId}), { close: closeCallback });
+                //} else {
+                //    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                //    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
+                //}
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "edit", entityId: entityId, contentType:"" }), { close: closeCallback });
-                } else {
-                    var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
-                    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
-                }
+                //if (useDummyContentEditor) {
+                    return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), { close: closeCallback });
+                //} else {
+                //    var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
+                //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
+                //}
             };
 
             svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
-                return svc._openModalWithCallback("content-items/content-edit.html", "EditContentItem as vm", "lg", resolve, callbacks);
+            	return svc._openModalWithCallback("edit-entity.html", "EditEntityWrapperCtrl as vm", "lg", resolve, callbacks);
             };
 
             svc.openItemHistory = function ioh(entityId, closeCallback) {

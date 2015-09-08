@@ -20,7 +20,7 @@ var $eavUIConfig = {
 		languages: [{ key: 'en-us', name: 'English (United States)' }, { key: 'de-de', name: 'Deutsch (Deutschland)' }],
 		defaultLanguage: 'en-us',
 		currentLanguage: 'en-us',
-		i18nRoot: "/i18n"
+		i18nRoot: "/i18n/"
 	}
 	//{
     //    preferredLanguage: function () { return "en"; },
