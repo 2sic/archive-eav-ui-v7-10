@@ -249,7 +249,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
-    <Content Include="i18n\eav-core-en.json" />
+    <Content Include="src\i18n\admin-en.json" />
+    <Content Include="src\i18n\edit-en.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FieldTemplateUserControl.cs">
@@ -373,6 +374,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EAV\js\specs\helpers\" />
+    <Folder Include="i18n\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
