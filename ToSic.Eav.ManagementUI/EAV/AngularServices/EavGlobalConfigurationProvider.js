@@ -5,22 +5,28 @@
 // the following config-stuff is not in angular, because some settings are needed in dialogs which are not built with angularJS yet.
 // they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
 var $eavUIConfig = {
-    urls: {
-        exportContent: function (appId) {
-            return "/todo?appId=" + appId;
-        },
-        importContent: function(appId) {
-            return "/todo?appId=" + appId;
-        },
-        ngRoot: function() {
-            return "/dist/";
-        }
-    },
-    languages: {
-        preferredLanguage: function () { return "en"; },
-        fallbackLanguage: function () { return "en"; },
-        i18nRoot: function () { return "/i18n/"; }
-    }
+	urls: {
+		exportContent: function(appId) {
+			return "/todo?appId=" + appId;
+		},
+		importContent: function(appId) {
+			return "/todo?appId=" + appId;
+		},
+		ngRoot: function() {
+			return "/dist/";
+		}
+	},
+	languages: {
+		languages: [{ key: 'en-us', name: 'English (United States)' }, { key: 'de-de', name: 'Deutsch (Deutschland)' }],
+		defaultLanguage: 'en-us',
+		currentLanguage: 'en-us',
+		i18nRoot: "/i18n"
+	}
+	//{
+    //    preferredLanguage: function () { return "en"; },
+    //    fallbackLanguage: function () { return "en"; },
+    //    i18nRoot: function () { return "/i18n/"; }
+    //}
 };
 
 if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs

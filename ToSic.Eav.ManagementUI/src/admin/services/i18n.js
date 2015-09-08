@@ -6,11 +6,11 @@
 
     .config(function ($translateProvider, languages) {
         $translateProvider
-          .preferredLanguage(languages.preferredLanguage())
+          .preferredLanguage(languages.currentLanguage.split('-')[0])
           .useSanitizeValueStrategy("escape")
-          .fallbackLanguage(languages.fallbackLanguage())
+          .fallbackLanguage(languages.defaultLanguage.split('-')[0])
           .useStaticFilesLoader({
-              prefix: languages.i18nRoot() + "eav-core-",
+              prefix: languages.i18nRoot + "eav-core-",
               suffix: ".json"
           });
     });
