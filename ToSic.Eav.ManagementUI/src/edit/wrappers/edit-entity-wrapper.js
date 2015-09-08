@@ -7,8 +7,6 @@
 	// The controller for the main form directive
 	app.controller('EditEntityWrapperCtrl', function editEntityCtrl($http, $scope, contentTypeName, entityId) {
 
-		console.log(entityId);
-
 		var vm = this;
 		vm.contentTypeName = contentTypeName;
 		vm.entityId = entityId;

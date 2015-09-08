@@ -39,23 +39,19 @@
 </head>
 <body>
     @if (ng == "content")
-    {
-	    <div eav-app="eavEditEntity" ng-include="'/eav/formlyeditui/edit-entity-wrapper.html'" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
-		
-		<script src="/eav/formlyeditui/localization/eav-localization.js"></script>
-		<script src="/eav/formlyeditui/fieldtemplates/eav-fieldtemplates.js"></script>
-	    <script src="/eav/formlyeditui/edit-entity.js"></script>
-		<script src="/eav/formlyeditui/edit-entity-wrapper.js"></script>
+	{
+		<div eav-app="eavEditEntity" ng-include="'wrappers/edit-entity-wrapper.html'" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+
 		<script src="/dist/edit/tosic-eav-edit.annotated.js"></script>
 
-		<!-- apiCheck is used by formly to validate its api -->
+			<!-- apiCheck is used by formly to validate its api -->
 		<script src="/bower_components/api-check/dist/api-check.js"></script>
-		<!-- This is the current state of master for formly core. -->
+			<!-- This is the current state of master for formly core. -->
 		<script src="/bower_components/angular-formly/dist/formly.min.js"></script>
-		<!-- This is the current state of master for the bootstrap templates -->
+			<!-- This is the current state of master for the bootstrap templates -->
 		<script src="/bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js"></script>
 
-		<!-- AngularUI (angular bootstrap components), needed at least for datetime picker -->
+			<!-- AngularUI (angular bootstrap components), needed at least for datetime picker -->
 		<script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 	}
     @if (ng == "content-types")
