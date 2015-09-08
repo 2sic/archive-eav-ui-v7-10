@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates', 'eavNgSvcs', 'ContentTypeFieldServices']);
 
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
@@ -20,7 +20,7 @@
 	});
 
 	// The controller for the main form directive
-	app.controller('EditEntityCtrl', function editEntityCtrl($http, $scope, formlyConfig, eavLanguageService) {
+	app.controller('EditEntityCtrl', function editEntityCtrl($http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -47,7 +47,7 @@
 
 		vm.formFields = null;
 
-		$http.get('eav/ContentType/GetFields?appId=1&staticName=' + encodeURIComponent($scope.contentTypeName))
+		contentTypeFieldSvc(1, { StaticName: $scope.contentTypeName }).getFields() // ToDo: use correct AppId
 			.then(function(result) {
 				vm.debug = result;
 
@@ -77,21 +77,12 @@
 
 		// Load existing entity if defined
 		if ($scope.entityId) {
-			$http.get("eav/entities/getone", { params: { 'contentType': $scope.contentTypeName, 'id': $scope.entityId, 'appId': 1, 'format': 'multi-language' } })
-			//$http.get('eav/Entity/GetEntity?entityId=' + $scope.entityId)
+			entitiesSvc.getMultiLanguage(1, $scope.contentTypeName, $scope.entityId) // ToDo: Use correct App-Id
 				.then(function (result) {
 					vm.entity = result.data;
 				});
 		} else {
-			// ToDo: Create new / blank model should probably not be here (EntityService?)
-			vm.entity = {
-				Id: null,
-				Guid: null,
-				Type: {
-					Name: $scope.contentTypeName
-				},
-				Attributes: {}
-			};
+			vm.entity = entitiesSvc.createEntity();
 		}
 
 		// Returns the field type for an attribute configuration
