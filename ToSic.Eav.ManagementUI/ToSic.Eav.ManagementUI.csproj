@@ -115,17 +115,27 @@
     <Content Include="EAV\FormlyEditUI\FieldTemplates\eav-fieldtemplates.js" />
     <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.css" />
     <Content Include="EAV\FormlyEditUI\FieldTemplates\templates\entity-default.html" />
+    <Content Include="EAV\FormlyEditUI\localization\eav-localization.js" />
+    <Content Include="EAV\FormlyEditUI\localization\formly-localization-wrapper.html" />
+    <Content Include="EAV\FormlyEditUI\localization\images\locked.png" />
+    <Content Include="EAV\FormlyEditUI\localization\images\unlocked.png" />
+    <Content Include="EAV\FormlyEditUI\localization\localization-menu.css" />
+    <Content Include="EAV\FormlyEditUI\localization\localization-menu.html" />
     <Content Include="EAV\FormlyEditUI\services\defaultvalue-service.js" />
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
-    <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.js" />
-    <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.min.js" />
-    <Content Include="EAV\FormlyEditUI\lib\api-check.js" />
+    <Content Include="EAV\ng\admin\eav-admin-ui-service.js" />
+    <Content Include="EAV\ng\content-items\content-items-controller.js" />
+    <Content Include="EAV\ng\content-items\content-items-services.js" />
+    <Content Include="EAV\ng\content-items\content-items.html" />
+    <Content Include="EAV\ng\content-types\xxxcontent-type-fields.html" />
+    <Content Include="EAV\ng\content-types\content-types-field-services.js" />
+    <Content Include="EAV\ng\content-types\content-types.html" />
+    <Content Include="EAV\ng\content-types\content-types-controller.js" />
+    <Content Include="EAV\ng\content-types\content-types-services.js" />
+    <Content Include="EAV\ng\permissions\permissions-standalone.html" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.html" />
-    <Content Include="EAV\FormlyEditUI\lib\formly.js" />
-    <Content Include="EAV\FormlyEditUI\lib\formly.min.js" />
-    <Content Include="EAV\FormlyEditUI\lib\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.js" />
     <Content Include="gruntfile.js" />
     <Content Include="CSS\bootstrap-theme.min.css" />
@@ -250,9 +260,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
-    <Content Include="EAV\FormlyEditUI\lib\formly.min.js.map" />
-    <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.js.map" />
-    <Content Include="EAV\FormlyEditUI\lib\angular-formly-templates-bootstrap.min.js.map" />
     <Content Include="i18n\eav-core-en.json" />
   </ItemGroup>
   <ItemGroup>

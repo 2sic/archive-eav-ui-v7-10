@@ -3,7 +3,6 @@
     angular.module("ContentTypesApp", [
         "ContentTypeServices",
         "ContentTypeFieldServices",
-        // "eavGlobalConfigurationProvider",
         "EavAdminUi",
         "Eavi18n"])
         .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS

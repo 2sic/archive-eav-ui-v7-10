@@ -2,12 +2,12 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates', 'sxcFieldTemplates', '2sxc4ng']);
+	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates']);
 
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
 		return {
-			templateUrl: '/DesktopModules/ToSIC_SexyContent/SexyContent/EAV/FormlyEditUI/edit-entity.html',
+			templateUrl: '/EAV/FormlyEditUI/edit-entity.html',
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
@@ -21,6 +21,7 @@
 
 	// The controller for the main form directive
 	app.controller('EditEntityCtrl', function editEntityCtrl($http, $scope, formlyConfig, eavLanguageService) {
+
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
 			return false; //eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
@@ -46,21 +47,22 @@
 
 		vm.formFields = null;
 
-		$http.get('eav/ContentType/GetContentTypeConfiguration?contentTypeName=' + encodeURIComponent($scope.contentTypeName))
+		$http.get('eav/ContentType/GetFields?appId=1&staticName=' + encodeURIComponent($scope.contentTypeName))
 			.then(function(result) {
 				vm.debug = result;
 
 				// Transform EAV content type configuration to formFields (formly configuration)
 				angular.forEach(result.data, function (e, i) {
 
-					console.log(e);
+					if (e.Metadata.All == null)
+						e.Metadata.All = {};
 
 					vm.formFields.push({
 						key: e.StaticName,
 						type: getType(e),
 						templateOptions: {
 							required: !!e.Metadata.All.Required,
-							label: e.Metadata.All.Name,
+							label: e.Metadata.All.Name == null ? e.StaticName : e.Metadata.All.Name,
 							description: e.Metadata.All.Notes,
 							settings: e.Metadata
 						},
@@ -75,7 +77,8 @@
 
 		// Load existing entity if defined
 		if ($scope.entityId) {
-			$http.get('eav/Entity/GetEntity?entityId=' + $scope.entityId)
+			$http.get("eav/entities/getone", { params: { 'contentType': $scope.contentTypeName, 'id': $scope.entityId, 'appId': 1, 'format': 'multi-language' } })
+			//$http.get('eav/Entity/GetEntity?entityId=' + $scope.entityId)
 				.then(function (result) {
 					vm.entity = result.data;
 				});
@@ -90,25 +93,27 @@
 				Attributes: {}
 			};
 		}
+
+		// Returns the field type for an attribute configuration
+		var getType = function (attributeConfiguration) {
+			var e = attributeConfiguration;
+			var type = e.Type.toLowerCase();
+			var subType = e.Metadata.String != null ? e.Metadata.String.InputType : null;
+
+			subType = subType ? subType.toLowerCase() : null;
+
+			// Special case: override subtype for string-textarea
+			if (type == 'string' && e.Metadata.String != null && e.Metadata.String.RowCount > 1)
+				subType = 'textarea';
+
+			// Use subtype 'default' if none is specified - or type does not exist
+			if (!subType || !formlyConfig.getType(type + '-' + subType))
+				subType = 'default';
+
+			return (type + '-' + subType);
+		}
 	});
 
-	// Returns the field type for an attribute configuration
-	var getType = function (attributeConfiguration) {
-		var e = attributeConfiguration;
-		var type = e.Type.toLowerCase();
-		var subType = e.Metadata.All.InputType;
-
-		subType = subType ? subType.toLowerCase() : null;
-
-		// Special case: override subtype for string-textarea
-		if (type == 'string' && e.Metadata.All.RowCount > 1)
-			subType = 'textarea';
-
-		// Use subtype 'default' if none is specified - or type does not exist
-		if (!subType || !formlyConfig.getType(type + '-' + subType))
-			subType = 'default';
-
-		return (type + '-' + subType);
-	}
+	
 
 })();

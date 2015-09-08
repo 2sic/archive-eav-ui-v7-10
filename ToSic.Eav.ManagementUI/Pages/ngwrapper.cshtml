@@ -38,41 +38,57 @@
 
 </head>
 <body>
-@if (ng == "content")
-{
-    <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
-}
-@if (ng == "content-types")
-{
-    <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
-}
-@if (ng == "pipelines")
-{
-    <div eav-app="PipelineManagement" ng-include="'pipelines/pipelines.html'" ng-dependencies="InitParametersFromUrl,PipelineManagement"></div>
-}
-@if (ng == "pipeline-designer")
-{
-    <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'"></div>
-    <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+    @if (ng == "content")
+    {
+	    <div eav-app="eavEditEntity" ng-include="'/eav/formlyeditui/edit-entity-wrapper.html'" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+		
+		<script src="/eav/formlyeditui/localization/eav-localization.js"></script>
+		<script src="/eav/formlyeditui/fieldtemplates/eav-fieldtemplates.js"></script>
+	    <script src="/eav/formlyeditui/edit-entity.js"></script>
+		<script src="/eav/formlyeditui/edit-entity-wrapper.js"></script>
+		<script src="/eav/formlyeditui/services/defaultvalue-service.js"></script>
 
-    //Toaster
+		<!-- apiCheck is used by formly to validate its api -->
+		<script src="/bower_components/api-check/dist/api-check.js"></script>
+		<!-- This is the current state of master for formly core. -->
+		<script src="/bower_components/angular-formly/dist/formly.min.js"></script>
+		<!-- This is the current state of master for the bootstrap templates -->
+		<script src="/bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js"></script>
+
+		<!-- AngularUI (angular bootstrap components), needed at least for datetime picker -->
+		<script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+	}
+    @if (ng == "content-types")
+    {
+        <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
+    }
+    @if (ng == "pipelines")
+    {
+        <div eav-app="PipelineManagement" ng-include="'pipelines/pipelines.html'" ng-dependencies="InitParametersFromUrl,PipelineManagement"></div>
+    }
+    @if (ng == "pipeline-designer")
+    {
+        <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'"></div>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+
+        //Toaster
     <link rel="stylesheet" href="/bower_components/angularjs-toaster/toaster.min.css"/>
-    <script src="/bower_components/angularjs-toaster/toaster.min.js"></script>
+        <script src="/bower_components/angularjs-toaster/toaster.min.js"></script>
 
-    //jsPlumb
-    <script src="/bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js"></script>
-    <script src='../EAV/AngularServices/EavDialogService.js'></script>
-}
+        //jsPlumb
+        <script src="/bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js"></script>
+        <script src='../EAV/AngularServices/EavDialogService.js'></script>
+    }
 
 
-@if (useMinifiedAdmin)
-{
-    <script src="/dist/admin/tosic-eav-admin.min.js"></script>
-}
-else
-{
-    <script src="/dist/admin/tosic-eav-admin.annotated.js"></script>
-}
+    @if (useMinifiedAdmin)
+    {
+        <script src="/dist/admin/tosic-eav-admin.min.js"></script>
+    }
+    else
+    {
+        <script src="/dist/admin/tosic-eav-admin.annotated.js"></script>
+    }
 
 </body>
 
