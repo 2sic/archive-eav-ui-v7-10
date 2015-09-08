@@ -121,20 +121,10 @@
     <Content Include="EAV\FormlyEditUI\localization\images\unlocked.png" />
     <Content Include="EAV\FormlyEditUI\localization\localization-menu.css" />
     <Content Include="EAV\FormlyEditUI\localization\localization-menu.html" />
-    <Content Include="EAV\FormlyEditUI\services\defaultvalue-service.js" />
+    <Content Include="src\edit\services\defaultvalue-service.js" />
     <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
     <Content Include="EAV\js\src\eav.js" />
     <Content Include="EAV\js\tests\SpecRunner.html" />
-    <Content Include="EAV\ng\admin\eav-admin-ui-service.js" />
-    <Content Include="EAV\ng\content-items\content-items-controller.js" />
-    <Content Include="EAV\ng\content-items\content-items-services.js" />
-    <Content Include="EAV\ng\content-items\content-items.html" />
-    <Content Include="EAV\ng\content-types\xxxcontent-type-fields.html" />
-    <Content Include="EAV\ng\content-types\content-types-field-services.js" />
-    <Content Include="EAV\ng\content-types\content-types.html" />
-    <Content Include="EAV\ng\content-types\content-types-controller.js" />
-    <Content Include="EAV\ng\content-types\content-types-services.js" />
-    <Content Include="EAV\ng\permissions\permissions-standalone.html" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.html" />
     <Content Include="EAV\FormlyEditUI\Test\EditEntityTest.js" />
     <Content Include="gruntfile.js" />
@@ -383,7 +373,10 @@
     <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="EAV\FormlyEditUI\services\" />
     <Folder Include="EAV\js\specs\helpers\" />
+    <Folder Include="src\edit\fields\" />
+    <Folder Include="src\edit\wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

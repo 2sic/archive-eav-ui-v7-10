@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
     "use strict";
+    var distRoot = "dist/";
+    var tmpRoot = "tmp/";
     var admin = {
         cwd: "src/admin/",
         cwdJs: ["src/admin/**/*.js", "!src/admin/**/*.annotated.js"],
@@ -13,12 +15,17 @@ module.exports = function(grunt) {
 
     var editUi = {
         cwd: "src/edit/",
+        cwdJs: "src/edit/**/*.js",
         tmp: "tmp/edit/",
-        dst: "dist/edit/"
+        templates: "tmp/edit/html-templates.js",
+        dist: "dist/edit/",
+        concatFile: "dist/edit/tosic-eav-edit.js",
+        annotated: "dist/edit/tosic-eav-edit.annotated.js",
+        uglifyFile: "dist/edit/tosic-eav-edit.min.js"
     };
 
     var concatPipelineCss = "pipeline-designer.css";
-    var uglifyPipelineCss = "pipeline-designer.min.css";
+    //var uglifyPipelineCss = "pipeline-designer.min.css";
 
 
     var js = {
@@ -35,12 +42,12 @@ module.exports = function(grunt) {
 
         jshint: {
             ngUi: [admin.cwdJs],
-            //edit: [],
-            all: ["gruntfile.js", admin.cwdJs, js.eav.specs, js.eav.src]
+            edit: [editUi.cwdJs],
+            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs, js.eav.specs, js.eav.src]
         },
 
         clean: {
-            tmp: admin.tmp + "**/*", // '.tmp/**/*',
+            tmp: tmpRoot + "**/*", // '.tmp/**/*',
             dist: "dist/**/*"
         },
 
@@ -52,7 +59,14 @@ module.exports = function(grunt) {
                         cwd: admin.cwd,
                         src: ["**", "!**/*Spec.js"],
                         dest: admin.tmp
+                    },
+                    {
+                        expand: true,
+                        cwd: editUi.cwd,
+                        src: ["**", "!**/*Spec.js"],
+                        dest: editUi.tmp
                     }
+
                 ]
             }
             //,
@@ -88,13 +102,40 @@ module.exports = function(grunt) {
                         dest: admin.templates
                     }
                 ]
+            },
+            editUi: {
+                options: {
+                    module: "eavEditTemplates",
+                    append: true,
+                    htmlmin: {
+                        collapseBooleanAttributes: true,
+                        collapseWhitespace: true,
+                        removeAttributeQuotes: true,
+                        removeComments: true,
+                        removeEmptyAttributes: true,
+                        removeRedundantAttributes: false,
+                        removeScriptTypeAttributes: true,
+                        removeStyleLinkTypeAttributes: true
+                    }
+                },
+                files: [
+                     {
+                         cwd: editUi.tmp,// + "/",
+                         src: ["**/*.html"], //, 'wrappers/**/*.html', 'other/**/*.html'],
+                         dest: editUi.templates
+                     }
+                ]
             }
         },
         concat: {
             default: {
                 src: admin.tmp + "**/*.js",
                 dest: admin.concatFile
-            }, 
+            },
+            editUi: {
+                src: editUi.tmp + "**/*.js",
+                dest: editUi.concatFile
+            },
             pipelineCss: {
                 src: [admin.tmp + "pipelines/pipeline-designer.css"],
                 dest: admin.dist + concatPipelineCss
@@ -106,7 +147,14 @@ module.exports = function(grunt) {
                 src: admin.concatFile,
                 ext: ".annotated.js",   // Dest filepaths will have this extension. 
                 extDot: "last"          // Extensions in filenames begin after the last dot 
+            },
+            editUi: {
+                expand: true,
+                src: editUi.concatFile,
+                ext: ".annotated.js",   // Dest filepaths will have this extension. 
+                extDot: "last"          // Extensions in filenames begin after the last dot 
             }
+
         },
 
 
@@ -119,8 +167,12 @@ module.exports = function(grunt) {
             default: {
                 src: admin.annotated,
                 dest: admin.uglifyFile
-            }
-            //,
+            },
+            editUi: {
+        src: editUi.annotated,
+        dest: editUi.uglifyFile
+    }
+    //,
             //pipelineCss: {
             //    src: [admin.tmp + "pipelines/pipeline-designer.css"],
             //    dest: uglifyPipelineCss
@@ -150,7 +202,7 @@ module.exports = function(grunt) {
                 },
                 expand: true,
                 cwd: admin.dist,
-                src: ["*.js"],
+                src: ["**/*.js"],
                 dest: admin.dist,
                 ext: ".gz.js"
             }
@@ -171,7 +223,7 @@ module.exports = function(grunt) {
 
         watch: {
             ngUi: {
-                files: ["gruntfile.js", admin.cwd + "**"],
+                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**"],
                 tasks: ["build"]
             },
             devEavMlJson: {

@@ -10,11 +10,11 @@
 
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
-					return d != null ? d.toLowerCase() == 'true' : false;
+					return d !== undefined ? d.toLowerCase() == 'true' : false;
 				case 'datetime':
-					return d != null ? new Date(d) : null;
+					return d !== undefined ? new Date(d) : null;
 				case 'entity':
-					return [];
+					return []; 
 				case 'number':
 					return null;
 				default:
