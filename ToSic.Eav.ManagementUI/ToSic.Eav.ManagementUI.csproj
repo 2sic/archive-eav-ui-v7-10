@@ -130,7 +130,7 @@
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
     <Content Include="bower.json" />
-    <Content Include="EAV\AngularServices\EavDialogService.js" />
+    <Content Include="src\admin\pipelines\todo-get-rid-of-EavDialogService.js" />
     <Content Include="EAV\AngularServices\eav-configuration.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />

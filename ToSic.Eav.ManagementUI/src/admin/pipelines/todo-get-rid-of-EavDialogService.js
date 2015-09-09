@@ -1,5 +1,11 @@
-﻿angular.module('eavDialogService', []).factory('eavDialogService', ["EavConfiguration",
-	function (configProvider) {
+﻿// todo: get rid of this
+
+// it's only used in the pipeline-designer-controller, and seems to be to open modal-dialogs to edit something
+
+// won't be necessary any more when Formly works
+
+angular.module('eavDialogService', ["EavConfiguration"])
+    .factory('eavDialogService', function (eavConfig) {
 		return {
 			open: function (params) {
 
@@ -11,7 +17,7 @@
 					title: null
 				}, params);
 
-				if (window.top.EavEditDialogs == null)
+				if (window.top.EavEditDialogs === null)
 					window.top.EavEditDialogs = [];
 
 				var dialogElement;
@@ -27,7 +33,7 @@
 					autoOpen: true,
 					modal: true,
 					width: params.width,
-					dialogClass: configProvider.dialogClass,
+					dialogClass: eavConfig.dialogClass,
 					height: params.height,
 					close: function (event, ui) {
 						$(this).remove();
@@ -40,4 +46,4 @@
 			}
 		};
 	}
-]);
+);

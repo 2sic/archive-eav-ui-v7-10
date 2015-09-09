@@ -45,46 +45,46 @@
 	<!-- This is the current state of master for the bootstrap templates -->
 	<script src="/bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js"></script>
 
-	<!-- AngularUI (angular bootstrap components), needed at least for datetime picker -->
-	@*<script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>*@
 
+    @if (useMinifiedAdmin)
+    {
+        <script src="/dist/admin/tosic-eav-admin.min.js"></script>
+    }
+    else
+    {
+        <script src="/dist/admin/tosic-eav-admin.annotated.js"></script>
+    }
 </head>
 <body>
-	@if (ng == "content")
-	{
-		<div eav-app="eavEditEntity" ng-include="'wrappers/edit-entity-wrapper.html'" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
-	}
-	@if (ng == "content-types")
-	{
-		<div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
-	}
-	@if (ng == "pipelines")
-	{
-		<div eav-app="PipelineManagement" ng-include="'pipelines/pipelines.html'" ng-dependencies="InitParametersFromUrl,PipelineManagement"></div>
-	}
-	@if (ng == "pipeline-designer")
-	{
-		<div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
-		<link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
-
-		//Toaster
-		<link rel="stylesheet" href="/bower_components/angularjs-toaster/toaster.min.css" />
-		<script src="/bower_components/angularjs-toaster/toaster.min.js"></script>
-
-		//jsPlumb
-		<script src="/bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js"></script>
-		<script src='../EAV/AngularServices/EavDialogService.js'></script>
-	}
 
 
-	@if (useMinifiedAdmin)
-	{
-		<script src="/dist/admin/tosic-eav-admin.min.js"></script>
-	}
-	else
-	{
-		<script src="/dist/admin/tosic-eav-admin.annotated.js"></script>
-	}
+    @if (ng == "content")
+    {
+        <div eav-app="eavEditEntity" ng-include="'wrappers/edit-entity-wrapper.html'" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+    }
+    @if (ng == "content-types")
+    {
+        <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
+    }
+    @if (ng == "pipelines")
+    {
+        <div eav-app="PipelineManagement" ng-include="'pipelines/pipelines.html'" ng-dependencies="InitParametersFromUrl,PipelineManagement"></div>
+    }
+    @if (ng == "pipeline-designer")
+    {
+        <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+
+        //Toaster
+        <link rel="stylesheet" href="/bower_components/angularjs-toaster/toaster.min.css" />
+        <script src="/bower_components/angularjs-toaster/toaster.min.js"></script>
+
+        //jsPlumb
+        <script src="/bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js"></script>
+    }
+
+
+
 
 </body>
 
