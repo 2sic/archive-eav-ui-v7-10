@@ -161,13 +161,13 @@ module.exports = function(grunt) {
             default: {
                 expand: true,
                 src: admin.concatFile,
-                ext: ".annotated.js",   // Dest filepaths will have this extension. 
+                // ext: ".annotated.js",   // Dest filepaths will have this extension. 
                 extDot: "last"          // Extensions in filenames begin after the last dot 
             },
             editUi: {
                 expand: true,
                 src: editUi.concatFile,
-                ext: ".annotated.js",   // Dest filepaths will have this extension. 
+                // ext: ".annotated.js",   // Dest filepaths will have this extension. 
                 extDot: "last"          // Extensions in filenames begin after the last dot 
             }
 
@@ -181,11 +181,11 @@ module.exports = function(grunt) {
             },
 
             default: {
-                src: admin.annotated,
+                src: admin.concatFile,
                 dest: admin.uglifyFile
             },
             editUi: {
-                src: editUi.annotated,
+                src: editUi.concatFile,
                 dest: editUi.uglifyFile
             }
     //,
