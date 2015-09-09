@@ -4,12 +4,11 @@ module.exports = function(grunt) {
     var tmpRoot = "tmp/";
     var admin = {
         cwd: "src/admin/",
-        cwdJs: ["src/admin/**/*.js", "!src/admin/**/*.annotated.js"],
+        cwdJs: ["src/admin/**/*.js"],
         tmp: "tmp/admin/",
         templates: "tmp/admin/html-templates.js",
         dist: "dist/admin/",
         concatFile: "dist/admin/tosic-eav-admin.js",
-        annotated: "dist/admin/tosic-eav-admin.annotated.js",
         uglifyFile: "dist/admin/tosic-eav-admin.min.js"
     };
 
@@ -20,7 +19,6 @@ module.exports = function(grunt) {
         templates: "tmp/edit/html-templates.js",
         dist: "dist/edit/",
         concatFile: "dist/edit/tosic-eav-edit.js",
-        annotated: "dist/edit/tosic-eav-edit.annotated.js",
         uglifyFile: "dist/edit/tosic-eav-edit.min.js",
         concatCss: "dist/edit/edit.css",
         concatCssMin: "dist/edit/edit.min.css"
@@ -31,8 +29,6 @@ module.exports = function(grunt) {
     };
 
     var concatPipelineCss = "pipeline-designer.css";
-    //var uglifyPipelineCss = "pipeline-designer.min.css";
-
 
     var js = {
         eav: {
@@ -47,9 +43,9 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            ngUi: [admin.cwdJs],
-            edit: [editUi.cwdJs],
-            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs, js.eav.specs, js.eav.src]
+            //ngUi: [admin.cwdJs],
+            //edit: [editUi.cwdJs],
+            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]//, js.eav.specs, js.eav.src]
         },
 
         clean: {
@@ -161,13 +157,11 @@ module.exports = function(grunt) {
             default: {
                 expand: true,
                 src: admin.concatFile,
-                // ext: ".annotated.js",   // Dest filepaths will have this extension. 
                 extDot: "last"          // Extensions in filenames begin after the last dot 
             },
             editUi: {
                 expand: true,
                 src: editUi.concatFile,
-                // ext: ".annotated.js",   // Dest filepaths will have this extension. 
                 extDot: "last"          // Extensions in filenames begin after the last dot 
             }
 
@@ -188,11 +182,6 @@ module.exports = function(grunt) {
                 src: editUi.concatFile,
                 dest: editUi.uglifyFile
             }
-    //,
-            //pipelineCss: {
-            //    src: [admin.tmp + "pipelines/pipeline-designer.css"],
-            //    dest: uglifyPipelineCss
-            //}
         },
         
         cssmin: {
@@ -218,9 +207,9 @@ module.exports = function(grunt) {
                     mode: "gzip"
                 },
                 expand: true,
-                cwd: admin.dist,
-                src: ["**/*.js"],
-                dest: admin.dist,
+                cwd: distRoot,
+                src: ["**/*.min.js"],
+                dest: distRoot,
                 ext: ".gz.js"
             }
         },
