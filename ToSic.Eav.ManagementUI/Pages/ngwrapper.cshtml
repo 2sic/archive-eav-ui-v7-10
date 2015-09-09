@@ -16,30 +16,27 @@
 
     @*Only load jQuery for the pipeline designer, others don't need it and it's much faster!*@
     @if (ng == "pipeline-designer")
-{
-    @*<script src="/Scripts/jquery-1.9.1.min.js"></script>
-    <script src="/Scripts/jquery-ui-1.10.3.min.js"></script>*@
+    {
+        <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+    }
 
-    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
-}
-
-    @*Default Set / Standard Components for Admin UI*@
+    @*CSS stuff*@
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
+    @*<link rel="stylesheet" href="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />*@
 
 
-
+    @*Default Set / Standard Components for Admin UI*@
     <script src="/bower_components/angular/angular.min.js"></script>
     <script src="/bower_components/angular-resource/angular-resource.min.js"></script>
     <script src="/bower_components/angular-animate/angular-animate.min.js"></script>
-    <script src="/bower_components/angular-translate/angular-translate.js"></script>
+    <script src="/bower_components/angular-translate/angular-translate.min.js"></script>
     <script src="/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
 
 
-    <link rel="/bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-    <script src="/bower_components/promise-window/dist/promise-window.min.js"></script>
+    @*<script src="/bower_components/promise-window/dist/promise-window.min.js"></script>*@
 
     @* Default Set / re-used components *@
     <script src='/eav/AngularServices/eav-configuration.js'></script>
