@@ -71,19 +71,47 @@
       "Actions": ""
     }
   },
-    "Pipeline": {
-      "Manage": {
-        "Title": "Pipelines",
-        "Table": {
-          "Id": "ID",
-          "Name": "Name",
-          "Description": "Description",
-          "Actions": ""
-        }
+  "Pipeline": {
+    "Manage": {
+      "Title": "Pipelines",
+      "Table": {
+        "Id": "ID",
+        "Name": "Name",
+        "Description": "Description",
+        "Actions": ""
+      }
 
+    },
+    "Designer": {
+
+    }
+  },
+  "Content": {
+    "Manage": {
+      "Title": "Manage Content / Data",
+      "Table": {
+        "Id": "ID",
+        "Published": "Publ",
+        "Title": "Title",
+        "Actions": ""
       },
-      "Designer": {
-
+      "NoTitle": "- no title -"
+    },
+    "Publish": {
+      "PnV": "published and visible",
+      "DoP": "this is a draft of another published item",
+      "D": "not published at the moment",
+      "HD": "has draft: {{id}}",
+      "HP": "will replace published: {{id}}"
+    },
+    "History": {
+      "Title": "History of {{id}}",
+      "Table": {
+        "Id": "#",
+        "When": "When",
+        "User": "User",
+        "Actions": ""
+      }
     }
   }
 }
