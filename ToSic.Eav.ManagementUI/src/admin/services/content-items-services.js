@@ -1,4 +1,4 @@
-angular.module('ContentItemsAppServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
+angular.module('ContentItemsAppServices', ['ng', 'eavNgSvcs', "EavConfiguration"])
     .factory('contentItemsSvc', function($http, entitiesSvc, eavManagementSvc, svcCreator) {
             return function createContentItemsSvc(appId, contentType, contentTypeId) {
                 var svc = {};

@@ -37,7 +37,7 @@ angular.module("EavAdminUi", ["ng",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", function ($modal, eavGlobalConfigurationProvider, eavManagementSvc, contentTypeSvc, $window) {
+    .factory("eavAdminDialogs", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
 
         var svc = {};
 
@@ -77,7 +77,7 @@ angular.module("EavAdminUi", ["ng",
                 //if (useDummyContentEditor) {
                     return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), { close: closeCallback });
                 //} else {
-                //    var url = eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentTypeId);
+                //    var url = eavConfig.itemForm.getNewItemUrl(contentTypeId);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
                 //}
             };
@@ -86,7 +86,7 @@ angular.module("EavAdminUi", ["ng",
                 //if (useDummyContentEditor) {
                     return svc.openItemEditWithEntityIdX(svc._createResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), { close: closeCallback });
                 //} else {
-                //    var url = eavGlobalConfigurationProvider.itemForm.getEditItemUrl(entityId, undefined, true);
+                //    var url = eavConfig.itemForm.getEditItemUrl(entityId, undefined, true);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
                 //}
             };
@@ -110,11 +110,11 @@ angular.module("EavAdminUi", ["ng",
                 switch (targetType) {
                     case "entity":
                         key.keyGuid = targetId;
-                        assignmentType = eavGlobalConfigurationProvider.metadataOfEntity;
+                        assignmentType = eavConfig.metadataOfEntity;
                         break;
                     case "attribute":
                         key.keyNumber = targetId;
-                        assignmentType = eavGlobalConfigurationProvider.metadataOfAttribute;
+                        assignmentType = eavConfig.metadataOfAttribute;
                         break;
                     default: throw "targetType unknown, only accepts entity or attribute";
                 }
@@ -128,7 +128,7 @@ angular.module("EavAdminUi", ["ng",
                     //} else {
 
                     //    var attSetId = result.data.AttributeSetId;
-                    //    var url = eavGlobalConfigurationProvider.itemForm
+                    //    var url = eavConfig.itemForm
                     //        .getNewItemUrl(attSetId, assignmentType, key, false);
 
                     //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
@@ -150,7 +150,7 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Pipeline Designer
             svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.adminUrls.pipelineDesigner(appId, pipelineId);
+                var url = eavConfig.adminUrls.pipelineDesigner(appId, pipelineId);
                 $window.open(url);
                 return;
             };
@@ -159,11 +159,11 @@ angular.module("EavAdminUi", ["ng",
         //#region Export / Import content Types
 
         svc.openContentExport = function oce(appId, closeCallback) {
-            var url = eavGlobalConfigurationProvider.adminUrls.exportContent(appId);
+            var url = eavConfig.adminUrls.exportContent(appId);
             window.open(url);
         };
         svc.openContentImport = function oci(appId, closeCallback) {
-            var url = eavGlobalConfigurationProvider.adminUrls.importContent(appId);
+            var url = eavConfig.adminUrls.importContent(appId);
             window.open(url);
         };
         //#endregion
@@ -178,7 +178,7 @@ angular.module("EavAdminUi", ["ng",
         // 2. The controller can be written as "something as vm" and this will be split and configured corectly
             svc._openModalWithCallback = function _openModalWithCallback(templateUrl, controller, size, resolveValues, callbacks) {
                 //if (templateUrl.substring(0, 2) == "~/")
-                //    templateUrl = eavGlobalConfigurationProvider.adminUrls.ngRoot() + templateUrl.substring(2);
+                //    templateUrl = eavConfig.adminUrls.ngRoot() + templateUrl.substring(2);
                 var foundAs = controller.indexOf(" as ");
                 var contAs = foundAs > 0 ?
                     controller.substring(foundAs + 4)

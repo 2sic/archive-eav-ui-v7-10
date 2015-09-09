@@ -5,7 +5,7 @@
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module('eavLocalization', ['formly', 'eavGlobalConfigurationProvider'], function (formlyConfigProvider) {
+	var eavLocalization = angular.module('eavLocalization', ['formly', "EavConfiguration"], function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([

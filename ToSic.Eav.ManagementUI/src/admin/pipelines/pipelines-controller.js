@@ -1,5 +1,5 @@
 ﻿// Config and Controller for the Pipeline Management UI
-angular.module("PipelineManagement", ["PipelineService", "eavGlobalConfigurationProvider", "eavNgSvcs", "EavAdminUi", "Eavi18n"]).
+angular.module("PipelineManagement", ["PipelineService", "EavConfiguration", "eavNgSvcs", "EavAdminUi", "Eavi18n"]).
 	controller("PipelineManagementController", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
 	    var vm = this;
         vm.appId = appId;

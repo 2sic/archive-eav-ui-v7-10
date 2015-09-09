@@ -1,5 +1,5 @@
-﻿/// <reference path="EavGlobalConfigurationProvider.js" />
-// EavGlobalConfigurationProvider providers default global values for the EAV angular system
+﻿/// <reference path="eavConfig.js" />
+// eavConfig providers default global values for the EAV angular system
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
 
 // the following config-stuff is not in angular, because some settings are needed in dialogs which are not built with angularJS yet.
@@ -34,9 +34,9 @@ var $eavUIConfig = {
 };
 
 if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
-    angular.module('eavGlobalConfigurationProvider', [])
+    angular.module("EavConfiguration", [])
         .constant("languages", $eavUIConfig.languages)
-        .factory('eavGlobalConfigurationProvider', function($location) {
+        .factory('eavConfig', function($location) {
 
             var getItemFormUrl = function(mode, params, preventRedirect) {
                 params.ManagementMode = mode + 'Item';

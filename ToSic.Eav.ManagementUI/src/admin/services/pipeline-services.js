@@ -1,11 +1,11 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
-    .factory('pipelineService', function($resource, $q, $filter, eavGlobalConfigurationProvider, $http, contentTypeSvc) {
+    .factory('pipelineService', function($resource, $q, $filter, eavConfig, $http, contentTypeSvc) {
         'use strict';
         var svc = {};
         // Web API Service
-        svc.pipelineResource = $resource(eavGlobalConfigurationProvider.api.baseUrl + '/EAV/PipelineDesigner/:action');
-        svc.entitiesResource = $resource(eavGlobalConfigurationProvider.api.baseUrl + '/EAV/Entities/:action');
+        svc.pipelineResource = $resource(eavConfig.api.baseUrl + '/EAV/PipelineDesigner/:action');
+        svc.entitiesResource = $resource(eavConfig.api.baseUrl + '/EAV/Entities/:action');
 
         svc.dataPipelineAttributeSetId = 0;
         svc.appId = 0;
@@ -20,11 +20,11 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
         var postProcessDataSources = function(model) {
             // Append Out-DataSource for the UI
             model.DataSources.push({
-                Name: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.name,
-                Description: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.description,
+                Name: eavConfig.pipelineDesigner.outDataSource.name,
+                Description: eavConfig.pipelineDesigner.outDataSource.description,
                 EntityGuid: 'Out',
-                PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
-                VisualDesignerData: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.visualDesignerData,
+                PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
+                VisualDesignerData: eavConfig.pipelineDesigner.outDataSource.visualDesignerData,
                 ReadOnly: true
             });
 
@@ -58,9 +58,9 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
 
                     // Add Out-DataSource for the UI
                     model.InstalledDataSources.push({
-                        PartAssemblyAndType: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
-                        ClassName: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.className,
-                        In: eavGlobalConfigurationProvider.pipelineDesigner.outDataSource.in,
+                        PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
+                        ClassName: eavConfig.pipelineDesigner.outDataSource.className,
+                        In: eavConfig.pipelineDesigner.outDataSource.in,
                         Out: null,
                         allowNew: false
                     });
@@ -124,7 +124,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                 // Query for existing Entity
                 svc.entitiesResource.query({ action: 'GetAssignedEntities', appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyGuid: keyGuid, contentType: contentTypeName }, function (success) {
                     if (success.length) // Edit existing Entity
-                        deferred.resolve(eavGlobalConfigurationProvider.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
+                        deferred.resolve(eavConfig.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
                     else { // Create new Entity
                         // todo: this is a get-content-type, it shouldn't be using the entitiesResource
                         // todo: but I'm not sure when it is being used
@@ -133,7 +133,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                             if (contentType[0] == 'n' && contentType[1] == 'u' && contentType[2] == 'l' && contentType[3] == 'l')
                                 deferred.reject('Content Type ' + contentTypeName + ' not found.');
                             else
-                                deferred.resolve(eavGlobalConfigurationProvider.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
+                                deferred.resolve(eavConfig.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
                         }, function(reason) {
                             deferred.reject(reason);
                         });

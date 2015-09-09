@@ -6,7 +6,7 @@ angular.module("PipelineDesigner")
 
     .controller("PipelineDesignerController",
 			
-	function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider, $q) {
+	function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavConfig, $q) {
 		"use strict";
         
 		// Init
@@ -239,14 +239,14 @@ angular.module("PipelineDesigner")
 
 		// Init a new Pipeline with DataSources and Wirings from Configuration
 	    var initNewPipeline = function() {
-	        angular.forEach(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.dataSources, function(dataSource) {
+	        angular.forEach(eavConfig.pipelineDesigner.defaultPipeline.dataSources, function(dataSource) {
 	            $scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, false, dataSource.entityGuid);
 	        });
 
 	        // Wait until all DataSources were created
 	        var initWiringsListener = $scope.$on("ngRepeatFinished", function() {
 	            $scope.connectionsInitialized = false;
-	            initWirings(eavGlobalConfigurationProvider.pipelineDesigner.defaultPipeline.streamWiring);
+	            initWirings(eavConfig.pipelineDesigner.defaultPipeline.streamWiring);
 	            $scope.connectionsInitialized = true;
 
 	            initWiringsListener(); // unbind the Listener

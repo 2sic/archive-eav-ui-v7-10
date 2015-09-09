@@ -1,7 +1,7 @@
 ﻿(function () {
     angular.module("Eavi18n", [
         "pascalprecht.translate",
-        "eavGlobalConfigurationProvider"
+        "EavConfiguration"
     ])
 
     .config(function ($translateProvider, languages) {

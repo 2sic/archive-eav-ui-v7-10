@@ -851,5 +851,5 @@ $.ajaxTransport(function (options, originalOptions, jqXHR) {
 
 // Contstruct angular module for EAV
 (function () {
-	angular.module('2sic-EAV', ['ui.tree', 'eavGlobalConfigurationProvider', 'eavDialogService']);
+	angular.module('2sic-EAV', ['ui.tree', "EavConfiguration", 'eavDialogService']);
 })();

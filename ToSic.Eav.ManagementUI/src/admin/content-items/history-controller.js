@@ -2,7 +2,7 @@
 
     angular.module("HistoryApp", [
         "ContentItemsAppServices",
-        "eavGlobalConfigurationProvider",
+        "EavConfiguration",
         "HistoryServices",
         "eavTemplates",
     "Eavi18n"

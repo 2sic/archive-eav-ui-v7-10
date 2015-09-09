@@ -9,10 +9,10 @@
 
 (function () {
     angular.module('2sic-EAV')
-        .factory('eavApiService', function (eavGlobalConfigurationProvider, $http) {
+        .factory('eavApiService', function (eavConfig, $http) {
             return function (settings) {
-                settings.url = eavGlobalConfigurationProvider.api.baseUrl + settings.url;
-                settings.params = $.extend({}, eavGlobalConfigurationProvider.defaultApiParams, settings.params);
+                settings.url = eavConfig.api.baseUrl + settings.url;
+                settings.params = $.extend({}, eavConfig.defaultApiParams, settings.params);
                 return $http(settings);
             }
         });

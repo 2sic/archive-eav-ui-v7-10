@@ -2,7 +2,7 @@
 
     angular.module("ContentItemsApp", [
         "ContentItemsAppServices",
-        "eavGlobalConfigurationProvider",
+        "EavConfiguration",
         "EavAdminUi",
         "Eavi18n"
     ])
@@ -11,7 +11,7 @@
         .controller("ContentItemsList", ContentItemsListController)
     ;
 
-    function ContentItemsListController(contentItemsSvc, eavGlobalConfigurationProvider, appId, contentType, contentTypeId, eavAdminDialogs, $modalInstance) {
+    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, contentTypeId, eavAdminDialogs, $modalInstance) {
         var vm = this;
         var svc = contentItemsSvc(appId, contentType, contentTypeId);
 

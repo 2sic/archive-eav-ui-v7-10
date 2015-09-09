@@ -1,4 +1,4 @@
-﻿angular.module('eavDialogService', []).factory('eavDialogService', ["eavGlobalConfigurationProvider",
+﻿angular.module('eavDialogService', []).factory('eavDialogService', ["EavConfiguration",
 	function (configProvider) {
 		return {
 			open: function (params) {

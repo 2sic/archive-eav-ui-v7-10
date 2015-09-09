@@ -1,8 +1,8 @@
-angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfigurationProvider'])
-    .factory('contentTypeSvc', function ($http, eavGlobalConfigurationProvider, svcCreator) {
+angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', "EavConfiguration"])
+    .factory('contentTypeSvc', function ($http, eavConfig, svcCreator) {
         return function appSpecificContentTypeSvc(appId) {
             var svc = {};
-            svc.scope = eavGlobalConfigurationProvider.contentType.defaultScope;
+            svc.scope = eavConfig.contentType.defaultScope;
             svc.appId = appId;
 
             svc.retrieveContentTypes = function typeListRetrieve() {
@@ -20,7 +20,7 @@ angular.module('ContentTypeServices', ['ng', 'eavNgSvcs', 'eavGlobalConfiguratio
                     StaticName: "",
                     Name: "",
                     Description: "",
-                    Scope: eavGlobalConfigurationProvider.contentType.defaultScope
+                    Scope: eavConfig.contentType.defaultScope
                 };
             };
 
