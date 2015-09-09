@@ -15,7 +15,9 @@
     "promise-window": "1.0.0",
     "jsPlumb": "1.7.2",
     "angularjs-toaster": "0.4.15",
-	"angular-google-maps": "~2.2.0"
+    "angular-google-maps": "~2.2.0",
+    "jquery": "2.1.4",
+    "jquery-ui": "1.11.4"
   },
   "private": true,
   "resolutions": {
