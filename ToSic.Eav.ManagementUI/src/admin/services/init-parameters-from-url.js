@@ -8,26 +8,30 @@
 // * appId
 (function () {
     angular.module("InitParametersFromUrl", [])
-        .factory('appId', function ($location) {
-        	// this ties up the App-Id to the Url 
-        	return $location.search().appid;
-		})
-		.factory('entityId', function($location) {
-			// ToDo: $location.search() returns null
-			return getQueryStringParam('entityid');
-		})
-		.factory('contentTypeName', function ($location) {
-		    // ToDo: $location.search() returns null
-			return getQueryStringParam('contenttypename');
-	    })
-	;
+        .factory("appId", function() {
+            return getQueryStringParam("appId");
+        })
+        .factory("entityId", function() {
+            return getQueryStringParam("entityid");
+        })
+        .factory("contentTypeName", function() {
+            return getQueryStringParam("contenttypename");
+        })
+
+        .factory("pipelineId", function () {
+            return getQueryStringParam("pipelineId");
+        })
+        // This is a dummy object, because it's needed for dialogs
+        .factory("$modalInstance", function() {
+            return null;
+        });
 
 	/* Temp - until $location.search() does work again */
 	var getQueryStringParam = function(name) {
 		var url = location.href;
 		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
 		var regexS = "[\\?&]" + name + "=([^&#]*)";
-		var regex = new RegExp(regexS);
+		var regex = new RegExp(regexS, "i");
 		var results = regex.exec(url);
 		return results === null ? null : results[1];
 	};

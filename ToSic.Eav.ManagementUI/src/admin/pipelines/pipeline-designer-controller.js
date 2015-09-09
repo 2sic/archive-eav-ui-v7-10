@@ -6,7 +6,7 @@ angular.module("PipelineDesigner")
 
     .controller("PipelineDesignerController",
 			
-	function ($scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider, $q) {
+	function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavGlobalConfigurationProvider, $q) {
 		"use strict";
         
 		// Init
@@ -17,15 +17,9 @@ angular.module("PipelineDesigner")
 		$scope.debug = false;
 
 		// Load Pipeline Data
-		$scope.PipelineEntityId = $location.search().PipelineId;
-		// Stop if no AppId is set
-		if (!$location.search().AppId) {
-			$timeout(function () {
-				uiNotification.error("Please specify an AppId");
-			});
-			return;
-		}
-		pipelineService.setAppId($location.search().AppId);
+	    $scope.PipelineEntityId = pipelineId;
+
+	    pipelineService.setAppId(appId);
 
 		// Get Data from PipelineService (Web API)
 		pipelineService.getPipeline($scope.PipelineEntityId).then(function (success) {

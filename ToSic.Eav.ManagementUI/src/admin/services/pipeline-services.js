@@ -1,5 +1,5 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
-angular.module('PipelineService', ['ContentTypeServices'])
+angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
     .factory('pipelineService', function($resource, $q, $filter, eavGlobalConfigurationProvider, $http, contentTypeSvc) {
         'use strict';
         var svc = {};

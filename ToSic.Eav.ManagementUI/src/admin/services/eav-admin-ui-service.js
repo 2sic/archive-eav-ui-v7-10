@@ -150,7 +150,7 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Pipeline Designer
             svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
-                var url = eavGlobalConfigurationProvider.pipelineDesigner.getUrl(appId, pipelineId);
+                var url = eavGlobalConfigurationProvider.adminUrls.pipelineDesigner(appId, pipelineId);
                 $window.open(url);
                 return;
             };

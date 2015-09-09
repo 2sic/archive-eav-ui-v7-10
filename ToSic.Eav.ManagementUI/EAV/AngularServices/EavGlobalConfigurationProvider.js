@@ -14,6 +14,10 @@ var $eavUIConfig = {
 		},
 		ngRoot: function() {
 			return "/dist/";
+		},
+		pipelineDesigner: function (appId, pipelineId) {
+		    return "/Pages/ngwrapper.cshtml?ng=pipeline-designer&AppId=" + appId + "&pipelineId=" + pipelineId;
+		    //return '/Pages/ngwrapper.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;
 		}
 	},
 	languages: {
@@ -64,9 +68,9 @@ if (angular) // always check if(angular) because this file is also included in o
                 languages: $eavUIConfig.languages,
 
                 pipelineDesigner: {
-                    getUrl: function(appId, pipelineId) {
-                        return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;
-                    },
+                    //getUrl: function(appId, pipelineId) {
+                    //    return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;
+                    //},
                     outDataSource: {
                         className: 'SexyContentTemplate',
                         in: ['Content', 'Presentation', 'ListContent', 'ListPresentation'],

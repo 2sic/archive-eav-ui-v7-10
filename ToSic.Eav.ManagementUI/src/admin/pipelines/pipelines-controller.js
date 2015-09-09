@@ -1,9 +1,8 @@
 ﻿// Config and Controller for the Pipeline Management UI
-angular.module('PipelineManagement', ['PipelineService', 'eavGlobalConfigurationProvider', 'ngResource', 'eavNgSvcs', 'EavAdminUi']).
-	controller('PipelineManagementController', function ($rootScope, $scope, $location, appId, $window, pipelineService, eavAdminDialogs) {
+angular.module("PipelineManagement", ["PipelineService", "eavGlobalConfigurationProvider", "eavNgSvcs", "EavAdminUi", "Eavi18n"]).
+	controller("PipelineManagementController", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
 	    var vm = this;
         vm.appId = appId;
-	    // vm.AppId = appId;
 
 	    pipelineService.setAppId(appId);
 	    pipelineService.initContentTypes();
@@ -18,7 +17,7 @@ angular.module('PipelineManagement', ['PipelineService', 'eavGlobalConfiguration
 
 	    // Delete a Pipeline
         vm.delete = function(pipeline) {
-            if (!confirm('Delete Pipeline "' + pipeline.Name + '" (' + pipeline.Id + ')?'))
+            if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
                 return;
 
             pipelineService.deletePipeline(pipeline.Id).then(function() {
@@ -57,4 +56,5 @@ angular.module('PipelineManagement', ['PipelineService', 'eavGlobalConfiguration
             if (inp)
                 eval(inp); // jshint ignore:line
         };
+        vm.close = function () { $modalInstance.dismiss("cancel"); };
     });

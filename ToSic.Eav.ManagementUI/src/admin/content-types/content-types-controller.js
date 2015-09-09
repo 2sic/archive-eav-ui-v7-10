@@ -81,7 +81,7 @@
             $modalInstance.close(vm.item);
         };
 
-        vm.cancel = function () {
+        vm.close = function () {
             $modalInstance.dismiss("cancel");
         };
     }
@@ -169,6 +169,6 @@
             $modalInstance.close();//vm.items);
         };
 
-        vm.cancel = function() { $modalInstance.dismiss("cancel"); };
+        vm.close = function() { $modalInstance.dismiss("cancel"); };
     }
 }());

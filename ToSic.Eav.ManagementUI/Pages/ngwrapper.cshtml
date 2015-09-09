@@ -64,7 +64,7 @@
 	}
 	@if (ng == "pipeline-designer")
 	{
-		<div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'"></div>
+		<div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
 		<link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
 
 		//Toaster

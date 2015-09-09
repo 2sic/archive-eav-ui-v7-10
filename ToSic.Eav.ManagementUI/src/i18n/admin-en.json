@@ -6,7 +6,10 @@
       "System": "advanced system functions",
       "Save": "save",
       "Cancel": "cancel",
-      "Permissions": "permissions"
+      "Permissions": "permissions",
+      "Edit": "edit",
+      "Delete": "delete",
+      "Copy": "copy"
     },
     "Messages": {
       "Loading": "loading...",
@@ -20,7 +23,6 @@
     "Terms": {
       "Title": "title"
     }
-
   },
   "ContentTypes": {
     "Title": "Content-Types and Data",
@@ -37,9 +39,51 @@
       "Import": "Import"
     }
   },
-  "Template": "Subj De",
-  "Category": "Cat de",
-  "Send": "Schick",
-  "SendingMessage": "sendend...",
-  "ThanksMessage": "danke...2"
+  "ContentTypeEdit": {
+    "Title": "Edit Content Type",
+    "Name": "Name",
+    "Description": "Description",
+    "Scope": "Scope"
+  },
+  "Fields": {
+    "Title": "Content Type Fields EN",
+    "TitleEdit": "Add Fields",
+    "Table": {
+      "Title": "Title",
+      "Name": "Static Name",
+      "DataType": "Data Type",
+      "Edit": "Edit & Data Type",
+      "Label": "Label",
+      "InputType": "Input Type",
+      "Notes": "Notes",
+      "Sort": "Sort",
+      "Action": ""
+    },
+    "General": "General"
+  },
+  "Permissions": {
+    "Title": "Permissions",
+    "Table": {
+      "Name": "Name",
+      "Id": "ID",
+      "Condition": "Condition",
+      "Grant": "Grant",
+      "Actions": ""
+    }
+  },
+    "Pipeline": {
+      "Manage": {
+        "Title": "Pipelines",
+        "Table": {
+          "Id": "ID",
+          "Name": "Name",
+          "Description": "Description",
+          "Actions": ""
+        }
+
+      },
+      "Designer": {
+
+    }
+  }
 }
