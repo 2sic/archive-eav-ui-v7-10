@@ -106,8 +106,8 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
-    <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="index.html" />
     <Content Include="src\edit\localization\language-switcher.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
@@ -129,29 +129,9 @@
     <Content Include="gruntfile.js" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
-    <Content Include="Pages\EavManagementApp2.aspx" />
-    <Content Include="Pages\EavManagement.aspx" />
-    <Content Include="EAV\Controls\CultureSelector.ascx" />
-    <Content Include="EAV\Controls\DimensionMenu.ascx" />
-    <Content Include="EAV\Controls\EavManagement.ascx" />
-    <Content Include="EAV\Controls\ItemFormEntityModelCreator.js" />
-    <Content Include="EAV\Controls\ItemForm.ascx" />
-    <Content Include="EAV\Controls\ItemForm.css" />
-    <Content Include="EAV\Controls\Images\Locked.png" />
-    <Content Include="EAV\Controls\Images\Unlocked.png" />
-    <Content Include="EAV\Controls\ItemForm.js" />
-    <Content Include="EAV\Dialogs\EditItem.aspx" />
-    <Content Include="EAV\Dialogs\NewItem.aspx" />
     <Content Include="bower.json" />
-    <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\String_Edit.ascx" />
     <Content Include="EAV\AngularServices\EavDialogService.js" />
     <Content Include="EAV\AngularServices\eav-configuration.js" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -253,110 +233,6 @@
     <Content Include="src\i18n\edit-en.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\FieldTemplateUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Common\Forms.cs" />
-    <Compile Include="Common\Serialization.cs" />
-    <Compile Include="Common\EventHandlers.cs" />
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EavManagement.aspx.designer.cs">
-      <DependentUpon>EavManagement.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EavManagementApp2.aspx.cs">
-      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EavManagement.aspx.cs">
-      <DependentUpon>EavManagement.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
-      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\CultureSelector.ascx.cs">
-      <DependentUpon>CultureSelector.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\CultureSelector.ascx.designer.cs">
-      <DependentUpon>CultureSelector.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\DimensionMenu.ascx.cs">
-      <DependentUpon>DimensionMenu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\DimensionMenu.ascx.designer.cs">
-      <DependentUpon>DimensionMenu.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\EavManagement.ascx.cs">
-      <DependentUpon>EavManagement.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\EavManagement.ascx.designer.cs">
-      <DependentUpon>EavManagement.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemForm.ascx.cs">
-      <DependentUpon>ItemForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
-      <DependentUpon>ItemForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\EditItem.aspx.cs">
-      <DependentUpon>EditItem.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\EditItem.aspx.designer.cs">
-      <DependentUpon>EditItem.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\NewItem.aspx.cs">
-      <DependentUpon>NewItem.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\NewItem.aspx.designer.cs">
-      <DependentUpon>NewItem.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.cs">
-      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.designer.cs">
-      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.cs">
-      <DependentUpon>Entity_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.designer.cs">
-      <DependentUpon>Entity_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.cs">
-      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.designer.cs">
-      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.cs">
-      <DependentUpon>Date_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.designer.cs">
-      <DependentUpon>Date_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.cs">
-      <DependentUpon>String_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.designer.cs">
-      <DependentUpon>String_Edit.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
