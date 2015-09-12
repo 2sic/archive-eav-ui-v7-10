@@ -32,7 +32,9 @@
         vm.edit = function edit(item) {
             if (item === undefined)
                 item = svc.newItem();
-            eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
+
+            var resolve = eavAdminDialogs.CreateResolve({ item: item, svc: svc });
+            return eavAdminDialogs.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve);
         };
 
         vm.editFields = function editFields(item) {
@@ -70,9 +72,8 @@
     }
 
     /// Edit or add a content-type
-    function ContentTypeEditController(appId, contentTypeSvc, item, $modalInstance) {
+    function ContentTypeEditController(appId, svc, item, $modalInstance) {
         var vm = this;
-        var svc = contentTypeSvc(appId);
         
         vm.item = item;
 

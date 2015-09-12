@@ -54,7 +54,6 @@ module.exports = function(grunt) {
         },
 
         copy: {
-            xyz: {},
             build: {
                 files: [
                     {

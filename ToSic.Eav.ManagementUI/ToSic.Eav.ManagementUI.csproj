@@ -171,7 +171,6 @@
     <Content Include="src\admin\content-types\content-types-fields.html" />
     <Content Include="src\admin\content-types\content-types.html" />
     <Content Include="src\admin\permissions\permissions-controller.js" />
-    <Content Include="src\admin\permissions\permissions-standalone.html" />
     <Content Include="src\admin\permissions\permissions.html" />
     <Content Include="src\admin\pipelines\pipeline-designer-app.js" />
     <Content Include="src\admin\pipelines\pipeline-designer-controller.js" />

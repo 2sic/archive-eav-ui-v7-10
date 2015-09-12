@@ -15,7 +15,7 @@
         };
 
         vm.add = function add() {
-            eavAdminDialogs.openMetadataNew('entity', svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
+            eavAdminDialogs.openMetadataNew(appId, "entity", svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
         };
 
         vm.items = svc.liveList();

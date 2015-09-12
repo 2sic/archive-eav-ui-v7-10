@@ -33,7 +33,7 @@ var $eavUIConfig = {
     //}
 };
 
-if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
+// if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
     angular.module("EavConfiguration", [])
         .constant("languages", $eavUIConfig.languages)
         .factory('eavConfig', function($location) {
@@ -97,7 +97,6 @@ if (angular) // always check if(angular) because this file is also included in o
                 },
                 metadataOfEntity: 4,
                 metadataOfAttribute: 2,
-                assignmentObjectTypeIdDataPipeline: 4, // deprecated, don't use any more, will be removed in january 2016
 
                 // new
                 contentType: {

@@ -174,28 +174,28 @@ namespace ToSic.Eav.Persistence
             return newSet;
         }
 
+        // 2015-09-09 seems like this is never used
+        ///// <summary>
+        ///// Remove an Attribute from an AttributeSet and delete values
+        ///// </summary>
+        //public void RemoveAttributeInSet(int attributeId, int attributeSetId)
+        //{
+        //    // Delete the AttributeInSet
+        //    Context.SqlDb.DeleteObject(Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
 
-        /// <summary>
-        /// Remove an Attribute from an AttributeSet and delete values
-        /// </summary>
-        public void RemoveAttributeInSet(int attributeId, int attributeSetId)
-        {
-            // Delete the AttributeInSet
-            Context.SqlDb.DeleteObject(Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
+        //    // Delete all Values an their ValueDimensions
+        //    var valuesToDelete = Context.SqlDb.Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
+        //    foreach (var valueToDelete in valuesToDelete)
+        //    {
+        //        valueToDelete.ValuesDimensions.ToList().ForEach(Context.SqlDb.DeleteObject);
+        //        Context.SqlDb.DeleteObject(valueToDelete);
+        //    }
 
-            // Delete all Values an their ValueDimensions
-            var valuesToDelete = Context.SqlDb.Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
-            foreach (var valueToDelete in valuesToDelete)
-            {
-                valueToDelete.ValuesDimensions.ToList().ForEach(Context.SqlDb.DeleteObject);
-                Context.SqlDb.DeleteObject(valueToDelete);
-            }
+        //    // Delete all Entity-Relationships
+        //    var relationshipsToDelete = Context.SqlDb.EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
+        //    relationshipsToDelete.ForEach(Context.SqlDb.DeleteObject);
 
-            // Delete all Entity-Relationships
-            var relationshipsToDelete = Context.SqlDb.EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
-            relationshipsToDelete.ForEach(Context.SqlDb.DeleteObject);
-
-            Context.SqlDb.SaveChanges();
-        }
+        //    Context.SqlDb.SaveChanges();
+        //}
     }
 }
