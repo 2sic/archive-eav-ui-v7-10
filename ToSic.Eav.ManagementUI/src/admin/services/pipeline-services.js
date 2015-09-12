@@ -122,7 +122,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                 var deferred = $q.defer();
 
                 // Query for existing Entity
-                svc.entitiesResource.query({ action: 'GetAssignedEntities', appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyGuid: keyGuid, contentType: contentTypeName }, function (success) {
+                svc.entitiesResource.query({ action: 'GetAssignedEntities', appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyType: "guid", key: keyGuid, contentType: contentTypeName }, function (success) {
                     if (success.length) // Edit existing Entity
                         deferred.resolve(eavConfig.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
                     else { // Create new Entity

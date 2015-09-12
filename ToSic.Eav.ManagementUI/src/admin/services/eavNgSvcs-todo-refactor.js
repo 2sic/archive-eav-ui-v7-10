@@ -40,7 +40,8 @@ angular.module('eavNgSvcs', ['ng'])
                 params: {
                     appId: eavManagementDialog.appId,
                     assignmentObjectTypeId: assignedToId,
-                    keyGuid: keyGuid,
+                    keyType: "guid",
+                    key: keyGuid,
                     contentType: contentTypeName
                 }
             });

@@ -14,22 +14,37 @@ namespace ToSic.Eav.WebApi
         /// <summary>
 		/// Get Entities with specified AssignmentObjectTypeId and Key
 		/// </summary>
-		public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, Guid keyGuid, string contentType, int? appId = null)
-        {
-            if (appId.HasValue)
-                AppId = appId.Value;
-            var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyGuid, contentType);
-            return Serializer.Prepare(entityList);
-        }
+		//public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, Guid keyGuid, string contentType, int? appId = null)
+  //      {
+  //          if (appId.HasValue)
+  //              AppId = appId.Value;
+  //          var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyGuid, contentType);
+  //          return Serializer.Prepare(entityList);
+  //      }
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyString, string contentType, int? appId = null)
+        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int? appId = null)
         {
             if (appId.HasValue)
                 AppId = appId.Value;
-            var entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, keyString, contentType);
+
+            IEnumerable<IEntity> entityList;
+            if (keyType == "guid")
+            {
+                var guidkey = Guid.Parse(key);
+                entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, guidkey, contentType);                
+            }
+            else if (keyType == "string")
+            {
+                entityList = MetaDS.GetAssignedEntities(assignmentObjectTypeId, key, contentType);                
+            }
+            else
+            {
+                throw new Exception("keytype unknown:" + keyType);
+            }
+
             return Serializer.Prepare(entityList);
         }
         #endregion
