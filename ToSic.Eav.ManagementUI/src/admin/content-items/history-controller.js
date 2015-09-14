@@ -1,7 +1,7 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("HistoryApp", [
-        "ContentItemsAppServices",
+        "ContentItemsServices",
         "EavConfiguration",
         "HistoryServices",
         "eavTemplates",
