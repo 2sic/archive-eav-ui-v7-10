@@ -9,30 +9,39 @@
 (function () {
     angular.module("InitParametersFromUrl", [])
         .factory("appId", function() {
-            return getQueryStringParam("appId");
+            return getParameterByName("appId");
         })
         .factory("entityId", function() {
-            return getQueryStringParam("entityid");
+            return getParameterByName("entityid");
         })
         .factory("contentTypeName", function() {
-            return getQueryStringParam("contenttypename");
+            return getParameterByName("contenttypename");
         })
 
         .factory("pipelineId", function () {
-            return getQueryStringParam("pipelineId");
+            return getParameterByName("pipelineId");
         })
         // This is a dummy object, because it's needed for dialogs
         .factory("$modalInstance", function() {
             return null;
         });
 
-	/* Temp - until $location.search() does work again */
-	var getQueryStringParam = function(name) {
-		var url = location.href;
-		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-		var regexS = "[\\?&]" + name + "=([^&#]*)";
-		var regex = new RegExp(regexS, "i");
-		var results = regex.exec(url);
-		return results === null ? null : results[1];
-	};
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)", "i"),
+            results = regex.exec(location.search);
+
+        // if nothing found, try normal URL because DNN places parameters in /key/value notation
+        if (results === null) {
+            // Otherwise try parts of the URL
+            var matches = window.location.pathname.match(new RegExp("/" + name + "/([^/]+)", "i"));
+
+            // Check if we found anything, if we do find it, we must reverse the results so we get the "last" one in case there are multiple hits
+            if (matches !== null && matches.length > 1)
+                results = matches.reverse()[0];
+        } else
+            results = results[1];
+
+        return results === null ? "" : decodeURIComponent(results.replace(/\+/g, " "));
+    }
 }());

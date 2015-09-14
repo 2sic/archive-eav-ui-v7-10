@@ -7,7 +7,7 @@
     .config(function ($translateProvider, languages, $translatePartialLoaderProvider) {
             $translateProvider
                 .preferredLanguage(languages.currentLanguage.split("-")[0])
-                .useSanitizeValueStrategy("escapeParameters")//"escape")
+                .useSanitizeValueStrategy("escapeParameters")   // this is very important to allow html in the JSON files
                 .fallbackLanguage(languages.defaultLanguage.split("-")[0])
 
                 .useLoader("$translatePartialLoader", {
