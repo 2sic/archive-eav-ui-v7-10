@@ -6,10 +6,10 @@
  *  5. entitiesSvc - a service to get/delete entities
  */
 
-angular.module('eavNgSvcs', ['ng'])
+angular.module("eavNgSvcs", ["ng"])
 
     /// Config to ensure that $location can work and give url-parameters
-    .config(['$locationProvider', function ($locationProvider) {
+    .config(["$locationProvider", function ($locationProvider) {
             $locationProvider.html5Mode({
                 enabled: true,
                 requireBase: false
@@ -17,7 +17,7 @@ angular.module('eavNgSvcs', ['ng'])
         } ])
 
     /// Provide state-information related to the current open dialog
-    .factory('eavManagementDialog', function($location){
+    .factory("eavManagementDialog", function($location){
         var result = {};
         var srch = $location.search();
         result.appId = srch.AppId || srch.appId || srch.appid;
@@ -25,18 +25,18 @@ angular.module('eavNgSvcs', ['ng'])
     })
 
     /// Management actions which are rather advanced metadata kind of actions
-    .factory('eavManagementSvc', function($http, eavManagementDialog) {
+    .factory("eavManagementSvc", function($http, eavManagementDialog) {
         var svc = {};
 
         // Retrieve extra content-type info
         svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
-            alert('using the wrong method - should use the content-type controller. Will work for now, change code please');
-            return $http.get('eav/contenttype/get', { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
+            alert("using the wrong method - should use the content-type controller. Will work for now, change code please");
+            return $http.get("eav/contenttype/get", { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
         };
 
         // Find all items assigned to a GUID
         svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
-            return $http.get('eav/metadata/getassignedentities', {
+            return $http.get("eav/metadata/getassignedentities", {
                 params: {
                     appId: eavManagementDialog.appId,
                     assignmentObjectTypeId: assignedToId,
@@ -51,7 +51,7 @@ angular.module('eavNgSvcs', ['ng'])
 
     // This is a helper-factory to create services which manage one live list
     // check examples with the permissions-service or the content-type-service how we use it
-    .factory('svcCreator', function() {
+    .factory("svcCreator", function() {
         var creator = {};
 
         // construct a object which has liveListCache, liveListReload(), liveListReset(),  
@@ -94,7 +94,7 @@ angular.module('eavNgSvcs', ['ng'])
     })
 
     /// Standard entity commands like get one, many etc.
-    .factory('entitiesSvc', function ($http, eavManagementDialog) {
+    .factory("entitiesSvc", function ($http, eavManagementDialog) {
         var svc = {};
 
         svc.get = function get(contentType, id) {
@@ -104,11 +104,11 @@ angular.module('eavNgSvcs', ['ng'])
         };
 
 		svc.getMultiLanguage = function getMultiLanguage(appId, contentType, id) {
-			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: 'multi-language' } });
+			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
 		};
 
         svc.delete = function del(type, id) {
-            return $http.delete('eav/entities/delete', {
+            return $http.delete("eav/entities/delete", {
                 params: {
                     'contentType': type,
                     'id': id,

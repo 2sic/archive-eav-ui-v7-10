@@ -1,5 +1,5 @@
-angular.module('HistoryServices', ['ng', 'eavNgSvcs'])//, "EavConfiguration"])
-    .factory('historySvc', function($http, svcCreator) { //, eavConfig, entitiesSvc, eavManagementSvc, contentTypeSvc) {
+angular.module("HistoryServices", ["ng", "eavNgSvcs"])//, "EavConfiguration"])
+    .factory("historySvc", function($http, svcCreator) { //, eavConfig, entitiesSvc, eavManagementSvc, contentTypeSvc) {
         //var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid
@@ -11,7 +11,7 @@ angular.module('HistoryServices', ['ng', 'eavNgSvcs'])//, "EavConfiguration"])
 
             // When we get the list, reverse-number the results to give it a nice version number
             svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
-                return $http.get('eav/entities/history', { params: { "appId": svc.appId, "entityId": svc.entityId } })
+                return $http.get("eav/entities/history", { params: { "appId": svc.appId, "entityId": svc.entityId } })
                 .then(function(result) {
                     var list = result.data;
                         for (var i = 0; i < list.length; i++)
@@ -21,7 +21,7 @@ angular.module('HistoryServices', ['ng', 'eavNgSvcs'])//, "EavConfiguration"])
             }));
 
             svc.getVersionDetails = function getVersionDetails(changeId) {
-                return $http.get('eav/entities/historydetails', { params: { "appId": svc.appId, "entityId": svc.entityId, "changeId": changeId } });
+                return $http.get("eav/entities/historydetails", { params: { "appId": svc.appId, "entityId": svc.entityId, "changeId": changeId } });
             };
 
             return svc;

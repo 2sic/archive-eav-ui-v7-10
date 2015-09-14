@@ -1,18 +1,18 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
-angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
-    .factory('pipelineService', function($resource, $q, $filter, eavConfig, $http, contentTypeSvc) {
-        'use strict';
+angular.module("PipelineService", ["ContentTypeServices", "ngResource"])
+    .factory("pipelineService", function($resource, $q, $filter, eavConfig, $http, contentTypeSvc) {
+        "use strict";
         var svc = {};
         // Web API Service
-        svc.pipelineResource = $resource(eavConfig.api.baseUrl + '/EAV/PipelineDesigner/:action');
-        svc.entitiesResource = $resource(eavConfig.api.baseUrl + '/EAV/Entities/:action');
+        svc.pipelineResource = $resource(eavConfig.api.baseUrl + "/EAV/PipelineDesigner/:action");
+        svc.entitiesResource = $resource(eavConfig.api.baseUrl + "/EAV/Entities/:action");
 
         svc.dataPipelineAttributeSetId = 0;
         svc.appId = 0;
 
         // Get the Definition of a DataSource
         svc.getDataSourceDefinitionProperty = function(model, dataSource) {
-            return $filter('filter')(model.InstalledDataSources, function(d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+            return $filter("filter")(model.InstalledDataSources, function(d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
         };
 
         // todo refactor: why do we have 2 methods with same name?
@@ -22,7 +22,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
             model.DataSources.push({
                 Name: eavConfig.pipelineDesigner.outDataSource.name,
                 Description: eavConfig.pipelineDesigner.outDataSource.description,
-                EntityGuid: 'Out',
+                EntityGuid: "Out",
                 PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
                 VisualDesignerData: eavConfig.pipelineDesigner.outDataSource.visualDesignerData,
                 ReadOnly: true
@@ -41,8 +41,8 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
             getPipeline: function(pipelineEntityId) {
                 var deferred = $q.defer();
 
-                var getPipeline = svc.pipelineResource.get({ action: 'GetPipeline', id: pipelineEntityId, appId: svc.appId });
-                var getInstalledDataSources = svc.pipelineResource.query({ action: 'GetInstalledDataSources' });
+                var getPipeline = svc.pipelineResource.get({ action: "GetPipeline", id: pipelineEntityId, appId: svc.appId });
+                var getInstalledDataSources = svc.pipelineResource.query({ action: "GetInstalledDataSources" });
 
                 // Join and modify retrieved Data
                 $q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function(results) {
@@ -52,7 +52,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                     // Init new Pipeline Object
                     if (!pipelineEntityId) {
                         model.Pipeline = {
-                            AllowEdit: 'True'
+                            AllowEdit: "True"
                         };
                     }
 
@@ -77,7 +77,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
             // Ensure Model has all DataSources and they're linked to their Definition-Object
             postProcessDataSources: function(model) {
                 // stop Post-Process if the model already contains the Out-DataSource
-                if ($filter('filter')(model.DataSources, function(d) { return d.EntityGuid == 'Out'; })[0])
+                if ($filter("filter")(model.DataSources, function(d) { return d.EntityGuid == "Out"; })[0])
                     return;
 
                 postProcessDataSources(model);
@@ -91,7 +91,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
             // Save whole Pipline
             savePipeline: function(pipeline, dataSources) {
                 if (!svc.appId)
-                    return $q.reject('appId must be set to save a Pipeline');
+                    return $q.reject("appId must be set to save a Pipeline");
 
                 // Remove some Properties from the DataSource before Saving
                 var dataSourcesPrepared = [];
@@ -102,19 +102,19 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                 });
 
                 return svc.pipelineResource.save({
-                    action: 'SavePipeline',
+                    action: "SavePipeline",
                     appId: svc.appId,
                     Id: pipeline.EntityId /*id later EntityId */
                 }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
             },
             // clone a whole Pipeline
             clonePipeline: function(pipelineEntityId) {
-                return svc.pipelineResource.get({ action: 'ClonePipeline', appId: svc.appId, Id: pipelineEntityId }).$promise;
+                return svc.pipelineResource.get({ action: "ClonePipeline", appId: svc.appId, Id: pipelineEntityId }).$promise;
             },
             // Get the URL to configure a DataSource
             getDataSourceConfigurationUrl: function(dataSource) {
-                var dataSourceFullName = $filter('typename')(dataSource.PartAssemblyAndType, 'classFullName');
-                var contentTypeName = '|Config ' + dataSourceFullName; // todo refactor centralize
+                var dataSourceFullName = $filter("typename")(dataSource.PartAssemblyAndType, "classFullName");
+                var contentTypeName = "|Config " + dataSourceFullName; // todo refactor centralize
                 var assignmentObjectTypeId = 4; // todo refactor centralize
                 var keyGuid = dataSource.EntityGuid;
                 var preventRedirect = true;
@@ -122,16 +122,16 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
                 var deferred = $q.defer();
 
                 // Query for existing Entity
-                svc.entitiesResource.query({ action: 'GetAssignedEntities', appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyType: "guid", key: keyGuid, contentType: contentTypeName }, function (success) {
+                svc.entitiesResource.query({ action: "GetAssignedEntities", appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyType: "guid", key: keyGuid, contentType: contentTypeName }, function (success) {
                     if (success.length) // Edit existing Entity
                         deferred.resolve(eavConfig.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
                     else { // Create new Entity
                         // todo: this is a get-content-type, it shouldn't be using the entitiesResource
                         // todo: but I'm not sure when it is being used
-                        svc.entitiesResource.get({ action: 'GetContentType', appId: svc.appId, contentType: contentTypeName }, function (contentType) {
+                        svc.entitiesResource.get({ action: "GetContentType", appId: svc.appId, contentType: contentTypeName }, function (contentType) {
                             // test for "null"-response
-                            if (contentType[0] == 'n' && contentType[1] == 'u' && contentType[2] == 'l' && contentType[3] == 'l')
-                                deferred.reject('Content Type ' + contentTypeName + ' not found.');
+                            if (contentType[0] == "n" && contentType[1] == "u" && contentType[2] == "l" && contentType[3] == "l")
+                                deferred.reject("Content Type " + contentTypeName + " not found.");
                             else
                                 deferred.resolve(eavConfig.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
                         }, function(reason) {
@@ -150,7 +150,7 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
         angular.extend(svc, {
             // Query the Data of a Pipeline
             queryPipeline: function (id) {
-                return svc.pipelineResource.get({ action: 'QueryPipeline', appId: svc.appId, id: id }).$promise;
+                return svc.pipelineResource.get({ action: "QueryPipeline", appId: svc.appId, id: id }).$promise;
             },
             // set appId and init some dynamic configurations
             setAppId: function (newAppId) {
@@ -158,17 +158,17 @@ angular.module('PipelineService', ['ContentTypeServices', 'ngResource'])
             },
             // Init some Content Types, currently only used for getPipelineUrl('new', ...)
             initContentTypes: function initContentTypes() {
-                return contentTypeSvc(svc.appId).getDetails('DataPipeline').then(function (result) {
+                return contentTypeSvc(svc.appId).getDetails("DataPipeline").then(function (result) {
                     svc.dataPipelineAttributeSetId = result.data.AttributeSetId;
                 });
             },
             // Get all Pipelines of current App
             getPipelines: function () {
-                return svc.entitiesResource.query({ action: 'GetEntities', appId: svc.appId, contentType: 'DataPipeline' });
+                return svc.entitiesResource.query({ action: "GetEntities", appId: svc.appId, contentType: "DataPipeline" });
             },
             // Delete a Pipeline on current App
             deletePipeline: function (id) {
-                return svc.pipelineResource.get({ action: 'DeletePipeline', appId: svc.appId, id: id }).$promise;
+                return svc.pipelineResource.get({ action: "DeletePipeline", appId: svc.appId, id: id }).$promise;
             }
         });
 

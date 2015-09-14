@@ -1,5 +1,5 @@
-angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', "EavConfiguration"])
-    .factory('contentTypeFieldSvc', function($http, eavConfig, svcCreator) {
+angular.module("ContentTypeFieldServices", ["ng", "eavNgSvcs", "EavConfiguration"])
+    .factory("contentTypeFieldSvc", function($http, eavConfig, svcCreator) {
         return function createFieldsSvc(appId, contentType) {
             // start with a basic service which implement the live-list functionality
             var svc = {};
@@ -7,11 +7,11 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', "EavConfiguration
             svc.contentType = contentType;
 
             svc.typeListRetrieve = function typeListRetrieve() {
-                return $http.get('eav/contenttype/datatypes/', { params: { "appid": svc.appId } });
+                return $http.get("eav/contenttype/datatypes/", { params: { "appid": svc.appId } });
             };
 
 	        svc.getFields = function getFields() {
-		        return $http.get('eav/contenttype/getfields', { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
+		        return $http.get("eav/contenttype/getfields", { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
 	        };
 
             svc = angular.extend(svc, svcCreator.implementLiveList(svc.getFields));
@@ -20,21 +20,21 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', "EavConfiguration
 
 
             svc.moveUp = function moveUp(item) {
-                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'up' } })
+                return $http.get("eav/contenttype/reorder", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: "up" } })
                     .then(svc.liveListReload);
             };
             svc.moveDown = function moveDown(item) {
-                return $http.get('eav/contenttype/reorder', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: 'down' } })
+                return $http.get("eav/contenttype/reorder", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, direction: "down" } })
                     .then(svc.liveListReload);
             };
 
             svc.delete = function del(item) {
-                return $http.delete('eav/contenttype/delete', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.delete("eav/contenttype/delete", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
             svc.addMany = function add(items, count) {
-                return $http.get('eav/contenttype/addfield/', { params: items[count] })
+                return $http.get("eav/contenttype/addfield/", { params: items[count] })
                     .then(function() {
                         if (items.length == ++count)
                             svc.liveListReload();
@@ -44,7 +44,7 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', "EavConfiguration
             };
 
             svc.add = function addOne(item) {
-                return $http.get('eav/contenttype/addfield/', { params: item })
+                return $http.get("eav/contenttype/addfield/", { params: item })
                     .then(svc.liveListReload);
             };
 
@@ -65,12 +65,12 @@ angular.module('ContentTypeFieldServices', ['ng', 'eavNgSvcs', "EavConfiguration
             svc.delete = function del(item) {
                 if (item.IsTitle)
                     throw "Can't delete Title";
-                return $http.delete('eav/contenttype/deletefield', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.delete("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
             svc.setTitle = function setTitle(item) {
-                return $http.get('eav/contenttype/setTitle', { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.get("eav/contenttype/setTitle", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 

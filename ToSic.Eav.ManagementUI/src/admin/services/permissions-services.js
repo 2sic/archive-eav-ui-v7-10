@@ -1,5 +1,5 @@
-angular.module('PermissionsServices', ['ng', 'eavNgSvcs', "EavConfiguration"])
-    .factory('permissionsSvc', function($http, eavConfig, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
+angular.module("PermissionsServices", ["ng", "eavNgSvcs", "EavConfiguration"])
+    .factory("permissionsSvc", function($http, eavConfig, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
         var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid

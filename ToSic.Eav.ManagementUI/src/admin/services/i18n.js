@@ -7,17 +7,22 @@
     .config(function ($translateProvider, languages, $translatePartialLoaderProvider) {
             $translateProvider
                 .preferredLanguage(languages.currentLanguage.split("-")[0])
-                .useSanitizeValueStrategy("escape")
+                .useSanitizeValueStrategy("escapeParameters")//"escape")
                 .fallbackLanguage(languages.defaultLanguage.split("-")[0])
 
-                .useLoader('$translatePartialLoader', {
-                    urlTemplate: languages.i18nRoot + '{part}-{lang}.js' // '/i18n/{part}/{lang}.json'
-                });
+                .useLoader("$translatePartialLoader", {
+                    urlTemplate: languages.i18nRoot + "{part}-{lang}.js" 
+                })
+                .useLoaderCache(true);              // should cache json
+            $translatePartialLoaderProvider         // these parts are always required
+                .addPart("admin")
+                .addPart("edit");   
+    })
 
-            $translatePartialLoaderProvider.addPart("admin").addPart("edit");
-            //.useStaticFilesLoader({
-            //	prefix: languages.i18nRoot + "admin-",
-            //    suffix: ".js"
-            //});
+    // ensure that adding parts will load the missing files
+    .run(function ($rootScope, $translate) {
+        $rootScope.$on("$translatePartialLoaderStructureChanged", function () {
+            $translate.refresh();
         });
+    });
 })();
