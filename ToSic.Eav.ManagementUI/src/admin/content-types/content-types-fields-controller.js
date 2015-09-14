@@ -1,11 +1,11 @@
 (function () { 
     angular.module("ContentTypesApp")
-        .controller("FieldList", ContentTypeFieldListController)
-        .controller("FieldsAdd", ContentTypeFieldAddController)
+        .controller("FieldList", contentTypeFieldListController)
+        .controller("FieldsAdd", contentTypeFieldAddController)
     ;
 
     /// The controller to manage the fields-list
-    function ContentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $translate) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $translate) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
@@ -64,7 +64,7 @@
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function ContentTypeFieldAddController(svc, $modalInstance) {
+    function contentTypeFieldAddController(svc, $modalInstance) {
         var vm = this;
 
         // prepare empty array of up to 10 new items to be added

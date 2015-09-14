@@ -1,8 +1,8 @@
-(function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
+(function () { 
 
-    angular.module("ContentEditApp", ['ContentItemsAppServices', 'EavAdminUi'])
-        .constant('createdBy', '2sic')          // just a demo how to use constant or value configs in AngularJS
-        .constant('license', 'MIT')             // these wouldn't be necessary, just added for learning exprience
+    angular.module("ContentEditApp", [
+        "ContentItemsAppServices",
+        "EavAdminUi"])
         .controller("EditContentItem", EditContentItemController)
         ;
 
@@ -12,7 +12,6 @@
         vm.entityId = entityId;
         vm.contentType = contentType;
         vm.TestMessage = "Test message the controller is binding correctly...";
-        // var svc = contentItemsSvc(appId, contentType, contentTypeId);
 
         vm.history = function history() {
             return eavAdminDialogs.openItemHistory(vm.entityId);

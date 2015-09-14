@@ -1,13 +1,11 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("ContentItemsApp", [
-        "ContentItemsAppServices",
+        "ContentItemsServices",
         "EavConfiguration",
         "EavAdminUi",
         "Eavi18n"
     ])
-        .constant("createdBy", "2sic")          // just a demo how to use constant or value configs in AngularJS
-        .constant("license", "MIT")             // these wouldn't be necessary, just added for learning exprience
         .controller("ContentItemsList", ContentItemsListController)
     ;
 
