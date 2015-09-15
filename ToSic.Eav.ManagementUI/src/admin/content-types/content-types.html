@@ -14,12 +14,12 @@
         <table class="table table-hover">
             <thead>
             <tr>
-                <th>{{ 'ContentTypes.TypesTable.Name' | translate }}</th>
-                <th>{{ 'ContentTypes.TypesTable.Description' | translate }}</th>
-                <th>{{ 'ContentTypes.TypesTable.Fields' | translate }}</th>
-                <th>{{ 'ContentTypes.TypesTable.Items' | translate }}</th>
-                <th>{{ 'ContentTypes.TypesTable.Permissions' | translate }}</th>
-                <th> </th>
+                <th translate="ContentTypes.TypesTable.Name"></th>
+                <th translate="ContentTypes.TypesTable.Description"></th>
+                <th translate="ContentTypes.TypesTable.Fields"></th>
+                <th translate="ContentTypes.TypesTable.Items"></th>
+                <th translate="ContentTypes.TypesTable.Actions"></th>
+                <th > </th>
             </tr>
             </thead>
             <tbody>
@@ -36,22 +36,13 @@
                         <span icon="list">&nbsp;{{item.Items}}</span>
                     </button>
                 </td>
-                <td>
-                    <button type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
-                        <span icon="user"/>/<span icon="lock"/>
-                    </button>
-                    <button type="button" class="btn btn-xs" ng-click="vm.openExport(item)">
-                        <span icon="export" tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}"></span>
-                    </button>
-
-                    <button type="button" class="btn btn-xs" ng-click="vm.openImport(item)">
-                        <span icon="import" tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}"></span>
-                    </button>
+                <td style="white-space: nowrap;">
+                    <button icon="export" tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openExport(item)"></button>
+                    <button icon="import" tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openImport(item)"></button>
+                    <button icon="user" type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"></button>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">
-                        <span icon="remove"/>
-                    </button>
+                    <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"></button>
                 </td>
             </tr>
             <tr ng-if="!vm.items.length">

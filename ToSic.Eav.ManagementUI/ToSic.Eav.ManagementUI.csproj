@@ -228,7 +228,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EAV\js\specs\helpers\" />
-    <Folder Include="i18n\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

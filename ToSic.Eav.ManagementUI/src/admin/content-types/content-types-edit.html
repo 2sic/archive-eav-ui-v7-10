@@ -1,8 +1,6 @@
 ﻿<div class="modal-header">
-    <button class="btn pull-right" type="button" ng-click="vm.close()">
-        <span class="glyphicon glyphicon-remove"></span>
-    </button>
-    <h3 class="modal-title">{{ "ContentTypeEdit.Title" | translate }}</h3>
+    <button icon="remove" class="btn pull-right" type="button" ng-click="vm.close()"></button>
+    <h3 class="modal-title" translate="ContentTypeEdit.Title"></h3>
 </div>
 
 <div class="modal-body">
@@ -15,7 +13,5 @@
     <input disabled="true" ng-model="vm.item.Scope" />
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="vm.ok()">
-        <span class="glyphicon glyphicon-ok"></span>
-    </button>
+    <button icon="ok" class="btn btn-primary" type="button" ng-click="vm.ok()"></button>
 </div>
