@@ -34,6 +34,7 @@ angular.module("EavAdminUi", ["ng",
     "PipelineManagement",   // Manage pipelines
     "ContentTypeServices",  // Needed to retrieve an Id in a special case
     //"ContentEditApp",       // the edit-app (doesn't work yet)
+    "ContentImportExportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
@@ -50,6 +51,15 @@ angular.module("EavAdminUi", ["ng",
             svc.openContentItemsX = function ociX(resolve, callbacks) {
                 return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, callbacks);
             };
+
+        //#endregion
+
+        //#region content import export
+            svc.openContentImport = function oci(appId, staticName, closeCallback) {
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
+                var callbacks = { close: closeCallback };
+                return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, callbacks);
+           };
 
         //#endregion
 
@@ -156,17 +166,7 @@ angular.module("EavAdminUi", ["ng",
             };
         //#endregion
 
-        //#region Export / Import content Types
 
-        svc.openContentExport = function oce(appId, closeCallback) {
-            var url = eavConfig.adminUrls.exportContent(appId);
-            window.open(url);
-        };
-        svc.openContentImport = function oci(appId, closeCallback) {
-            var url = eavConfig.adminUrls.importContent(appId);
-            window.open(url);
-        };
-        //#endregion
 
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {

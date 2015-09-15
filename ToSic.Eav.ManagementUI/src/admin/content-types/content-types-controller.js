@@ -58,8 +58,8 @@
             return eavAdminDialogs.openContentExport(svc.appId);
         };
 
-        vm.openImport = function openImport() {
-            return eavAdminDialogs.openContentImport(svc.appId);
+        vm.openImport = function openImport(item) {
+            return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
     }
 

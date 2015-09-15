@@ -38,7 +38,14 @@
                 </td>
                 <td>
                     <button type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
-                        <span icon="user"/>&nbsp;/&nbsp;<span icon="lock"/>
+                        <span icon="user"/>/<span icon="lock"/>
+                    </button>
+                    <button type="button" class="btn btn-xs" ng-click="vm.openExport(item)">
+                        <span icon="export" tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-xs" ng-click="vm.openImport(item)">
+                        <span icon="import" tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}"></span>
                     </button>
                 </td>
                 <td>
@@ -52,16 +59,6 @@
             </tr>
             </tbody>
         </table>
-
-        <!-- import/export -->
-        <h3>{{ 'ContentTypes.TitleExportImport' | translate }} </h3>
-        <button type="button" class="btn" ng-click="vm.openExport()">
-            <span icon="export"> {{ 'ContentTypes.Buttons.Export' | translate }}</span>
-        </button>
-
-        <button type="button" class="btn" ng-click="vm.openImport()">
-            <span icon="import">{{ 'ContentTypes.Buttons.Import' | translate }}</span>
-        </button>
 
     </div>
 </div>
