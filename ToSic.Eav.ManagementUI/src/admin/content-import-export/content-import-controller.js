@@ -1,4 +1,4 @@
-(function () { 
+(function () {
 
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
@@ -15,41 +15,49 @@
             key: "File",
             type: "file",
             templateOptions: {
-                label: translate("Content.Import.Form.File.Label"),
                 required: true
-            }     
+            },
+            expressionProperties: {
+                "templateOptions.label": "'Content.Import.Form.File.Label' | translate"
+            }
         }, {
             // File references
             key: "FileReferences",
             type: "radio",
-            templateOptions: {
-                label: translate("Content.Import.Form.FileReferences.Label"),
-                options: [{
-                    "name":  translate("Content.Import.Form.FileReferences.Option.Keep"),
-                    "value": "Keep"
-                }, {
-                    "name":  translate("Content.Import.Form.FileReferences.Option.Resolve"),
-                    "value": "Resolve"
-                }],
+            expressionProperties: {
+                "templateOptions.label": "'Content.Import.Form.FileReferences.Label' | translate",
+                "templateOptions.options": function () {
+                    return [{
+                        "name": translate("Content.Import.Form.FileReferences.Option.Keep"),
+                        "value": "Keep"
+                    }, {
+                        "name": translate("Content.Import.Form.FileReferences.Option.Resolve"),
+                        "value": "Resolve"
+                    }];
+                }
             },
             defaultValue: "Keep"
         }, {
+            // Clear entities
             key: "ClearEntities",
             type: "radio",
-            templateOptions: {
-                label: translate("Content.Import.Form.ClearEntities.Label"),
-                options: [{
-                    "name":  translate("Content.Import.Form.ClearEntities.Option.None"),
-                    "value": "None"
-                }, {
-                    "name":  translate("Content.Import.Form.ClearEntities.Option.All"),
-                    "value": "All"
-                }],
-            }
+            expressionProperties: {
+                "templateOptions.label": "'Content.Import.Form.ClearEntities.Label' | translate",
+                "templateOptions.options": function () {
+                    return [{
+                        "name": translate("Content.Import.Form.ClearEntities.Option.None"),
+                        "value": "None"
+                    }, {
+                        "name": translate("Content.Import.Form.ClearEntities.Option.All"),
+                        "value": "All"
+                    }];
+                }
+            },
+            defaultValue: "None"
         }];
 
 
-        vm.formValues = { };
+        vm.formValues = {};
 
 
         vm.close = function () {
@@ -57,7 +65,7 @@
         };
 
         vm.submit = function () {
-            
+
         };
     }
-} ());
+}());

@@ -1,7 +1,9 @@
 (function () {
     angular.module("ContentImportApp", [
-        "EavServices",
         "EavAdminUi",
-        "EavDirectives"
+        "EavDirectives",
+        "EavServices",
+        "ContentFormlyTypes",
+        "bootstrap.fileField"
     ]);
 }());

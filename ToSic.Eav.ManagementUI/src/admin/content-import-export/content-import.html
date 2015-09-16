@@ -6,6 +6,5 @@
 <div class="modal-body">
     <formly-form ng-submit="vm.submit()" form="vm.form" model="vm.formValues" fields="vm.formFields"></formly-form>
 
-
-    <pre>{{vm.debug | json}}</pre>
+    <pre>{{vm.formValues | json}}</pre>
 </div>
