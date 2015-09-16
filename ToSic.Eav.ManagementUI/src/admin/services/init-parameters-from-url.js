@@ -11,7 +11,10 @@
         .factory("appId", function() {
             return getParameterByName("appId");
         })
-        .factory("entityId", function() {
+        .factory("zoneId", function () {
+            return getParameterByName("zoneId");
+        })
+        .factory("entityId", function () {
             return getParameterByName("entityid");
         })
         .factory("contentTypeName", function() {
