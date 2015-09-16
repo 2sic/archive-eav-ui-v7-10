@@ -26,8 +26,6 @@
                 item = svc.newItem();
 
             eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
-            //var resolve = eavAdminDialogs.CreateResolve({ item: item });
-            //return eavAdminDialogs.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve);
         };
 
         vm.editFields = function editFields(item) {
