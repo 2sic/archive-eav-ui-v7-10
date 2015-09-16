@@ -50,11 +50,6 @@
 
 		var loadContentType = function () {
 
-		    if (vm.entity === undefined || vm.entity.Type === undefined || vm.entity.Type.Name === undefined || vm.entity.Type.Name === "") {
-		        alert("No content type found - can't edit entity");
-		        return;
-		    }
-
 		    contentTypeFieldSvc(1, { StaticName: vm.entity.Type.Name }).getFields() // ToDo: use correct AppId
 			.then(function (result) {
 			    vm.debug = result;
@@ -93,7 +88,6 @@
                     loadContentType();
                 });
 		} else {
-		    alert("no entityId defined. content type is: " + $scope.contentTypeName);
 		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
 		    loadContentType();
 		}

@@ -74,9 +74,9 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
         
         //#region Item - new, edit
-            svc.openItemNew = function oin(contentTypeId, closeCallback) {
+            svc.openItemNew = function oin(contentTypeName, closeCallback) {
                 //if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), { close: closeCallback });
+                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeName }), { close: closeCallback });
                 //} else {
                 //    var url = eavConfig.itemForm.getNewItemUrl(contentTypeId);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
