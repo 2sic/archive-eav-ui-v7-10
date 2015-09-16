@@ -1,6 +1,10 @@
 ﻿/* These are helpers to create larger dialogs than available by default in boostrap*/
-.modal-xlg { width: 95%; }
-.modal-max { width: 100%; }
+.modal-xlg {
+     width: 95%;
+}
+.modal-max {
+     width: 100%;
+}
 
 
 /* this helps that tooltips can wrap as we want them to */
@@ -9,4 +13,7 @@
 }
 
 
-/* this ensures that a column in a table doesn't just wrap buttons under each other but beside each other */
+/* since we have many windows on other windows, I want to reduce opacity so it's more see-through */
+.modal-backdrop.in {
+    opacity: .1;
+}
