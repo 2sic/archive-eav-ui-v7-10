@@ -4,7 +4,7 @@
          .factory("ContentImportService", contentImportService);
 
 
-    function contentImportController() {
+    function contentImportService() {
 
     }
 }());

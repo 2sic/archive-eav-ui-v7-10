@@ -44,16 +44,14 @@ angular.module("EavAdminUi", ["ng",
         //#region Content Items dialogs
         svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
-                var callbacks = { close: closeCallback };
-                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, callbacks);
+                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, closeCallback);
             };
         //#endregion
 
         //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
-                var callbacks = { close: closeCallback };
-                return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, callbacks);
+                return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
            };
 
         //#endregion
@@ -62,20 +60,19 @@ angular.module("EavAdminUi", ["ng",
 
             svc.openContentTypeEdit = function octe(item, closeCallback) {
                 var resolve = svc.CreateResolve({ item: item });
-                return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, { close: closeCallback });
+                return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, closeCallback);
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
                 var resolve = svc.CreateResolve({ contentType: item });
-                var callbacks = { close: closeCallback };
-                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, callbacks);
+                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
             };
         //#endregion
         
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeId, closeCallback) {
                 //if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), { close: closeCallback });
+                    return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), closeCallback );
                 //} else {
                 //    var url = eavConfig.itemForm.getNewItemUrl(contentTypeId);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error === "closed") closeCallback(); });
@@ -84,7 +81,7 @@ angular.module("EavAdminUi", ["ng",
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
                 //if (useDummyContentEditor) {
-                    return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), { close: closeCallback });
+                    return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), closeCallback );
                 //} else {
                 //    var url = eavConfig.itemForm.getEditItemUrl(entityId, undefined, true);
                 //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
@@ -98,7 +95,7 @@ angular.module("EavAdminUi", ["ng",
             svc.openItemHistory = function ioh(entityId, closeCallback) {
                 return svc.OpenModal("content-items/history.html", "History as vm", "lg",
                     svc.CreateResolve({ entityId: entityId }),
-                    { close: closeCallback });
+                    closeCallback);
             };
             
 
@@ -140,8 +137,7 @@ angular.module("EavAdminUi", ["ng",
         //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, targetGuid: targetGuid });
-                var callbacks = { close: closeCallback };
-                return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, callbacks);
+                return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, closeCallback);
             };
         //#endregion
 
@@ -157,6 +153,8 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
+                if (typeof (callbacks) === "function") // if it's only one callback, use it for all close-cases
+                    callbacks = { close: callbacks };
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
             };
 
