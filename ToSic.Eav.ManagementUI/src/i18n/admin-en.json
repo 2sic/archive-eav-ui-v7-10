@@ -105,25 +105,35 @@
       "HP": "will replace published: {{id}}"
     },
     "Import": {
-      "Title": "Import Content",
-      "Form": {
+      "Title": "Import Content / Data Step {{currentStep}} of 3",
+      "Help":  "This will import content-items / data into 2sxc. It requires that you already defined the Content-Type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
+      "Fields": {
         "File": {
           "Label": "Choose file"
         },
         "FileReferences": {
           "Label": "References to pages / files",
-          "Option": {
+          "Options": {
             "Keep": "Import links as written in the file (for example /Portals/...)",
-            "Resolve":  "Try to resolve pathes to references"
+            "Resolve": "Try to resolve pathes to references"
           }
         },
         "ClearEntities": {
           "Label": "Clear all other entities",
-          "Option": {
+          "Options": {
             "None": "Keep all entities not found in import",
-            "All":  "Remove all entities not found in import"
+            "All": "Remove all entities not found in import"
           }
         }
+      },
+      "Commands": {
+        "Preview": "Preview Import",
+        "Import": "Import",
+        "Back": "Back",
+        "Close": "Close"
+      },
+      "Messages": {
+        "BackupContentBefore": "Remember to backup your DNN first!"
       }
     },
     "Export": {
