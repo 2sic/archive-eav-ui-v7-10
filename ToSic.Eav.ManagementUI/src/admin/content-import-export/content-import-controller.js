@@ -4,13 +4,25 @@
         .controller("ContentImport", contentImportController);
 
 
-    function contentImportController(appId, eavAdminDialogs, eavConfig, $modalInstance, $filter, $translate) {
-        var vm = this;
-
+    function contentImportController(appId, contentType, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
         var translate = $filter("translate");
 
+        var vm = this;
+
+
+        vm.formValues = { };
 
         vm.formFields = [{
+            // Content type
+            key: "AppId",
+            type: "hidden",
+            defaultValue: appId
+        }, {
+            // Content type
+            key: "ContentType",
+            type: "hidden",
+            defaultValue: contentType
+        }, {
             // File
             key: "File",
             type: "file",
@@ -18,20 +30,20 @@
                 required: true
             },
             expressionProperties: {
-                "templateOptions.label": "'Content.Import.Form.File.Label' | translate"
+                "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
             }
         }, {
             // File references
             key: "FileReferences",
             type: "radio",
             expressionProperties: {
-                "templateOptions.label": "'Content.Import.Form.FileReferences.Label' | translate",
+                "templateOptions.label": "'Content.Import.Fields.FileReferences.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Form.FileReferences.Option.Keep"),
+                        "name": translate("Content.Import.Fields.FileReferences.Options.Keep"),
                         "value": "Keep"
                     }, {
-                        "name": translate("Content.Import.Form.FileReferences.Option.Resolve"),
+                        "name": translate("Content.Import.Fields.FileReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -42,13 +54,13 @@
             key: "ClearEntities",
             type: "radio",
             expressionProperties: {
-                "templateOptions.label": "'Content.Import.Form.ClearEntities.Label' | translate",
+                "templateOptions.label": "'Content.Import.Fields.ClearEntities.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Form.ClearEntities.Option.None"),
+                        "name": translate("Content.Import.Fields.ClearEntities.Options.None"),
                         "value": "None"
                     }, {
-                        "name": translate("Content.Import.Form.ClearEntities.Option.All"),
+                        "name": translate("Content.Import.Fields.ClearEntities.Options.All"),
                         "value": "All"
                     }];
                 }
@@ -56,16 +68,18 @@
             defaultValue: "None"
         }];
 
+        vm.currentStep = "1"; // 1, 2, 3...
 
-        vm.formValues = {};
+        vm.evaluateContent = function previewContent() {
 
-
-        vm.close = function () {
-            $modalInstance.dismiss("cancel");
         };
 
-        vm.submit = function () {
+        vm.importContent = function importContent() {
 
+        };
+
+        vm.close = function close() {
+            $modalInstance.dismiss("cancel");
         };
     }
 }());

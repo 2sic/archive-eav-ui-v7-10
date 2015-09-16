@@ -1,10 +1,36 @@
 ﻿<div class="modal-header">
     <button class="btn pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
-    <h3 class="modal-title" translate="Content.Import.Title"></h3>
+    <h3 class="modal-title" translate="Content.Import.Title" translate-values="{currentStep: vm.currentStep}"></h3>
 </div>
 
 <div class="modal-body">
-    <formly-form ng-submit="vm.submit()" form="vm.form" model="vm.formValues" fields="vm.formFields"></formly-form>
 
-    <pre>{{vm.formValues | json}}</pre>
+    <div ng-switch="vm.currentStep">
+
+        <div ng-switch-when="1">
+            <p translate="Content.Import.Help"></p>
+            <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
+                <p class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></p>
+                <button type="button" class="btn btn-primary" ng-click="vm.evaluateContent(); vm.currentStep = 2" ng-disabled="!vm.form.$valid" translate="Content.Import.Commands.Preview"></button>
+                <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
+            </formly-form>
+        </div>
+
+        <div ng-switch-when="2">
+            <p>
+                TODO: Show the evaluation of the content
+            </p>
+            <button type="button" class="btn btn-primary" ng-click="vm.importContent(); vm.currentStep = 3" translate="Content.Import.Commands.Import"></button>
+            <button type="button" class="btn btn-default" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
+            <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
+        </div>
+
+        <div ng-switch-when="3">
+            <p>
+                TODO: Show the result of import
+            </p>
+            <button type="button" class="btn btn-primary" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
+            <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
+        </div>
+    </div>
 </div>
