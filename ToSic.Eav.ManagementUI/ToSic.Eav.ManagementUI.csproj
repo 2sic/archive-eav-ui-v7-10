@@ -108,9 +108,11 @@
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
     <Content Include="index.html" />
+    <Content Include="src\admin\content-import-export\content-formly-types-config.js" />
+    <Content Include="src\admin\content-import-export\content-import-app.js" />
     <Content Include="src\admin\content-import-export\content-import-controller.js" />
+    <Content Include="src\admin\content-import-export\content-formly-types-app.js" />
     <Content Include="src\admin\content-import-export\content-import.html" />
-    <Content Include="src\admin\content-import-export\content-ie-app.js" />
     <Content Include="src\admin\content-types\content-types-app.js" />
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />

@@ -33,7 +33,7 @@ angular.module("EavAdminUi", ["ng",
     "PermissionsApp",       // Permissions dialogs to manage permissions
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
-    "ContentImportExportApp",
+    "ContentImportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
@@ -50,7 +50,7 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
 
         //#region content import export
-            svc.openContentImport = function oci(appId, staticName, closeCallback) {
+            svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 var callbacks = { close: closeCallback };
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, callbacks);
