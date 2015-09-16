@@ -47,43 +47,67 @@
 
 		vm.formFields = null;
 
-		contentTypeFieldSvc(1, { StaticName: $scope.contentTypeName }).getFields() // ToDo: use correct AppId
-			.then(function(result) {
-				vm.debug = result;
 
-				// Transform EAV content type configuration to formFields (formly configuration)
-				angular.forEach(result.data, function (e, i) {
+		var loadContentType = function () {
 
-					if (e.Metadata.All === undefined)
-						e.Metadata.All = {};
+		    if (vm.entity === undefined || vm.entity.Type === undefined || vm.entity.Type.Name === undefined || vm.entity.Type.Name === "") {
+		        alert("No content type found - can't edit entity");
+		        return;
+		    }
 
-					vm.formFields.push({
-						key: e.StaticName,
-						type: getType(e),
-						templateOptions: {
-							required: !!e.Metadata.All.Required,
-							label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
-							description: e.Metadata.All.Notes,
-							settings: e.Metadata
-						},
-						hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
-						//defaultValue: parseDefaultValue(e)
-						expressionProperties: {
-							'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
-						}
-					});
-				});
+		    contentTypeFieldSvc(1, { StaticName: vm.entity.Type.Name }).getFields() // ToDo: use correct AppId
+			.then(function (result) {
+			    vm.debug = result;
+
+			    // Transform EAV content type configuration to formFields (formly configuration)
+			    angular.forEach(result.data, function (e, i) {
+
+			        if (e.Metadata.All === undefined)
+			            e.Metadata.All = {};
+
+			        vm.formFields.push({
+			            key: e.StaticName,
+			            type: getType(e),
+			            templateOptions: {
+			                required: !!e.Metadata.All.Required,
+			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
+			                description: e.Metadata.All.Notes,
+			                settings: e.Metadata
+			            },
+			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
+			            //defaultValue: parseDefaultValue(e)
+			            expressionProperties: {
+			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
+			            }
+			        });
+			    });
 			});
+		};
 
-		// Load existing entity if defined
-		if ($scope.entityId) {
-			entitiesSvc.getMultiLanguage(1, $scope.contentTypeName, $scope.entityId) // ToDo: Use correct App-Id
-				.then(function (result) {
-					vm.entity = result.data;
-				});
+	    // Load existing entity if defined
+		
+		if (!!$scope.entityId) {
+		    entitiesSvc.getMultiLanguage(1, $scope.contentTypeName, $scope.entityId) // ToDo: Use correct App-Id
+                .then(function (result) {
+                    vm.entity = result.data;
+                    loadContentType();
+                });
 		} else {
-			vm.entity = entitiesSvc.createEntity();
+		    alert("no entityId defined. content type is: " + $scope.contentTypeName);
+		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
+		    loadContentType();
 		}
+
+
+		//// Load existing entity if defined
+		//if ($scope.entityId) {
+		//	entitiesSvc.getMultiLanguage(1, $scope.contentTypeName, $scope.entityId) // ToDo: Use correct App-Id
+		//		.then(function (result) {
+		//			vm.entity = result.data;
+		//		});
+		//} else {
+		//    vm.entity = entitiesSvc.newEntity();
+		//}
 
 		// Returns the field type for an attribute configuration
 		var getType = function(attributeConfiguration) {

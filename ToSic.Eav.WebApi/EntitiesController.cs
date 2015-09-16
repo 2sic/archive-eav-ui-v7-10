@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi
                 AppId = appId.Value;
 
             var found = InitialDS.List[id];
-            if (found.Type.Name != contentType)
+            if (contentType != null && found.Type.Name != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
         }

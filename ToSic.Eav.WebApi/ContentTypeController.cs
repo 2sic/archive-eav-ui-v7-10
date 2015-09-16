@@ -40,12 +40,12 @@ namespace ToSic.Eav.WebApi
 	    }
 
         [HttpGet]
-	    public IContentType Get(int appId, string contentTypeId, string scope = null)
+	    public IContentType GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
             SetAppIdAndUser(appId);
             // var source = InitialDS;
             var cache = DataSource.GetCache(null, appId);
-            return cache.GetContentType(contentTypeId);
+            return cache.GetContentType(contentTypeStaticName);
         }
 
 	    [HttpDelete]

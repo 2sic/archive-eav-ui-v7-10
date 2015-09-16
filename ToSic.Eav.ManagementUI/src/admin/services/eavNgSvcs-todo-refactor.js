@@ -117,12 +117,12 @@ angular.module("eavNgSvcs", ["ng"])
             });
         };
 
-		svc.newEntity = function() {
+		svc.newEntity = function(contentTypeName) {
 			return {
 				Id: null,
 				Guid: null,
 				Type: {
-					Name: $scope.contentTypeName
+					Name: contentTypeName
 				},
 				Attributes: {}
 			};
