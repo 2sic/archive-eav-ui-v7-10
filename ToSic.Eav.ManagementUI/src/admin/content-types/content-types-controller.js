@@ -1,13 +1,13 @@
 (function () { 
 
     angular.module("ContentTypesApp")
-        .controller("List", ContentTypeListController)
-        .controller("Edit", ContentTypeEditController)
+        .controller("List", contentTypeListController)
+        .controller("Edit", contentTypeEditController)
     ;
 
 
     /// Manage the list of content-types
-    function ContentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
+    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
@@ -25,8 +25,9 @@
             if (item === undefined)
                 item = svc.newItem();
 
-            var resolve = eavAdminDialogs.CreateResolve({ item: item, svc: svc });
-            return eavAdminDialogs.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve);
+            eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
+            //var resolve = eavAdminDialogs.CreateResolve({ item: item });
+            //return eavAdminDialogs.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve);
         };
 
         vm.editFields = function editFields(item) {
@@ -64,9 +65,11 @@
     }
 
     /// Edit or add a content-type
-    function ContentTypeEditController(appId, svc, item, $modalInstance) {
+    /// Note that the svc can also be null if you don't already have it, the system will then create its own
+    function contentTypeEditController(appId, item, contentTypeSvc, $modalInstance) {
         var vm = this;
-        
+        var svc = contentTypeSvc(appId);
+
         vm.item = item;
 
         vm.ok = function () {
