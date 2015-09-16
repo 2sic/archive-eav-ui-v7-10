@@ -5,8 +5,8 @@ angular.module("EavServices")
         "use strict";
         var svc = {};
         // Web API Service
-        svc.pipelineResource = $resource(eavConfig.api.baseUrl + "/EAV/PipelineDesigner/:action");
-        svc.entitiesResource = $resource(eavConfig.api.baseUrl + "/EAV/Entities/:action");
+        svc.pipelineResource = $resource("eav/PipelineDesigner/:action");
+        svc.entitiesResource = $resource("eav/Entities/:action");
 
         svc.dataPipelineAttributeSetId = 0;
         svc.appId = 0;

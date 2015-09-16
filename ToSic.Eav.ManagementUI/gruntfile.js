@@ -9,7 +9,9 @@ module.exports = function(grunt) {
         templates: "tmp/admin/html-templates.js",
         dist: "dist/admin/",
         concatFile: "dist/admin/tosic-eav-admin.js",
-        uglifyFile: "dist/admin/tosic-eav-admin.min.js"
+        uglifyFile: "dist/admin/tosic-eav-admin.min.js",
+        concatCss: "dist/admin/eav-admin.css",
+        concatCssMin: "dist/admin/eav-admin.min.css"
     };
 
     var editUi = {
@@ -137,6 +139,10 @@ module.exports = function(grunt) {
             default: {
                 src: admin.tmp + "**/*.js",
                 dest: admin.concatFile
+            },
+            adminCss: {
+                src: admin.tmp + "**.css",
+                dest: admin.concatCss
             },
             editUi: {
                 src: editUi.tmp + "**/*.js",

@@ -44,7 +44,7 @@ angular.module("EavAdminUi", ["ng",
         //#region Content Items dialogs
         svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
-                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, closeCallback);
+                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
         //#endregion
 

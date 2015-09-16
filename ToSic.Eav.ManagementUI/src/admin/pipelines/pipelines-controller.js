@@ -5,7 +5,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagementController", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
+	controller("PipelineManagement", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
 	    var vm = this;
         vm.appId = appId;
 

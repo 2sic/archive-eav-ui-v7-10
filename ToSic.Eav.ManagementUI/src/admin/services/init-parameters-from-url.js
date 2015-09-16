@@ -24,6 +24,9 @@
         .factory("pipelineId", function () {
             return getParameterByName("pipelineId");
         })
+        .factory("dialog", function () {
+            return getParameterByName("dialog");
+        })
         // This is a dummy object, because it's needed for dialogs
         .factory("$modalInstance", function() {
             return null;
@@ -31,8 +34,13 @@
 
     function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)", "i"),
-            results = regex.exec(location.search);
+        var searchRx = new RegExp("[\\?&]" + name + "=([^&#]*)", "i");
+        var results = searchRx.exec(location.search);
+
+        if (results === null) {
+            var hashRx = new RegExp("[#&]" + name + "=([^&#]*)", "i");
+            results = hashRx.exec(location.hash);
+        }
 
         // if nothing found, try normal URL because DNN places parameters in /key/value notation
         if (results === null) {

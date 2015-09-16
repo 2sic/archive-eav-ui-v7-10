@@ -1,0 +1,12 @@
+﻿/* These are helpers to create larger dialogs than available by default in boostrap*/
+.modal-xlg { width: 95%; }
+.modal-max { width: 100%; }
+
+
+/* this helps that tooltips can wrap as we want them to */
+.tooltip-inner {
+    white-space: pre-wrap;
+}
+
+
+/* this ensures that a column in a table doesn't just wrap buttons under each other but beside each other */

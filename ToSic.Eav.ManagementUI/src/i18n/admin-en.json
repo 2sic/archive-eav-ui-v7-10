@@ -73,7 +73,8 @@
   },
   "Pipeline": {
     "Manage": {
-      "Title": "Pipelines",
+      "Title": "Visual Queries / Pipelines",
+      "Intro": "Use the visual designer to create queries or merge data from various sources. This can then be used in views or accessed as JSON (if permissions allow). <a href='http://2sxc.org/en/help?tag=visualquerydesigner' target='_blank'>read more</a>",
       "Table": {
         "Id": "ID",
         "Name": "Name",
