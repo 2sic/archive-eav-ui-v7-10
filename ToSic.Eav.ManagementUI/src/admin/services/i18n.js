@@ -1,8 +1,5 @@
 ﻿(function () {
-    angular.module("Eavi18n", [
-        "pascalprecht.translate",
-        "EavConfiguration"
-    ])
+    angular.module("EavServices")
 
     .config(function ($translateProvider, languages, $translatePartialLoaderProvider) {
             $translateProvider

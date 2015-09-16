@@ -1,5 +1,6 @@
-angular.module("HistoryServices", ["ng", "eavNgSvcs"])//, "EavConfiguration"])
-    .factory("historySvc", function($http, svcCreator) { //, eavConfig, entitiesSvc, eavManagementSvc, contentTypeSvc) {
+
+angular.module("EavServices")
+    .factory("historySvc", function($http, svcCreator) { 
         //var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid

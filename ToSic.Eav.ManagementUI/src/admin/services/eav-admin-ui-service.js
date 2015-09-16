@@ -28,12 +28,11 @@
 
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
+    "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
-    "ContentTypeServices",  // Needed to retrieve an Id in a special case
-    //"ContentEditApp",       // the edit-app (doesn't work yet)
     "ContentImportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
@@ -43,15 +42,11 @@ angular.module("EavAdminUi", ["ng",
         var svc = {};
 
         //#region Content Items dialogs
-            svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
-                return svc.openContentItemsX(svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId }), { close: closeCallback });
-            };
-
-
-            svc.openContentItemsX = function ociX(resolve, callbacks) {
+        svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
+                var callbacks = { close: closeCallback };
                 return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "lg", resolve, callbacks);
             };
-
         //#endregion
 
         //#region content import export
@@ -64,20 +59,15 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
 
         //#region ContentType dialogs
-            //svc.openContentTypeEdit = function octe(item, closeCallback) {
-            //    return svc.openContentTypeEditX(svc.CreateResolve({ item: item }), { close: closeCallback });
-            //};
 
-            //svc.openContentTypeEditX = function octeX(resolve, callbacks) {
-            //    return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, callbacks);
-            //};
-
-            svc.openContentTypeFields = function octf(item, closeCallback) {
-                return svc.openContentTypeFieldsX(
-                    svc.CreateResolve({contentType: item }), { close: closeCallback });
+            svc.openContentTypeEdit = function octe(item, closeCallback) {
+                var resolve = svc.CreateResolve({ item: item });
+                return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "sm", resolve, { close: closeCallback });
             };
 
-            svc.openContentTypeFieldsX = function octfX(resolve, callbacks) {
+            svc.openContentTypeFields = function octf(item, closeCallback) {
+                var resolve = svc.CreateResolve({ contentType: item });
+                var callbacks = { close: closeCallback };
                 return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, callbacks);
             };
         //#endregion
@@ -149,11 +139,8 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
-                return svc.openPermissionsForGuidX(
-                    svc.CreateResolve({ appId: appId, targetGuid: targetGuid }), { close: closeCallback });
-            };
-
-            svc.openPermissionsForGuidX = function opfgX(resolve, callbacks) {
+                var resolve = svc.CreateResolve({ appId: appId, targetGuid: targetGuid });
+                var callbacks = { close: closeCallback };
                 return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, callbacks);
             };
         //#endregion

@@ -1,7 +1,7 @@
 (function () { 
 
     angular.module("PermissionsApp", [
-        "PermissionsServices",
+        "EavServices",
         "EavConfiguration",
         "EavAdminUi"])
         .controller("PermissionList", permissionListController)

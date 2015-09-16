@@ -1,4 +1,11 @@
-angular.module("PipelineDesigner", ["PipelineDesigner.filters", "ngResource", "toaster", "EavConfiguration", "eavDialogService", "PipelineService", "eavTemplates"]) 
+angular.module("PipelineDesigner", [
+    "PipelineDesigner.filters",
+    "ngResource",
+    "toaster",
+    "EavConfiguration",
+    "eavDialogService",
+    "EavServices",
+    "eavTemplates"])
 
 // datasource directive makes an element a DataSource with jsPlumb
     .directive("datasource", function($timeout) {

@@ -1,12 +1,10 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("HistoryApp", [
-        "ContentItemsServices",
+        "EavServices",
         "EavConfiguration",
-        "HistoryServices",
         "eavTemplates",
-    "Eavi18n"
-    ])//, 'EavAdminUi'])
+    ])
         .controller("History", HistoryController)
         .controller("HistoryDetails", HistoryDetailsController)
         ;
