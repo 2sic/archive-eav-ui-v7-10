@@ -1,9 +1,9 @@
 angular.module("ContentItemsServices", ["eavNgSvcs", "EavConfiguration"])
     .factory("contentItemsSvc", function($http, entitiesSvc, eavManagementSvc, svcCreator) {
-            return function createContentItemsSvc(appId, contentType, contentTypeId) {
+            return function createContentItemsSvc(appId, contentType /*, contentTypeId */) {
                 var svc = {};
                 svc.contentType = contentType;
-                svc.contentTypeId = contentTypeId;
+                // seems not used: svc.contentTypeId = contentTypeId;
                 svc.appId = appId;
 
                 svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {

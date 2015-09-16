@@ -9,9 +9,9 @@
         .controller("ContentItemsList", ContentItemsListController)
     ;
 
-    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, contentTypeId, eavAdminDialogs, $modalInstance) {
+    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, /*contentTypeId, */ eavAdminDialogs, $modalInstance) {
         var vm = this;
-        var svc = contentItemsSvc(appId, contentType, contentTypeId);
+        var svc = contentItemsSvc(appId, contentType); //, contentTypeId);
 
         vm.add = function add() {
             eavAdminDialogs.openItemNew(svc.contentTypeId, svc.liveListReload);
