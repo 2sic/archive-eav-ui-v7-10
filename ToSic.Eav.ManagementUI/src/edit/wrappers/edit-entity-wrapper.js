@@ -9,8 +9,6 @@
 
 		var vm = this;
 		vm.contentTypeName = contentTypeName;
-		alert(contentTypeName);
-		alert(vm.contentTypeName);
 		vm.entityId = entityId;
 		
 		vm.registeredControls = [];

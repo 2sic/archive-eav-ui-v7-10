@@ -105,7 +105,7 @@ namespace ToSic.Eav.WebApi
                         Id = found.EntityId,
                         Guid = found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
-                        TitleAttributeName = found.Title.Name,
+                        TitleAttributeName = found.Title == null ? null : found.Title.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                         {
 							Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
