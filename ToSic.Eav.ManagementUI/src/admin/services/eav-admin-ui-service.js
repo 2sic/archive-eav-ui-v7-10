@@ -34,7 +34,7 @@ angular.module("EavAdminUi", ["ng",
     "PipelineManagement",   // Manage pipelines
     "ContentTypeServices",  // Needed to retrieve an Id in a special case
     //"ContentEditApp",       // the edit-app (doesn't work yet)
-    "ContentImportExportApp",
+    "ContentImportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
@@ -55,7 +55,7 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
 
         //#region content import export
-            svc.openContentImport = function oci(appId, staticName, closeCallback) {
+            svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 var callbacks = { close: closeCallback };
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, callbacks);

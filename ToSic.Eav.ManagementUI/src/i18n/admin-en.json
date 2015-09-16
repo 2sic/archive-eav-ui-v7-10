@@ -104,6 +104,31 @@
       "HD": "has draft: {{id}}",
       "HP": "will replace published: {{id}}"
     },
+    "Import": {
+      "Title": "Import Content",
+      "Form": {
+        "File": {
+          "Label": "Choose file"
+        },
+        "FileReferences": {
+          "Label": "References to pages / files",
+          "Option": {
+            "Keep": "Import links as written in the file (for example /Portals/...)",
+            "Resolve":  "Try to resolve pathes to references"
+          }
+        },
+        "ClearEntities": {
+          "Label": "Clear all other entities",
+          "Option": {
+            "None": "Keep all entities not found in import",
+            "All":  "Remove all entities not found in import"
+          }
+        }
+      }
+    },
+    "Export": {
+      "Title": "Export Content"
+    },
     "History": {
       "Title": "History of {{id}}",
       "Table": {
