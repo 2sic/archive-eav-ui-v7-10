@@ -1,4 +1,5 @@
-angular.module("ContentTypeServices", ["ng", "eavNgSvcs", "EavConfiguration"])
+
+angular.module("EavServices")
     .factory("contentTypeSvc", function ($http, eavConfig, svcCreator) {
         return function appSpecificContentTypeSvc(appId, scope) {
             var svc = {};
@@ -40,5 +41,5 @@ angular.module("ContentTypeServices", ["ng", "eavNgSvcs", "EavConfiguration"])
             };
             return svc;
         };
-        //return svc;
+
     });

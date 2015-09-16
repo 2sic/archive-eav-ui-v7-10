@@ -2,10 +2,8 @@
 (function () {
 
     angular.module("ContentTypesApp", [
-        "ContentTypeServices",
-        "ContentTypeFieldServices",
+        "EavServices",
         "EavAdminUi",
-        "Eavi18n",
         "EavDirectives"
         ])
         .constant("license", {

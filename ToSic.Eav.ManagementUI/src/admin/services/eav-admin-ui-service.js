@@ -28,12 +28,11 @@
 
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
+    "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
-    "ContentTypeServices",  // Needed to retrieve an Id in a special case
-    //"ContentEditApp",       // the edit-app (doesn't work yet)
     "ContentImportExportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app

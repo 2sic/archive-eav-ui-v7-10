@@ -114,6 +114,8 @@
     <Content Include="src\admin\content-types\content-types-app.js" />
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
+    <Content Include="src\admin\services\svc-creator.js" />
+    <Content Include="src\admin\services\_eav-services.js" />
     <Content Include="src\edit\localization\language-switcher.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />

@@ -1,4 +1,5 @@
-angular.module("ContentTypeFieldServices", ["ng", "eavNgSvcs", "EavConfiguration"])
+
+angular.module("EavServices")
     .factory("contentTypeFieldSvc", function($http, eavConfig, svcCreator) {
         return function createFieldsSvc(appId, contentType) {
             // start with a basic service which implement the live-list functionality

@@ -1,4 +1,5 @@
-angular.module("PermissionsServices", ["ng", "eavNgSvcs", "EavConfiguration"])
+
+angular.module("EavServices")
     .factory("permissionsSvc", function($http, eavConfig, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
         var eavConf = eavConfig;
 

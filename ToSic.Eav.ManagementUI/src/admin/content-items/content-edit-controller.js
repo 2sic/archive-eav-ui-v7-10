@@ -1,8 +1,9 @@
 (function () { 
 
     angular.module("ContentEditApp", [
-        "ContentItemsAppServices",
-        "EavAdminUi"])
+        "EavServices",
+        "EavAdminUi"
+    ])
         .controller("EditContentItem", EditContentItemController)
         ;
 

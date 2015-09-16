@@ -2,10 +2,8 @@
 (function () {
 
     angular.module("ContentImportExportApp", [
-        "ContentTypeServices",
-        "ContentTypeFieldServices",
+        "EavServices",
         "EavAdminUi",
-        "Eavi18n",
         "EavDirectives"
         ])    
     ;

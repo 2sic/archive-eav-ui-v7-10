@@ -1,10 +1,9 @@
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
     angular.module("ContentItemsApp", [
-        "ContentItemsServices",
         "EavConfiguration",
         "EavAdminUi",
-        "Eavi18n"
+        "EavServices"
     ])
         .controller("ContentItemsList", ContentItemsListController)
     ;
