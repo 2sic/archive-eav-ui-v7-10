@@ -13,7 +13,7 @@
         var svc = contentItemsSvc(appId, contentType); //, contentTypeId);
 
         vm.add = function add() {
-            eavAdminDialogs.openItemNew(svc.contentTypeId, svc.liveListReload);
+            eavAdminDialogs.openItemNew(contentType, svc.liveListReload);
         };
 
         vm.edit = function(item) {
