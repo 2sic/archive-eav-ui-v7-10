@@ -1,10 +1,10 @@
 ﻿(function () {
 
-    angular.module("ContentImportApp")
-         .factory("ContentImportService", contentImportService);
+    //angular.module("ContentImportApp")
+    //     .factory("ContentImportService", contentImportService);
 
 
-    function contentImportService() {
+    //function contentImportService() {
 
-    }
+    //}
 }());

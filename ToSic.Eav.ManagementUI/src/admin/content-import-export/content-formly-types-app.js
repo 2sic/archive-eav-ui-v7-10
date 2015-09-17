@@ -1,8 +1,8 @@
 ﻿(function () {
     angular.module("ContentFormlyTypes", [
+        "naif.base64",
         "formly",
         "formlyBootstrap",
-        "bootstrap.fileField",
         "ui.bootstrap"
     ]);
 }());

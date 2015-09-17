@@ -16,7 +16,7 @@ namespace ToSic.Eav.WebApi
     {
 
         [HttpPost]
-        public void EvaluateContent()
+        public void EvaluateContent(int appId, string contentType)
         {
 
         }

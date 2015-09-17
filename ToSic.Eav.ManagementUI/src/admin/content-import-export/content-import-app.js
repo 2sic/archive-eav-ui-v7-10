@@ -3,7 +3,6 @@
         "EavAdminUi",
         "EavDirectives",
         "EavServices",
-        "ContentFormlyTypes",
-        "bootstrap.fileField"
+        "ContentFormlyTypes"
     ]);
 }());
