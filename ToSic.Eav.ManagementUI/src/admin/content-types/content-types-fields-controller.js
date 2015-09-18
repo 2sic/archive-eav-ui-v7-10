@@ -53,10 +53,10 @@
 
             if (exists) {
                 eavAdminDialogs.openItemEditWithEntityId(
-                    item.Metadata[metadataType].EntityId,
+                    item.Metadata[metadataType].Id,
                     svc.liveListReload);
             } else {
-                eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, metadataType,
+                eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, '@' + metadataType,
                     svc.liveListReload);
             }
         };

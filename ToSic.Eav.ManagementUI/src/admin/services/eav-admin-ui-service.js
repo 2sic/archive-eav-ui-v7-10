@@ -70,7 +70,7 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
         
         //#region Item - new, edit
-            svc.openItemNew = function oin(contentTypeId, closeCallback) {
+            svc.openItemNew = function oin(contentTypeName, closeCallback) {
                 //if (useDummyContentEditor) {
                     return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), closeCallback );
                 //} else {
@@ -119,8 +119,9 @@ angular.module("EavAdminUi", ["ng",
                 return contentTypeSvc(appId).getDetails(metadataType)
                     .then(function (result) {
                     //if (useDummyContentEditor) {
-                        var resolve = svc.CreateResolve({ mode: "new", entityId: 0, contentTypeName: metadataType });
-                        angular.extend(resolve, svc.CreateResolve(key));
+                        var resolve = svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: metadataType });
+                        alert(metadataType);
+                        resolve = angular.extend(resolve, svc.CreateResolve(key));
                         return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
                     //} else {
 
