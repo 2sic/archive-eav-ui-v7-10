@@ -4,11 +4,12 @@
         .controller("ContentImport", contentImportController);
 
 
-    function contentImportController(appId, contentType, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
 
+        vm.debug = {};
 
         vm.formValues = { };
 
@@ -71,7 +72,7 @@
         vm.currentStep = "1"; // 1, 2, 3...
 
         vm.evaluateContent = function previewContent() {
-
+            contentImportService.evaluateContent(vm.formValues).then(function (result) { vm.debug = result; });
         };
 
         vm.importContent = function importContent() {
