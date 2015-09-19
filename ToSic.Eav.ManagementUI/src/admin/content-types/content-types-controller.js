@@ -71,8 +71,9 @@
         vm.item = item;
 
         vm.ok = function () {
-            svc.save(item);
-            $modalInstance.close(vm.item);
+            svc.save(item).then(function() {
+                $modalInstance.close(vm.item);              
+            });
         };
 
         vm.close = function () {
