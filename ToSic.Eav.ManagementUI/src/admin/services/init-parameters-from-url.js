@@ -8,7 +8,8 @@
 // * appId
 (function () {
     angular.module("InitParametersFromUrl", [])
-        .factory("appId", function() {
+        //#region properties
+        .factory("appId", function () {
             return getParameterByName("appId");
         })
         .factory("zoneId", function () {
@@ -17,7 +18,7 @@
         .factory("entityId", function () {
             return getParameterByName("entityid");
         })
-        .factory("contentTypeName", function() {
+        .factory("contentTypeName", function () {
             return getParameterByName("contenttypename");
         })
 
@@ -27,12 +28,23 @@
         .factory("dialog", function () {
             return getParameterByName("dialog");
         })
+        //#endregion
+        //#region helpers / dummy objects
         // This is a dummy object, because it's needed for dialogs
-        .factory("$modalInstance", function() {
+        .factory("$modalInstance", function () {
             return null;
-        });
+        })
+    //#endregion
+    ;
 
     function getParameterByName(name) {
+        if (window.$2sxc)
+            return window.$2sxc.urlParams.get(name);
+        return getParameterByNameDuplicate(name);
+    }
+
+    // this is a duplicate fn of the 2sxc-version, should only be used if 2sxc doesn't exist
+    function getParameterByNameDuplicate(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var searchRx = new RegExp("[\\?&]" + name + "=([^&#]*)", "i");
         var results = searchRx.exec(location.search);
