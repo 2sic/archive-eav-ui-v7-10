@@ -244,18 +244,9 @@ module.exports = function(grunt) {
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks("grunt-contrib-uglify");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
-    grunt.loadNpmTasks("grunt-contrib-jasmine");
-    grunt.loadNpmTasks("grunt-contrib-watch");
-    grunt.loadNpmTasks("grunt-ng-annotate");
-    grunt.loadNpmTasks("grunt-contrib-concat");
-    grunt.loadNpmTasks("grunt-contrib-copy");
-    grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-ng-templates");
-    grunt.loadNpmTasks("grunt-contrib-compress");
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
+    // Load all grunt-plugins mentioned in the package.json
+    require("load-grunt-tasks")(grunt);
+
 
     // Default task.
     grunt.registerTask("build", [
@@ -276,4 +267,8 @@ module.exports = function(grunt) {
     grunt.registerTask("quickDebug", "quickly log a test", function() {
         grunt.log(admin.cwdJs);
     });
+
+    grunt.task.loadTasks("grunt-tasks/lib");
+    
+
 };
