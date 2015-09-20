@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         tmp: "tmp/admin/",
         templates: "tmp/admin/html-templates.js",
         dist: "dist/admin/",
-        concatFile: "dist/admin/tosic-eav-admin.js",
-        uglifyFile: "dist/admin/tosic-eav-admin.min.js",
+        concatFile: "dist/admin/eav-admin.js",
+        uglifyFile: "dist/admin/eav-admin.min.js",
         concatCss: "dist/admin/eav-admin.css",
         concatCssMin: "dist/admin/eav-admin.min.css"
     };
@@ -20,8 +20,8 @@ module.exports = function(grunt) {
         tmp: "tmp/edit/",
         templates: "tmp/edit/html-templates.js",
         dist: "dist/edit/",
-        concatFile: "dist/edit/tosic-eav-edit.js",
-        uglifyFile: "dist/edit/tosic-eav-edit.min.js",
+        concatFile: "dist/edit/eav-edit.js",
+        uglifyFile: "dist/edit/eav-edit.min.js",
         concatCss: "dist/edit/edit.css",
         concatCssMin: "dist/edit/edit.min.css"
     };
@@ -255,7 +255,7 @@ module.exports = function(grunt) {
         });
 
         return object;
-    };
+    }
 
     // Load all grunt-plugins mentioned in the package.json
     require("load-grunt-tasks")(grunt);
@@ -282,7 +282,11 @@ module.exports = function(grunt) {
     });
 
     // External task - read http://www.thomasboyt.com/2013/09/01/maintainable-grunt.html
-    grunt.task.loadTasks("grunt-tasks/angular-set");
+    // note that for a reason I don't understand, ...
+    // the options in each file override the other ones
+    // so I have to uncomment only the file I want to execute
+    // since library-preparation is not a common action, this is sufficient for now
+    //grunt.task.loadTasks("grunt-tasks/angular-set");
     //grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
 
 };

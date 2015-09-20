@@ -18,6 +18,7 @@
     @if (ng == "pipeline-designer")
     {
         <script src="/dist/lib/pipeline/set.min.js"></script>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
     }
 
     @*Default Set / Standard Components for Admin UI*@
@@ -25,30 +26,25 @@
 
     @*CSS stuff*@
     <link rel="stylesheet" href="/dist/lib/angular/set.min.css" />
-    
-    <lin@*k rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
-    <lin*@k rel="stylesheet" href="/bower_components/angularjs-toaster/toaster.min.css" />
-
 
     @* Default Set / re-used components *@
-    <script src='/eav/AngularServices/eav-configuration.js'></script>
+    <script src="/eav/AngularServices/eav-configuration.js"></script>
     <script src="/eav/AngularServices/eav4Ng.js"></script>
 
     <link rel="stylesheet" href="/dist/admin/eav-admin.min.css" />
 
 
     @*Edit Scripts and stuff - used everywhere*@
-    <script src="/dist/edit/tosic-eav-edit.js"></script>
+    <script src="/dist/edit/eav-edit.js"></script>
     <link rel="stylesheet" href="/dist/edit/edit.min.css" />
 
     @if (useMinifiedAdmin)
     {
-        <script src="/dist/admin/tosic-eav-admin.min.js"></script>
+        <script src="/dist/admin/eav-admin.min.js"></script>
     }
     else
     {
-        <script src="/dist/admin/tosic-eav-admin.js"></script>
+        <script src="/dist/admin/eav-admin.js"></script>
     }
 </head>
 <body>
@@ -68,11 +64,7 @@
     }
     @if (ng == "pipeline-designer")
     {
-
-
         <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
-        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
-
     }
 
 
