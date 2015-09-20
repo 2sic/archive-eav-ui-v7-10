@@ -107,6 +107,7 @@
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="index.html" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
@@ -218,6 +219,7 @@
     <Content Include="Pages\ngwrapper.cshtml" />
     <Content Include="src\i18n\admin-en.json" />
     <Content Include="src\i18n\edit-en.json" />
+    <Content Include="grunt-tasks\angular-set\gruntfile.js" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">

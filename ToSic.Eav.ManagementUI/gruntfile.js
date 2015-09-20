@@ -244,6 +244,19 @@ module.exports = function(grunt) {
         }
     });
 
+    function loadConfig(path) {
+        var glob = require('glob');
+        var object = {};
+        var key;
+
+        glob.sync('*', { cwd: path }).forEach(function (option) {
+            key = option.replace(/\.js$/, '');
+            object[key] = require(path + option);
+        });
+
+        return object;
+    };
+
     // Load all grunt-plugins mentioned in the package.json
     require("load-grunt-tasks")(grunt);
 
@@ -268,7 +281,8 @@ module.exports = function(grunt) {
         grunt.log(admin.cwdJs);
     });
 
-    grunt.task.loadTasks("grunt-tasks/lib");
-    
+    // External task - read http://www.thomasboyt.com/2013/09/01/maintainable-grunt.html
+    grunt.task.loadTasks("grunt-tasks/angular-set");
+    //grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
 
 };
