@@ -100,6 +100,7 @@ namespace ToSic.Eav.BLL.Parts
         {
             return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
         }
+
         /// <summary>
         /// Add a new Entity
         /// </summary>
@@ -124,7 +125,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        private Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true)
+        public Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true)
         {
             // Prevent duplicate add of FieldProperties
             if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)

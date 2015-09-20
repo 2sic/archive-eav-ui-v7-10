@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
@@ -121,6 +124,143 @@ namespace ToSic.Eav.WebApi
             }
         }
 
+
+        // trying to develop a save 2dm 2015-09-20
+
+	    [HttpPost]
+	    public bool Save([FromUri]int appId, [FromUri] string contentType, [FromUri] int id, [FromUri] bool isMetadata, [FromUri] string metadataType, [FromUri] string keyType, [FromUri] string key, Formats.EntityWithLanguages newData)
+	    {
+            // large note: we could do all the checks here, but they might be identical to the
+            // import - must review w/2tk...
+
+            // check if new
+	        var mode = (id == 0) ? "new" : "update";
+
+            // dummy values to start development, must populate these correctly later on
+	        var systemIsMultilanguage = true;
+	        var defaultLanguage = 7;
+
+            // variables to populate later
+	        var assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
+	        long keyNumber = 0;
+	        var keyString = "";
+	        var keyGuid = Guid.Empty;
+
+            #region Special Quality Checks for new
+            if (mode == "new")
+	        {
+                // new items must also contain the core language - if a language is set at all
+	            if (systemIsMultilanguage)
+	            {
+                    // check if all have the default language
+                    // the only allowed exception is entity-fields, which don't have a language-relationship
+	                var foundItemsWithMainLanguage =
+	                    777; // newData.Attributes.Select(a => a.Value.Values.Contains(v => v.Dimension == defaultLanguage));
+
+	                var defaultLanguageOk = true; // dummy info till the test works dev only
+                    if(!defaultLanguageOk)
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Some default-language info missing in the new entity."});
+	            }
+
+                // if the item is defined as metadata, then ensure the key and everything are ok
+	            if (isMetadata)
+	            {
+                    // check if the targetType matches one of the targetTypes in the DB
+	                var typeInDb = CurrentContext.DbS.GetAssignmentObjectType(metadataType);
+                    if(typeInDb == null)
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Cannot save as metadata because metadata-type unknown"});
+
+                    // check if the key-type is ok
+	                keyType = keyType.ToLower();
+	                switch (keyType)
+	                {
+                        case "number":
+	                        var isOk = Int64.TryParse(key, out keyNumber);
+                            if(!isOk)
+                                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Tried to retrieve a number-key for the meadata but conversion failed"});
+	                        break;
+                        case "guid":
+	                        isOk = Guid.TryParse(key, out keyGuid);
+                            if (!isOk)
+                                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Tried to retrieve a guid-key for the meadata but conversion failed" });
+                            break;
+                        case "string":
+	                        keyString = key;
+	                        break;
+                        default:
+                            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "metadata keytype unknown. expected number, guid or string"});
+	                }                    
+	            }
+	        }
+            #endregion
+
+            #region create the new? or update exsting?
+
+            // todo
+#endregion
+
+
+
+            return false;
+	    }
+        private void OldInsertWebForm()
+        {
+            //// Cancel insert if current language is not default language
+            //if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
+            //    return;
+
+            //var values = new Dictionary<string, ValueViewModel>();
+
+            //// Extract Values
+            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>())
+            //    fieldTemplate.ExtractValues(values);
+
+            //// Prepare DimensionIds
+            //var dimensionIds = new List<int>();
+            //if (DefaultCultureDimension.HasValue)
+            //    dimensionIds.Add(DefaultCultureDimension.Value);
+
+            //Entity result;
+            //var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : EavContext.DefaultAssignmentObjectTypeId;
+            //if (!KeyGuid.HasValue)
+            //    result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+            //else
+            //    result = Db.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
+
+            //RedirectToListItems();
+
+            //if (Inserted != null)
+            //    Inserted(result);
+
+            //if (Saved != null)
+            //    Saved(result);
+        }
+
+        private void OldUpdateWebForm()
+        {
+            //var values = new Dictionary<string, ValueViewModel>();
+
+            //#region Extract Values (only of enabled fields)
+            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))
+            //{
+            //    // if not master and not translated, don't pass/extract this value
+            //    if (!MasterRecord && fieldTemplate.ValueId == null && fieldTemplate.ReadOnly)
+            //        continue;
+
+            //    fieldTemplate.ExtractValues(values);
+            //}
+            //#endregion
+
+            //var result = Db.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
+
+            //RedirectToListItems();
+
+            //if (Updated != null)
+            //    Updated(result);
+
+            //if (Saved != null)
+            //    Saved(result);
+        }
         #endregion
 
 
@@ -187,7 +327,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpGet]
 	    public bool HistoryRestore(int appId, int entityId, int changeId)
 	    {
-	        int DefaultCultureDimension = 0;
+	        var DefaultCultureDimension = 0;
             throw  new Exception("this is not tested yet!");
             SetAppIdAndUser(appId);
             CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
