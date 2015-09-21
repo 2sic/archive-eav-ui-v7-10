@@ -12,6 +12,7 @@ namespace ToSic.Eav.WebApi.Formats
         public int Id;
         public Guid Guid;
         public Type Type;
+        public bool IsPublished;
         public string TitleAttributeName;
         public Dictionary<string, Attribute> Attributes;
         public Metadata Metadata;
