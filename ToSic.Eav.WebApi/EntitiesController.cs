@@ -105,6 +105,7 @@ namespace ToSic.Eav.WebApi
 
                     var ce = new Formats.EntityWithLanguages()
                     {
+                        AppId = appId,
                         Id = found.EntityId,
                         Guid = found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
@@ -126,25 +127,18 @@ namespace ToSic.Eav.WebApi
 
 
         // trying to develop a save 2dm 2015-09-20
-
 	    [HttpPost]
-	    public bool Save([FromUri]int appId, [FromUri] string contentType, [FromUri] int id, [FromUri] bool isMetadata, [FromUri] string metadataType, [FromUri] string keyType, [FromUri] string key, Formats.EntityWithLanguages newData)
+	    public bool Save([FromUri]int appId, Formats.EntityWithLanguages newData)
 	    {
             // large note: we could do all the checks here, but they might be identical to the
             // import - must review w/2tk...
 
             // check if new
-	        var mode = (id == 0) ? "new" : "update";
+	        var mode = (newData.Id == 0) ? "new" : "update";
 
             // dummy values to start development, must populate these correctly later on
 	        var systemIsMultilanguage = true;
 	        var defaultLanguage = 7;
-
-            // variables to populate later
-	        var assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
-	        long keyNumber = 0;
-	        var keyString = "";
-	        var keyGuid = Guid.Empty;
 
             #region Special Quality Checks for new
             if (mode == "new")
@@ -163,33 +157,16 @@ namespace ToSic.Eav.WebApi
 	            }
 
                 // if the item is defined as metadata, then ensure the key and everything are ok
-	            if (isMetadata)
+	            if (newData.Metadata.HasMetadata)
 	            {
                     // check if the targetType matches one of the targetTypes in the DB
-	                var typeInDb = CurrentContext.DbS.GetAssignmentObjectType(metadataType);
+                    // note this already happens in the format-type, nothing necessary here
+	                var typeInDb = CurrentContext.DbS.GetAssignmentObjectType(newData.Metadata.KeyType);
                     if(typeInDb == null)
                         throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Cannot save as metadata because metadata-type unknown"});
 
-                    // check if the key-type is ok
-	                keyType = keyType.ToLower();
-	                switch (keyType)
-	                {
-                        case "number":
-	                        var isOk = Int64.TryParse(key, out keyNumber);
-                            if(!isOk)
-                                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Tried to retrieve a number-key for the meadata but conversion failed"});
-	                        break;
-                        case "guid":
-	                        isOk = Guid.TryParse(key, out keyGuid);
-                            if (!isOk)
-                                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Tried to retrieve a guid-key for the meadata but conversion failed" });
-                            break;
-                        case "string":
-	                        keyString = key;
-	                        break;
-                        default:
-                            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "metadata keytype unknown. expected number, guid or string"});
-	                }                    
+                    // check if the key-type is ok -- this already happens automatically in the 
+                    // metadata - so no code here
 	            }
 	        }
             #endregion
