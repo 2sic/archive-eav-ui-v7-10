@@ -8,6 +8,8 @@ using System.Web.Http;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.Import;
+
 
 namespace ToSic.Eav.WebApi
 {
@@ -130,53 +132,48 @@ namespace ToSic.Eav.WebApi
 	    [HttpPost]
 	    public bool Save([FromUri]int appId, Formats.EntityWithLanguages newData)
 	    {
-            // large note: we could do all the checks here, but they might be identical to the
-            // import - must review w/2tk...
+            // var zoneId = 0; // TODO2tk: Define
+            // TODO2tk: Multi or single language
+            // TODO2tk: Create or update
+            // TODO2tk: Convert structures
+            //var entity = new ToSic.Eav.Import.ImportEntity();
 
-            // check if new
-	        var mode = (newData.Id == 0) ? "new" : "update";
+            //// GUID
+            //if (newData.Id == 0)
+            //{
+            //    entity.EntityGuid = Guid.NewGuid();
+            //}
+            //else
+            //{
+            //    entity.EntityGuid = newData.Guid;
+            //}
 
-            // dummy values to start development, must populate these correctly later on
-	        var systemIsMultilanguage = true;
-	        var defaultLanguage = 7;
+            //// Content type
+            //entity.AttributeSetStaticName = newData.Type.StaticName;
+            //entity.KeyNumber = newData.Metadata.KeyNumber;
+            //entity.IsPublished =
+            //// ...
 
-            #region Special Quality Checks for new
-            if (mode == "new")
-	        {
-                // new items must also contain the core language - if a language is set at all
-	            if (systemIsMultilanguage)
-	            {
-                    // check if all have the default language
-                    // the only allowed exception is entity-fields, which don't have a language-relationship
-	                var foundItemsWithMainLanguage =
-	                    777; // newData.Attributes.Select(a => a.Value.Values.Contains(v => v.Dimension == defaultLanguage));
+            //if(newData.Metadata.HasMetadata)
+            //{
+            //    entity.AssignmentObjectTypeId = newData.Metadata.TargetType;
+            //}
+            //// entity.AssignmentObjectTypeId // Type of metadata metadata.TargetType
 
-	                var defaultLanguageOk = true; // dummy info till the test works dev only
-                    if(!defaultLanguageOk)
-                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Some default-language info missing in the new entity."});
-	            }
+            //foreach(var attribute in newData.Attributes)
+            //{
+            //    foreach(var value in attribute.Value.Values)
+            //    {
+            //        foreach(var dimension in value.Dimensions)
+            //        {
 
-                // if the item is defined as metadata, then ensure the key and everything are ok
-	            if (newData.Metadata.HasMetadata)
-	            {
-                    // check if the targetType matches one of the targetTypes in the DB
-                    // note this already happens in the format-type, nothing necessary here
-	                var typeInDb = CurrentContext.DbS.GetAssignmentObjectType(newData.Metadata.KeyType);
-                    if(typeInDb == null)
-                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {ReasonPhrase = "Cannot save as metadata because metadata-type unknown"});
-
-                    // check if the key-type is ok -- this already happens automatically in the 
-                    // metadata - so no code here
-	            }
-	        }
-            #endregion
-
-            #region create the new? or update exsting?
-
-            // todo
-#endregion
+            //        }
+            //    }
+            //}
 
 
+            //var import = new ToSic.Eav.Import.Import(null, appId,  User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            //import.RunImport(null, new ToSic.Eav.Import.ImportEntity[] { entity }, true, true);
 
             return false;
 	    }
