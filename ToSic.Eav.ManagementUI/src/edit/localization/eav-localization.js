@@ -66,7 +66,7 @@
 
 				    // Assign default language if no dimension is set
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
-					    fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false;
+					    fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = false;
 
 					var valueToEdit;
 
@@ -85,7 +85,7 @@
 					// 3. Use the first value if there is only one
 					if (valueToEdit === undefined) {
 						if (fieldModel.Values.length > 1)
-							throw "Default language value not found, but found multiple values - can't handle editing";
+							throw "Default language value not found, but found multiple values - can't handle editing for " + $scope.options.key;
 						// Use the first value
 						valueToEdit = fieldModel.Values[0];
 					}
