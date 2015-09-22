@@ -85,7 +85,6 @@
 		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
                 .then(function (result) {
                     vm.entity = enhanceEntity(result.data);
-                    console.log(vm.entity);
                     loadContentType();
                 });
 		} else {
