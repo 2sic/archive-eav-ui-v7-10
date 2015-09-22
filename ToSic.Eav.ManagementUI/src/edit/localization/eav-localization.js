@@ -58,9 +58,8 @@
 					// If current language = default language and there are no values, create an empty value object
 					if (langConf.currentLanguage == langConf.defaultLanguage) {
 						if (fieldModel.Values.length === 0) {
-							var defaultValue = eavDefaultValueService(scope.options);
-							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
-							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false; // Assign default language dimension
+						    var defaultValue = eavDefaultValueService(scope.options);
+						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
 						}
 					}
 
@@ -140,10 +139,12 @@
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 
 				vm.actions = {
-					translate: function () {
-						var value = { Value: 'New translated value!', Dimensions: {} };
-						value.Dimensions[languages.currentLanguage] = false;
-						vm.fieldModel.Values.push(value);
+				    translate: function translate() {
+				        vm.fieldModel.addVs('New translated value!', languages.currentLanguage, false);
+
+						//var value = { Value: 'New translated value!', Dimensions: {} };
+						//value.Dimensions[languages.currentLanguage] = false;
+						//vm.fieldModel.Values.push(value);
 					}
 				};
 

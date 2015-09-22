@@ -84,11 +84,12 @@
 		if (!!$scope.entityId) {
 		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
                 .then(function (result) {
-                    vm.entity = result.data;
+                    vm.entity = enhanceEntity(result.data);
+                    console.log(vm.entity);
                     loadContentType();
                 });
 		} else {
-		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
+		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
 		    loadContentType();
 		}
 
