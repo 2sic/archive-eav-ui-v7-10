@@ -19,7 +19,7 @@ function enhanceEntity(entity) {
     enhancer.enhanceVs = function (vs) {
         vs.hasLanguage = function (language) { return this.Dimensions.hasOwnProperty(language); };
         vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
-        vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : ""; };
+        vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : null; };
 
         if(typeof vs.Dimensions != "undefined")
             enhancer.enhanceWithCount(vs.Dimensions);
