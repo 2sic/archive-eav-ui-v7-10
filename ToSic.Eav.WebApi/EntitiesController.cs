@@ -131,7 +131,7 @@ namespace ToSic.Eav.WebApi
 
 
 	    [HttpPost]
-	    public bool Save([FromUri]int appId, EntityWithLanguages newData)
+	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
             // TODO2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
@@ -143,13 +143,13 @@ namespace ToSic.Eav.WebApi
             {
                 importEntity.EntityGuid = newData.Guid;
             }
-            importEntity.IsPublished = newData.IsPublished;
+            importEntity.IsPublished = true; // TODO2tk: newData.IsPublished;
 
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
 
             // Metadata if we have
-            if (newData.Metadata.HasMetadata)
+            if (newData.Metadata != null && newData.Metadata.HasMetadata)
             {
                 importEntity.AssignmentObjectTypeId = newData.Metadata.TargetType;
                 importEntity.KeyGuid = newData.Metadata.KeyGuid;
@@ -158,6 +158,7 @@ namespace ToSic.Eav.WebApi
             }
 
             // Attributes
+            importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
             var attributeSet = EavDataController.Instance(appId: appId).AttribSet.GetAttributeSet(newData.Type.StaticName);
             foreach (var attribute in newData.Attributes)
             {
@@ -165,7 +166,7 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var importValue = importEntity.AppendAttributeValue(attribute.Key, value, attributeType);
+                    var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
 
                     if (value.Dimensions == null)
                         continue;   // NOTE2tk: We maybe have to add a default root dimension if not defined

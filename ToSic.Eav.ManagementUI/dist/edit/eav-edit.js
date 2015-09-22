@@ -27,8 +27,8 @@
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function() {
-			alert("Saving not implemented yet!");
+		vm.save = function () {
+		    entitiesSvc.save(appId, vm.entity);
 		};
 
 		// The control object is available outside the directive
@@ -430,7 +430,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 	var app = angular.module('eavEditEntity');
 
 	// The controller for the main form directive
-	app.controller('EditEntityWrapperCtrl', ["$http", "$scope", "contentTypeName", "entityId", function editEntityCtrl($http, $scope, contentTypeName, entityId) {
+	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId) {
 
 		var vm = this;
 		vm.contentTypeName = contentTypeName;

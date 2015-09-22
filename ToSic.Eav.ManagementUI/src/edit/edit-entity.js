@@ -27,8 +27,8 @@
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function() {
-			alert("Saving not implemented yet!");
+		vm.save = function () {
+		    entitiesSvc.save(appId, vm.entity);
 		};
 
 		// The control object is available outside the directive
