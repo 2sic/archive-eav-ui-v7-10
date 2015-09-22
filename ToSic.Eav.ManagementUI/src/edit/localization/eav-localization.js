@@ -60,9 +60,13 @@
 						if (fieldModel.Values.length === 0) {
 							var defaultValue = eavDefaultValueService(scope.options);
 							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
-							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = true; // Assign default language dimension
+							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false; // Assign default language dimension
 						}
 					}
+
+				    // Assign default language if no dimension is set
+					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
+					    fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false;
 
 					var valueToEdit;
 
@@ -91,9 +95,10 @@
 					// Set scope variable 'value' to simplify binding
 					scope.value = fieldModel._currentValue;
 
-					// Decide whether the value is writable or not
+				    // Decide whether the value is writable or not
+                    // Conditions: current language is NOT default and the current value has 
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
-					(scope.value && scope.value.Dimensions[langConf.currentLanguage]);
+                        (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
 					scope.to.disabled = !writable;
 				};
@@ -138,7 +143,7 @@
 				vm.actions = {
 					translate: function () {
 						var value = { Value: 'New translated value!', Dimensions: {} };
-						value.Dimensions[languages.currentLanguage] = true;
+						value.Dimensions[languages.currentLanguage] = false;
 						vm.fieldModel.Values.push(value);
 					}
 				};
