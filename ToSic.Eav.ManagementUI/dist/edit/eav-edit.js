@@ -84,11 +84,12 @@
 		if (!!$scope.entityId) {
 		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
                 .then(function (result) {
-                    vm.entity = result.data;
+                    vm.entity = enhanceEntity(result.data);
+                    console.log(vm.entity);
                     loadContentType();
                 });
 		} else {
-		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
+		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
 		    loadContentType();
 		}
 
@@ -278,7 +279,7 @@
 	            }
 	        }).then(function (data) {
 	            $scope.availableEntities = data.data;
-	});
+	        });
 	    };
 
 	    $scope.getEntityText = function (entityId) {
@@ -321,7 +322,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('localization/localization-menu.html',
-    "<div dropdown is-open=status.isopen class=eav-localization><a class=eav-localization-lock ng-if=vm.isDefaultLanguage() ng-class=\"{ 'eav-localization-lock-open': !options.templateOptions.disabled }\" dropdown-toggle href=javascript:void(0)><i class=\"glyphicon glyphicon-globe\"></i></a><ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=menu aria-labelledby=single-button><li role=menuitem><a ng-click=vm.actions.translate()>Translate</a></li><li role=menuitem><a href=#>Another action</a></li><li role=menuitem class=dropdown-submenu><a href=#>Something else here</a><ul class=dropdown-menu><li role=menuitem><a href=#>Action</a></li><li role=menuitem><a href=#>Another action</a></li></ul></li><li class=divider></li><li role=menuitem><a href=#>Separated link</a></li></ul></div>"
+    "<div dropdown is-open=status.isopen class=eav-localization><a class=eav-localization-lock ng-if=vm.isDefaultLanguage() ng-class=\"{ 'eav-localization-lock-open': !options.templateOptions.disabled }\" dropdown-toggle href=javascript:void(0)><i class=\"glyphicon glyphicon-globe\"></i></a><ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=menu aria-labelledby=single-button><li role=menuitem><a ng-disabled=vm.enableTranslate() ng-click=vm.actions.translate()>Translate</a></li><li role=menuitem><a ng-click=vm.actions.linkDefault()>Unlink</a></li><li role=menuitem class=dropdown-submenu><a href=#>Something else here</a><ul class=dropdown-menu><li role=menuitem><a href=#>Action</a></li><li role=menuitem><a href=#>Another action</a></li></ul></li><li class=divider></li><li role=menuitem><a href=#>Separated link</a></li></ul></div>"
   );
 
 
@@ -391,9 +392,8 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 					// If current language = default language and there are no values, create an empty value object
 					if (langConf.currentLanguage == langConf.defaultLanguage) {
 						if (fieldModel.Values.length === 0) {
-							var defaultValue = eavDefaultValueService(scope.options);
-							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
-							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false; // Assign default language dimension
+						    var defaultValue = eavDefaultValueService(scope.options);
+						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
 						}
 					}
 
@@ -428,7 +428,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 					// Set scope variable 'value' to simplify binding
 					scope.value = fieldModel._currentValue;
 
-					// Decide whether the value is writable or not
+				    // Decide whether the value is writable or not
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
                         (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
@@ -470,14 +470,17 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 			controller: ["$scope", "languages", function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
+				vm.enableTranslate = function () { return true; };
 
 				vm.actions = {
-					translate: function () {
-						var value = { Value: 'New translated value!', Dimensions: {} };
-						value.Dimensions[languages.currentLanguage] = false;
-						vm.fieldModel.Values.push(value);
-					}
+				    translate: function translate() {
+				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				    },
+				    linkDefault: function linkDefault() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				    }
 				};
 
 			}]

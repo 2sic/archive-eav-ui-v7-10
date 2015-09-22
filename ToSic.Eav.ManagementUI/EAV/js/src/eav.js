@@ -59,8 +59,7 @@ function enhanceEntity(entity) {
             delete value.Dimensions[language];
 
             // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
-            //if (value.Dimensions.length == 0 && this.Values.length > 0)
-            if (value.Dimensions.count() === 0 && this.Values.length > 0)
+            if (Object.keys(value.Dimensions).length === 0 && this.Values.length > 0)
                 this.removeVs(value);
         };
 

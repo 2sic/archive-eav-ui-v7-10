@@ -136,16 +136,17 @@
 			controller: function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
+				vm.enableTranslate = function () { return true; };
 
 				vm.actions = {
 				    translate: function translate() {
-				        vm.fieldModel.addVs('New translated value!', languages.currentLanguage, false);
-
-						//var value = { Value: 'New translated value!', Dimensions: {} };
-						//value.Dimensions[languages.currentLanguage] = false;
-						//vm.fieldModel.Values.push(value);
-					}
+				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				    },
+				    linkDefault: function linkDefault() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				    }
 				};
 
 			}
