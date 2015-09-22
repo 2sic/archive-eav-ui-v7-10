@@ -96,7 +96,6 @@
 					scope.value = fieldModel._currentValue;
 
 				    // Decide whether the value is writable or not
-                    // Conditions: current language is NOT default and the current value has 
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
                         (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
