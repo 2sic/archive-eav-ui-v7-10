@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
 
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
@@ -430,7 +430,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 	var app = angular.module('eavEditEntity');
 
 	// The controller for the main form directive
-	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId) {
+	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", "$modalInstance", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
 
 		var vm = this;
 		vm.contentTypeName = contentTypeName;
@@ -456,7 +456,8 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				savePromises.push(e.save());
 			});
 			$q.all(savePromises).then(function () {
-				alert("All save promises resolved!");
+			    alert("All save promises resolved!");
+			    $modalInstance.dismiss("cancel");
 			});
 		};
 	}]);
