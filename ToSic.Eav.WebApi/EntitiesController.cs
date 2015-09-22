@@ -9,7 +9,9 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Import;
-
+using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.BLL;
+using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.WebApi
 {
@@ -128,55 +130,62 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        // trying to develop a save 2dm 2015-09-20
 	    [HttpPost]
-	    public bool Save([FromUri]int appId, Formats.EntityWithLanguages newData)
+	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
-            // var zoneId = 0; // TODO2tk: Define
-            // TODO2tk: Multi or single language
-            // TODO2tk: Create or update
-            // TODO2tk: Convert structures
-            //var entity = new ToSic.Eav.Import.ImportEntity();
+            // TODO2tk: Refactor code - we use methods from XML import extensions!
+            var importEntity = new ImportEntity();
+            if (newData.Id == 0)
+            {   // New entity
+                importEntity.EntityGuid = Guid.NewGuid();
+            }
+            else
+            {
+                importEntity.EntityGuid = newData.Guid;
+            }
+            importEntity.IsPublished = true; // TODO2tk: newData.IsPublished;
 
-            //// GUID
-            //if (newData.Id == 0)
-            //{
-            //    entity.EntityGuid = Guid.NewGuid();
-            //}
-            //else
-            //{
-            //    entity.EntityGuid = newData.Guid;
-            //}
+            // Content type
+            importEntity.AttributeSetStaticName = newData.Type.StaticName;
 
-            //// Content type
-            //entity.AttributeSetStaticName = newData.Type.StaticName;
-            //entity.KeyNumber = newData.Metadata.KeyNumber;
-            //entity.IsPublished =
-            //// ...
+            // Metadata if we have
+            if (newData.Metadata != null && newData.Metadata.HasMetadata)
+            {
+                importEntity.AssignmentObjectTypeId = newData.Metadata.TargetType;
+                importEntity.KeyGuid = newData.Metadata.KeyGuid;
+                importEntity.KeyNumber = newData.Metadata.KeyNumber;
+                importEntity.KeyString = newData.Metadata.KeyString;
+            }
 
-            //if(newData.Metadata.HasMetadata)
-            //{
-            //    entity.AssignmentObjectTypeId = newData.Metadata.TargetType;
-            //}
-            //// entity.AssignmentObjectTypeId // Type of metadata metadata.TargetType
+            // Attributes
+            importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
+            var attributeSet = EavDataController.Instance(appId: appId).AttribSet.GetAttributeSet(newData.Type.StaticName);
+            foreach (var attribute in newData.Attributes)
+            {
+                var attributeType = attributeSet.GetAttributeByName(attribute.Key).Type;
 
-            //foreach(var attribute in newData.Attributes)
-            //{
-            //    foreach(var value in attribute.Value.Values)
-            //    {
-            //        foreach(var dimension in value.Dimensions)
-            //        {
+                foreach (var value in attribute.Value.Values)
+                {
+                    var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
 
-            //        }
-            //    }
-            //}
+                    if (value.Dimensions == null)
+                        continue;   // NOTE2tk: We maybe have to add a default root dimension if not defined
+           
+                    foreach (var dimension in value.Dimensions)
+                    {
+                        importValue.AppendLanguageReference(dimension.Key, dimension.Value);
+                    }
+                }
+            }
 
+            // Run import
+            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
 
-            //var import = new ToSic.Eav.Import.Import(null, appId,  User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            //import.RunImport(null, new ToSic.Eav.Import.ImportEntity[] { entity }, true, true);
-
-            return false;
+            return true;
 	    }
+
+
         private void OldInsertWebForm()
         {
             //// Cancel insert if current language is not default language
