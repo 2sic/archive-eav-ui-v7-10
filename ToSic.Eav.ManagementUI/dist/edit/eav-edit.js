@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
 
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
@@ -84,12 +84,11 @@
 		if (!!$scope.entityId) {
 		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
                 .then(function (result) {
-                    vm.entity = enhanceEntity(result.data);
-                    console.log(vm.entity);
+                    vm.entity = result.data;
                     loadContentType();
                 });
 		} else {
-		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
+		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
 		    loadContentType();
 		}
 
@@ -279,7 +278,7 @@
 	            }
 	        }).then(function (data) {
 	            $scope.availableEntities = data.data;
-	        });
+	});
 	    };
 
 	    $scope.getEntityText = function (entityId) {
@@ -392,8 +391,9 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 					// If current language = default language and there are no values, create an empty value object
 					if (langConf.currentLanguage == langConf.defaultLanguage) {
 						if (fieldModel.Values.length === 0) {
-						    var defaultValue = eavDefaultValueService(scope.options);
-						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
+							var defaultValue = eavDefaultValueService(scope.options);
+							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
+							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = false; // Assign default language dimension
 						}
 					}
 
@@ -428,7 +428,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 					// Set scope variable 'value' to simplify binding
 					scope.value = fieldModel._currentValue;
 
-				    // Decide whether the value is writable or not
+					// Decide whether the value is writable or not
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
                         (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
@@ -473,12 +473,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 
 				vm.actions = {
-				    translate: function translate() {
-				        vm.fieldModel.addVs('New translated value!', languages.currentLanguage, false);
-
-						//var value = { Value: 'New translated value!', Dimensions: {} };
-						//value.Dimensions[languages.currentLanguage] = false;
-						//vm.fieldModel.Values.push(value);
+					translate: function () {
+						var value = { Value: 'New translated value!', Dimensions: {} };
+						value.Dimensions[languages.currentLanguage] = false;
+						vm.fieldModel.Values.push(value);
 					}
 				};
 
@@ -520,7 +518,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 	var app = angular.module('eavEditEntity');
 
 	// The controller for the main form directive
-	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId) {
+	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", "$modalInstance", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
 
 		var vm = this;
 		vm.contentTypeName = contentTypeName;
@@ -547,6 +545,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 			});
 			$q.all(savePromises).then(function () {
 				alert("All save promises resolved!");
+			    $modalInstance.dismiss("cancel");
 			});
 		};
 	}]);
