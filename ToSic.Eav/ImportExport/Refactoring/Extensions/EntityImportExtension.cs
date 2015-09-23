@@ -54,18 +54,30 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
         public static IValueImportModel AppendAttributeValue(this Import.ImportEntity importEntity, string valueName, object value, string valueType, string valueLanguage = null, bool valueReadOnly = false, bool resolveHyperlink = false)
         {
-            var valueString = string.Empty;
-
-            var enumerable = value as IEnumerable;
-            if (enumerable != null)
+            string valueString;
+            if (value == null)
             {
-                valueString = string.Join(",", enumerable);
+                valueString = null;
             }
+            else if (value is string)
+            {
+                valueString = value as string;
+            }
+            else if (value is IEnumerable)
+            {
+                var enumerable = value as IEnumerable;
+
+                valueString = "";
+                foreach (var item in enumerable)
+                {
+                    valueString += item + ",";
+                }
+                valueString = valueString.Trim(',');
+            }    
             else
             {
                 valueString = value.ToString();
             }
-
             return importEntity.AppendAttributeValue(valueName, valueString, valueType, valueLanguage, valueReadOnly, resolveHyperlink);
 
         }
@@ -120,7 +132,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     {
                         valueModel = new ValueImportModel<DateTime?>(importEntity)
                         {
-                            Value = string.IsNullOrEmpty(valueString) ? null : new DateTime?(DateTime.Parse(valueString))
+                            Value = string.IsNullOrEmpty(valueString) ? null : new DateTime?(DateTime.Parse(valueString.Replace("T", " ").Replace("Z", " ")))
                         };
                     }
                     break;
@@ -139,7 +151,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     break;
 
                 case "Entity":
-                    {
+                    {   // TODO2tk: GUID comes like [\r\n "xxxx-xxxx-xxxxx-xxx" \r\n]
                         valueModel = new ValueImportModel<List<Guid>>(importEntity) 
                         { 
                             Value = string.IsNullOrEmpty(valueString) ? new List<Guid>() : valueString.Split(',').Select(Guid.Parse).ToList()

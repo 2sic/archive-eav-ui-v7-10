@@ -27,14 +27,6 @@
 		};
 	});
 
-	//eavLocalization.factory('eavLanguageService', function (languages) {
-		//return {
-		//	languages: [{ key: 'en-us', name: 'English (United States)' }],
-		//	defaultLanguage: 'en-us',
-		//	currentLanguage: 'en-us'
-		//};
-	//});
-
 	eavLocalization.directive('eavLocalizationScopeControl', function () {
 		return {
 			restrict: 'E',
@@ -151,4 +143,47 @@
 		};
 	});
 
+	eavLocalization.directive('eavTimepickerWithoutTimezone', function () {
+	    var directive = {
+	        restrict: 'A',
+	        require: ['ngModel'],
+	        link: link
+	    };
+	    return directive;
+
+	    function link(scope, element, attributes, modelController) {
+	        scope.$watch(attributes.ngModel, function (newValue) {
+	            //var dateString;
+	            //var date;
+	            //if (newValue instanceof Date) {
+	            //    date = newValue;
+	            //} else {
+	            //    date = new Date(newValue.substring(0, 4), newValue.substring(5, 7), newValue.substring(8, 10), newValue.substring(11, 13), newValue.substring(14, 16), newValue.substring(17, 19));
+	            //}
+	            //dateString = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()); //).toISOString().substring(0, 20);
+
+	            //console.log(typeof newValue + "-" +  newValue + ">" +  new Date(dateString));
+	            //attributes.ngModel = "Test";
+	            //scope.$apply();
+	            //console.log(newValue.toISOString().substring(0, 20));
+	        });
+
+	        //var modelController = controllers[0];
+
+	        //// Called with date object when picked from the datepicker
+	        //modelController.$parsers.push(function (viewValue) {
+	        //    return viewValue.toISOString().substring(0, 20);
+	        //});
+
+	        //// Called with 'yyyy-mm-ddThh.mm.ssZ' string to format
+	        //modelController.$formatters.push(function (modelValue) {
+	        //    if (!modelValue) {
+	        //        return "undefined";
+	        //    }
+	        //    var date = new Date(modelValue);
+	        //    date.setMonth(0);
+	        //    return date;
+	        //});
+	    }
+	});
 })();

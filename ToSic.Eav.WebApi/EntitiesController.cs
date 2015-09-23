@@ -169,8 +169,10 @@ namespace ToSic.Eav.WebApi
                     var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
 
                     if (value.Dimensions == null)
-                        continue;   // NOTE2tk: We maybe have to add a default root dimension if not defined
-           
+                    {   // TODO2tk: Must this be done to save entities
+                        importValue.AppendLanguageReference("", false);
+                        continue;
+                    }
                     foreach (var dimension in value.Dimensions)
                     {
                         importValue.AppendLanguageReference(dimension.Key, dimension.Value);
