@@ -44,16 +44,21 @@ namespace ToSic.Eav.WebApi
         {
             public bool Succeeded;
 
-            public dynamic Details;
+            public dynamic Detail;
 
-            public ContentEvaluationResult(bool succeeded, dynamic details) { Succeeded = succeeded; Details = details; }
+            public ContentEvaluationResult(bool succeeded, dynamic detail) {
+                Succeeded = succeeded;
+                Detail = detail;
+            }
         }
 
         public class ContentImportResult
         {
             public bool Succeeded;
 
-            public ContentImportResult(bool succeeded) { Succeeded = succeeded; }
+            public ContentImportResult(bool succeeded) {
+                Succeeded = succeeded;
+            }
         }
 
 
@@ -74,7 +79,7 @@ namespace ToSic.Eav.WebApi
                 }
                 else
                 {
-                    return new ContentEvaluationResult(import.ErrorProtocol.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
+                    return new ContentEvaluationResult(!import.ErrorProtocol.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
                 }
             }
         }

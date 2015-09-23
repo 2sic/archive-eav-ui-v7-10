@@ -6,50 +6,69 @@
 <div class="modal-body">
 
     <div ng-switch="vm.currentStep">
-
+        <!-- FORM -->
         <div ng-switch-when="1">
-            <p translate="Content.Import.Help"></p>
+
+            <div translate="Content.Import.Help"></div>
             <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
-                <p class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></p>
+                <div class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></div>
                 <button type="button" class="btn btn-primary" ng-click="vm.evaluateContent(); vm.currentStep = 2" ng-disabled="!vm.form.$valid" translate="Content.Import.Commands.Preview"></button>
                 <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
             </formly-form>
-        </div>
 
+        </div>
+        <!-- END FORM -->
+        <!-- EVALUATION RESULT -->
         <div ng-switch-when="2">
-            <p ng-show="vm.evaluation.Succeeded">
-                <h4>{{Content.Import.Evaluation.Detail.Title}}</h4>
+
+            <div ng-if="vm.evaluation.Succeeded">
+                <h4 translate="Content.Import.Evaluation.Detail.Title" translate-values="{filename: vm.formValues.File.filename}"></h4>
+                <h5 translate="Content.Import.Evaluation.Detail.File.Title"></h5>
                 <ul>
-                    <li></li>
+                    <li translate="Content.Import.Evaluation.Detail.File.ElementCount" translate-values="{count: vm.evaluation.Detail.DocumentElementsCount}"></li>
+                    <li translate="Content.Import.Evaluation.Detail.File.LanguageCount" translate-values="{count: vm.evaluation.Detail.LanguagesInDocumentCount}"></li>
+                    <li translate="Content.Import.Evaluation.Detail.File.Attributes" translate-values="{count: vm.evaluation.Detail.AttributeNamesInDocument.length, attributes: vm.evaluation.Detail.AttributeNamesInDocument.join(', ')}"></li>
                 </ul>
-            </p>
-            <p ng-hide="vm.evaluation.Succeeded">
-                <h4>{{ "Content.Import.Evaluation.Error.Title" | translate }} '{{vm.formValues.File.filename}}'</h4>
+                <h5 translate="Content.Import.Evaluation.Detail.Entities.Title"></h5>
                 <ul>
-                    <li ng-repeat="error in vm.evaluation.Details">
+                    <li translate="Content.Import.Evaluation.Detail.Entities.Create" translate-values="{count: vm.evaluation.Detail.AmountOfEntitiesCreated}"></li>
+                    <li translate="Content.Import.Evaluation.Detail.Entities.Update" translate-values="{count: vm.evaluation.Detail.AmountOfEntitiesUpdated}"></li>
+                    <li translate="Content.Import.Evaluation.Detail.Entities.Delete" translate-values="{count: vm.evaluation.Detail.AmountOfEntitiesDeleted}"></li>
+                    <li translate="Content.Import.Evaluation.Detail.Entities.AttributesIgnored" translate-values="{count: vm.evaluation.Detail.AttributeNamesNotImported.length, attributes: vm.evaluation.Detail.AttributeNamesNotImported.join(', ')}"></li>
+                </ul>
+                <div class="text-warning" translate="Content.Import.Messages.ImportCanTakeSomeTime"></div>
+            </div>
+
+            <div ng-if="!vm.evaluation.Succeeded">
+                <h4 translate="Content.Import.Evaluation.Error.Title" translate-values="{filename: vm.formValues.File.filename}"></h4>
+                <ul>
+                    <li ng-repeat="error in vm.evaluation.Detail">
                         <div><span translate="Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}"></span></div>
-                        <div ng-if="error.ErrorDetail"><i>{{ "Content.Import.Evaluation.Error.Detail" | translate }}: {{error.ErrorDetail}}</i></div>
-                        <div ng-if="error.LineNumber"><i>{{ "Content.Import.Evaluation.Error.LineNumber" | translate }}: {{error.LineNumber}}</i></div>
-                        <div ng-if="error.LineDetail"><i>{{ "Content.Import.Evaluation.Error.LineDetail" | translate }}: {{error.LineDetail}}</i></div>
+                        <div ng-if="error.ErrorDetail"><i translate="Content.Import.Evaluation.Error.Detail" translate-values="{detail: error.ErrorDetail}"></i></div>
+                        <div ng-if="error.LineNumber"><i translate=Content.Import.Evaluation.Error.LineNumber" translate-values="{number: error.LineNumber}"></i></div>
+                        <div ng-if="error.LineDetail"><i translate="Content.Import.Evaluation.Error.LineDetail" translate-values="{detail: error.LineDetail}"></i></div>
                     </li>
                 </ul>
-            </p>
+            </div>
+
             <button type="button" class="btn btn-primary" ng-click="vm.importContent(); vm.currentStep = 3" translate="Content.Import.Commands.Import" ng-show="vm.evaluation.Succeeded"></button>
             <button type="button" class="btn btn-default" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
             <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
-        </div>
 
+        </div>
+        <!-- END EVALUATION RESULT -->
+        <!-- IMPORT RESULT -->
         <div ng-switch-when="3">
-            <p>
+
+            <div>
                 <span ng-show="vm.import.Succeeded" translate="Content.Import.Messages.ImportSucceeded"></span>
                 <span ng-hide="vm.import.Succeeded" translate="Content.Import.Messages.ImportFailed"></span>
-            </p>
+            </div>
+
             <button type="button" class="btn btn-primary" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
             <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
+
         </div>
-
+        <!-- END IMPORT RESULT -->
     </div>
-
-    <hr />
-    <pre>{{vm.formValues | json}}</pre>
 </div>

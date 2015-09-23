@@ -107,12 +107,12 @@
     },
     "Import": {
       "Title": "Import Content / Data Step {{currentStep}} of 3",
-      "Help":  "This will import content-items / data into 2sxc. It requires that you already defined the Content-Type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
+      "Help": "This will import content-items / data into 2sxc. It requires that you already defined the Content-Type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
       "Fields": {
         "File": {
           "Label": "Choose file"
         },
-        "FileReferences": {
+        "ResourcesReferences": {
           "Label": "References to pages / files",
           "Options": {
             "Keep": "Import links as written in the file (for example /Portals/...)",
@@ -134,7 +134,47 @@
         "Close": "Close"
       },
       "Messages": {
-        "BackupContentBefore": "Remember to backup your DNN first!"
+        "BackupContentBefore": "Remember to backup your DNN first!",
+
+        "ImportSucceeded": "Import done.",
+        "ImportFailed": "Import failed.",
+
+        "ImportCanTakeSomeTime": ""
+      },
+      "Evaluation": {
+        "Error": {
+          "Title": "Try to import file '{{filename}}'",
+          "Codes": {
+            "0": "Unknown error occured.",
+            "1": "Selected content-type does not exist.",
+            "2": "Document is not a valid XML file.",
+            "3": "Selected content-type does not match the content-type in the XML file.",
+            "4": "The language is not supported.",
+            "5": "The document does not specify all languages for all entities.",
+            "6": "Language reference cannot be parsed, the language is not supported.",
+            "7": "Language reference cannot be parsed, the read-write protection is not supported.",
+            "8": "Value cannot be read, because of it has an invalid format."
+          },
+          "Detail": "Details: {{detail}}",
+          "LineNumber": "Line-no: {{number}}",
+          "LineDetail": "Line-details: {{detail}}"
+        },
+        "Detail": {
+          "Title": "Try to import file '{{filename}}'",
+          "File": {
+            "Title": "File contains:",
+            "ElementCount": "{{count}} content-items (records/entities)",
+            "LanguageCount": "{{count}} languages",
+            "Attributes": "{{count}} columns: {{attributes}}"
+          },
+          "Entities": {
+            "Title": "If you press Import, it will:",
+            "Create": "Create {{count}} content-items",
+            "Update": "Update {{count}} content-items",
+            "Delete": "Delete {{count}} content-items",
+            "AttributesIgnored": "Ignore {{count}} columns: {{attributes}}"
+          }
+        }
       }
     },
     "Export": {

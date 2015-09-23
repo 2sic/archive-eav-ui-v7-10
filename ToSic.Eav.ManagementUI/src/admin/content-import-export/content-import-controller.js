@@ -72,17 +72,28 @@
         vm.currentStep = "1"; // 1, 2, 3...
 
 
-        vm.evaluation = { };
+        vm.evaluation = {};
+        vm.evaluationInProgress = false;
 
         vm.import = { };
-
+        vm.importInProgress = false;
 
         vm.evaluateContent = function previewContent() {
-            contentImportService.evaluateContent(vm.formValues).then(function (result) { vm.evaluation = result.data; });
+            vm.evaluation = { };
+            vm.evaluationInProgress = true;
+            return contentImportService.evaluateContent(vm.formValues).then(function (result) {
+                vm.evaluation = result.data;
+                vm.evaluationInProgress = true;
+            });
         };
 
         vm.importContent = function importContent() {
-
+            vm.import = { };
+            vm.importInProgress = true;
+            return contentImportService.importContent(vm.formValues).then(function (result) {
+                vm.import = result.data;
+                vm.importInProgress = false;
+            });
         };
 
         vm.close = function close() {

@@ -137,11 +137,13 @@
         "BackupContentBefore": "Remember to backup your DNN first!",
 
         "ImportSucceeded": "Import done.",
-        "ImportFailed": "Import failed."
+        "ImportFailed": "Import failed.",
+
+        "ImportCanTakeSomeTime": ""
       },
       "Evaluation": {
         "Error": {
-          "Title": "Try to import file ",
+          "Title": "Try to import file '{{filename}}'",
           "Codes": {
             "0": "Unknown error occured.",
             "1": "Selected content-type does not exist.",
@@ -153,15 +155,28 @@
             "7": "Language reference cannot be parsed, the read-write protection is not supported.",
             "8": "Value cannot be read, because of it has an invalid format."
           },
-          "Detail": "Details",
-          "LineNumber": "Line-no",
-          "LineDetail": "Line-details"
+          "Detail": "Details: {{detail}}",
+          "LineNumber": "Line-no: {{number}}",
+          "LineDetail": "Line-details: {{detail}}"
         },
-        "Details": {
-
+        "Detail": {
+          "Title": "Try to import file '{{filename}}'",
+          "File": {
+            "Title": "File contains:",
+            "ElementCount": "{{count}} content-items (records/entities)",
+            "LanguageCount": "{{count}} languages",
+            "Attributes": "{{count}} columns: {{attributes}}"
+          },
+          "Entities": {
+            "Title": "If you press Import, it will:",
+            "Create": "Create {{count}} content-items",
+            "Update": "Update {{count}} content-items",
+            "Delete": "Delete {{count}} content-items",
+            "AttributesIgnored": "Ignore {{count}} columns: {{attributes}}"
+          }
+        }
       }
-    }
-  },
+    },
     "Export": {
       "Title": "Export Content"
     },
