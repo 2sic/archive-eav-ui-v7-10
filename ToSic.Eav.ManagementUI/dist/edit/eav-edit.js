@@ -196,40 +196,20 @@
 	    formlyConfigProvider.setType({
 	        name: 'datetime-default',
 	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
-	        template: '<div><div class="input-group"><div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;"><i class="glyphicon glyphicon-calendar"></i></div><input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup /></div>' +
-				 '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian" eav-timepicker-without-timezone></timepicker></div>',
+	        template: '<div>' +
+                '<div class="input-group">' +
+                    '<div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;">' +
+                        '<i class="glyphicon glyphicon-calendar"></i>' +
+                    '</div>' +
+                    '<input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />' +
+				    '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>' +
+                '</div>',
 	        defaultOptions: {
 	            templateOptions: {
 	                datepickerOptions: {},
 	                datepickerPopup: 'dd.MM.yyyy'
 	            }
-	        },
-	        link: function (scope) {
-
-	            //scope.$watch('value.Value', function () {
-	            //    var obj = scope.value;
-	            //    if (typeof(obj.Value) === 'string' && obj.Value !== '') {
-	            //        obj.Value = new Date(obj.Value);
-	            //    }
-
-	            //    if (obj.Value instanceof Date) {
-	            //        obj.Value.toJSON = function () {
-	            //            var tzo = -this.getTimezoneOffset();
-                //            var dif = tzo >= 0 ? '+' : '-';
-                //            function pad(n) { 
-                //                return n < 10 ? '0' + n : n; 
-                //            }
-	            //            return this.getUTCFullYear() + '-' +
-                //                pad(this.getUTCMonth() + 1) + '-' +
-                //                pad(this.getUTCDate()) + 'T' +
-                //                pad(this.getUTCHours()) + ':' +
-                //                pad(this.getUTCMinutes()) + ':' +
-                //                pad(this.getUTCSeconds()) + 'Z' +
-                //                dif + pad(tzo / 60);
-	            //        };
-	            //    }
-	            //});
-			}
+	        }
 		});
 
 		formlyConfigProvider.setType({
@@ -504,47 +484,29 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		};
 	});
 
-	eavLocalization.directive('eavTimepickerWithoutTimezone', function () {
+	eavLocalization.directive('eavTreatTimeUtc', function () {
 	    var directive = {
 	        restrict: 'A',
 	        require: ['ngModel'],
+            compile: compile,
 	        link: link
 	    };
 	    return directive;
 
-	    function link(scope, element, attributes, modelController) {
-	        scope.$watch(attributes.ngModel, function (newValue) {
-	            //var dateString;
-	            //var date;
-	            //if (newValue instanceof Date) {
-	            //    date = newValue;
-	            //} else {
-	            //    date = new Date(newValue.substring(0, 4), newValue.substring(5, 7), newValue.substring(8, 10), newValue.substring(11, 13), newValue.substring(14, 16), newValue.substring(17, 19));
-	            //}
-	            //dateString = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()); //).toISOString().substring(0, 20);
+	    function compile(element, attributes) {
 
-	            //console.log(typeof newValue + "-" +  newValue + ">" +  new Date(dateString));
-	            //attributes.ngModel = "Test";
-	            //scope.$apply();
-	            //console.log(newValue.toISOString().substring(0, 20));
+	    }
+
+	    function link(scope, element, attributes, modelController) {     
+	        modelController[0].$formatters.push(function (modelValue) {
+
+	            return modelValue;
 	        });
 
-	        //var modelController = controllers[0];
+	        modelController[0].parsers.push(function (viewValue) {
 
-	        //// Called with date object when picked from the datepicker
-	        //modelController.$parsers.push(function (viewValue) {
-	        //    return viewValue.toISOString().substring(0, 20);
-	        //});
-
-	        //// Called with 'yyyy-mm-ddThh.mm.ssZ' string to format
-	        //modelController.$formatters.push(function (modelValue) {
-	        //    if (!modelValue) {
-	        //        return "undefined";
-	        //    }
-	        //    var date = new Date(modelValue);
-	        //    date.setMonth(0);
-	        //    return date;
-	        //});
+	            return viewValue;
+	        });
 	    }
 	});
 })();

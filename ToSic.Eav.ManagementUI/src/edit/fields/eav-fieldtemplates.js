@@ -79,40 +79,20 @@
 	    formlyConfigProvider.setType({
 	        name: 'datetime-default',
 	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
-	        template: '<div><div class="input-group"><div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;"><i class="glyphicon glyphicon-calendar"></i></div><input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup /></div>' +
-				 '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian" eav-timepicker-without-timezone></timepicker></div>',
+	        template: '<div>' +
+                '<div class="input-group">' +
+                    '<div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;">' +
+                        '<i class="glyphicon glyphicon-calendar"></i>' +
+                    '</div>' +
+                    '<input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />' +
+				    '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>' +
+                '</div>',
 	        defaultOptions: {
 	            templateOptions: {
 	                datepickerOptions: {},
 	                datepickerPopup: 'dd.MM.yyyy'
 	            }
-	        },
-	        link: function (scope) {
-
-	            //scope.$watch('value.Value', function () {
-	            //    var obj = scope.value;
-	            //    if (typeof(obj.Value) === 'string' && obj.Value !== '') {
-	            //        obj.Value = new Date(obj.Value);
-	            //    }
-
-	            //    if (obj.Value instanceof Date) {
-	            //        obj.Value.toJSON = function () {
-	            //            var tzo = -this.getTimezoneOffset();
-                //            var dif = tzo >= 0 ? '+' : '-';
-                //            function pad(n) { 
-                //                return n < 10 ? '0' + n : n; 
-                //            }
-	            //            return this.getUTCFullYear() + '-' +
-                //                pad(this.getUTCMonth() + 1) + '-' +
-                //                pad(this.getUTCDate()) + 'T' +
-                //                pad(this.getUTCHours()) + ':' +
-                //                pad(this.getUTCMinutes()) + ':' +
-                //                pad(this.getUTCSeconds()) + 'Z' +
-                //                dif + pad(tzo / 60);
-	            //        };
-	            //    }
-	            //});
-			}
+	        }
 		});
 
 		formlyConfigProvider.setType({
