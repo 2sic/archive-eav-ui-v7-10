@@ -167,25 +167,30 @@
 
 				vm.actions = {
 				    translate: function translate() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
 				    autoTranslate: function(languageKey) {
-				        alert('Sorry, but this action is not implemented yet.');
+				        alert('This action is not implemented yet.');
 				    },
 				    copyFrom: function (languageKey) {
+				        if ($scope.options.templateOptions.disabled)
+				            alert("Copy not possible: the field is disabled.");
 				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
-				        vm.fieldModel.addVs(value, languages.currentLanguage, false);
+				        $scope.value.Value = value;
 				    },
 				    useFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
-				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, true);
+				        vs.setLanguage(languages.currentLanguage, true);
 				    },
 				    shareFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
-				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, false);
+				        vs.setLanguage(languages.currentLanguage, false);
 				    }
 				};
 
