@@ -137,11 +137,19 @@
 			controller: function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+				vm.languages = languages;
+				vm.hasLanguage = function(languageKey) {
+				    return vm.fieldModel.getVsWithLanguage(languageKey) !== null;
+				};
 
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 				vm.enableTranslate = function () { return true; };
 
 				vm.infoMessage = function () {
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
+				        return 'auto (default)';
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
+				        return '';
 				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
 				};
 
@@ -159,11 +167,26 @@
 
 				vm.actions = {
 				    translate: function translate() {
-				        vm.fieldModel.addVs($scope.value, languages.currentLanguage, false);
+				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
+				    autoTranslate: function(languageKey) {
+				        alert('Sorry, but this action is not implemented yet.');
+				    },
+				    copyFrom: function (languageKey) {
+				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
+				        vm.fieldModel.addVs(value, languages.currentLanguage, false);
+				    },
+				    useFrom: function (languageKey) {
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, true);
+				    },
+				    shareFrom: function (languageKey) {
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, false);
+				    }
 				};
 
 			}

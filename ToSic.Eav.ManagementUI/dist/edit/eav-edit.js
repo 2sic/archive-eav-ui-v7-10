@@ -321,7 +321,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('localization/localization-menu.html',
-    "<div dropdown is-open=status.isopen class=eav-localization><a class=eav-localization-lock ng-if=vm.isDefaultLanguage() title={{vm.tooltip()}} ng-class=\"{ 'eav-localization-lock-open': !options.templateOptions.disabled }\" dropdown-toggle href=javascript:void(0)>{{vm.infoMessage()}} <i class=\"glyphicon glyphicon-globe\"></i></a><ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=menu aria-labelledby=single-button><li role=menuitem><a ng-disabled=vm.enableTranslate() ng-click=vm.actions.translate()>Translate</a></li><li role=menuitem><a ng-click=vm.actions.linkDefault()>Unlink</a></li><li role=menuitem class=dropdown-submenu><a href=#>Something else here</a><ul class=dropdown-menu><li role=menuitem><a href=#>Action</a></li><li role=menuitem><a href=#>Another action</a></li></ul></li><li class=divider></li><li role=menuitem><a href=#>Separated link</a></li></ul></div>"
+    "<div dropdown is-open=status.isopen class=eav-localization><a class=eav-localization-lock ng-if=vm.isDefaultLanguage() title={{vm.tooltip()}} ng-class=\"{ 'eav-localization-lock-open': !options.templateOptions.disabled }\" dropdown-toggle href=javascript:void(0)>{{vm.infoMessage()}} <i class=\"glyphicon glyphicon-globe\"></i></a><ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=menu aria-labelledby=single-button><li role=menuitem><a ng-disabled=vm.enableTranslate() ng-click=vm.actions.translate()>Translate (unlink)</a></li><li role=menuitem><a ng-click=vm.actions.linkDefault()>Use default</a></li><li role=menuitem class=dropdown-submenu><a href=#>Google-Translate from</a><ul class=dropdown-menu><li ng-repeat=\"language in vm.languages.languages\" class=disabled role=menuitem><a ng-click=vm.actions.autoTranslate(language.key) title={{language.name}} href=#>{{language.key}}</a></li></ul></li><li role=menuitem class=dropdown-submenu><a href=#>Copy from</a><ul class=dropdown-menu><li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: options.templateOptions.disabled || !vm.hasLanguage(language.key) }\" role=menuitem><a ng-click=vm.actions.copyFrom(language.key) title={{language.name}} href=#>{{language.key}}</a></li></ul></li><li role=menuitem class=dropdown-submenu><a href=#>Use from</a><ul class=dropdown-menu><li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=menuitem><a ng-click=vm.actions.useFrom(language.key) title={{language.name}} href=#>{{language.key}}</a></li></ul></li><li role=menuitem class=dropdown-submenu><a href=#>Share from</a><ul class=dropdown-menu><li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=menuitem><a ng-click=vm.actions.shareFrom(language.key) title={{language.name}} href=#>{{language.key}}</a></li></ul></li></ul></div>"
   );
 
 
@@ -470,11 +470,19 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 			controller: ["$scope", "languages", function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+				vm.languages = languages;
+				vm.hasLanguage = function(languageKey) {
+				    return vm.fieldModel.getVsWithLanguage(languageKey) !== null;
+				};
 
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 				vm.enableTranslate = function () { return true; };
 
 				vm.infoMessage = function () {
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
+				        return 'auto (default)';
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
+				        return '';
 				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
 				};
 
@@ -492,11 +500,26 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 				vm.actions = {
 				    translate: function translate() {
-				        vm.fieldModel.addVs($scope.value, languages.currentLanguage, false);
+				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
+				    autoTranslate: function(languageKey) {
+				        alert('Sorry, but this action is not implemented yet.');
+				    },
+				    copyFrom: function (languageKey) {
+				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
+				        vm.fieldModel.addVs(value, languages.currentLanguage, false);
+				    },
+				    useFrom: function (languageKey) {
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, true);
+				    },
+				    shareFrom: function (languageKey) {
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vm.fieldModel.setLanguageToVs(vs, languages.currentLanguage, false);
+				    }
 				};
 
 			}]
