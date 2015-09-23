@@ -128,7 +128,8 @@
 			restrict: 'E',
 			scope: {
 				fieldModel: '=fieldModel',
-				options: '=options'
+				options: '=options',
+                value: '=value'
 			},
 			templateUrl: 'localization/localization-menu.html',
 			link: function (scope, element, attrs) { },
@@ -140,13 +141,29 @@
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 				vm.enableTranslate = function () { return true; };
 
+				vm.infoMessage = function () {
+				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				};
+
+				vm.tooltip = function () {
+				    var editableIn = [];
+				    var usedIn = [];
+				    angular.forEach($scope.value.Dimensions, function (value, key) {
+				        (value ? usedIn : editableIn).push(key);
+				    });
+				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    if (usedIn.length > 0)
+				        tooltip += ', also used in ' + usedIn.join(', ');
+				    return tooltip;
+				};
+
 				vm.actions = {
 				    translate: function translate() {
-				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				        vm.fieldModel.addVs($scope.value, languages.currentLanguage, false);
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
-				    }
+				    },
 				};
 
 			}
