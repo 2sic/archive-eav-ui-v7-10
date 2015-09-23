@@ -3,8 +3,8 @@
 		<i class="glyphicon glyphicon-globe"></i>
 	</a>
 	<ul class="dropdown-menu multi-level pull-right eav-localization-dropdown" role="menu" aria-labelledby="single-button">
-		<li role="menuitem"><a ng-click="vm.actions.translate()">Translate</a></li>
-		<li role="menuitem"><a href="#">Another action</a></li>
+		<li role="menuitem"><a ng-disabled="vm.enableTranslate()" ng-click="vm.actions.translate()">Translate</a></li>
+		<li role="menuitem"><a ng-click="vm.actions.linkDefault()">Unlink</a></li>
 		<li role="menuitem" class="dropdown-submenu">
 			<a href="#">Something else here</a>
 			<ul class="dropdown-menu">

@@ -21,8 +21,9 @@ function enhanceEntity(entity) {
         vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
         vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : null; };
 
-        if(typeof vs.Dimensions != "undefined")
-            enhancer.enhanceWithCount(vs.Dimensions);
+        // ToDo: Fix enhance dimensions - or use alternative Object.keys(vs.Dimensions).length
+        //if(typeof vs.Dimensions != "undefined")
+            //enhancer.enhanceWithCount(vs.Dimensions);
         return vs;
     };
 
@@ -58,8 +59,7 @@ function enhanceEntity(entity) {
             delete value.Dimensions[language];
 
             // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
-            //if (value.Dimensions.length == 0 && this.Values.length > 0)
-            if (value.Dimensions.count() === 0 && this.Values.length > 0)
+            if (Object.keys(value.Dimensions).length === 0 && this.Values.length > 0)
                 this.removeVs(value);
         };
 
@@ -70,11 +70,11 @@ function enhanceEntity(entity) {
         };
 
         // todo: when adding VS - ensure the events are added too...
-        att.addVs = function(value, language) {
+        att.addVs = function(value, language, shareMode) {
             var dimensions = {};
-            dimensions[language] = true;
+            dimensions[language] = (shareMode === null ? true : shareMode);
             var newVs = { "Value": value, "Dimensions": dimensions };
-            enhancer.enhanceWithCount(newVs.Dimensions);
+            // ToDo: enhancer.enhanceWithCount(newVs.Dimensions);
             this.Values.push(enhancer.enhanceVs(newVs));
         };
 
@@ -88,25 +88,20 @@ function enhanceEntity(entity) {
     // this will enhance an entity
     enhancer.enhanceEntity = function(ent) {
         ent.getTitle = function() {
-            ent.getAttribute(e.TitleAttributeName);
+            ent.getAttribute(ent.TitleAttributeName);
         };
 
         ent.hasAttribute = function(attrName) {
-            for (var c = 0; c < ent.Attributes.length; c++)
-                if (ent.Attributes[c].Key == attrName)
-                    return true;
-            return false;
+            return ent.Attributes[attrName] !== undefined;
         };
 
         ent.getAttribute = function(attrName) {
-            for (var c = 0; c < ent.Attributes.length; c++)
-                if (ent.Attributes[c].Key == attrName)
-                    return ent.Attributes[c];
-            return null;
+            return ent.Attributes[attrName];
         };
 
-        for (var attCount = 0; attCount < ent.Attributes.length; attCount++)
-            enhancer.enhanceAtt(ent.Attributes[attCount]);
+        for (var attKey in ent.Attributes)
+            if(ent.Attributes.hasOwnProperty(attKey))
+                enhancer.enhanceAtt(ent.Attributes[attKey]);
 
         return ent;
     };
