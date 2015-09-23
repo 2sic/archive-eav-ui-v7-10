@@ -12,6 +12,8 @@ namespace ToSic.Eav
         /// </summary>
         IEnumerable<ILanguage> Languages { get; }
         string Serialized {get;}
+
+        object ObjectValue { get; }
 	}
 
 	/// <summary>

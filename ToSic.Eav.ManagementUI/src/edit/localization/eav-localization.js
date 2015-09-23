@@ -120,7 +120,8 @@
 			restrict: 'E',
 			scope: {
 				fieldModel: '=fieldModel',
-				options: '=options'
+				options: '=options',
+                value: '=value'
 			},
 			templateUrl: 'localization/localization-menu.html',
 			link: function (scope, element, attrs) { },
@@ -128,16 +129,60 @@
 			controller: function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+				vm.languages = languages;
+				vm.hasLanguage = function(languageKey) {
+				    return vm.fieldModel.getVsWithLanguage(languageKey) !== null;
+				};
 
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
 				vm.enableTranslate = function () { return true; };
 
+				vm.infoMessage = function () {
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
+				        return 'auto (default)';
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
+				        return '';
+				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				};
+
+				vm.tooltip = function () {
+				    var editableIn = [];
+				    var usedIn = [];
+				    angular.forEach($scope.value.Dimensions, function (value, key) {
+				        (value ? usedIn : editableIn).push(key);
+				    });
+				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    if (usedIn.length > 0)
+				        tooltip += ', also used in ' + usedIn.join(', ');
+				    return tooltip;
+				};
+
 				vm.actions = {
 				    translate: function translate() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				    },
+				    autoTranslate: function(languageKey) {
+				        alert('This action is not implemented yet.');
+				    },
+				    copyFrom: function (languageKey) {
+				        if ($scope.options.templateOptions.disabled)
+				            alert("Copy not possible: the field is disabled.");
+				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
+				        $scope.value.Value = value;
+				    },
+				    useFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vs.setLanguage(languages.currentLanguage, true);
+				    },
+				    shareFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vs.setLanguage(languages.currentLanguage, false);
 				    }
 				};
 
