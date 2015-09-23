@@ -17,23 +17,39 @@
         </div>
 
         <div ng-switch-when="2">
-            <p>
-                TODO: Show the evaluation of the content
+            <p ng-show="vm.evaluation.Succeeded">
+                <h4>{{Content.Import.Evaluation.Detail.Title}}</h4>
+                <ul>
+                    <li></li>
+                </ul>
             </p>
-            <button type="button" class="btn btn-primary" ng-click="vm.importContent(); vm.currentStep = 3" translate="Content.Import.Commands.Import"></button>
+            <p ng-hide="vm.evaluation.Succeeded">
+                <h4>{{ "Content.Import.Evaluation.Error.Title" | translate }} '{{vm.formValues.File.filename}}'</h4>
+                <ul>
+                    <li ng-repeat="error in vm.evaluation.Details">
+                        <div><span translate="Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}"></span></div>
+                        <div ng-if="error.ErrorDetail"><i>{{ "Content.Import.Evaluation.Error.Detail" | translate }}: {{error.ErrorDetail}}</i></div>
+                        <div ng-if="error.LineNumber"><i>{{ "Content.Import.Evaluation.Error.LineNumber" | translate }}: {{error.LineNumber}}</i></div>
+                        <div ng-if="error.LineDetail"><i>{{ "Content.Import.Evaluation.Error.LineDetail" | translate }}: {{error.LineDetail}}</i></div>
+                    </li>
+                </ul>
+            </p>
+            <button type="button" class="btn btn-primary" ng-click="vm.importContent(); vm.currentStep = 3" translate="Content.Import.Commands.Import" ng-show="vm.evaluation.Succeeded"></button>
             <button type="button" class="btn btn-default" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
             <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
         </div>
 
         <div ng-switch-when="3">
             <p>
-                TODO: Show the result of import
+                <span ng-show="vm.import.Succeeded" translate="Content.Import.Messages.ImportSucceeded"></span>
+                <span ng-hide="vm.import.Succeeded" translate="Content.Import.Messages.ImportFailed"></span>
             </p>
             <button type="button" class="btn btn-primary" ng-click="vm.currentStep = 1" translate="Content.Import.Commands.Back"></button>
             <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
         </div>
+
     </div>
 
     <hr />
-    <pre>{{vm.debug | json}}</pre>
+    <pre>{{vm.formValues | json}}</pre>
 </div>

@@ -34,17 +34,17 @@
                 "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
             }
         }, {
-            // File references
-            key: "FileReferences",
+            // File / page references
+            key: "ResourcesReferences",
             type: "radio",
             expressionProperties: {
-                "templateOptions.label": "'Content.Import.Fields.FileReferences.Label' | translate",
+                "templateOptions.label": "'Content.Import.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Fields.FileReferences.Options.Keep"),
+                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Keep"),
                         "value": "Keep"
                     }, {
-                        "name": translate("Content.Import.Fields.FileReferences.Options.Resolve"),
+                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -71,8 +71,14 @@
 
         vm.currentStep = "1"; // 1, 2, 3...
 
+
+        vm.evaluation = { };
+
+        vm.import = { };
+
+
         vm.evaluateContent = function previewContent() {
-            contentImportService.evaluateContent(vm.formValues).then(function (result) { vm.debug = result; });
+            contentImportService.evaluateContent(vm.formValues).then(function (result) { vm.evaluation = result.data; });
         };
 
         vm.importContent = function importContent() {

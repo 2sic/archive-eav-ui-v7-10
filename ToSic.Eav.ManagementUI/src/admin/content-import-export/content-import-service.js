@@ -14,7 +14,7 @@
 
         function evaluateContent(args) {
 
-            return $http.post("eav/ContentImport/EvaluateContent", { AppId: args.AppId, ContentType: args.ContentType, ContentBase64: args.File.base64 });
+            return $http.post("eav/ContentImport/EvaluateContent", { AppId: args.AppId, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
         }
 
         function importContent(args) {
