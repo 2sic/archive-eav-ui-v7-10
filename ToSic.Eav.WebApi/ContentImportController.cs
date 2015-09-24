@@ -72,15 +72,15 @@ namespace ToSic.Eav.WebApi
         private XmlImport GetXmlImport(ContentImportArgs args)
         {
             var contentTypeId = GetContentTypeId(args.ContentType);
-            var contentLanguages = GetContentLanguages();
+            var contextLanguages = GetContextLanguages();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contentLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
+                return new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
             }
         }
 
-        private string[] GetContentLanguages()
+        private string[] GetContextLanguages()
         {
             return CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
         }

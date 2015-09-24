@@ -3,7 +3,7 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, defaultLanguage, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
@@ -20,7 +20,7 @@
             key: "DefaultLanguage",
             type: "hidden",
             templateOptions: { label: "" },
-            defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
+            defaultValue: $filter("caseSensitiveLanguageKey")(languages.defaultLanguage)
         }, {
             // Content type
             key: "ContentType",

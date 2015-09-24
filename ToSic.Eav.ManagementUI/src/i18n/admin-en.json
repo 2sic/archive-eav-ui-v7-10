@@ -107,10 +107,38 @@
     },
     "Export": {
       "Title": "Export Content / Data",
-      "Help":  "",
+      "Help": "This will generate an XML file which you can edit in Excel. If you just want to import new data, use this to export the schema that you can then fill in using Excel. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
       "Commands": {
-        "Export": "Export",
-        "Close": "Close"
+        "Export": "Export"
+      },
+      "Fields": {
+        "Language": {
+          "Label": "Languages",
+          "Options": {
+            "All": "All"
+          }
+        },
+        "LanguageReferences": {
+          "Label": "Value references to other languages",
+          "Options": {
+            "Link": "Keep references to other languages (for re-import)",
+            "Resolve": "Replace references with values"
+          }
+        },
+        "ResourcesReferences": {
+          "Label": "File / page references",
+          "Options": {
+            "Link": "Keep references (for re-import, for example Page:4711)",
+            "Resolve": "Replace references with real URLs (for example /Portals/0...)"
+          }
+        },
+        "RecordExport": {
+          "Label": "Export data",
+          "Options": {
+            "Blank": "No, just export blank data schema (for new data import)",
+            "All": "Yes, export all content-items"
+          }
+        }
       }
     },
     "Import": {
@@ -138,8 +166,7 @@
       "Commands": {
         "Preview": "Preview Import",
         "Import": "Import",
-        "Back": "Back",
-        "Close": "Close"
+        "Back": "Back"
       },
       "Messages": {
         "BackupContentBefore": "Remember to backup your DNN first!",

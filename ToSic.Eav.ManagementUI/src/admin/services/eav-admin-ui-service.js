@@ -51,12 +51,12 @@ angular.module("EavAdminUi", ["ng",
 
         //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
             };
 
             svc.openContentExport = function ocexp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 

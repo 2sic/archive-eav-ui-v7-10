@@ -116,6 +116,7 @@
     <Content Include="src\admin\content-import-export\content-export-service.js" />
     <Content Include="src\admin\content-import-export\content-export.html" />
     <Content Include="src\admin\content-import-export\content-formly-types-config.js" />
+    <Content Include="src\admin\content-import-export\content-helper-filters.js" />
     <Content Include="src\admin\content-import-export\content-import-app.js" />
     <Content Include="src\admin\content-import-export\content-import-controller.js" />
     <Content Include="src\admin\content-import-export\content-formly-types-app.js" />

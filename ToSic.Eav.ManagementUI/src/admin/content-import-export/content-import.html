@@ -4,28 +4,34 @@
     <h3 class="modal-title" translate="Content.Import.Title" translate-values="{step: vm.viewStateSelected}"></h3>
 </div>
 <!-- END HEADER -->
-<!-- BODY -->
-<div class="modal-body">
 
-    <div ng-switch="vm.viewStateSelected">
-        <!-- FORM -->
-        <div ng-switch-when="1">
+<div ng-switch="vm.viewStateSelected">
+
+    <!-- FORM -->
+    <div ng-switch-when="1">
+        <div class="modal-body">
             <div translate="Content.Import.Help"></div>
-            <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
-                <div class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></div>
-                <br />
-                <button type="button" class="btn btn-primary" ng-click="vm.evaluateContent()" ng-disabled="!vm.formValues.File || !vm.formValues.File.filename" translate="Content.Import.Commands.Preview"></button>
-                <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
-            </formly-form>
+            <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields"></formly-form>
+            <div class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></div>
         </div>
-        <!-- END FORM -->
-        <!-- WAITING -->
-        <div ng-switch-when="0">
-            <div><img src="/Scripts/images/ui-ajax-loader.gif" /> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="vm.evaluateContent()" ng-disabled="!vm.formValues.File || !vm.formValues.File.filename" translate="Content.Import.Commands.Preview"></button>
         </div>
-        <!-- END WAITING -->
-        <!-- EVALUATION RESULT -->
-        <div ng-switch-when="2">
+    </div>
+    <!-- END FORM -->
+
+
+    <!-- WAITING -->
+    <div ng-switch-when="0">
+        <div class="modal-body"><img src="/Scripts/images/ui-ajax-loader.gif" /> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div>
+        <div class="modal-footer"></div>
+    </div>
+    <!-- END WAITING -->
+
+
+    <!-- EVALUATION RESULT -->
+    <div ng-switch-when="2">
+        <div class="modal-body">
             <!-- DETAILS / STATISTICS -->
             <div ng-if="vm.evaluationResult.Succeeded">
                 <h4 translate="Content.Import.Evaluation.Detail.Title" translate-values="{filename: vm.formValues.File.filename}"></h4>
@@ -58,23 +64,24 @@
                 </ul>
             </div>
             <!-- END ERRORS -->
-            <br />
-            <button type="button" class="btn btn-primary" ng-click="vm.importContent()" translate="Content.Import.Commands.Import" ng-show="vm.evaluationResult.Succeeded"></button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="vm.importContent()" translate="Content.Import.Commands.Import" ng-disabled="!vm.evaluationResult.Succeeded"></button>
             <button type="button" class="btn btn-default" ng-click="vm.back()" translate="Content.Import.Commands.Back"></button>
-            <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
         </div>
-        <!-- END EVALUATION RESULT -->
-        <!-- IMPORT RESULT -->
-        <div ng-switch-when="3">
-            <div>
-                <span ng-show="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportSucceeded"></span>
-                <span ng-hide="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportFailed"></span>
-            </div>
-            <br />
-            <button type="button" class="btn btn-primary" ng-click="vm.back()" translate="Content.Import.Commands.Back"></button>
-            <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Import.Commands.Close"></button>
-        </div>
-        <!-- END IMPORT RESULT -->
     </div>
+    <!-- END EVALUATION RESULT -->
+
+
+    <!-- IMPORT RESULT -->
+    <div ng-switch-when="3">
+        <div class="modal-body">
+            <span ng-show="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportSucceeded"></span>
+            <span ng-hide="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportFailed"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="vm.back()" translate="Content.Import.Commands.Back"></button>
+        </div>
+    </div>
+    <!-- END IMPORT RESULT -->
 </div>
-<!-- END BODY -->
