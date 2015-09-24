@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Import;
-using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
@@ -134,7 +130,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpPost]
 	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
-            // TODO2tk: Refactor code - we use methods from XML import extensions!
+            // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
             if (newData.Id == 0)
             {   // New entity
@@ -144,7 +140,8 @@ namespace ToSic.Eav.WebApi
             {
                 importEntity.EntityGuid = newData.Guid;
             }
-            importEntity.IsPublished = true; // TODO2tk: newData.IsPublished;
+            importEntity.IsPublished = true; // TODO 2rm: newData.IsPublished;
+            // todo 2rm - date-picker shouldn't have time zones
 
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
@@ -188,65 +185,6 @@ namespace ToSic.Eav.WebApi
             return true;
 	    }
 
-
-        private void OldInsertWebForm()
-        {
-            //// Cancel insert if current language is not default language
-            //if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
-            //    return;
-
-            //var values = new Dictionary<string, ValueViewModel>();
-
-            //// Extract Values
-            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>())
-            //    fieldTemplate.ExtractValues(values);
-
-            //// Prepare DimensionIds
-            //var dimensionIds = new List<int>();
-            //if (DefaultCultureDimension.HasValue)
-            //    dimensionIds.Add(DefaultCultureDimension.Value);
-
-            //Entity result;
-            //var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : EavContext.DefaultAssignmentObjectTypeId;
-            //if (!KeyGuid.HasValue)
-            //    result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
-            //else
-            //    result = Db.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
-
-            //RedirectToListItems();
-
-            //if (Inserted != null)
-            //    Inserted(result);
-
-            //if (Saved != null)
-            //    Saved(result);
-        }
-
-        private void OldUpdateWebForm()
-        {
-            //var values = new Dictionary<string, ValueViewModel>();
-
-            //#region Extract Values (only of enabled fields)
-            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))
-            //{
-            //    // if not master and not translated, don't pass/extract this value
-            //    if (!MasterRecord && fieldTemplate.ValueId == null && fieldTemplate.ReadOnly)
-            //        continue;
-
-            //    fieldTemplate.ExtractValues(values);
-            //}
-            //#endregion
-
-            //var result = Db.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
-
-            //RedirectToListItems();
-
-            //if (Updated != null)
-            //    Updated(result);
-
-            //if (Saved != null)
-            //    Saved(result);
-        }
         #endregion
 
 
