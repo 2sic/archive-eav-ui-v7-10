@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web.Http;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
@@ -31,50 +32,37 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        public HttpResponseMessage ExportContent(ContentExportArgs args)
+        [HttpGet]
+        public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType, RecordExport recordExport, ResourceReferenceExport resourcesReferences, LanguageReferenceExport languageReferences)
         {
-            AppId = args.AppId;
+            AppId = appId;
 
-            var fileContent = default(string);
-
-            var contentTypeId = GetContentTypeId(args.ContentType);
+            var contentTypeId = GetContentTypeId(contentType);
             var contextLanguages = GetContextLanguages();
 
-            var export = new XmlExport();
-            if (args.RecordExport.IsBlank())
+            string fileContent;
+            if (recordExport.IsBlank())
             {
-                fileContent = export.CreateBlankXml(CurrentContext.ZoneId, args.AppId, contentTypeId, "");
+                fileContent = new XmlExport().CreateBlankXml(CurrentContext.ZoneId, appId, contentTypeId, "");
             }
             else
             {
-                fileContent = export.CreateXml(CurrentContext.ZoneId, args.AppId, contentTypeId, args.Language ?? "", args.DefaultLanguage, contextLanguages, args.LanguageReferences, args.ResourcesReferences);
+                fileContent = new XmlExport().CreateXml(CurrentContext.ZoneId, appId, contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences);
             }
 
-            HttpResponseMessage response = XXX(args, fileContent);
-            return response;
-        }
-
-        private HttpResponseMessage XXX(ContentExportArgs args, string fileContent)
-        {
-            var fileName = string.Format
-                        (
-                            "2sxc {0} {1} {2} {3}.xml",
-                            args.ContentType.Replace(" ", "-"),
-                            args.Language.Replace(" ", "-"),
-                            args.RecordExport.IsBlank() ? "Template" : "Data",
-                            DateTime.Now.ToString("yyyyMMddHHmmss")
-                        );
+            var fileName = string.Format("2sxc {0} {1} {2} {3}.xml", contentType.Replace(" ", "-"), language, recordExport.IsBlank() ? "Template" : "Data", DateTime.Now.ToString("yyyyMMddHHmmss"));
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StreamContent(GetStreamFromString(fileContent));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
+            response.Content.Headers.ContentLength = fileContent.Length;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
             response.Content.Headers.ContentDisposition.FileName = fileName;
-            response.Content.Headers.ContentLength = fileContent.Length;
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             return response;
         }
 
-        public Stream GetStreamFromString(string str)
+
+        private Stream GetStreamFromString(string str)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);

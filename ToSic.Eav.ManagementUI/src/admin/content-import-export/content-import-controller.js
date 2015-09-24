@@ -19,13 +19,11 @@
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
-            templateOptions: { label: "" },
-            defaultValue: $filter("caseSensitiveLanguageKey")(languages.defaultLanguage)
+            defaultValue: $filter("isoLangCode")(languages.defaultLanguage)
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
-            templateOptions: { label: "" },
             defaultValue: contentType
         }, {
             // File

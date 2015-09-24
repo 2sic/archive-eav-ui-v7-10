@@ -16,41 +16,41 @@
     function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter) {
         var translate = $filter("translate");
 
+
         var vm = this;
 
-        vm.formValues = { };
+        vm.formValues = {};
 
         vm.formFields = [{
             // Content type
             key: "AppId",
             type: "hidden",
-            templateOptions: { label: "" },
             defaultValue: appId
         }, {
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
-            templateOptions: { label: "" },
-            defaultValue: $filter("caseSensitiveLanguageKey")(languages.defaultLanguage)
+            defaultValue: $filter("isoLangCode")(languages.defaultLanguage)
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
-            templateOptions: { label: "" },
             defaultValue: contentType
         }, {
             key: "Language",
             type: "select",
-            templateOptions: {
-
-            },
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.Language.Label' | translate",
                 "templateOptions.options": function () {
-                    return [{
+                    var options = [{
                         "name": translate("Content.Export.Fields.Language.Options.All"),
                         "value": ""
                     }];
+                    angular.forEach(languages.languages, function (lang) {
+                        var langCode = $filter("isoLangCode")(lang.key);
+                        options.push({ "name": langCode, "value": langCode });
+                    });
+                    return options;
                 }
             },
             defaultValue: ""
@@ -76,6 +76,9 @@
             type: "radio",
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.LanguageReferences.Label' | translate",
+                "templateOptions.disabled": function () {
+                    return vm.formValues.RecordExport == "Blank";
+                },
                 "templateOptions.options": function () {
                     return [{
                         "name": translate("Content.Export.Fields.LanguageReferences.Options.Link"),
@@ -93,6 +96,9 @@
             type: "radio",
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.ResourcesReferences.Label' | translate",
+                "templateOptions.disabled": function () {
+                    return vm.formValues.RecordExport == "Blank";
+                },
                 "templateOptions.options": function () {
                     return [{
                         "name": translate("Content.Export.Fields.ResourcesReferences.Options.Link"),
@@ -106,10 +112,10 @@
             defaultValue: "Link"
         }];
 
-        vm.exportContent = function exportContent() {
-            contentExportService.exportContent(formFields).then(function () { });
-        };
 
+        vm.exportContent = function exportContent() {
+            contentExportService.exportContent(vm.formValues);
+        };
 
         vm.close = function close() {
             $modalInstance.dismiss("cancel");
@@ -123,17 +129,16 @@
          .factory("contentExportService", contentExportService);
 
 
-    function contentExportService($http, $q) {
+    function contentExportService() {
         var srvc = {
             exportContent: exportContent,
         };
         return srvc;
 
         function exportContent(args) {
-            return $q.when(true);
+            window.open("/api/eav/ContentExport/ExportContent?appId=" + args.AppId + "&language=" + args.Language + "&defaultLanguage=" + args.DefaultLanguage + "&contentType=" + args.ContentType + "&recordExport=" + args.RecordExport + "&resourcesReferences=" + args.ResourcesReferences + "&languageReferences=" + args.LanguageReferences, "_self", "");
         }
     }
-    contentExportService.$inject = ["$http", "$q"];
 }());
 (function () {
     angular.module("ContentFormlyTypes", [
@@ -167,7 +172,7 @@
     angular.module("ContentHelperFilters", []);
 
 
-    angular.module("ContentHelperFilters").filter("caseSensitiveLanguageKey", function () {
+    angular.module("ContentHelperFilters").filter("isoLangCode", function () {
         return function (str) {
             if (str.length != 5)
                 return str;
@@ -206,13 +211,11 @@
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
-            templateOptions: { label: "" },
-            defaultValue: $filter("caseSensitiveLanguageKey")(languages.defaultLanguage)
+            defaultValue: $filter("isoLangCode")(languages.defaultLanguage)
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
-            templateOptions: { label: "" },
             defaultValue: contentType
         }, {
             // File
