@@ -113,6 +113,7 @@
     <Content Include="Scripts\images\ui-ajax-loader.gif" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
+    <Content Include="src\admin\content-import-export\content-export-service.js" />
     <Content Include="src\admin\content-import-export\content-export.html" />
     <Content Include="src\admin\content-import-export\content-formly-types-config.js" />
     <Content Include="src\admin\content-import-export\content-import-app.js" />

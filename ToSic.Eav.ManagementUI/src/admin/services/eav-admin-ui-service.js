@@ -34,6 +34,7 @@ angular.module("EavAdminUi", ["ng",
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
+    "ContentExportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
@@ -52,7 +53,12 @@ angular.module("EavAdminUi", ["ng",
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
-           };
+            };
+
+            svc.openContentExport = function ocexp(appId, staticName, closeCallback) {
+                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
+                return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
+            };
 
         //#endregion
 

@@ -1,1 +1,15 @@
-﻿
+﻿<!-- HEADER -->
+<div class="modal-header">
+    <button class="btn pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
+    <h3 class="modal-title" translate="Content.Export.Title"></h3>
+</div>
+<!-- END HEADER -->
+<!-- BODY -->
+<div class="modal-body">
+    <div translate="Content.Export.Help"></div>
+    <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
+        <button type="button" class="btn btn-primary" ng-click="vm.exportContent()" translate="Content.Export.Commands.Export"></button>
+        <button type="button" class="btn btn-default" ng-click="vm.close()" translate="Content.Export.Commands.Close"></button>
+    </formly-form>
+</div>
+<!-- END BODY -->

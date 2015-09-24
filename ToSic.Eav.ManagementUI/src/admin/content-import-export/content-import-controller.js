@@ -8,9 +8,7 @@
 
         var vm = this;
 
-        vm.debug = {};
-
-        vm.formValues = { };
+        vm.formValues = {};
 
         vm.formFields = [{
             // Content type
@@ -21,7 +19,7 @@
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
-            defaultValue: defaultLanguage
+            defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
         }, {
             // Content type
             key: "ContentType",

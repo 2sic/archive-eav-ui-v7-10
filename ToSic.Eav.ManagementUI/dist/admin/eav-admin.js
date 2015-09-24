@@ -1,5 +1,69 @@
+(function () {
+    angular.module("ContentExportApp", [
+        "EavAdminUi",
+        "EavDirectives",
+        "EavServices",
+        "ContentFormlyTypes"
+    ]);
+}());
+(function () {
+
+    angular.module("ContentExportApp")
+        .controller("ContentExport", contentExportController);
+
+    function contentExportController(appId, defaultLanguage, contentType, contentExportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
+        var translate = $filter("translate");
+
+        var vm = this;
+
+        vm.formValues = {};
+
+        vm.formFields = [{
+            // Content type
+            key: "AppId",
+            type: "hidden",
+            defaultValue: appId
+        }, {
+            // Default / fallback language
+            key: "DefaultLanguage",
+            type: "hidden",
+            defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
+        }, {
+            // Content type
+            key: "ContentType",
+            type: "hidden",
+            defaultValue: contentType
+        }];
+
+        vm.exportContent = function exportContent() {
+
+        };
 
 
+        vm.close = function close() {
+            $modalInstance.dismiss("cancel");
+        };
+    }
+    contentExportController.$inject = ["appId", "defaultLanguage", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "$modalInstance", "$filter"];
+}());
+(function () {
+
+    angular.module("ContentExportApp")
+         .factory("contentExportService", contentExportService);
+
+
+    function contentExportService($http, $q) {
+        var srvc = {
+            exportContent: exportContent,
+        };
+        return srvc;
+
+        function exportContent(args) {
+            return $q.when(true);
+        }
+    }
+    contentExportService.$inject = ["$http", "$q"];
+}());
 (function () {
     angular.module("ContentFormlyTypes", [
         "naif.base64",
@@ -17,7 +81,7 @@
 
             formly.setType({
                 name: "file",
-                template: "<span class='btn btn-default btn-file'><span class='glyphicon glyphicon-open'></span><input type='file' ng-model='model[options.key]' base-sixty-four-input /></span><br /><span ng-if='model[options.key]'>{{model[options.key].filename}}</span>",
+                template: "<span class='btn btn-default btn-file'><span class='glyphicon glyphicon-open'></span><input type='file' ng-model='model[options.key]' base-sixty-four-input /></span> <span ng-if='model[options.key]'>{{model[options.key].filename}}</span>",
                 wrapper: ["bootstrapLabel", "bootstrapHasError"]
             });
 
@@ -41,21 +105,23 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
+    function contentImportController(appId, defaultLanguage, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
 
-        vm.debug = {};
-
-        vm.formValues = { };
+        vm.formValues = {};
 
         vm.formFields = [{
             // Content type
             key: "AppId",
             type: "hidden",
             defaultValue: appId
+        }, {
+            // Default / fallback language
+            key: "DefaultLanguage",
+            type: "hidden",
+            defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
         }, {
             // Content type
             key: "ContentType",
@@ -107,38 +173,54 @@
             defaultValue: "None"
         }];
 
-        vm.currentStep = "1"; // 1, 2, 3...
+        vm.viewStates = {
+            "Waiting":   0,
+            "Default":   1,
+            "Evaluated": 2,
+            "Imported":  3
+        };
+
+        vm.viewStateSelected = vm.viewStates.Default;
 
 
-        vm.evaluation = {};
-        vm.evaluationInProgress = false;
+        vm.evaluationResult = { };
 
-        vm.import = { };
-        vm.importInProgress = false;
+        vm.importResult = { };
 
-        vm.evaluateContent = function previewContent() {
-            vm.evaluation = { };
-            vm.evaluationInProgress = true;
+
+        vm.evaluateContent = function evaluateContent() {
+            vm.viewStateSelected = vm.viewStates.Waiting;
             return contentImportService.evaluateContent(vm.formValues).then(function (result) {
-                vm.evaluation = result.data;
-                vm.evaluationInProgress = true;
+                vm.evaluationResult = result.data;
+                vm.viewStateSelected = vm.viewStates.Evaluated;
             });
         };
 
         vm.importContent = function importContent() {
-            vm.import = { };
-            vm.importInProgress = true;
+            vm.viewStateSelected = vm.viewStates.Waiting;
             return contentImportService.importContent(vm.formValues).then(function (result) {
-                vm.import = result.data;
-                vm.importInProgress = false;
+                vm.importResult = result.data;
+                vm.viewStateSelected = vm.viewStates.Imported;
             });
         };
 
+        vm.reset = function reset() {
+            vm.formValues = { };
+            vm.evaluationResult = { };
+            vm.importResult = { };
+        };
+
+        vm.back = function back() {
+            vm.reset();
+            vm.viewStateSelected = vm.viewStates.Default;
+        };
+
         vm.close = function close() {
+            vm.viewStateSelected = vm.viewStates.Default;
             $modalInstance.dismiss("cancel");
         };
     }
-    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "$modalInstance", "$filter"];
+    contentImportController.$inject = ["appId", "defaultLanguage", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "$modalInstance", "$filter"];
 }());
 (function () {
 
@@ -151,15 +233,14 @@
             evaluateContent: evaluateContent,
             importContent: importContent
         };
-
         return srvc;
 
         function evaluateContent(args) {
-            return $http.post("eav/ContentImport/EvaluateContent", { AppId: args.AppId, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
+            return $http.post("eav/ContentImport/EvaluateContent", { AppId: args.AppId, DefaultLanguage: args.DefaultLanguage, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
         }
 
         function importContent(args) {
-            return $http.post("eav/ContentImport/ImportContent", { AppId: args.AppId, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
+            return $http.post("eav/ContentImport/ImportContent", { AppId: args.AppId, DefaultLanguage: args.DefaultLanguage, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
         }
     }
     contentImportService.$inject = ["$http"];
@@ -350,8 +431,8 @@
             return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         };
 
-        vm.openExport = function openExport() {
-            return eavAdminDialogs.openContentExport(svc.appId);
+        vm.openExport = function openExport(item) {
+            return eavAdminDialogs.openContentExport(svc.appId, item.StaticName, vm.refresh);
         };
 
         vm.openImport = function openImport(item) {
@@ -491,12 +572,12 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
   'use strict';
 
   $templateCache.put('content-import-export/content-export.html',
-    ""
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title translate=Content.Export.Title></h3></div><div class=modal-body><div translate=Content.Export.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields><button type=button class=\"btn btn-primary\" ng-click=vm.exportContent() translate=Content.Export.Commands.Export></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Export.Commands.Close></button></formly-form></div>"
   );
 
 
   $templateCache.put('content-import-export/content-import.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title translate=Content.Import.Title translate-values=\"{currentStep: vm.currentStep}\"></h3></div><div class=modal-body><div ng-switch=vm.currentStep><div ng-switch-when=1><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div><button type=button class=\"btn btn-primary\" ng-click=\"vm.evaluateContent(); vm.currentStep = 2\" ng-disabled=!vm.form.$valid translate=Content.Import.Commands.Preview></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></formly-form></div><div ng-switch-when=2><div ng-if=vm.evaluation.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluation.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluation.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluation.Detail.AttributeNamesInDocument.length, attributes: vm.evaluation.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluation.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluation.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluation.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluation.Detail.AttributeNamesNotImported.length, attributes: vm.evaluation.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluation.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluation.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div><button type=button class=\"btn btn-primary\" ng-click=\"vm.importContent(); vm.currentStep = 3\" translate=Content.Import.Commands.Import ng-show=vm.evaluation.Succeeded></button> <button type=button class=\"btn btn-default\" ng-click=\"vm.currentStep = 1\" translate=Content.Import.Commands.Back></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></div><div ng-switch-when=3><div><span ng-show=vm.import.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.import.Succeeded translate=Content.Import.Messages.ImportFailed></span></div><button type=button class=\"btn btn-primary\" ng-click=\"vm.currentStep = 1\" translate=Content.Import.Commands.Back></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></div></div></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title translate=Content.Import.Title translate-values=\"{step: vm.viewStateSelected}\"></h3></div><div class=modal-body><div ng-switch=vm.viewStateSelected><div ng-switch-when=1><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div><br><button type=button class=\"btn btn-primary\" ng-click=vm.evaluateContent() ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=Content.Import.Commands.Preview></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></formly-form></div><div ng-switch-when=0><div><img src=\"/Scripts/images/ui-ajax-loader.gif\"> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div></div><div ng-switch-when=2><div ng-if=vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluationResult.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div><br><button type=button class=\"btn btn-primary\" ng-click=vm.importContent() translate=Content.Import.Commands.Import ng-show=vm.evaluationResult.Succeeded></button> <button type=button class=\"btn btn-default\" ng-click=vm.back() translate=Content.Import.Commands.Back></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></div><div ng-switch-when=3><div><span ng-show=vm.importResult.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.importResult.Succeeded translate=Content.Import.Messages.ImportFailed></span></div><br><button type=button class=\"btn btn-primary\" ng-click=vm.back() translate=Content.Import.Commands.Back></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Import.Commands.Close></button></div></div></div>"
   );
 
 
@@ -1548,6 +1629,7 @@ angular.module("EavAdminUi", ["ng",
     "ContentItemsApp",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
+    "ContentExportApp",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
@@ -1564,9 +1646,14 @@ angular.module("EavAdminUi", ["ng",
 
         //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
+                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
-           };
+            };
+
+            svc.openContentExport = function ocexp(appId, staticName, closeCallback) {
+                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
+                return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
+            };
 
         //#endregion
 

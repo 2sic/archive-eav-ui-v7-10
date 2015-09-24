@@ -105,9 +105,17 @@
       "HD": "has draft: {{id}}",
       "HP": "will replace published: {{id}}"
     },
+    "Export": {
+      "Title": "Export Content",
+      "Help":  "",
+      "Commands": {
+        "Export": "Export",
+        "Close": "Close"
+      }
+    },
     "Import": {
-      "Title": "Import Content / Data Step {{currentStep}} of 3",
-      "Help": "This will import content-items / data into 2sxc. It requires that you already defined the Content-Type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
+      "Title": "Import Content / Data Step {{step}} of 3",
+      "Help": "This will import content-items into 2sxc. It requires that you already defined the content-type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
       "Fields": {
         "File": {
           "Label": "Choose file"
@@ -136,10 +144,12 @@
       "Messages": {
         "BackupContentBefore": "Remember to backup your DNN first!",
 
+        "WaitingForResponse": "Please wait while processing...",
+
         "ImportSucceeded": "Import done.",
         "ImportFailed": "Import failed.",
 
-        "ImportCanTakeSomeTime": ""
+        "ImportCanTakeSomeTime": "Note: The import validates much data and may take several minutes."
       },
       "Evaluation": {
         "Error": {
