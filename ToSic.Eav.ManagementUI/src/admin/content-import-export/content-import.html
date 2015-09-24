@@ -1,7 +1,7 @@
 ﻿<!-- HEADER -->
 <div class="modal-header">
     <button class="btn pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
-    <h3 class="modal-title" translate="Content.Import.Title" translate-values="{step: vm.viewStateSelected}"></h3>
+    <h3 class="modal-title"><span  translate="Content.Import.Title"></span> <span ng-show="vm.viewStateSelected > 0" translate="Content.Import.TitleSteps" translate-values="{step: vm.viewStateSelected}"></span></h3>
 </div>
 <!-- END HEADER -->
 
@@ -15,7 +15,7 @@
             <div class="text-warning" translate="Content.Import.Messages.BackupContentBefore"></div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary" ng-click="vm.evaluateContent()" ng-disabled="!vm.formValues.File || !vm.formValues.File.filename" translate="Content.Import.Commands.Preview"></button>
+            <button type="button" class="btn btn-default" ng-click="vm.evaluateContent()" ng-disabled="!vm.formValues.File || !vm.formValues.File.filename" translate="Content.Import.Commands.Preview"></button>
         </div>
     </div>
     <!-- END FORM -->
@@ -24,7 +24,6 @@
     <!-- WAITING -->
     <div ng-switch-when="0">
         <div class="modal-body"><img src="/Scripts/images/ui-ajax-loader.gif" /> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div>
-        <div class="modal-footer"></div>
     </div>
     <!-- END WAITING -->
 
@@ -66,8 +65,8 @@
             <!-- END ERRORS -->
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary" ng-click="vm.importContent()" translate="Content.Import.Commands.Import" ng-disabled="!vm.evaluationResult.Succeeded"></button>
-            <button type="button" class="btn btn-default" ng-click="vm.back()" translate="Content.Import.Commands.Back"></button>
+            <button type="button" class="btn pull-left" ng-click="vm.back()" icon="arrow-left"></button>
+            <button type="button" class="btn btn-default" ng-click="vm.importContent()" translate="Content.Import.Commands.Import" ng-disabled="!vm.evaluationResult.Succeeded"></button>
         </div>
     </div>
     <!-- END EVALUATION RESULT -->
@@ -79,9 +78,8 @@
             <span ng-show="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportSucceeded"></span>
             <span ng-hide="vm.importResult.Succeeded" translate="Content.Import.Messages.ImportFailed"></span>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary" ng-click="vm.back()" translate="Content.Import.Commands.Back"></button>
-        </div>
     </div>
     <!-- END IMPORT RESULT -->
+
+    <pre>{{vm.formValues | json}}</pre>
 </div>

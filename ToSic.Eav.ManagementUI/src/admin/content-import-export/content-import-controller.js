@@ -109,7 +109,6 @@
         };
 
         vm.back = function back() {
-            vm.reset();
             vm.viewStateSelected = vm.viewStates.Default;
         };
 

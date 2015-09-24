@@ -142,7 +142,8 @@
       }
     },
     "Import": {
-      "Title": "Import Content / Data Step {{step}} of 3",
+      "Title": "Import Content / Data Step",
+      "TitleSteps":  "{{step}} of 3",
       "Help": "This will import content-items into 2sxc. It requires that you already defined the content-type before you try importing, and that you created the import-file using the template provided by the Export. Please visit <a href='http://2sxc.org/help' target='_blank'>http://2sxc.org/help</a> for more instructions.",
       "Fields": {
         "File": {
@@ -165,8 +166,7 @@
       },
       "Commands": {
         "Preview": "Preview Import",
-        "Import": "Import",
-        "Back": "Back"
+        "Import": "Import"
       },
       "Messages": {
         "BackupContentBefore": "Remember to backup your DNN first!",

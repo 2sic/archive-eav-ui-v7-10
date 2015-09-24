@@ -38,6 +38,7 @@ namespace ToSic.Eav.WebApi
             AppId = appId;
 
             var contentTypeId = GetContentTypeId(contentType);
+            var contentTypeName = GetContentTypeName(contentType);
             var contextLanguages = GetContextLanguages();
 
             string fileContent;
@@ -50,7 +51,7 @@ namespace ToSic.Eav.WebApi
                 fileContent = new XmlExport().CreateXml(CurrentContext.ZoneId, appId, contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences);
             }
 
-            var fileName = string.Format("2sxc {0} {1} {2} {3}.xml", contentType.Replace(" ", "-"), language, recordExport.IsBlank() ? "Template" : "Data", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            var fileName = string.Format("2sxc {0} {1} {2} {3}.xml", contentTypeName.Replace(" ", "-"), language, recordExport.IsBlank() ? "Template" : "Data", DateTime.Now.ToString("yyyyMMddHHmmss"));
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StreamContent(GetStreamFromString(fileContent));
@@ -72,9 +73,14 @@ namespace ToSic.Eav.WebApi
             return stream;
         }
 
-        private int GetContentTypeId(string name)
+        private int GetContentTypeId(string staticName)
         {
-            return CurrentContext.AttribSet.GetAttributeSetId(name, null);
+            return CurrentContext.AttribSet.GetAttributeSetId(staticName, null);
+        }
+
+        private string GetContentTypeName(string staticName)
+        {
+            return CurrentContext.AttribSet.GetAttributeSet(staticName).Name;
         }
 
         private string[] GetContextLanguages()

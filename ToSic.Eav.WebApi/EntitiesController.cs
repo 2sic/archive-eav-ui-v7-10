@@ -140,8 +140,8 @@ namespace ToSic.Eav.WebApi
             {
                 importEntity.EntityGuid = newData.Guid;
             }
-            importEntity.IsPublished = true; // TODO 2rm: newData.IsPublished;
-            // todo 2rm - date-picker shouldn't have time zones
+            importEntity.IsPublished = true; // todo 2rm - newData.IsPublished;
+                                             // todo 2rm - date picker shouldn't have time zones (maybe talk to 2tk before fixing the  bug)
 
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
