@@ -16,22 +16,25 @@
 
         var vm = this;
 
-        vm.formValues = {};
+        vm.formValues = { };
 
         vm.formFields = [{
             // Content type
             key: "AppId",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: appId
         }, {
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: contentType
         }];
 
@@ -121,11 +124,13 @@
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: contentType
         }, {
             // File
@@ -572,7 +577,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
   'use strict';
 
   $templateCache.put('content-import-export/content-export.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title translate=Content.Export.Title></h3></div><div class=modal-body><div translate=Content.Export.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields><button type=button class=\"btn btn-primary\" ng-click=vm.exportContent() translate=Content.Export.Commands.Export></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Export.Commands.Close></button></formly-form></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title translate=Content.Export.Title>cc</h3></div><div class=modal-body><div translate=Content.Export.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields><button type=button class=\"btn btn-primary\" ng-click=vm.exportContent() translate=Content.Export.Commands.Export></button> <button type=button class=\"btn btn-default\" ng-click=vm.close() translate=Content.Export.Commands.Close></button></formly-form></div>"
   );
 
 

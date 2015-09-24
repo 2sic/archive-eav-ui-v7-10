@@ -19,11 +19,13 @@
             // Default / fallback language
             key: "DefaultLanguage",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: defaultLanguage.substring(0, 2).toLowerCase() + "-" + defaultLanguage.substring(3, 5).toUpperCase()
         }, {
             // Content type
             key: "ContentType",
             type: "hidden",
+            templateOptions: { label: "" },
             defaultValue: contentType
         }, {
             // File

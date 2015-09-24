@@ -106,7 +106,7 @@
       "HP": "will replace published: {{id}}"
     },
     "Export": {
-      "Title": "Export Content",
+      "Title": "Export Content / Data",
       "Help":  "",
       "Commands": {
         "Export": "Export",
@@ -186,9 +186,6 @@
           }
         }
       }
-    },
-    "Export": {
-      "Title": "Export Content"
     },
     "History": {
       "Title": "History of {{id}}",
