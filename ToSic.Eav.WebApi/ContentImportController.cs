@@ -1,86 +1,57 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.Http;
-using ToSic.Eav.BLL;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using ToSic.Eav.Persistence;
-using ToSic.Eav.Serializers;
 
 
 namespace ToSic.Eav.WebApi
 {
-
-
-
-
     public class ContentImportController : Eav3WebApiBase
     {
-        public class ContentEvaluateArgs
-        {
-            public int AppId;
-            public ResourceReferenceImport ResourcesReferences;
-            public EntityClearImport ClearEntities;
-            public string ContentType;
-            public string ContentBase64;
-        }
-
         public class ContentImportArgs
         {
             public int AppId;
+
+            public string DefaultLanguage;
+
             public ResourceReferenceImport ResourcesReferences;
+
             public EntityClearImport ClearEntities;
+
             public string ContentType;
+
             public string ContentBase64;
-        }
-
-        public class ContentEvaluationResult
-        {
-            public bool Succeeded;
-
-            public dynamic Detail;
-
-            public ContentEvaluationResult(bool succeeded, dynamic detail) {
-                Succeeded = succeeded;
-                Detail = detail;
-            }
         }
 
         public class ContentImportResult
         {
             public bool Succeeded;
 
-            public ContentImportResult(bool succeeded) {
+            public dynamic Detail;
+
+            public ContentImportResult(bool succeeded, dynamic detail)
+            {
                 Succeeded = succeeded;
+                Detail = detail;
             }
         }
 
 
         [HttpPost]
-        public ContentEvaluationResult EvaluateContent(ContentEvaluateArgs args)
+        public ContentImportResult EvaluateContent(ContentImportArgs args)
         {
             AppId = args.AppId;
 
-            using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
+            var import = GetXmlImport(args);
+            if (import.ErrorProtocol.HasErrors)
             {
-                var contentTypeId = GetContentTypeId(args.ContentType);
-                var contextLanguages = GetContextLanguages();
-
-                var import = new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, contextLanguages[0], args.ClearEntities, args.ResourcesReferences);
-                if (import.ErrorProtocol.HasErrors)
-                {
-                    return new ContentEvaluationResult(!import.ErrorProtocol.HasErrors, import.ErrorProtocol.Errors);
-                }
-                else
-                {
-                    return new ContentEvaluationResult(!import.ErrorProtocol.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
-                }
+                return new ContentImportResult(!import.ErrorProtocol.HasErrors, import.ErrorProtocol.Errors);
+            }
+            else
+            {
+                return new ContentImportResult(!import.ErrorProtocol.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
             }
         }
 
@@ -89,22 +60,27 @@ namespace ToSic.Eav.WebApi
         {
             AppId = args.AppId;
 
-            using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
+            var import = GetXmlImport(args);
+            if (!import.ErrorProtocol.HasErrors)
             {
-                var contentTypeId = GetContentTypeId(args.ContentType);
-                var contextLanguages = GetContextLanguages();
-
-                var import = new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, contextLanguages[0], args.ClearEntities, args.ResourcesReferences);
-                if (!import.ErrorProtocol.HasErrors)
-                {
-                    import.PersistImportToRepository(CurrentContext.UserName);
-                }
-                return new ContentImportResult(!import.ErrorProtocol.HasErrors);
+                import.PersistImportToRepository(CurrentContext.UserName);
             }
+            return new ContentImportResult(!import.ErrorProtocol.HasErrors, null);
         }
 
 
-        private string[] GetContextLanguages()
+        private XmlImport GetXmlImport(ContentImportArgs args)
+        {
+            var contentTypeId = GetContentTypeId(args.ContentType);
+            var contentLanguages = GetContentLanguages();
+
+            using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
+            {
+                return new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contentLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
+            }
+        }
+
+        private string[] GetContentLanguages()
         {
             return CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
         }

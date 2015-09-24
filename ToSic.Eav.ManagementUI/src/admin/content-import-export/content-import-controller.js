@@ -3,8 +3,7 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
+    function contentImportController(appId, defaultLanguage, contentType, contentImportService, eavAdminDialogs, eavConfig, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
@@ -18,6 +17,11 @@
             key: "AppId",
             type: "hidden",
             defaultValue: appId
+        }, {
+            // Default / fallback language
+            key: "DefaultLanguage",
+            type: "hidden",
+            defaultValue: defaultLanguage
         }, {
             // Content type
             key: "ContentType",
@@ -69,34 +73,50 @@
             defaultValue: "None"
         }];
 
-        vm.currentStep = "1"; // 1, 2, 3...
+        vm.viewStates = {
+            "Waiting":   0,
+            "Default":   1,
+            "Evaluated": 2,
+            "Imported":  3
+        };
+
+        vm.viewStateSelected = vm.viewStates.Default;
 
 
-        vm.evaluation = {};
-        vm.evaluationInProgress = false;
+        vm.evaluationResult = { };
 
-        vm.import = { };
-        vm.importInProgress = false;
+        vm.importResult = { };
 
-        vm.evaluateContent = function previewContent() {
-            vm.evaluation = { };
-            vm.evaluationInProgress = true;
+
+        vm.evaluateContent = function evaluateContent() {
+            vm.viewStateSelected = vm.viewStates.Waiting;
             return contentImportService.evaluateContent(vm.formValues).then(function (result) {
-                vm.evaluation = result.data;
-                vm.evaluationInProgress = true;
+                vm.evaluationResult = result.data;
+                vm.viewStateSelected = vm.viewStates.Evaluated;
             });
         };
 
         vm.importContent = function importContent() {
-            vm.import = { };
-            vm.importInProgress = true;
+            vm.viewStateSelected = vm.viewStates.Waiting;
             return contentImportService.importContent(vm.formValues).then(function (result) {
-                vm.import = result.data;
-                vm.importInProgress = false;
+                vm.importResult = result.data;
+                vm.viewStateSelected = vm.viewStates.Imported;
             });
         };
 
+        vm.reset = function reset() {
+            vm.formValues = { };
+            vm.evaluationResult = { };
+            vm.importResult = { };
+        };
+
+        vm.back = function back() {
+            vm.reset();
+            vm.viewStateSelected = vm.viewStates.Default;
+        };
+
         vm.close = function close() {
+            vm.viewStateSelected = vm.viewStates.Default;
             $modalInstance.dismiss("cancel");
         };
     }

@@ -110,6 +110,7 @@
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
+    <Content Include="Scripts\images\ui-ajax-loader.gif" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export.html" />

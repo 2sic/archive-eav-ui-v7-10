@@ -50,7 +50,7 @@ angular.module("EavAdminUi", ["ng",
 
         //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
+                var resolve = svc.CreateResolve({ appId: appId, defaultLanguage: "en-US", contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
            };
 

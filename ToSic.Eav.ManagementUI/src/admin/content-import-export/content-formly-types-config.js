@@ -7,7 +7,7 @@
 
             formly.setType({
                 name: "file",
-                template: "<span class='btn btn-default btn-file'><span class='glyphicon glyphicon-open'></span><input type='file' ng-model='model[options.key]' base-sixty-four-input /></span><br /><span ng-if='model[options.key]'>{{model[options.key].filename}}</span>",
+                template: "<span class='btn btn-default btn-file'><span class='glyphicon glyphicon-open'></span><input type='file' ng-model='model[options.key]' base-sixty-four-input /></span> <span ng-if='model[options.key]'>{{model[options.key].filename}}</span>",
                 wrapper: ["bootstrapLabel", "bootstrapHasError"]
             });
 
