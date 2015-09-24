@@ -20,7 +20,7 @@
 	});
 
 	// The controller for the main form directive
-	app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {

@@ -20,7 +20,7 @@
 	});
 
 	// The controller for the main form directive
-	app.controller('EditEntityCtrl', ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "entitiesSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller('EditEntityCtrl', ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "entitiesSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -332,7 +332,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/edit-entity-wrapper.html',
-    "<div class=modal-header><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><div xng-controller=\"EditEntityWrapperCtrl as vm\"><eav-language-switcher></eav-language-switcher><eav-edit-entity content-type-name={{vm.contentTypeName}} entity-id={{vm.entityId}} register-edit-control=vm.registerEditControl></eav-edit-entity><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\">Save</button></div></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><div xng-controller=\"EditEntityWrapperCtrl as vm\"><eav-language-switcher></eav-language-switcher><eav-edit-entity content-type-name={{vm.contentTypeName}} entity-id={{vm.entityId}} register-edit-control=vm.registerEditControl></eav-edit-entity><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\">Save</button></div></div>"
   );
 
 }]);
@@ -614,9 +614,12 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				savePromises.push(e.save());
 			});
 			$q.all(savePromises).then(function () {
-				alert("All save promises resolved!");
 			    $modalInstance.dismiss("cancel");
 			});
+		};
+
+		vm.close = function () {
+		    $modalInstance.dismiss("cancel");
 		};
 	}]);
 

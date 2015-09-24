@@ -31,9 +31,12 @@
 				savePromises.push(e.save());
 			});
 			$q.all(savePromises).then(function () {
-				alert("All save promises resolved!");
 			    $modalInstance.dismiss("cancel");
 			});
+		};
+
+		vm.close = function () {
+		    $modalInstance.dismiss("cancel");
 		};
 	});
 
