@@ -1949,8 +1949,11 @@ angular.module("EavServices")
         svc.appId = 0;
 
         // Get the Definition of a DataSource
-        svc.getDataSourceDefinitionProperty = function(model, dataSource) {
-            return $filter("filter")(model.InstalledDataSources, function(d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+        svc.getDataSourceDefinitionProperty = function (model, dataSource) {
+        	var definition = $filter("filter")(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType == dataSource.PartAssemblyAndType; })[0];
+        	if (!definition)
+        		throw "DataSource Definition not found: " + dataSource.PartAssemblyAndType;
+        	return definition;
         };
 
         // todo refactor: why do we have 2 methods with same name?

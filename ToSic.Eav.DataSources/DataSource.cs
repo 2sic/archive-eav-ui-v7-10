@@ -52,7 +52,12 @@ namespace ToSic.Eav
 			//	.Invoke(null, new object[] { zoneId, appId, upstream, ConfigurationProvider });
 			//return (IDataSource) ds;
 
-			var newDs = (BaseDataSource)Factory.Container.Resolve(Type.GetType(sourceName));
+			var type = Type.GetType(sourceName);
+			if (type == null)
+			{
+				throw new Exception("DataSource not installed on Server: " + sourceName);
+			}
+			var newDs = (BaseDataSource)Factory.Container.Resolve(type);
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
 			return newDs;
 		}

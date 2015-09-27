@@ -91,7 +91,10 @@ namespace ToSic.Eav.WebApi
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
 					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
-					dataSourcesJson.Add(dataSource);
+					// ToDo: Replace ToSic.Eav with ToSic.Eav.DataSources
+					var partAssemblyAndType = (string)dataSource["PartAssemblyAndType"];
+
+                    dataSourcesJson.Add(dataSource);
 				}
 				#endregion
 			}
