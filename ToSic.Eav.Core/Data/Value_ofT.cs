@@ -46,6 +46,11 @@ namespace ToSic.Eav.Data
             }
         }
 
+        public object ObjectValue
+        {
+            get { return ((IValue<T>)this).TypedContents; }
+        }
+
         public Value(T typedContents)
         {
             TypedContents = typedContents;

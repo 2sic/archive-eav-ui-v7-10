@@ -27,14 +27,6 @@
 		};
 	});
 
-	//eavLocalization.factory('eavLanguageService', function (languages) {
-		//return {
-		//	languages: [{ key: 'en-us', name: 'English (United States)' }],
-		//	defaultLanguage: 'en-us',
-		//	currentLanguage: 'en-us'
-		//};
-	//});
-
 	eavLocalization.directive('eavLocalizationScopeControl', function () {
 		return {
 			restrict: 'E',
@@ -58,11 +50,14 @@
 					// If current language = default language and there are no values, create an empty value object
 					if (langConf.currentLanguage == langConf.defaultLanguage) {
 						if (fieldModel.Values.length === 0) {
-							var defaultValue = eavDefaultValueService(scope.options);
-							fieldModel.Values.push({ Value: defaultValue, Dimensions: {} });
-							fieldModel.Values[0].Dimensions[langConf.currentLanguage] = true; // Assign default language dimension
+						    var defaultValue = eavDefaultValueService(scope.options);
+						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
 						}
 					}
+
+				    // Assign default language if no dimension is set
+					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
+					    fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = false;
 
 					var valueToEdit;
 
@@ -81,7 +76,7 @@
 					// 3. Use the first value if there is only one
 					if (valueToEdit === undefined) {
 						if (fieldModel.Values.length > 1)
-							throw "Default language value not found, but found multiple values - can't handle editing";
+							throw "Default language value not found, but found multiple values - can't handle editing for " + $scope.options.key;
 						// Use the first value
 						valueToEdit = fieldModel.Values[0];
 					}
@@ -91,9 +86,9 @@
 					// Set scope variable 'value' to simplify binding
 					scope.value = fieldModel._currentValue;
 
-					// Decide whether the value is writable or not
+				    // Decide whether the value is writable or not
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
-					(scope.value && scope.value.Dimensions[langConf.currentLanguage]);
+                        (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
 					scope.to.disabled = !writable;
 				};
@@ -125,7 +120,8 @@
 			restrict: 'E',
 			scope: {
 				fieldModel: '=fieldModel',
-				options: '=options'
+				options: '=options',
+                value: '=value'
 			},
 			templateUrl: 'localization/localization-menu.html',
 			link: function (scope, element, attrs) { },
@@ -133,18 +129,90 @@
 			controller: function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
+				vm.languages = languages;
+				vm.hasLanguage = function(languageKey) {
+				    return vm.fieldModel.getVsWithLanguage(languageKey) !== null;
+				};
+
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
+				vm.enableTranslate = function () { return true; };
+
+				vm.infoMessage = function () {
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
+				        return 'auto (default)';
+				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
+				        return '';
+				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				};
+
+				vm.tooltip = function () {
+				    var editableIn = [];
+				    var usedIn = [];
+				    angular.forEach($scope.value.Dimensions, function (value, key) {
+				        (value ? usedIn : editableIn).push(key);
+				    });
+				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    if (usedIn.length > 0)
+				        tooltip += ', also used in ' + usedIn.join(', ');
+				    return tooltip;
+				};
 
 				vm.actions = {
-					translate: function () {
-						var value = { Value: 'New translated value!', Dimensions: {} };
-						value.Dimensions[languages.currentLanguage] = true;
-						vm.fieldModel.Values.push(value);
-					}
+				    translate: function translate() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				    },
+				    linkDefault: function linkDefault() {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				    },
+				    autoTranslate: function(languageKey) {
+				        alert('This action is not implemented yet.');
+				    },
+				    copyFrom: function (languageKey) {
+				        if ($scope.options.templateOptions.disabled)
+				            alert("Copy not possible: the field is disabled.");
+				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
+				        $scope.value.Value = value;
+				    },
+				    useFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vs.setLanguage(languages.currentLanguage, true);
+				    },
+				    shareFrom: function (languageKey) {
+				        vm.fieldModel.removeLanguage(languages.currentLanguage);
+				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
+				        vs.setLanguage(languages.currentLanguage, false);
+				    }
 				};
 
 			}
 		};
 	});
 
+	eavLocalization.directive('eavTreatTimeUtc', function () {
+	    var directive = {
+	        restrict: 'A',
+	        require: ['ngModel'],
+            compile: compile,
+	        link: link
+	    };
+	    return directive;
+
+	    function compile(element, attributes) {
+
+	    }
+
+	    function link(scope, element, attributes, modelController) {     
+	        modelController[0].$formatters.push(function (modelValue) {
+
+	            return modelValue;
+	        });
+
+	        modelController[0].parsers.push(function (viewValue) {
+
+	            return viewValue;
+	        });
+	    }
+	});
 })();

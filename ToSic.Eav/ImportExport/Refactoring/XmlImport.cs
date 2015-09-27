@@ -47,7 +47,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// </summary>
         public IEnumerable<XElement> DocumentElements { get; private set; }
 
-        private readonly string documentLanguageFallback;
+        private readonly string _documentLanguageFallback;
 
         private IEnumerable<string> _languages;
 
@@ -106,7 +106,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             _zoneId = zoneId;
             _contentType = EavDataController.Instance(zoneId, applicationId).AttribSet.GetAttributeSet(contentTypeId);
             _languages = languages;
-            this.documentLanguageFallback = documentLanguageFallback;
+            _documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;
             _resourceReference = resourceReference;
 
@@ -200,7 +200,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         continue;
                     }
 
-                    var entityGuid = entityGuidManager.GetGuid(documentElement, documentLanguageFallback);
+                    var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
                     var entity = GetEntity(entityGuid);
                     if (entity == null)
                     {

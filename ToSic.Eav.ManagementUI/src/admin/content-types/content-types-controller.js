@@ -53,8 +53,8 @@
             return eavAdminDialogs.openPermissionsForGuid(svc.appId, item.StaticName, vm.refresh);
         };
 
-        vm.openExport = function openExport() {
-            return eavAdminDialogs.openContentExport(svc.appId);
+        vm.openExport = function openExport(item) {
+            return eavAdminDialogs.openContentExport(svc.appId, item.StaticName, vm.refresh);
         };
 
         vm.openImport = function openImport(item) {

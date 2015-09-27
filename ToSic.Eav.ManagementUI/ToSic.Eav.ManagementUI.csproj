@@ -110,10 +110,13 @@
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
+    <Content Include="Scripts\images\ui-ajax-loader.gif" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
+    <Content Include="src\admin\content-import-export\content-export-service.js" />
     <Content Include="src\admin\content-import-export\content-export.html" />
     <Content Include="src\admin\content-import-export\content-formly-types-config.js" />
+    <Content Include="src\admin\content-import-export\content-helper-filters.js" />
     <Content Include="src\admin\content-import-export\content-import-app.js" />
     <Content Include="src\admin\content-import-export\content-import-controller.js" />
     <Content Include="src\admin\content-import-export\content-formly-types-app.js" />
@@ -126,6 +129,7 @@
     <Content Include="src\admin\services\svc-creator.js" />
     <Content Include="src\admin\services\_eav-services.js" />
     <Content Include="src\edit\localization\language-switcher.html" />
+    <Content Include="src\edit\localization\multilevel-dropdown-menu.css" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
     <Content Include="src\edit\edit-entity.html" />

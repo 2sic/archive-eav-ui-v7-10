@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Import;
-
+using ToSic.Eav.BLL;
+using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.WebApi
 {
@@ -113,13 +111,14 @@ namespace ToSic.Eav.WebApi
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         TitleAttributeName = found.Title == null ? null : found.Title.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
-                        {
-							Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
                             {
-                                Value = v.Serialized,
-                                Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
-                            }).ToArray()
-                        })
+                                Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
+                                {
+                                    Value = v.ObjectValue,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
+                                    Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
+                                }).ToArray()
+                            }
+                        )
                     };
                     return ce;
                 default:
@@ -128,113 +127,64 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        // trying to develop a save 2dm 2015-09-20
 	    [HttpPost]
-	    public bool Save([FromUri]int appId, Formats.EntityWithLanguages newData)
+	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
-            // var zoneId = 0; // TODO2tk: Define
-            // TODO2tk: Multi or single language
-            // TODO2tk: Create or update
-            // TODO2tk: Convert structures
-            //var entity = new ToSic.Eav.Import.ImportEntity();
+            // TODO 2tk: Refactor code - we use methods from XML import extensions!
+            var importEntity = new ImportEntity();
+            if (newData.Id == 0)
+            {   // New entity
+                importEntity.EntityGuid = Guid.NewGuid();
+            }
+            else
+            {
+                importEntity.EntityGuid = newData.Guid;
+            }
+            importEntity.IsPublished = true; // todo 2rm - newData.IsPublished;
+                                             // todo 2rm - date picker shouldn't have time zones (maybe talk to 2tk before fixing the  bug)
 
-            //// GUID
-            //if (newData.Id == 0)
-            //{
-            //    entity.EntityGuid = Guid.NewGuid();
-            //}
-            //else
-            //{
-            //    entity.EntityGuid = newData.Guid;
-            //}
+            // Content type
+            importEntity.AttributeSetStaticName = newData.Type.StaticName;
 
-            //// Content type
-            //entity.AttributeSetStaticName = newData.Type.StaticName;
-            //entity.KeyNumber = newData.Metadata.KeyNumber;
-            //entity.IsPublished =
-            //// ...
+            // Metadata if we have
+            if (newData.Metadata != null && newData.Metadata.HasMetadata)
+            {
+                importEntity.AssignmentObjectTypeId = newData.Metadata.TargetType;
+                importEntity.KeyGuid = newData.Metadata.KeyGuid;
+                importEntity.KeyNumber = newData.Metadata.KeyNumber;
+                importEntity.KeyString = newData.Metadata.KeyString;
+            }
 
-            //if(newData.Metadata.HasMetadata)
-            //{
-            //    entity.AssignmentObjectTypeId = newData.Metadata.TargetType;
-            //}
-            //// entity.AssignmentObjectTypeId // Type of metadata metadata.TargetType
+            // Attributes
+            importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
+            var attributeSet = EavDataController.Instance(appId: appId).AttribSet.GetAttributeSet(newData.Type.StaticName);
+            foreach (var attribute in newData.Attributes)
+            {
+                var attributeType = attributeSet.GetAttributeByName(attribute.Key).Type;
 
-            //foreach(var attribute in newData.Attributes)
-            //{
-            //    foreach(var value in attribute.Value.Values)
-            //    {
-            //        foreach(var dimension in value.Dimensions)
-            //        {
+                foreach (var value in attribute.Value.Values)
+                {
+                    var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
 
-            //        }
-            //    }
-            //}
+                    if (value.Dimensions == null)
+                    {   // TODO2tk: Must this be done to save entities
+                        importValue.AppendLanguageReference("", false);
+                        continue;
+                    }
+                    foreach (var dimension in value.Dimensions)
+                    {
+                        importValue.AppendLanguageReference(dimension.Key, dimension.Value);
+                    }
+                }
+            }
 
+            // Run import
+            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
 
-            //var import = new ToSic.Eav.Import.Import(null, appId,  User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            //import.RunImport(null, new ToSic.Eav.Import.ImportEntity[] { entity }, true, true);
-
-            return false;
+            return true;
 	    }
-        private void OldInsertWebForm()
-        {
-            //// Cancel insert if current language is not default language
-            //if (DefaultCultureDimension.HasValue && !DimensionIds.Contains(DefaultCultureDimension.Value))
-            //    return;
 
-            //var values = new Dictionary<string, ValueViewModel>();
-
-            //// Extract Values
-            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>())
-            //    fieldTemplate.ExtractValues(values);
-
-            //// Prepare DimensionIds
-            //var dimensionIds = new List<int>();
-            //if (DefaultCultureDimension.HasValue)
-            //    dimensionIds.Add(DefaultCultureDimension.Value);
-
-            //Entity result;
-            //var assignmentObjectTypeId = AssignmentObjectTypeId.HasValue ? AssignmentObjectTypeId.Value : EavContext.DefaultAssignmentObjectTypeId;
-            //if (!KeyGuid.HasValue)
-            //    result = Db.AddEntity(AttributeSetId, values, null, KeyNumber, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
-            //else
-            //    result = Db.AddEntity(AttributeSetId, values, null, KeyGuid.Value, assignmentObjectTypeId, dimensionIds: dimensionIds, isPublished: IsPublished);
-
-            //RedirectToListItems();
-
-            //if (Inserted != null)
-            //    Inserted(result);
-
-            //if (Saved != null)
-            //    Saved(result);
-        }
-
-        private void OldUpdateWebForm()
-        {
-            //var values = new Dictionary<string, ValueViewModel>();
-
-            //#region Extract Values (only of enabled fields)
-            //foreach (var fieldTemplate in phFields.Controls.OfType<FieldTemplateUserControl>().Where(f => f.Enabled))
-            //{
-            //    // if not master and not translated, don't pass/extract this value
-            //    if (!MasterRecord && fieldTemplate.ValueId == null && fieldTemplate.ReadOnly)
-            //        continue;
-
-            //    fieldTemplate.ExtractValues(values);
-            //}
-            //#endregion
-
-            //var result = Db.UpdateEntity(_repositoryId, values, dimensionIds: DimensionIds, masterRecord: MasterRecord, isPublished: IsPublished);
-
-            //RedirectToListItems();
-
-            //if (Updated != null)
-            //    Updated(result);
-
-            //if (Saved != null)
-            //    Saved(result);
-        }
         #endregion
 
 

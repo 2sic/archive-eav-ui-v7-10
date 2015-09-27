@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
 
 	// Main directive that renders an entity edit form
 	app.directive('eavEditEntity', function() {
@@ -20,15 +20,15 @@
 	});
 
 	// The controller for the main form directive
-	app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function() {
-			alert("Saving not implemented yet!");
+		vm.save = function () {
+		    entitiesSvc.save(appId, vm.entity);
 		};
 
 		// The control object is available outside the directive
@@ -84,11 +84,11 @@
 		if (!!$scope.entityId) {
 		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
                 .then(function (result) {
-                    vm.entity = result.data;
+                    vm.entity = enhanceEntity(result.data);
                     loadContentType();
                 });
 		} else {
-		    vm.entity = entitiesSvc.newEntity($scope.contentTypeName);
+		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
 		    loadContentType();
 		}
 
