@@ -99,8 +99,14 @@ function enhanceEntity(entity) {
             return ent.Attributes[attrName];
         };
 
+        // ToDo: Discuss with 2dm 
+        ent.Attributes.addAttribute = function (attrName) {
+            ent.Attributes[attrName] = { Values: [] };
+            enhancer.enhanceAtt(ent.Attributes[attrName]);
+        };
+
         for (var attKey in ent.Attributes)
-            if(ent.Attributes.hasOwnProperty(attKey))
+            if(ent.Attributes.hasOwnProperty(attKey) && typeof(ent.Attributes[attKey]) != 'function')
                 enhancer.enhanceAtt(ent.Attributes[attKey]);
 
         return ent;

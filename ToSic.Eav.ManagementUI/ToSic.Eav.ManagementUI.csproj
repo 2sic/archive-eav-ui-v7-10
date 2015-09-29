@@ -128,12 +128,14 @@
     <Content Include="src\admin\eav-admin.css" />
     <Content Include="src\admin\services\svc-creator.js" />
     <Content Include="src\admin\services\_eav-services.js" />
+    <Content Include="src\edit\edit-entities.html" />
+    <Content Include="src\edit\edit-entities.js" />
     <Content Include="src\edit\localization\language-switcher.html" />
     <Content Include="src\edit\localization\multilevel-dropdown-menu.css" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
-    <Content Include="src\edit\edit-entity.html" />
-    <Content Include="src\edit\edit-entity.js" />
+    <Content Include="src\edit\edit-entity-form.html" />
+    <Content Include="src\edit\edit-entity-form.js" />
     <Content Include="src\edit\fields\eav-fieldtemplates.js" />
     <Content Include="src\edit\fields\templates\entity-default.css" />
     <Content Include="src\edit\fields\templates\entity-default.html" />

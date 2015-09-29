@@ -77,7 +77,7 @@ angular.module("EavAdminUi", ["ng",
         
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
-                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), closeCallback );
+                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeName }), closeCallback);
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {

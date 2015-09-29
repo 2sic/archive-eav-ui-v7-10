@@ -43,7 +43,7 @@
 
 					// Set base value object if not defined
 					if (!scope.model[scope.options.key])
-						scope.model[scope.options.key] = { Values: [] };
+						scope.model.addAttribute(scope.options.key);
 
 					var fieldModel = scope.model[scope.options.key];
 

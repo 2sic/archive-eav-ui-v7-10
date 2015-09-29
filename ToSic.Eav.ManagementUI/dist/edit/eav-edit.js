@@ -1,41 +1,97 @@
 /* global angular */
 (function () {
+    'use strict';
+
+    var app = angular.module('eavEditEntities', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', 'EavServices', 'eavEditTemplates', 'eavEditEntity']);
+
+    app.directive('eavEditEntities', function () {
+        return {
+            templateUrl: 'edit-entities.html',
+            restrict: 'E',
+            scope: {
+                editPackageRequest: '=editPackageRequest'
+            },
+            controller: 'EditEntities',
+            controllerAs: 'vm'
+        };
+    });
+
+    // The controller for the main form directive
+    app.controller('EditEntities', ["appId", "$http", "$scope", "entitiesSvc", "$modalInstance", function editEntityCtrl(appId, $http, $scope, entitiesSvc, $modalInstance) {
+
+        var vm = this;
+
+        vm.registeredControls = [];
+        vm.registerEditControl = function (control) {
+            vm.registeredControls.push(control);
+        };
+
+        vm.isValid = function () {
+            var valid = true;
+            angular.forEach(vm.registeredControls, function (e, i) {
+                if (!e.isValid())
+                    valid = false;
+            });
+            return valid;
+        };
+
+        vm.save = function () {
+            entitiesSvc.savePackage(appId, vm.editPackage);
+        };
+
+        vm.editPackage = null;
+
+        entitiesSvc.getPackage(appId, $scope.editPackageRequest)
+            .then(function (result) {
+                vm.editPackage = result.data;
+                angular.forEach(vm.editPackage.entities, function (v, i) {
+
+                    // If the entity is null, it does not exist yet. Create a new one
+                    if (vm.editPackage.entities[i].entity === null && vm.editPackage.entities[i].packageInfo.contentTypeName !== undefined)
+                        vm.editPackage.entities[i].entity = entitiesSvc.newEntity(vm.editPackage.entities[i].packageInfo.contentTypeName);
+
+                    vm.editPackage.entities[i].entity = enhanceEntity(vm.editPackage.entities[i].entity);
+                });
+            });
+
+    }]);
+
+
+
+})();
+/* global angular */
+(function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', 'EavServices', 'eavEditTemplates', 'eavEditEntities']);
 
 	// Main directive that renders an entity edit form
-	app.directive('eavEditEntity', function() {
+	app.directive('eavEditEntityForm', function() {
 		return {
-			templateUrl: 'edit-entity.html',
+			templateUrl: 'edit-entity-form.html',
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
-				entityId: '@entityId',
+				entity: '=entity',
 				registerEditControl: '=registerEditControl'
 			},
-			controller: 'EditEntityCtrl',
+			controller: 'EditEntityFormCtrl',
 			controllerAs: 'vm'
 		};
 	});
 
 	// The controller for the main form directive
-    app.controller('EditEntityCtrl', ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "entitiesSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller('EditEntityFormCtrl', ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "entitiesSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function () {
-		    entitiesSvc.save(appId, vm.entity);
-		};
-
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; },
-			save: vm.save
+			isValid: function() { return vm.form.$valid; }
 		};
 
 		// Register this control in the parent control
@@ -43,14 +99,14 @@
 			$scope.registerEditControl(vm.control);
 
 		vm.model = null;
-		vm.entity = null;
+		vm.entity = $scope.entity;
 
 		vm.formFields = null;
 
 
 		var loadContentType = function () {
 
-		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.Name }).getFields()
+		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.StaticName }).getFields()
 			.then(function (result) {
 			    vm.debug = result;
 
@@ -70,7 +126,6 @@
 			                settings: e.Metadata
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
-			            //defaultValue: parseDefaultValue(e)
 			            expressionProperties: {
 			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
 			            }
@@ -80,17 +135,9 @@
 		};
 
 	    // Load existing entity if defined
-		
-		if (!!$scope.entityId) {
-		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
-                .then(function (result) {
-                    vm.entity = enhanceEntity(result.data);
-                    loadContentType();
-                });
-		} else {
-		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
+		if (vm.entity !== null)
 		    loadContentType();
-		}
+
 
 		// Returns the field type for an attribute configuration
 		var getType = function(attributeConfiguration) {
@@ -306,7 +353,12 @@
 angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('edit-entity.html',
+  $templateCache.put('edit-entities.html',
+    "<div ng-if=\"vm.editPackage != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.editPackage.entities\"><eav-edit-entity-form entity=p.entity register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\">Save</button></div>"
+  );
+
+
+  $templateCache.put('edit-entity-form.html',
     "<div ng-show=vm.editInDefaultLanguageFirst()>Please edit this in the default language first.</div><div ng-show=!vm.editInDefaultLanguageFirst()><formly-form ng-submit=vm.onSubmit() form=vm.form model=vm.entity.Attributes fields=vm.formFields></formly-form><a ng-click=\"vm.showDebug = !vm.showDebug;\">Debug</a><div ng-if=vm.showDebug><h3>Debug</h3><pre>{{vm.entity | json}}</pre><pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre></div></div>"
   );
 
@@ -332,7 +384,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/edit-entity-wrapper.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><div xng-controller=\"EditEntityWrapperCtrl as vm\"><eav-language-switcher></eav-language-switcher><eav-edit-entity content-type-name={{vm.contentTypeName}} entity-id={{vm.entityId}} register-edit-control=vm.registerEditControl></eav-edit-entity><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\">Save</button></div></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><eav-edit-entities edit-package-request=vm.editPackageRequest></eav-edit-entities></div>"
   );
 
 }]);
@@ -382,7 +434,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 					// Set base value object if not defined
 					if (!scope.model[scope.options.key])
-						scope.model[scope.options.key] = { Values: [] };
+						scope.model.addAttribute(scope.options.key);
 
 					var fieldModel = scope.model[scope.options.key];
 
@@ -591,33 +643,14 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", "$modalInstance", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
 
 		var vm = this;
-		vm.contentTypeName = contentTypeName;
-		vm.entityId = entityId;
+		vm.editPackageRequest = {
+            type: 'entities',
+            entities: [{
+		        contentTypeName: contentTypeName,
+		        entityId: entityId
+		    }]
+		};
 		
-		vm.registeredControls = [];
-		vm.registerEditControl = function (control) {
-			vm.registeredControls.push(control);
-		};
-
-		vm.isValid = function () {
-			var valid = true;
-			angular.forEach(vm.registeredControls, function (e, i) {
-				if (!e.isValid())
-					valid = false;
-			});
-			return valid;
-		};
-
-		vm.save = function () {
-			var savePromises = [];
-			angular.forEach(vm.registeredControls, function (e, i) {
-				savePromises.push(e.save());
-			});
-			$q.all(savePromises).then(function () {
-			    $modalInstance.dismiss("cancel");
-			});
-		};
-
 		vm.close = function () {
 		    $modalInstance.dismiss("cancel");
 		};

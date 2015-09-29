@@ -37,7 +37,6 @@ namespace ToSic.Eav.WebApi
             return Serializer.Prepare(found);
 	    }
 
-
         /// <summary>
 		/// Get all Entities of specified Type
 		/// </summary>
@@ -126,8 +125,58 @@ namespace ToSic.Eav.WebApi
             }
         }
 
+        [HttpPost]
+        public dynamic GetPackage([FromUri]int appId, [FromBody]EditPackageRequestEntities editPackage)
+        {
+            if (editPackage.Type != "entities")
+                throw new NotSupportedException("Package type " + editPackage.Type + " is not supported.");
 
-	    [HttpPost]
+            return new
+            {
+                entities = editPackage.Entities.Select(p => new
+                {
+                    // ToDo: PackageInfo
+                    packageInfo = new { type = "entities", contentTypeName = p.contentTypeName, entityId = p.entityId },
+                    entity = p.entityId != null ? GetOne(appId, (string)p.contentTypeName, (int)p.entityId) : null
+                })
+            };
+        }
+
+        public bool SavePackage([FromUri] int appId, [FromBody] EditPackage editPackage)
+        {
+            var success = true;
+            foreach(var entity in editPackage.Entities)
+            {
+                success = success && Save((EntityWithLanguages)entity.Entity, appId);
+            }
+            return success;
+        }
+
+        public class EditPackageRequest
+        {
+            public string Type
+            {
+                get; set;
+            }
+        }
+
+        public class EditPackageRequestEntities : EditPackageRequest
+        {
+            public List<dynamic> Entities { get; set; }
+        }
+
+        public class EditPackage
+        {
+            public List<EditPackageInfo> Entities { get; set; }
+        }
+
+        public class EditPackageInfo
+        {
+            public dynamic PackageInfo { get; set; }
+            public EntityWithLanguages Entity { get; set; }
+        }
+
+        [HttpPost]
 	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
             // TODO 2tk: Refactor code - we use methods from XML import extensions!

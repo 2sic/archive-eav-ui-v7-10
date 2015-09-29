@@ -1,0 +1,9 @@
+﻿<div ng-if="vm.editPackage != null">
+    <eav-language-switcher></eav-language-switcher>
+
+    <div ng-repeat="p in vm.editPackage.entities">
+        <eav-edit-entity-form entity="p.entity" register-edit-control="vm.registerEditControl"></eav-edit-entity-form>
+    </div>
+
+    <button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">Save</button>
+</div>

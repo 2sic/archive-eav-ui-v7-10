@@ -2,40 +2,35 @@
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', 'EavServices', 'eavEditTemplates', 'eavEditEntities']);
 
 	// Main directive that renders an entity edit form
-	app.directive('eavEditEntity', function() {
+	app.directive('eavEditEntityForm', function() {
 		return {
-			templateUrl: 'edit-entity.html',
+			templateUrl: 'edit-entity-form.html',
 			restrict: 'E',
 			scope: {
 				contentTypeName: '@contentTypeName',
-				entityId: '@entityId',
+				entity: '=entity',
 				registerEditControl: '=registerEditControl'
 			},
-			controller: 'EditEntityCtrl',
+			controller: 'EditEntityFormCtrl',
 			controllerAs: 'vm'
 		};
 	});
 
 	// The controller for the main form directive
-    app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller('EditEntityFormCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function () {
-		    entitiesSvc.save(appId, vm.entity);
-		};
-
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; },
-			save: vm.save
+			isValid: function() { return vm.form.$valid; }
 		};
 
 		// Register this control in the parent control
@@ -43,14 +38,14 @@
 			$scope.registerEditControl(vm.control);
 
 		vm.model = null;
-		vm.entity = null;
+		vm.entity = $scope.entity;
 
 		vm.formFields = null;
 
 
 		var loadContentType = function () {
 
-		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.Name }).getFields()
+		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.StaticName }).getFields()
 			.then(function (result) {
 			    vm.debug = result;
 
@@ -70,7 +65,6 @@
 			                settings: e.Metadata
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
-			            //defaultValue: parseDefaultValue(e)
 			            expressionProperties: {
 			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
 			            }
@@ -80,17 +74,9 @@
 		};
 
 	    // Load existing entity if defined
-		
-		if (!!$scope.entityId) {
-		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
-                .then(function (result) {
-                    vm.entity = enhanceEntity(result.data);
-                    loadContentType();
-                });
-		} else {
-		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
+		if (vm.entity !== null)
 		    loadContentType();
-		}
+
 
 		// Returns the field type for an attribute configuration
 		var getType = function(attributeConfiguration) {
