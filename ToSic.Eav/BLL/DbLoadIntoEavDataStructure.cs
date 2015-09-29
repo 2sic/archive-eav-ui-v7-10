@@ -285,9 +285,10 @@ namespace ToSic.Eav.BLL
             {
                 try
                 {
-                    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], relationship.ChildEntityID.HasValue ? entities[relationship.ChildEntityID.Value] : null));
+                    if(entities.ContainsKey(relationship.ParentEntityID) && (!relationship.ChildEntityID.HasValue || entities.ContainsKey(relationship.ChildEntityID.Value)))
+                        relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], relationship.ChildEntityID.HasValue ? entities[relationship.ChildEntityID.Value] : null));
                 }
-                catch (KeyNotFoundException) { } // may occour if not all entities are loaded
+                catch (KeyNotFoundException) { } // may occour if not all entities are loaded - edited 2rm 2015-09-29: Should not occur anymore
             }
             #endregion
 

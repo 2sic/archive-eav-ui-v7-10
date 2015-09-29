@@ -126,14 +126,14 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public dynamic GetPackage([FromUri]int appId, [FromBody]EditPackageRequestEntities editPackage)
+        public dynamic GetPackage([FromUri]int appId, [FromBody]EditPackageRequestEntities packageRequest)
         {
-            if (editPackage.Type != "entities")
-                throw new NotSupportedException("Package type " + editPackage.Type + " is not supported.");
+            if (packageRequest.Type != "entities")
+                throw new NotSupportedException("Package type " + packageRequest.Type + " is not supported.");
 
             return new
-            {
-                entities = editPackage.Entities.Select(p => new
+            { 
+                entities = packageRequest.Entities.Select(p => new
                 {
                     // ToDo: PackageInfo
                     packageInfo = new { type = "entities", contentTypeName = p.contentTypeName, entityId = p.entityId },
@@ -154,10 +154,7 @@ namespace ToSic.Eav.WebApi
 
         public class EditPackageRequest
         {
-            public string Type
-            {
-                get; set;
-            }
+            public string Type { get; set; }
         }
 
         public class EditPackageRequestEntities : EditPackageRequest
@@ -176,7 +173,7 @@ namespace ToSic.Eav.WebApi
             public EntityWithLanguages Entity { get; set; }
         }
 
-        [HttpPost]
+        //[HttpPost]
 	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
 	    {
             // TODO 2tk: Refactor code - we use methods from XML import extensions!

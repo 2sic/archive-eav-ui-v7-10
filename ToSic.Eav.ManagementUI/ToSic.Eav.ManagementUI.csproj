@@ -126,6 +126,7 @@
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />
+    <Content Include="src\admin\eav.js" />
     <Content Include="src\admin\services\svc-creator.js" />
     <Content Include="src\admin\services\_eav-services.js" />
     <Content Include="src\edit\edit-entities.html" />

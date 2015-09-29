@@ -63,8 +63,8 @@ angular.module("eavNgSvcs", ["ng"])
 			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
 		};
 
-		svc.getPackage = function (appId, editPackage) {
-		    return $http.post("eav/entities/getpackage", editPackage, { params: { appId: appId } });
+		svc.getPackage = function (appId, packageRequest) {
+		    return $http.post("eav/entities/getpackage", packageRequest, { params: { appId: appId } });
 		};
 
 		svc.savePackage = function (appId, editPackage) {
