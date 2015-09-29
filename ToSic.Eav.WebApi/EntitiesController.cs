@@ -195,6 +195,8 @@ namespace ToSic.Eav.WebApi
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
 
+            importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
+
             // Metadata if we have
             if (newData.Metadata != null && newData.Metadata.HasMetadata)
             {
