@@ -47,7 +47,7 @@
                 angular.forEach(vm.editPackage.entities, function (v, i) {
 
                     // If the entity is null, it does not exist yet. Create a new one
-                    if (vm.editPackage.entities[i].entity === null && vm.editPackage.entities[i].packageInfo.contentTypeName !== undefined)
+                    if (!vm.editPackage.entities[i].entity && !!vm.editPackage.entities[i].packageInfo.contentTypeName)
                         vm.editPackage.entities[i].entity = entitiesSvc.newEntity(vm.editPackage.entities[i].packageInfo.contentTypeName);
 
                     vm.editPackage.entities[i].entity = enhanceEntity(vm.editPackage.entities[i].entity);

@@ -26,7 +26,7 @@ namespace ToSic.Eav.WebApi
                 AppId = appId.Value;
 
             var found = InitialDS.List[id];
-            if (contentType != null && found.Type.Name != contentType)
+            if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
         }
@@ -135,7 +135,6 @@ namespace ToSic.Eav.WebApi
             { 
                 entities = packageRequest.Entities.Select(p => new
                 {
-                    // ToDo: PackageInfo
                     packageInfo = new { type = "entities", contentTypeName = p.contentTypeName, entityId = p.entityId },
                     entity = p.entityId != null ? GetOne(appId, (string)p.contentTypeName, (int)p.entityId) : null
                 })
@@ -178,7 +177,7 @@ namespace ToSic.Eav.WebApi
 	    {
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
-            if (newData.Id == 0)
+            if (newData.Id == 0 && newData.Guid == Guid.Empty)
             {   // New entity
                 importEntity.EntityGuid = Guid.NewGuid();
             }

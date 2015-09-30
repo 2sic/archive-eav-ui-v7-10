@@ -48,12 +48,16 @@
 					var fieldModel = scope.model[scope.options.key];
 
 					// If current language = default language and there are no values, create an empty value object
-					if (langConf.currentLanguage == langConf.defaultLanguage) {
-						if (fieldModel.Values.length === 0) {
-						    var defaultValue = eavDefaultValueService(scope.options);
-						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
-						}
+					if (fieldModel.Values.length === 0) {
+					    if (langConf.currentLanguage == langConf.defaultLanguage) {
+					        var defaultValue = eavDefaultValueService(scope.options);
+					        fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
+					    }
+					    else { // There are no values - value must be edited in default language first
+					        return;
+					    }
 					}
+
 
 				    // Assign default language if no dimension is set
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
