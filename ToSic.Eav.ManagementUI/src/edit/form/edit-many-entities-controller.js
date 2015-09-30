@@ -2,20 +2,7 @@
 (function () {
     'use strict';
 
-    var app = angular.module('eavEditEntities', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', 'EavServices', 'eavEditTemplates', 'eavEditEntity']);
-
-    app.directive('eavEditEntities', function () {
-        return {
-            templateUrl: 'edit-entities.html',
-            restrict: 'E',
-            scope: {
-                editPackageRequest: '=editPackageRequest',
-                afterSaveEvent: '=afterSaveEvent'
-            },
-            controller: 'EditEntities',
-            controllerAs: 'vm'
-        };
-    });
+    var app = angular.module('eavEditEntity');
 
     // The controller for the main form directive
     app.controller('EditEntities', function editEntityCtrl(appId, $http, $scope, entitiesSvc, $modalInstance) {

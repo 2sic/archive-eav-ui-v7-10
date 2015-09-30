@@ -1,23 +1,8 @@
-﻿/* global angular */
+﻿
 (function () {
 	'use strict';
 
-	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', 'EavServices', 'eavEditTemplates', 'eavEditEntities']);
-
-	// Main directive that renders an entity edit form
-	app.directive('eavEditEntityForm', function() {
-		return {
-			templateUrl: 'edit-entity-form.html',
-			restrict: 'E',
-			scope: {
-				contentTypeName: '@contentTypeName',
-				entity: '=entity',
-				registerEditControl: '=registerEditControl'
-			},
-			controller: 'EditEntityFormCtrl',
-			controllerAs: 'vm'
-		};
-	});
+	var app = angular.module('eavEditEntity'); 
 
 	// The controller for the main form directive
     app.controller('EditEntityFormCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {

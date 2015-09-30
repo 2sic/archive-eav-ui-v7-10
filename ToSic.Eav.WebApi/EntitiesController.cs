@@ -135,8 +135,8 @@ namespace ToSic.Eav.WebApi
             { 
                 entities = packageRequest.Entities.Select(p => new
                 {
-                    packageInfo = new { type = "entities", contentTypeName = p.contentTypeName, entityId = p.entityId },
-                    entity = p.entityId != null ? GetOne(appId, (string)p.contentTypeName, (int)p.entityId) : null
+                    packageInfo = new { type = "entities", contentTypeName = p.ContentTypeName, entityId = p.EntityId },
+                    entity = p.EntityId != 0 ? GetOne(appId, (string)p.ContentTypeName, (int)p.EntityId) : null
                 })
             };
         }
@@ -155,14 +155,26 @@ namespace ToSic.Eav.WebApi
             return true;
         }
 
-        public class EditPackageRequest
+
+        public class EditPackageRequestEntities 
         {
             public string Type { get; set; }
+            public List<ItemIdentifier> Entities { get; set; }
         }
 
-        public class EditPackageRequestEntities : EditPackageRequest
+        public class ItemIdentifier
         {
-            public List<dynamic> Entities { get; set; }
+            // simple entity identifier (to edit existing)...
+            public int EntityId { get; set; }
+
+            // ...or content-type (for new)
+            public string ContentTypeName { get; set; }
+            #endregion
+
+            #region Additional Assignment information
+            public Metadata Metadata { get; set; }
+            #endregion
+
         }
 
         public class EditPackage
@@ -243,7 +255,7 @@ namespace ToSic.Eav.WebApi
             return importEntity;
         }
 
-        #endregion
+        
 
 
         #region Delete calls
