@@ -144,12 +144,15 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public bool SaveMany([FromUri] int appId, [FromBody] EditPackage editPackage)
         {
-            var success = true;
-            foreach(var entity in editPackage.Entities)
-            {
-                success = success && SaveOne((EntityWithLanguages)entity.Entity, appId);
-            }
-            return success;
+            var items = new List<ImportEntity>();
+            foreach (var entity in editPackage.Entities)
+                items.Add(CreateImportEntity(entity.Entity, appId));
+
+            // Run import
+            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            import.RunImport(null, items.ToArray(), true, true);
+
+            return true;
         }
 
         public class EditPackageRequest
@@ -175,7 +178,18 @@ namespace ToSic.Eav.WebApi
 
         //[HttpPost]
 	    public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
-	    {
+        {
+            ImportEntity importEntity = CreateImportEntity(newData, appId);
+
+            // Run import
+            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
+
+            return true;
+        }
+
+        private static ImportEntity CreateImportEntity(EntityWithLanguages newData, int appId)
+        {
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
             if (newData.Id == 0 && newData.Guid == Guid.Empty)
@@ -226,12 +240,8 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            // Run import
-            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
-
-            return true;
-	    }
+            return importEntity;
+        }
 
         #endregion
 
