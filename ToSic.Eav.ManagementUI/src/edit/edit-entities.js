@@ -9,7 +9,8 @@
             templateUrl: 'edit-entities.html',
             restrict: 'E',
             scope: {
-                editPackageRequest: '=editPackageRequest'
+                editPackageRequest: '=editPackageRequest',
+                afterSaveEvent: '=afterSaveEvent'
             },
             controller: 'EditEntities',
             controllerAs: 'vm'
@@ -26,6 +27,8 @@
             vm.registeredControls.push(control);
         };
 
+        vm.afterSaveEvent = $scope.afterSaveEvent;
+
         vm.isValid = function () {
             var valid = true;
             angular.forEach(vm.registeredControls, function (e, i) {
@@ -36,12 +39,12 @@
         };
 
         vm.save = function () {
-            entitiesSvc.savePackage(appId, vm.editPackage);
+            entitiesSvc.saveMany(appId, vm.editPackage).then(vm.afterSaveEvent);
         };
 
         vm.editPackage = null;
 
-        entitiesSvc.getPackage(appId, $scope.editPackageRequest)
+        entitiesSvc.getManyForEditing(appId, $scope.editPackageRequest)
             .then(function (result) {
                 vm.editPackage = result.data;
                 angular.forEach(vm.editPackage.entities, function (v, i) {

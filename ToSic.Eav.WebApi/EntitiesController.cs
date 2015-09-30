@@ -126,7 +126,7 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public dynamic GetPackage([FromUri]int appId, [FromBody]EditPackageRequestEntities packageRequest)
+        public dynamic GetManyForEditing([FromUri]int appId, [FromBody]EditPackageRequestEntities packageRequest)
         {
             if (packageRequest.Type != "entities")
                 throw new NotSupportedException("Package type " + packageRequest.Type + " is not supported.");
@@ -141,12 +141,13 @@ namespace ToSic.Eav.WebApi
             };
         }
 
-        public bool SavePackage([FromUri] int appId, [FromBody] EditPackage editPackage)
+        [HttpPost]
+        public bool SaveMany([FromUri] int appId, [FromBody] EditPackage editPackage)
         {
             var success = true;
             foreach(var entity in editPackage.Entities)
             {
-                success = success && Save((EntityWithLanguages)entity.Entity, appId);
+                success = success && SaveOne((EntityWithLanguages)entity.Entity, appId);
             }
             return success;
         }
@@ -173,7 +174,7 @@ namespace ToSic.Eav.WebApi
         }
 
         //[HttpPost]
-	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
+	    public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
 	    {
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();

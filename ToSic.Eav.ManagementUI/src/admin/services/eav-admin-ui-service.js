@@ -77,11 +77,13 @@ angular.module("EavAdminUi", ["ng",
         
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
-                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeName }), closeCallback);
+                var resolve = svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeName });
+                return svc.openItemEditWithEntityIdX(resolve, closeCallback);
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), closeCallback );
+                var resolve = svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName: null });
+                return svc.openItemEditWithEntityIdX(resolve, closeCallback);
             };
 
             svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
