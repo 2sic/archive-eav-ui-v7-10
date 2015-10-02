@@ -1,19 +1,19 @@
 ﻿
 (function () {
-    'use strict';
+    "use strict";
 
-    var app = angular.module('eavEditEntity');
+    var app = angular.module("eavEditEntity");
 
-    app.directive('eavEditEntities', function () {
+    app.directive("eavEditEntities", function () {
         return {
-            templateUrl: 'form/edit-many-entities.html',
-            restrict: 'E',
+            templateUrl: "form/edit-many-entities.html",
+            restrict: "E",
             scope: {
-                editPackageRequest: '=editPackageRequest',
-                afterSaveEvent: '=afterSaveEvent'
+                itemList: "=",
+                afterSaveEvent: "="
             },
-            controller: 'EditEntities',
-            controllerAs: 'vm'
+            controller: "EditEntities",
+            controllerAs: "vm"
         };
     });
 

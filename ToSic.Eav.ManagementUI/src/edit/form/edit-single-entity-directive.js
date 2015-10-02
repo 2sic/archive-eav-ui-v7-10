@@ -1,19 +1,18 @@
 ﻿
 (function () {
-	'use strict';
+	"use strict";
 
-	angular.module('eavEditEntity')
-        .directive('eavEditEntityForm', function () {
+	angular.module("eavEditEntity")
+        .directive("eavEditEntityForm", function () {
 		return {
-		    templateUrl: 'form/edit-single-entity.html',
-			restrict: 'E',
+		    templateUrl: "form/edit-single-entity.html",
+			restrict: "E",
 			scope: {
-				contentTypeName: '@contentTypeName',
-				entity: '=entity',
-				registerEditControl: '=registerEditControl'
+				entity: "=",
+				registerEditControl: "="
 			},
-			controller: 'EditEntityFormCtrl',
-			controllerAs: 'vm'
+			controller: "EditEntityFormCtrl",
+			controllerAs: "vm"
 		};
 	});
 	

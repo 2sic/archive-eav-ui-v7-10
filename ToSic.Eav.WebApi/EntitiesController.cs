@@ -91,7 +91,7 @@ namespace ToSic.Eav.WebApi
 	    //    return typeFilter.LightList.Count();
 	    //}
 
-        public dynamic /* Formats.EntityWithLanguages */ GetOne(int appId, string contentType, int id, string format = "multi-language")
+        public EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
         {
             switch (format)
             {
@@ -102,7 +102,7 @@ namespace ToSic.Eav.WebApi
 
                     //return Serializer.Prepare(found);
 
-                    var ce = new Formats.EntityWithLanguages()
+                    var ce = new EntityWithLanguages()
                     {
                         AppId = appId,
                         Id = found.EntityId,
@@ -126,40 +126,31 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public dynamic GetManyForEditing([FromUri]int appId, [FromBody]EditPackageRequestEntities packageRequest)
+        public List<EditPackageInfo> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
-            if (packageRequest.Type != "entities")
-                throw new NotSupportedException("Package type " + packageRequest.Type + " is not supported.");
-
-            return new
-            { 
-                entities = packageRequest.Entities.Select(p => new
-                {
-                    packageInfo = new { type = "entities", contentTypeName = p.ContentTypeName, entityId = p.EntityId },
-                    entity = p.EntityId != 0 ? GetOne(appId, (string)p.ContentTypeName, (int)p.EntityId) : null
-                })
-            };
+            return items.Select(p => new EditPackageInfo
+            {
+                Header = p,
+                Entity = p.EntityId != 0 ? GetOne(appId, p.ContentTypeName, p.EntityId) : null
+            }).ToList();
         }
 
+
+        #endregion
+
+
         [HttpPost]
-        public bool SaveMany([FromUri] int appId, [FromBody] EditPackage editPackage)
+        public bool SaveMany([FromUri] int appId, [FromBody] List<EditPackageInfo> items)
         {
-            var items = new List<ImportEntity>();
-            foreach (var entity in editPackage.Entities)
-                items.Add(CreateImportEntity(entity.Entity, appId));
+            var convertedItems = new List<ImportEntity>();
+            foreach (var entity in items)
+                convertedItems.Add(CreateImportEntity(entity.Entity, appId));
 
             // Run import
             var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            import.RunImport(null, items.ToArray(), true, true);
+            import.RunImport(null, convertedItems.ToArray(), true, true);
 
             return true;
-        }
-
-
-        public class EditPackageRequestEntities 
-        {
-            public string Type { get; set; }
-            public List<ItemIdentifier> Entities { get; set; }
         }
 
         public class ItemIdentifier
@@ -169,7 +160,6 @@ namespace ToSic.Eav.WebApi
 
             // ...or content-type (for new)
             public string ContentTypeName { get; set; }
-            #endregion
 
             #region Additional Assignment information
             public Metadata Metadata { get; set; }
@@ -177,14 +167,9 @@ namespace ToSic.Eav.WebApi
 
         }
 
-        public class EditPackage
-        {
-            public List<EditPackageInfo> Entities { get; set; }
-        }
-
         public class EditPackageInfo
         {
-            public dynamic PackageInfo { get; set; }
+            public ItemIdentifier Header { get; set; }
             public EntityWithLanguages Entity { get; set; }
         }
 

@@ -1,11 +1,11 @@
 ﻿
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity'); 
+	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller('EditEntityFormCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -51,7 +51,7 @@
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
 			            expressionProperties: {
-			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
+			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
 			            }
 			        });
 			    });
@@ -72,14 +72,14 @@
 			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (type === 'string' && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
-				subType = 'textarea';
+			if (type === "string" && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
+				subType = "textarea";
 
 			// Use subtype 'default' if none is specified - or type does not exist
-			if (!subType || !formlyConfig.getType(type + '-' + subType))
-				subType = 'default';
+			if (!subType || !formlyConfig.getType(type + "-" + subType))
+				subType = "default";
 
-			return (type + '-' + subType);
+			return (type + "-" + subType);
 		};
 	});
     

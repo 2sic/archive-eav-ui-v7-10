@@ -1,11 +1,11 @@
 ﻿/* global angular */
 (function () {
-    'use strict';
+    "use strict";
 
-    var app = angular.module('eavEditEntity');
+    var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller('EditEntities', function editEntityCtrl(appId, $http, $scope, entitiesSvc, $modalInstance) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc) {
 
         var vm = this;
 
@@ -26,21 +26,21 @@
         };
 
         vm.save = function () {
-            entitiesSvc.saveMany(appId, vm.editPackage).then(vm.afterSaveEvent);
+            entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
         };
 
-        vm.editPackage = null;
+        vm.items = null;
 
-        entitiesSvc.getManyForEditing(appId, $scope.editPackageRequest)
+        entitiesSvc.getManyForEditing(appId, $scope.itemList)
             .then(function (result) {
-                vm.editPackage = result.data;
-                angular.forEach(vm.editPackage.entities, function (v, i) {
+                vm.items = result.data;
+                angular.forEach(vm.items, function (v, i) {
 
                     // If the entity is null, it does not exist yet. Create a new one
-                    if (!vm.editPackage.entities[i].entity && !!vm.editPackage.entities[i].packageInfo.contentTypeName)
-                        vm.editPackage.entities[i].entity = entitiesSvc.newEntity(vm.editPackage.entities[i].packageInfo.contentTypeName);
+                    if (!vm.items[i].Entity && !!vm.items[i].Header.ContentTypeName)
+                        vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header.ContentTypeName);
 
-                    vm.editPackage.entities[i].entity = enhanceEntity(vm.editPackage.entities[i].entity);
+                    vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
                 });
             });
 

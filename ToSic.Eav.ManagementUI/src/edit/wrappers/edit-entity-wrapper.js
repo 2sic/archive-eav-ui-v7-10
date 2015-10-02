@@ -1,20 +1,20 @@
 ﻿/* global angular */
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity');
+	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller('EditEntityWrapperCtrl', function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
+	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
 
 		var vm = this;
-		vm.editPackageRequest = {
-            type: 'entities',
-            entities: [{
-		        contentTypeName: contentTypeName,
-		        entityId: entityId
+		vm.itemList =
+                [{
+		        ContentTypeName: contentTypeName,
+		        EntityId: entityId
+                    // todo: metadata infos too...
 		    }]
-		};
+	    ;
 
         // this is the callback after saving - needed to close everything
 		vm.afterSave = function (result) {
