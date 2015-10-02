@@ -61,6 +61,7 @@ namespace ToSic.Eav.WebApi
 
             Serializer.IncludeGuid = true;
 	        Serializer.IncludePublishingInfo = true;
+	        Serializer.IncludeMetadata = true;
 
             return Serializer.Prepare(typeFilter.LightList);
         }
@@ -144,7 +145,7 @@ namespace ToSic.Eav.WebApi
         {
             var convertedItems = new List<ImportEntity>();
             foreach (var entity in items)
-                convertedItems.Add(CreateImportEntity(entity.Entity, appId));
+                convertedItems.Add(CreateImportEntity(entity, appId));
 
             // Run import
             var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
@@ -174,19 +175,21 @@ namespace ToSic.Eav.WebApi
         }
 
         //[HttpPost]
-	    public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
+	    //public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
+     //   {
+     //       ImportEntity importEntity = CreateImportEntity(newData, appId);
+
+     //       // Run import
+     //       var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+     //       import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
+
+     //       return true;
+     //   }
+
+        private static ImportEntity CreateImportEntity(EditPackageInfo editInfo, int appId)
         {
-            ImportEntity importEntity = CreateImportEntity(newData, appId);
-
-            // Run import
-            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
-
-            return true;
-        }
-
-        private static ImportEntity CreateImportEntity(EntityWithLanguages newData, int appId)
-        {
+            var newData = editInfo.Entity;
+            var metadata = editInfo.Header.Metadata;
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
             if (newData.Id == 0 && newData.Guid == Guid.Empty)
@@ -206,12 +209,12 @@ namespace ToSic.Eav.WebApi
             importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
 
             // Metadata if we have
-            if (newData.Metadata != null && newData.Metadata.HasMetadata)
+            if (metadata != null && metadata.HasMetadata)
             {
-                importEntity.AssignmentObjectTypeId = newData.Metadata.TargetType;
-                importEntity.KeyGuid = newData.Metadata.KeyGuid;
-                importEntity.KeyNumber = newData.Metadata.KeyNumber;
-                importEntity.KeyString = newData.Metadata.KeyString;
+                importEntity.AssignmentObjectTypeId = metadata.TargetType;
+                importEntity.KeyGuid = metadata.KeyGuid;
+                importEntity.KeyNumber = metadata.KeyNumber;
+                importEntity.KeyString = metadata.KeyString;
             }
 
             // Attributes

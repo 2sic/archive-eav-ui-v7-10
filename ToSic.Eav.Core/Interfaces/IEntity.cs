@@ -25,6 +25,8 @@ namespace ToSic.Eav
 		/// Gets the AssignmentObjectTypeId
 		/// </summary>
 		int AssignmentObjectTypeId { get; }
+
+        IMetadata Metadata { get; }
 		/// <summary>
 		/// Gets a Dictionary having all Attributes having a value
 		/// </summary>

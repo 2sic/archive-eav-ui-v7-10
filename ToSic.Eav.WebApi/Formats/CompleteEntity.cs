@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool HasMetadata
         {
-            get { return _targetType != 0; }
+            get { return _targetType != Constants.DefaultAssignmentObjectTypeId; }
         }
 
         private int _targetType = 0;

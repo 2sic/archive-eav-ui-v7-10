@@ -55,6 +55,7 @@
     <Compile Include="Data\AttributeHelperTools.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\Dimension.cs" />
     <Compile Include="Data\EntityRelationship.cs" />
     <Compile Include="Data\EntityRelationshipItem.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Interfaces\IAttribute.cs" />
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
+    <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IIoC.cs" />

@@ -54,7 +54,10 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Internal value - ignore for now
         /// </summary>
+        [Obsolete("You should use Metadata.TargetType instead")]
 		public int AssignmentObjectTypeId { get; internal set; }
+
+        public IMetadata Metadata { get; set; }
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
         /// </summary>
@@ -99,11 +102,12 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Create a new Entity
 		/// </summary>
-		public Entity(Guid entityGuid, int entityId, int repositoryId, int assignmentObjectTypeId, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
+		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata metadata /* int assignmentObjectTypeId */, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
-			AssignmentObjectTypeId = assignmentObjectTypeId;
+		    Metadata = metadata;
+		    AssignmentObjectTypeId = Metadata.TargetType;// assignmentObjectTypeId;
 			Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase); // 2015-04-24 added, maybe a risk but should help with tokens
 			Type = type;
 			IsPublished = isPublished;

@@ -77,17 +77,16 @@ angular.module("EavAdminUi", ["ng",
         
         //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
-                var resolve = svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeName });
-                return svc.openItemEditWithEntityIdX(resolve, closeCallback);
+                svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                var resolve = svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName: null });
-                return svc.openItemEditWithEntityIdX(resolve, closeCallback);
+                svc.openEditItems([{ EntityId: entityId }], closeCallback);
             };
 
-            svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
-            	return svc.OpenModal("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, callbacks);
+            svc.openEditItems = function oel(items, closeCallback) {
+                var resolve = svc.CreateResolve({ items: items });
+                return svc.OpenModal("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, closeCallback);
             };
 
             svc.openItemHistory = function ioh(entityId, closeCallback) {
@@ -99,35 +98,26 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Metadata - mainly new
             svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
-                var key = {};//, assignmentType;
+                var metadata = {};
                 switch (targetType) {
                     case "entity":
-                        key.keyGuid = targetId;
-                        key.assignmentType = eavConfig.metadataOfEntity;
+                        metadata.Key = targetId;
+                        metadata.KeyType = "guid";
+                        metadata.TargetType = eavConfig.metadataOfEntity;
                         break;
                     case "attribute":
-                        key.keyNumber = targetId;
-                        key.assignmentType = eavConfig.metadataOfAttribute;
+                        metadata.Key = targetId;
+                        metadata.KeyType = "number";
+                        metadata.TargetType = eavConfig.metadataOfAttribute;
                         break;
-                    default: throw "targetType unknown, only accepts entity or attribute";
+                    default: throw "targetType unknown, only accepts entity or attribute for now";
                 }
-                // return eavManagementSvc.getContentTypeDefinition(metadataType)
-                return contentTypeSvc(appId).getDetails(metadataType)
-                    .then(function (result) {
-                    //if (useDummyContentEditor) {
-                        var resolve = svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: metadataType });
-                        alert(metadataType);
-                        resolve = angular.extend(resolve, svc.CreateResolve(key));
-                        return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
-                    //} else {
+                var items = [{
+                    ContentTypeName: metadataType,
+                    Metadata: metadata
+                }];
 
-                    //    var attSetId = result.data.AttributeSetId;
-                    //    var url = eavConfig.itemForm
-                    //        .getNewItemUrl(attSetId, assignmentType, key, false);
-
-                    //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
-                    //}
-                });
+                svc.openEditItems(items, closeCallback);
             };
         //#endregion
 
