@@ -53,29 +53,19 @@
 
             var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
-            //var exists = item.Metadata[metadataType] !== undefined;
-
-            //if (exists) {
-            //    eavAdminDialogs.openItemEditWithEntityId(
-            //        item.Metadata[metadataType].Id,
-            //        svc.liveListReload);
-            //} else {
-            //    eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, '@' + metadataType,
-            //        svc.liveListReload);
-            //}
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             return item.Metadata[metadataType] !== undefined
                 ? { EntityId: item.Metadata[metadataType].Id }  // if defined, return the entity-number to edit
                 : {
-                    ContentTypeName: "@" + metadataType,
+                    ContentTypeName: "@" + metadataType,        // otherwise the content type for new-assegnment
                     Metadata: {
                         Key: item.Id,
                         KeyType: "number",
-                        TargetType: eavConfig.metadataOfEntity
+                        TargetType: eavConfig.metadataOfAttribute
                     }
-                };      // otherwise the content type for new-assegnment
+                };      
         };
     }
 

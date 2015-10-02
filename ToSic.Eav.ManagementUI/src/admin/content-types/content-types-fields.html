@@ -28,8 +28,7 @@
 					</td>
 					<td><span tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
 					<td class="text-nowrap">
-						<button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, 'All')" translate="Fields.General"></button>
-						<button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)">{{item.Type}}</button>
+						<button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)"> {{item.Type}}</button>
 					</td>
 					<td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td>
 					<!--<td>-</td>-->
