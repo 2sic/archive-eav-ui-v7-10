@@ -50,21 +50,22 @@
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-
+            // assemble an array of 2 items for editing
             var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             return item.Metadata[metadataType] !== undefined
-                ? { EntityId: item.Metadata[metadataType].Id }  // if defined, return the entity-number to edit
+                ? { EntityId: item.Metadata[metadataType].Id, Title: "General" }  // if defined, return the entity-number to edit
                 : {
                     ContentTypeName: "@" + metadataType,        // otherwise the content type for new-assegnment
                     Metadata: {
                         Key: item.Id,
                         KeyType: "number",
                         TargetType: eavConfig.metadataOfAttribute
-                    }
+                    },
+                    Title: metadataType
                 };      
         };
     }

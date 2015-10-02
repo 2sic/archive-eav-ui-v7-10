@@ -127,9 +127,9 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public List<EditPackageInfo> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
+        public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
-            return items.Select(p => new EditPackageInfo
+            return items.Select(p => new EntityWithHeader
             {
                 Header = p,
                 Entity = p.EntityId != 0 ? GetOne(appId, p.ContentTypeName, p.EntityId) : null
@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi
 
 
         [HttpPost]
-        public bool SaveMany([FromUri] int appId, [FromBody] List<EditPackageInfo> items)
+        public bool SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         {
             var convertedItems = new List<ImportEntity>();
             foreach (var entity in items)
@@ -168,7 +168,7 @@ namespace ToSic.Eav.WebApi
 
         }
 
-        public class EditPackageInfo
+        public class EntityWithHeader
         {
             public ItemIdentifier Header { get; set; }
             public EntityWithLanguages Entity { get; set; }
@@ -186,7 +186,7 @@ namespace ToSic.Eav.WebApi
      //       return true;
      //   }
 
-        private static ImportEntity CreateImportEntity(EditPackageInfo editInfo, int appId)
+        private static ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
         {
             var newData = editInfo.Entity;
             var metadata = editInfo.Header.Metadata;
