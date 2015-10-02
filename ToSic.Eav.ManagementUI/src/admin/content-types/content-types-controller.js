@@ -44,6 +44,13 @@
             });
         };
 
+        vm.changeScope = function admin() {
+            $translate("ContentTypes.Buttons.ChangeScopeQuestion").then(function (msg) {
+                var inp = prompt(msg);
+                if (inp)
+                    svc.setScope(inp);
+            });
+        };
         vm.isGuid = function isGuid(txtToTest) {
             var patt = new RegExp(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i);
             return patt.test(txtToTest); // note: can't use the txtToTest.match because it causes infinite digest cycles
