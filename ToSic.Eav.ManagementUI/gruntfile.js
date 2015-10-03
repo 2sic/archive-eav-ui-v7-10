@@ -61,18 +61,18 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: admin.cwd,
-                        src: ["**", "!**/*Spec.js"],
+                        src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: admin.tmp
                     },
                     {
                         expand: true,
                         cwd: editUi.cwd,
-                        src: ["**", "!**/*Spec.js"],
+                        src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: editUi.tmp
                     }
                 ]
             },
-            i18n: {
+            i18n: { 
                 files: [
                     {
                         expand: true,

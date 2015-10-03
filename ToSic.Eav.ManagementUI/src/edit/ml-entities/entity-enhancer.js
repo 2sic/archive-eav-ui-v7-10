@@ -2,7 +2,7 @@
 
 // Note: the entity-reader is meant for admin-purposes. 
 // It does not try to do fallback, because the admin-UI MUST know the real data
-function enhanceEntity(entity) {
+function TEMPRENAMEenhanceEntity(entity) {
     var enhancer = this; 
 
     enhancer.enhanceWithCount = function (obj) {

@@ -1,15 +1,14 @@
 ﻿/* Main object with dependencies, used in wrappers and other places */
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity', [
-        'formly',
-        'ui.bootstrap',
-        'eavFieldTemplates',
-        'eavNgSvcs',
-        'EavServices',
-        'eavEditTemplates',
-        //'eavEditEntities'
+	angular.module("eavEditEntity", [
+        "formly",
+        "ui.bootstrap",
+        "eavFieldTemplates",
+        "eavNgSvcs",
+        "EavServices",
+        "eavEditTemplates"
 	]);
 
 

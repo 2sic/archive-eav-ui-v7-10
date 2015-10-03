@@ -6,7 +6,7 @@ angular.module("PipelineDesigner")
 
     .controller("PipelineDesignerController",
 			
-	function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavConfig, $q) {
+	function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavConfig, $q, eavManagementSvc) {
 		"use strict";
         
 		// Init
@@ -326,14 +326,16 @@ angular.module("PipelineDesigner")
 	            return;
 	        }
 
-	        uiNotification.wait();
+	        // uiNotification.wait();
 
-	        pipelineService.getDataSourceConfigurationUrl(dataSource).then(function(url) {
-	            uiNotification.clear();
-	            eavDialogService.open({ url: url, title: "Configure DataSource " + dataSource.Name });
-	        }, function(error) {
-	            uiNotification.error("Open Configuration UI failed", error);
-	        });
+	        pipelineService.editDataSourcePart(dataSource);
+
+	        //pipelineService.getDataSourceConfigurationUrl(dataSource).then(function(url) {
+	        //    uiNotification.clear();
+	        //    eavDialogService.open({ url: url, title: "Configure DataSource " + dataSource.Name });
+	        //}, function(error) {
+	        //    uiNotification.error("Open Configuration UI failed", error);
+	        //});
 	    };
 
 		// Test wether a DataSource is persisted on the Server

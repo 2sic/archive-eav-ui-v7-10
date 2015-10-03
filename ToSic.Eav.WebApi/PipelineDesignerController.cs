@@ -91,9 +91,11 @@ namespace ToSic.Eav.WebApi
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
 					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
-					// ToDo: Replace ToSic.Eav with ToSic.Eav.DataSources
+					
+                    // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
+                    // Using a trick to add a special EOL-character to ensure we don't replace somethin in the middle
 					var partAssemblyAndType = (string)dataSource["PartAssemblyAndType"];
-
+                    dataSource["PartAssemblyAndType"] = (partAssemblyAndType + "~").Replace(", ToSic.Eav~", ", ToSic.Eav.DataSources");
                     dataSourcesJson.Add(dataSource);
 				}
 				#endregion

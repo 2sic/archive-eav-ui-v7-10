@@ -5,10 +5,10 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, uiNotification) {
 
         var vm = this;
-
+        
         vm.registeredControls = [];
         vm.registerEditControl = function (control) {
             vm.registeredControls.push(control);
@@ -29,6 +29,13 @@
             entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
         };
 
+        // todo: translate
+        vm.saveAndKeepOpen = function () {
+                uiNotification.note("Saving", "", true);
+            entitiesSvc.saveMany(appId, vm.items).then(function () {
+                uiNotification.note("Saved", "", true);
+            });
+        };
         vm.items = null;
 
         entitiesSvc.getManyForEditing(appId, $scope.itemList)

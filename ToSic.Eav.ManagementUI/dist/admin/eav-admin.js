@@ -488,6 +488,7 @@
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
 
+
         vm.liveEval = function admin() {
             $translate("General.Questions.SystemInput").then(function (msg) {
                 var inp = prompt(msg);
@@ -496,6 +497,14 @@
             });
         };
 
+        // this is to change the scope of the items being shown
+        vm.changeScope = function admin() {
+            $translate("ContentTypes.Buttons.ChangeScopeQuestion").then(function (msg) {
+                var inp = prompt(msg);
+                if (inp)
+                    svc.setScope(inp);
+            });
+        };
         vm.isGuid = function isGuid(txtToTest) {
             var patt = new RegExp(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i);
             return patt.test(txtToTest); // note: can't use the txtToTest.match because it causes infinite digest cycles
@@ -588,32 +597,23 @@
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-
+            // assemble an array of 2 items for editing
             var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
-            //var exists = item.Metadata[metadataType] !== undefined;
-
-            //if (exists) {
-            //    eavAdminDialogs.openItemEditWithEntityId(
-            //        item.Metadata[metadataType].Id,
-            //        svc.liveListReload);
-            //} else {
-            //    eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, '@' + metadataType,
-            //        svc.liveListReload);
-            //}
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             return item.Metadata[metadataType] !== undefined
-                ? { EntityId: item.Metadata[metadataType].Id }  // if defined, return the entity-number to edit
+                ? { EntityId: item.Metadata[metadataType].Id, Title: "General" }  // if defined, return the entity-number to edit
                 : {
-                    ContentTypeName: "@" + metadataType,
+                    ContentTypeName: "@" + metadataType,        // otherwise the content type for new-assegnment
                     Metadata: {
                         Key: item.Id,
                         KeyType: "number",
-                        TargetType: eavConfig.metadataOfEntity
-                    }
-                };      // otherwise the content type for new-assegnment
+                        TargetType: eavConfig.metadataOfAttribute
+                    },
+                    Title: metadataType
+                };      
         };
     }
     contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$translate", "eavConfig"];
@@ -659,122 +659,6 @@ angular.module("EavDirectives", [])
         };
     })
 ;
-
-
-// Note: the entity-reader is meant for admin-purposes. 
-// It does not try to do fallback, because the admin-UI MUST know the real data
-function enhanceEntity(entity) {
-    var enhancer = this; 
-
-    enhancer.enhanceWithCount = function (obj) {
-        obj.count = function () {
-            var key, count = 0;
-            for (key in this)
-                if (this.hasOwnProperty(key) && typeof this[key] != 'function')
-                    count++;
-            return count;
-        };
-    }; 
-
-    // this will enhance a Values with necessary methods
-    enhancer.enhanceVs = function (vs) {
-        vs.hasLanguage = function (language) { return this.Dimensions.hasOwnProperty(language); };
-        vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
-        vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : null; };
-
-        // ToDo: Fix enhance dimensions - or use alternative Object.keys(vs.Dimensions).length
-        //if(typeof vs.Dimensions != "undefined")
-            //enhancer.enhanceWithCount(vs.Dimensions);
-        return vs;
-    };
-
-    // this will enhance an attribute
-    enhancer.enhanceAtt = function(att) {
-        att.getVsWithLanguage = function(language) {
-            // try to find it based on the language - it then has a property matching the language
-            for (var v = 0; v < this.Values.length; v++)
-                if (this.Values[v].hasLanguage(language))
-                    return this.Values[v];
-
-            // if we don't find it, we must report it back as such
-            return null;
-        };
-
-        att.setLanguageToVs = function(vs, language, shareMode) {
-            // check if it's already there, if yes, just ensure shareMode, then done
-            if (vs.hasLanguage(language))
-                return vs.setLanguage(language, shareMode);
-
-            // otherwise find the language if it's anywhere else and remove that first; 
-            // note that this might delete a value set, so we should only do it after checking if it wasn't already right
-            this.removeLanguage(language);
-
-            // now set it anew
-            return vs.setLanguage(language, shareMode);
-        };
-
-        att.removeLanguage = function(language) {
-            var value = this.getVsWithLanguage(language);
-            if (value === null)
-                return;
-            delete value.Dimensions[language];
-
-            // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
-            if (Object.keys(value.Dimensions).length === 0 && this.Values.length > 0)
-                this.removeVs(value);
-        };
-
-        att.removeVs = function(vs) {
-            for (var v = 0; v < this.Values.length; v++)
-                if (this.Values[v] === vs)
-                    this.Values.splice(v, 1);
-        };
-
-        // todo: when adding VS - ensure the events are added too...
-        att.addVs = function(value, language, shareMode) {
-            var dimensions = {};
-            dimensions[language] = (shareMode === null ? true : shareMode);
-            var newVs = { "Value": value, "Dimensions": dimensions };
-            // ToDo: enhancer.enhanceWithCount(newVs.Dimensions);
-            this.Values.push(enhancer.enhanceVs(newVs));
-        };
-
-        // Now go through the Values and give them more commands
-        for (var v = 0; v < att.Values.length; v++)
-            enhancer.enhanceVs(att.Values[v]);
-
-        return att;
-    };
-
-    // this will enhance an entity
-    enhancer.enhanceEntity = function(ent) {
-        ent.getTitle = function() {
-            ent.getAttribute(ent.TitleAttributeName);
-        };
-
-        ent.hasAttribute = function(attrName) {
-            return ent.Attributes[attrName] !== undefined;
-        };
-
-        ent.getAttribute = function(attrName) {
-            return ent.Attributes[attrName];
-        };
-
-        // ToDo: Discuss with 2dm 
-        ent.Attributes.addAttribute = function (attrName) {
-            ent.Attributes[attrName] = { Values: [] };
-            enhancer.enhanceAtt(ent.Attributes[attrName]);
-        };
-
-        for (var attKey in ent.Attributes)
-            if(ent.Attributes.hasOwnProperty(attKey) && typeof(ent.Attributes[attKey]) != 'function')
-                enhancer.enhanceAtt(ent.Attributes[attKey]);
-
-        return ent;
-    };
-
-    return enhancer.enhanceEntity(entity);
-}
 angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache) {
   'use strict';
 
@@ -819,12 +703,12 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-fields.html',
-    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-default\"></button><table class=\"table table-hover\"><thead><tr><th translate=Fields.Table.Title></th><th translate=Fields.Table.Name></th><th translate=Fields.Table.Edit></th><th translate=Fields.Table.Label></th><th translate=Fields.Table.Notes></th><th translate=Fields.Table.Sort></th><th translate=Fields.Table.Action></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\"><td><button icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\" type=button class=\"btn btn-xs\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)></button></td><td><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=text-nowrap><button icon=pencil type=button class=\"btn btn-xs\" ng-click=\"vm.createOrEditMetadata(item, 'All')\" translate=Fields.General></button> <button icon=pencil type=button class=\"btn btn-xs\" ng-click=\"vm.createOrEditMetadata(item, item.Type)\">{{item.Type}}</button></td><td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td><td>{{item.Metadata['@All'].Attributes.Notes.DefaultValue.TypedContents}}</td><td class=text-nowrap><button icon=arrow-up type=button class=\"btn btn-xs\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div>"
+    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-default\"></button><table class=\"table table-hover\"><thead><tr><th translate=Fields.Table.Title></th><th translate=Fields.Table.Name></th><th translate=Fields.Table.Edit></th><th translate=Fields.Table.Label></th><th translate=Fields.Table.Notes></th><th translate=Fields.Table.Sort></th><th translate=Fields.Table.Action></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\"><td><button icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\" type=button class=\"btn btn-xs\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)></button></td><td><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=text-nowrap><button icon=pencil type=button class=\"btn btn-xs\" ng-click=\"vm.createOrEditMetadata(item, item.Type)\">{{item.Type}}</button></td><td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td><td>{{item.Metadata['@All'].Attributes.Notes.DefaultValue.TypedContents}}</td><td class=text-nowrap><button icon=arrow-up type=button class=\"btn btn-xs\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div>"
   );
 
 
   $templateCache.put('content-types/content-types.html',
-    "<div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div></div><div><h3>todo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div>"
+    "<div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <button icon=record title=\"{{ 'ContentTypes.Buttons.ChangeScope' | translate }}\" type=button class=btn ng-click=vm.changeScope()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div></div><div><h3>todo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div>"
   );
 
 
@@ -881,13 +765,15 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 } ());
 angular.module("PipelineDesigner", [
-    "PipelineDesigner.filters",
-    "ngResource",
-    "toaster",
-    "EavConfiguration",
-    "eavDialogService",
-    "EavServices",
-    "eavTemplates"])
+        "PipelineDesigner.filters",
+        "ngResource",
+        "EavConfiguration",
+        "eavDialogService",
+        "EavServices",
+        "eavTemplates",
+        "eavNgSvcs",
+        "EavAdminUi"
+    ])
 
 // datasource directive makes an element a DataSource with jsPlumb
     .directive("datasource", ["$timeout", function($timeout) {
@@ -905,49 +791,7 @@ angular.module("PipelineDesigner", [
                 }
             }
         };
-    }])
-
-// Show Notifications using toaster
-    .factory("uiNotification", [
-        "toaster", function(toaster) {
-            "use strict";
-
-            var showNote = function(type, title, body, autoHide) {
-                // wrap toaster in ready-Event because notes would't be show if teaster is used before
-                angular.element(document).ready(function() {
-                    toaster.clear();
-                    toaster.pop(type, title, body, autoHide ? null : 0);
-                });
-            };
-
-            return {
-                clear: function() {
-                    toaster.clear();
-                },
-                error: function(title, bodyOrError) {
-                    var message;
-                    // test whether bodyOrError is an Error from Web API
-                    if (bodyOrError && bodyOrError.data && bodyOrError.data.Message) {
-                        message = bodyOrError.data.Message;
-                        if (bodyOrError.data.ExceptionMessage)
-                            message += "\n" + bodyOrError.data.ExceptionMessage;
-                    } else
-                        message = bodyOrError;
-
-                    showNote("error", title, message);
-                },
-                note: function(title, body, autoHide) {
-                    showNote("note", title, body, autoHide);
-                },
-                success: function(title, body, autoHide) {
-                    showNote("success", title, body, autoHide);
-                },
-                wait: function(title) {
-                    showNote("note", title ? title : "Please wait ..", "This shouldn't take long", false);
-                }
-            };
-        }
-    ]);
+    }]);
 
 // Filters for "ClassName, AssemblyName"
 angular.module("PipelineDesigner.filters", []).filter("typename", function () {
@@ -977,7 +821,7 @@ angular.module("PipelineDesigner")
 
     .controller("PipelineDesignerController",
 			
-	["appId", "pipelineId", "$scope", "pipelineService", "$location", "$timeout", "$filter", "uiNotification", "eavDialogService", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavConfig, $q) {
+	["appId", "pipelineId", "$scope", "pipelineService", "$location", "$timeout", "$filter", "uiNotification", "eavDialogService", "$log", "eavConfig", "$q", "eavManagementSvc", function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, $log, eavConfig, $q, eavManagementSvc) {
 		"use strict";
         
 		// Init
@@ -1297,14 +1141,16 @@ angular.module("PipelineDesigner")
 	            return;
 	        }
 
-	        uiNotification.wait();
+	        // uiNotification.wait();
 
-	        pipelineService.getDataSourceConfigurationUrl(dataSource).then(function(url) {
-	            uiNotification.clear();
-	            eavDialogService.open({ url: url, title: "Configure DataSource " + dataSource.Name });
-	        }, function(error) {
-	            uiNotification.error("Open Configuration UI failed", error);
-	        });
+	        pipelineService.editDataSourcePart(dataSource);
+
+	        //pipelineService.getDataSourceConfigurationUrl(dataSource).then(function(url) {
+	        //    uiNotification.clear();
+	        //    eavDialogService.open({ url: url, title: "Configure DataSource " + dataSource.Name });
+	        //}, function(error) {
+	        //    uiNotification.error("Open Configuration UI failed", error);
+	        //});
 	    };
 
 		// Test wether a DataSource is persisted on the Server
@@ -1645,6 +1491,7 @@ angular.module("EavServices", [
     "EavConfiguration",     // global configuration
     "pascalprecht.translate",
     "ngResource",           // only needed for the pipeline-service, maybe not necessary any more?
+    "toaster"
 ]);
 
 angular.module("EavServices")
@@ -2264,7 +2111,7 @@ angular.module("EavServices")
 // PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", ["$resource", "$q", "$filter", "eavConfig", "$http", "contentTypeSvc", function($resource, $q, $filter, eavConfig, $http, contentTypeSvc) {
+    .factory("pipelineService", ["$resource", "$q", "$filter", "eavConfig", "$http", "contentTypeSvc", "eavManagementSvc", "eavAdminDialogs", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, eavManagementSvc, eavAdminDialogs) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -2378,39 +2225,37 @@ angular.module("EavServices")
             clonePipeline: function(pipelineEntityId) {
                 return svc.pipelineResource.get({ action: "ClonePipeline", appId: svc.appId, Id: pipelineEntityId }).$promise;
             },
+
+
             // Get the URL to configure a DataSource
-            getDataSourceConfigurationUrl: function(dataSource) {
+            editDataSourcePart: function(dataSource) {
                 var dataSourceFullName = $filter("typename")(dataSource.PartAssemblyAndType, "classFullName");
                 var contentTypeName = "|Config " + dataSourceFullName; // todo refactor centralize
                 var assignmentObjectTypeId = 4; // todo refactor centralize
                 var keyGuid = dataSource.EntityGuid;
                 var preventRedirect = true;
 
-                var deferred = $q.defer();
-
                 // Query for existing Entity
-                svc.entitiesResource.query({ action: "GetAssignedEntities", appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyType: "guid", key: keyGuid, contentType: contentTypeName }, function (success) {
+                eavManagementSvc.getAssignedItems(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
+                    var success = result.data;
                     if (success.length) // Edit existing Entity
-                        deferred.resolve(eavConfig.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
+                        eavAdminDialogs.openItemEditWithEntityId(success[0].Id);
                     else { // Create new Entity
-                        // todo: this is a get-content-type, it shouldn't be using the entitiesResource
-                        // todo: but I'm not sure when it is being used
-                        svc.entitiesResource.get({ action: "GetContentType", appId: svc.appId, contentType: contentTypeName }, function (contentType) {
-                            // test for "null"-response
-                            if (contentType[0] == "n" && contentType[1] == "u" && contentType[2] == "l" && contentType[3] == "l")
-                                deferred.reject("Content Type " + contentTypeName + " not found.");
-                            else
-                                deferred.resolve(eavConfig.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
-                        }, function(reason) {
-                            deferred.reject(reason);
-                        });
+                        alert("Try to create new");
+                        var items = [
+                            {
+                                ContentTypeName: contentTypeName,
+                                Metadata: {
+                                    TargetType: assignmentObjectTypeId,
+                                    KeyType: "guid",
+                                    Key: keyGuid
+                                }
+                            }
+                        ];
+                        eavAdminDialogs.openEditItems(items, function() { alert('callback after save'); });
                     }
-                }, function(reason) {
-                    deferred.reject(reason);
                 });
-
-                return deferred.promise;
-            },
+            }
 
         });
 
@@ -2490,3 +2335,44 @@ angular.module("EavServices")
     })
 
 ;
+
+angular.module("EavServices")
+    .factory("uiNotification", ["toaster", function (toaster) {
+            "use strict";
+
+            var showNote = function (type, title, body, autoHide) {
+                // wrap toaster in ready-Event because notes would't be show if teaster is used before
+                angular.element(document).ready(function () {
+                    toaster.clear();
+                    toaster.pop(type, title, body, autoHide ? null : 0);
+                });
+            };
+
+            return {
+                clear: function () {
+                    toaster.clear();
+                },
+                error: function (title, bodyOrError) {
+                    var message;
+                    // test whether bodyOrError is an Error from Web API
+                    if (bodyOrError && bodyOrError.data && bodyOrError.data.Message) {
+                        message = bodyOrError.data.Message;
+                        if (bodyOrError.data.ExceptionMessage)
+                            message += "\n" + bodyOrError.data.ExceptionMessage;
+                    } else
+                        message = bodyOrError;
+
+                    showNote("error", title, message);
+                },
+                note: function (title, body, autoHide) {
+                    showNote("note", title, body, autoHide);
+                },
+                success: function (title, body, autoHide) {
+                    showNote("success", title, body, autoHide);
+                },
+                wait: function (title) {
+                    showNote("note", title ? title : "Please wait ..", "This shouldn't take long", false);
+                }
+            };
+        }]
+    );

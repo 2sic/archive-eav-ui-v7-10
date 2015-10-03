@@ -154,37 +154,18 @@ namespace ToSic.Eav.WebApi
             return true;
         }
 
-        public class ItemIdentifier
-        {
-            // simple entity identifier (to edit existing)...
-            public int EntityId { get; set; }
-
-            // ...or content-type (for new)
-            public string ContentTypeName { get; set; }
-
-            #region Additional Assignment information
-            public Metadata Metadata { get; set; }
-            #endregion
-
-        }
-
-        public class EntityWithHeader
-        {
-            public ItemIdentifier Header { get; set; }
-            public EntityWithLanguages Entity { get; set; }
-        }
 
         //[HttpPost]
-	    //public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
-     //   {
-     //       ImportEntity importEntity = CreateImportEntity(newData, appId);
+        //public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
+        //   {
+        //       ImportEntity importEntity = CreateImportEntity(newData, appId);
 
-     //       // Run import
-     //       var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-     //       import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
+        //       // Run import
+        //       var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+        //       import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
 
-     //       return true;
-     //   }
+        //       return true;
+        //   }
 
         private static ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
         {

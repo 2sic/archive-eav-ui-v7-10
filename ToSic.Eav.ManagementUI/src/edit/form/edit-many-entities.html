@@ -5,5 +5,20 @@
         <eav-edit-entity-form entity="p.Entity" register-edit-control="vm.registerEditControl"></eav-edit-entity-form>
     </div>
 
-    <button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">Save</button>
+
+    <span icon="eye-open" tooltip="{{ 'Status.Published' | translate }}"></span>
+
+    <button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">
+        <span icon="ok" tooltip="{{ 'Button.Save' | translate }}"></span>
+    </button>
+
+
+    <button class="btn pull-right">
+        <span icon="option-horizontal" tooltip="{{ 'Button.MoreOptions' | translate }}"></span>
+    </button>
+
+    <button class="btn pull-right" ng-click="vm.saveAndKeepOpen()">
+        <span icon="check" tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
+    </button>
+    
 </div>

@@ -4,4 +4,5 @@ angular.module("EavServices", [
     "EavConfiguration",     // global configuration
     "pascalprecht.translate",
     "ngResource",           // only needed for the pipeline-service, maybe not necessary any more?
+    "toaster"
 ]);

@@ -1,7 +1,7 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", function($resource, $q, $filter, eavConfig, $http, contentTypeSvc) {
+    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, eavManagementSvc, eavAdminDialogs) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -115,39 +115,37 @@ angular.module("EavServices")
             clonePipeline: function(pipelineEntityId) {
                 return svc.pipelineResource.get({ action: "ClonePipeline", appId: svc.appId, Id: pipelineEntityId }).$promise;
             },
+
+
             // Get the URL to configure a DataSource
-            getDataSourceConfigurationUrl: function(dataSource) {
+            editDataSourcePart: function(dataSource) {
                 var dataSourceFullName = $filter("typename")(dataSource.PartAssemblyAndType, "classFullName");
                 var contentTypeName = "|Config " + dataSourceFullName; // todo refactor centralize
                 var assignmentObjectTypeId = 4; // todo refactor centralize
                 var keyGuid = dataSource.EntityGuid;
                 var preventRedirect = true;
 
-                var deferred = $q.defer();
-
                 // Query for existing Entity
-                svc.entitiesResource.query({ action: "GetAssignedEntities", appId: svc.appId, assignmentObjectTypeId: assignmentObjectTypeId, keyType: "guid", key: keyGuid, contentType: contentTypeName }, function (success) {
+                eavManagementSvc.getAssignedItems(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
+                    var success = result.data;
                     if (success.length) // Edit existing Entity
-                        deferred.resolve(eavConfig.itemForm.getEditItemUrl(success[0].Id /*EntityId*/, null, preventRedirect));
+                        eavAdminDialogs.openItemEditWithEntityId(success[0].Id);
                     else { // Create new Entity
-                        // todo: this is a get-content-type, it shouldn't be using the entitiesResource
-                        // todo: but I'm not sure when it is being used
-                        svc.entitiesResource.get({ action: "GetContentType", appId: svc.appId, contentType: contentTypeName }, function (contentType) {
-                            // test for "null"-response
-                            if (contentType[0] == "n" && contentType[1] == "u" && contentType[2] == "l" && contentType[3] == "l")
-                                deferred.reject("Content Type " + contentTypeName + " not found.");
-                            else
-                                deferred.resolve(eavConfig.itemForm.getNewItemUrl(contentType.AttributeSetId, assignmentObjectTypeId, { KeyGuid: keyGuid, ReturnUrl: null }, preventRedirect));
-                        }, function(reason) {
-                            deferred.reject(reason);
-                        });
+                        alert("Try to create new");
+                        var items = [
+                            {
+                                ContentTypeName: contentTypeName,
+                                Metadata: {
+                                    TargetType: assignmentObjectTypeId,
+                                    KeyType: "guid",
+                                    Key: keyGuid
+                                }
+                            }
+                        ];
+                        eavAdminDialogs.openEditItems(items, function() { alert('callback after save'); });
                     }
-                }, function(reason) {
-                    deferred.reject(reason);
                 });
-
-                return deferred.promise;
-            },
+            }
 
         });
 

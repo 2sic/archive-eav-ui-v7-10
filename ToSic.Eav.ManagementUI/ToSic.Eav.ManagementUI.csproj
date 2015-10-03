@@ -126,8 +126,9 @@
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />
-    <Content Include="src\admin\eav.js" />
+    <Content Include="src\edit\ml-entities\entity-enhancer.js" />
     <Content Include="src\admin\services\svc-creator.js" />
+    <Content Include="src\admin\services\toaster.js" />
     <Content Include="src\admin\services\_eav-services.js" />
     <Content Include="src\edit\eav-edit-entity-app.js" />
     <Content Include="src\edit\form\edit-many-entities-directive.js" />
@@ -150,9 +151,8 @@
     <Content Include="src\edit\localization\eav-localization.js" />
     <Content Include="src\edit\localization\localization-menu.html" />
     <Content Include="src\edit\services\defaultvalue-service.js" />
-    <Content Include="EAV\js\specs\eav-content-ml.spec.js" />
-    <Content Include="EAV\js\src\eav.js" />
-    <Content Include="EAV\js\tests\SpecRunner.html" />
+    <Content Include="src\edit\ml-entities\specs\eav-content-ml.spec.js" />
+    <Content Include="src\edit\ml-entities\tests\SpecRunner.html" />
     <Content Include="gruntfile.js" />
     <Content Include="CSS\bootstrap-theme.min.css" />
     <Content Include="CSS\bootstrap.min.css" />
@@ -249,7 +249,7 @@
     <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="EAV\js\specs\helpers\" />
+    <Folder Include="src\edit\ml-entities\specs\helpers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
