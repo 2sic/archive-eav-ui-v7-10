@@ -54,9 +54,11 @@ namespace ToSic.Eav.WebApi
 		/// <param name="eavConnectionString">optional EAV Connection String</param>
 		public PipelineDesignerController(string userName, string eavConnectionString = null)
 		{
+            // TODO URGENT - TRYING TO GET THIS TO WORK - HAS SIDE EFFECTS ON OTHER SERVICES
+            // Must discuss w/2bg, seems to work now anyhow...
 			// Preserving circular reference
-			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
 
 			_userName = userName;
 

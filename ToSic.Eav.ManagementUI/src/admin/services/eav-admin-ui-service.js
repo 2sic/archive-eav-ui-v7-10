@@ -140,6 +140,8 @@ angular.module("EavAdminUi", ["ng",
 
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
+                if (typeof (callbacks) === "undefined")
+                    return;
                 if (typeof (callbacks) === "function") // if it's only one callback, use it for all close-cases
                     callbacks = { close: callbacks };
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);

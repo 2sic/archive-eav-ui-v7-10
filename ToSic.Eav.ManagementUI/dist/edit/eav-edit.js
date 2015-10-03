@@ -653,7 +653,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 // Note: the entity-reader is meant for admin-purposes. 
 // It does not try to do fallback, because the admin-UI MUST know the real data
-function TEMPRENAMEenhanceEntity(entity) {
+function enhanceEntity(entity) {
     var enhancer = this; 
 
     enhancer.enhanceWithCount = function (obj) {
