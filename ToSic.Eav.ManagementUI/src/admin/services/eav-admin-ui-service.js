@@ -40,16 +40,16 @@ angular.module("EavAdminUi", ["ng",
 ])
     .factory("eavAdminDialogs", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
 
-        var svc = {};
+            var svc = {};
 
-        //#region Content Items dialogs
-        svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
+            //#region List of Content Items dialogs
+            svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
                 return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region content import export
+            //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
@@ -60,9 +60,9 @@ angular.module("EavAdminUi", ["ng",
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 
-        //#endregion
+            //#endregion
 
-        //#region ContentType dialogs
+            //#region ContentType dialogs
 
             svc.openContentTypeEdit = function octe(item, closeCallback) {
                 var resolve = svc.CreateResolve({ item: item });
@@ -73,9 +73,9 @@ angular.module("EavAdminUi", ["ng",
                 var resolve = svc.CreateResolve({ contentType: item });
                 return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
         
-        //#region Item - new, edit
+            //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
                 svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
             };
@@ -94,9 +94,9 @@ angular.module("EavAdminUi", ["ng",
                     svc.CreateResolve({ entityId: entityId }),
                     closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Metadata - mainly new
+            //#region Metadata - mainly new
             svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
                 var metadata = {};
                 switch (targetType) {
@@ -119,22 +119,22 @@ angular.module("EavAdminUi", ["ng",
 
                 svc.openEditItems(items, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Permissions Dialog
+            //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, targetGuid: targetGuid });
                 return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Pipeline Designer
+            //#region Pipeline Designer
             svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
                 var url = eavConfig.adminUrls.pipelineDesigner(appId, pipelineId);
                 $window.open(url);
                 return;
             };
-        //#endregion
+            //#endregion
 
 
 

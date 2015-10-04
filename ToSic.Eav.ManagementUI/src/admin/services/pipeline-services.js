@@ -131,18 +131,14 @@ angular.module("EavServices")
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);
                     else { // Create new Entity
-                        alert("Try to create new");
-                        var items = [
-                            {
+                        var items = [{
                                 ContentTypeName: contentTypeName,
                                 Metadata: {
                                     TargetType: assignmentObjectTypeId,
                                     KeyType: "guid",
                                     Key: keyGuid
-                                }
-                            }
-                        ];
-                        eavAdminDialogs.openEditItems(items, function() { alert('callback after save'); });
+                                }}];
+                        eavAdminDialogs.openEditItems(items);
                     }
                 });
             }

@@ -25,7 +25,8 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            var found = InitialDS.List[id];
+            // must use cache, because it shows both published  unpublished
+            var found = DataSource.GetCache(null, appId).List[id];
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
@@ -100,7 +101,9 @@ namespace ToSic.Eav.WebApi
                     Serializer.IncludeAllEditingInfos = true;
 
                     var found = GetEntityOrThrowError(contentType, id, appId);
-
+                    var maybeDraft = found.GetDraft();
+                    if (maybeDraft != null)
+                        found = maybeDraft;
                     //return Serializer.Prepare(found);
 
                     var ce = new EntityWithLanguages()
@@ -109,6 +112,7 @@ namespace ToSic.Eav.WebApi
                         Id = found.EntityId,
                         Guid = found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
+                        IsPublished = found.IsPublished,
                         TitleAttributeName = found.Title == null ? null : found.Title.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                             {
@@ -142,13 +146,16 @@ namespace ToSic.Eav.WebApi
 
         [HttpPost]
         public bool SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
-        {
+        { 
             var convertedItems = new List<ImportEntity>();
             foreach (var entity in items)
                 convertedItems.Add(CreateImportEntity(entity, appId));
 
             // Run import
-            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
+            var import = new Import.Import(null, appId, User.Identity.Name, 
+                leaveExistingValuesUntouched: false, 
+                preserveUndefinedValues: false,
+                preventDraftSave: false);
             import.RunImport(null, convertedItems.ToArray(), true, true);
 
             return true;
@@ -181,7 +188,7 @@ namespace ToSic.Eav.WebApi
             {
                 importEntity.EntityGuid = newData.Guid;
             }
-            importEntity.IsPublished = true; // todo 2rm - newData.IsPublished;
+            importEntity.IsPublished = newData.IsPublished;
                                              // todo 2rm - date picker shouldn't have time zones (maybe talk to 2tk before fixing the  bug)
 
             // Content type
@@ -200,10 +207,14 @@ namespace ToSic.Eav.WebApi
 
             // Attributes
             importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
-            var attributeSet = EavDataController.Instance(appId: appId).AttribSet.GetAttributeSet(newData.Type.StaticName);
+
+            // throw new Exception("error - must get cache to load correct cache first");
+            var attributeSet = DataSource.GetCache(null, appId).GetContentType(newData.Type.StaticName);
+            
             foreach (var attribute in newData.Attributes)
             {
-                var attributeType = attributeSet.GetAttributeByName(attribute.Key).Type;
+                var attDef = attributeSet.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
+                var attributeType = attDef.Type;
 
                 foreach (var value in attribute.Value.Values)
                 {

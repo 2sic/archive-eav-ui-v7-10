@@ -89,7 +89,7 @@ angular.module("eavNgSvcs", ["ng"])
 					StaticName: contentTypeName
 				},
 				Attributes: {},
-                Published: true
+                IsPublished: true
 			};
 		};
         

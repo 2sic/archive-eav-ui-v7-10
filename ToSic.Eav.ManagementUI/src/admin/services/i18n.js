@@ -1,4 +1,9 @@
-﻿(function () {
+﻿/* The main component for language inclusion
+ * Ensure the dependencies work, that the url-schema is prepared etc.
+ * 
+ */
+
+(function () {
     angular.module("EavServices")
 
     .config(function ($translateProvider, languages, $translatePartialLoaderProvider) {
@@ -21,5 +26,8 @@
         $rootScope.$on("$translatePartialLoaderStructureChanged", function () {
             $translate.refresh();
         });
-    });
+    })
+
+    //.factory("")
+    ;
 })();

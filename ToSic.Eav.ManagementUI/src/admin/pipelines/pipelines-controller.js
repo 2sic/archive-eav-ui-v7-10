@@ -46,12 +46,12 @@ angular.module("PipelineManagement", [
         };
 
         vm.add = function add() {
-            eavAdminDialogs.openItemNew(pipelineService.dataPipelineAttributeSetId, vm.refresh);
+            eavAdminDialogs.openItemNew("DataPipeline" /*pipelineService.dataPipelineAttributeSetId */, vm.refresh);
         };
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
-        };
+        }; 
 
         vm.design = function design(item) {
             return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);

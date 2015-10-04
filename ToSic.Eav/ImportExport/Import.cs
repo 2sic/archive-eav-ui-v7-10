@@ -28,18 +28,21 @@ namespace ToSic.Eav.Import
         {
             get { return _importLog; }
         }
+
+        bool PreventDraftSave { get; set; }
         #endregion
 
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true)
+        public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true, bool preventDraftSave = true)
         {
             Context = EavDataController.Instance(zoneId, appId);
 
             Context.UserName = userName;
             _leaveExistingValuesUntouched = leaveExistingValuesUntouched;
             _preserveUndefinedValues = preserveUndefinedValues;
+            PreventDraftSave = preventDraftSave;
         }
 
         /// <summary>
@@ -176,28 +179,42 @@ namespace ToSic.Eav.Import
             }
             #endregion
 
+            // todo: should perform entityexists from cache
             // Update existing Entity
             if (importEntity.EntityGuid.HasValue && Context.Entities.EntityExists(importEntity.EntityGuid.Value))
             {
                 #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
                 // Get existing, published Entity
+                // todo: should perform get from cache...
                 var existingEntities = Context.Entities.GetEntitiesByGuid(importEntity.EntityGuid.Value);
-                Entity existingEntity;
-                try
-                {
-                    existingEntity = existingEntities.Count() == 1 ? existingEntities.First() : existingEntities.Single(e => e.IsPublished);
-                }
-                catch (Exception ex)
-                {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Unable find existing published Entity. " + ex.Message) { ImportEntity = importEntity, });
-                    return;
-                }
+                Entity existingEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First();    // get draft first, otherwise the published
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists") { ImportEntity = importEntity });
 
-                // Prevent updating Draft-Entity
-                if (!existingEntity.IsPublished)
+                if (PreventDraftSave)
                 {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed") { ImportEntity = importEntity, });
-                    return;
+                    try
+                    {
+                        existingEntity = existingEntities.Count() == 1
+                            ? existingEntities.First()
+                            : existingEntities.Single(e => e.IsPublished);
+                    }
+                    catch (Exception ex)
+                    {
+                        _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
+                            "Unable find existing published Entity. " + ex.Message) {ImportEntity = importEntity,});
+                        return;
+                    }
+
+                    // Prevent updating Draft-Entity
+                    if (!existingEntity.IsPublished)
+                    {
+                        _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
+                            "Importing a Draft-Entity is not allowed") {ImportEntity = importEntity,});
+                        return;
+                    }
+
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity after draft-check is") { ImportEntity = importEntity });
+
                 }
 
                 // Ensure entity has same AttributeSet
@@ -207,15 +224,21 @@ namespace ToSic.Eav.Import
                     return;
                 }
 
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists") { ImportEntity = importEntity });
                 #endregion
 
                 #region Delete Draft-Entity (if any)
-                var draftEntityId = Context.Publishing.GetDraftEntityId(existingEntity.EntityID);
-                if (draftEntityId.HasValue)
+
+                if (PreventDraftSave)
                 {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Draft-Entity deleted") { ImportEntity = importEntity, });
-                    Context.Entities.DeleteEntity(draftEntityId.Value);
+                    var draftEntityId = Context.Publishing.GetDraftEntityId(existingEntity.EntityID);
+                    if (draftEntityId.HasValue)
+                    {
+                        _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Draft-Entity deleted")
+                        {
+                            ImportEntity = importEntity,
+                        });
+                        Context.Entities.DeleteEntity(draftEntityId.Value);
+                    }
                 }
                 #endregion
 

@@ -49,7 +49,18 @@
 
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
                 });
+                vm.willPublish = vm.items[0].Entity.IsPublished;
             });
+
+        vm.willPublish = false;
+
+        vm.togglePublish = function() {
+            vm.willPublish = !vm.willPublish;
+            angular.forEach(vm.items, function(v, i) {
+                vm.items[i].Entity.IsPublished = vm.willPublish;
+            });
+        };
+
 
     });
 

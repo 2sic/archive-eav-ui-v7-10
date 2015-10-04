@@ -12,7 +12,9 @@
   },
   "Message": {
     "Saving": "saving...",
-    "Saved": "saved"
+    "Saved": "saved",
+    "WillPublish": "will publish when saving",
+    "WontPublish": "will not publish when saving"
 
   },
   "General": {

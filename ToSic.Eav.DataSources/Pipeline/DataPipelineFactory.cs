@@ -73,13 +73,26 @@ namespace ToSic.Eav.DataSources
 						configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
 					}
 
-				#endregion
+                #endregion
 
-				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
-			    dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
-				//ConfigurationProvider.configList = dataSource.Configuration;
+                
+                // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
+			    try
+			    {
+			        var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(),
+			            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
+			        dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
+				    //ConfigurationProvider.configList = dataSource.Configuration;
 
-				dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+				    dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+			    }
+			    catch (Exception ex)
+			    {
+			        var partAndAssembly = dataPipelinePart["PartAssemblyAndType"][0].ToString();
+                    if(partAndAssembly.EndsWith(", ToSic.EAV"))
+                        throw new Exception("Error in the pipeline / query you are using - it is still using an old convention. Please open and save the query in the query designer to fix this");
+			    }
+
 			}
 			dataSources.Add("Out", outSource);
 			#endregion
