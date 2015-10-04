@@ -17,8 +17,7 @@
     @*Only load jQuery & jsPlumb for the pipeline designer, others don't need it and it's much faster!*@
     @if (ng == "pipeline-designer")
     {
-        <script src="/dist/lib/pipeline/set.min.js"></script>
-        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+        <script src="/dist/lib/pipeline/jq.min.js"></script>
     }
 
 
@@ -47,6 +46,13 @@
     {
         <script src="/dist/admin/eav-admin.js"></script>
     }
+
+    @if (ng == "pipeline-designer")
+    {
+        <script src="/dist/lib/pipeline/set.min.js"></script>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+    }
+
 </head>
 <body>
 

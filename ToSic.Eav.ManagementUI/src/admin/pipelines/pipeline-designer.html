@@ -3,6 +3,7 @@
         <div id="pipelineContainer">
             <div ng-repeat="dataSource in pipelineData.DataSources"
                  datasource
+                 guid="{{dataSource.EntityGuid}}"
                  id="dataSource_{{dataSource.EntityGuid}}"
                  class="dataSource"
                  ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px">

@@ -14,8 +14,8 @@ module.exports = function (grunt) {
     	banner: "/*! jsPlumb-Set without jQuery for 2sic 2sxc & eav <%= grunt.template.today(\"yyyy-mm-dd hh:MM\") %> */\n",
 		cwd: "bower_components/",
 		jsFiles: [
-            // "bower_components/jsplumb/dist/js/dom.jsPlumb-1.7.2-min.js",
-            "bower_components/jsplumb/dist/js/dom.jsPlumb-1.7.2.js",
+            "bower_components/jsplumb/dist/js/dom.jsPlumb-1.7.2-min.js",
+            //"bower_components/jsplumb/dist/js/dom.jsPlumb-1.7.2.js",
         ],
         tmp: "tmp/lib/pipeline/",
         dist: "dist/lib/pipeline",

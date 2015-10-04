@@ -12,16 +12,21 @@ module.exports = function (grunt) {
     "use strict";
     var pipelineDesigner = {
     	banner: "/*! jQuery and jsPlumb-Set for 2sic 2sxc & eav <%= grunt.template.today(\"yyyy-mm-dd hh:MM\") %> */\n",
-		cwd: "bower_components/",
-		jsFiles: [
-			// basic jquery
+    	cwd: "bower_components/",
+    	jqFiles: [
             "bower_components/jquery/dist/jquery.min.js",
             "bower_components/jquery-ui/jquery-ui.min.js",
+    	],
+		jsFiles: [
+			// basic jquery
+            //"bower_components/jquery/dist/jquery.min.js",
+            //"bower_components/jquery-ui/jquery-ui.min.js",
 
             "bower_components/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js",
         ],
         tmp: "tmp/lib/pipeline/",
         dist: "dist/lib/pipeline",
+        jqConcat: "dist/lib/pipeline/jq.min.js",
         concatFile: "dist/lib/pipeline/set.min.js",
         uglifyFile: "dist/lib/pipeline/set.min.js"
     };
@@ -38,39 +43,18 @@ module.exports = function (grunt) {
         		nonull: true,
                 src: pipelineDesigner.jsFiles,
                 dest: pipelineDesigner.concatFile
-            }
-        },
-
-
-        uglify: {
-            options: {
-                banner: pipelineDesigner.banner,
-                sourceMap: false
             },
-
-            pipelineDesigner: {
-                src: pipelineDesigner.concatFile,
-                dest: pipelineDesigner.uglifyFile
-            }
+        	jQuery: {
+        		nonull: true,
+                src: pipelineDesigner.jqFiles,
+                dest: pipelineDesigner.jqConcat
+        	},
         },
 
-		// compress not used for now, because the iis seems to re-compress it causing strange side-effects
-        compress: {
-            main: {
-                options: {
-                    mode: "gzip"
-                },
-                expand: true,
-                cwd: pipelineDesigner.dist,
-                src: ["**/*.min.js"],
-                dest: pipelineDesigner.dist,
-                ext: ".gz.js"
-            }
-        }
     });
 
     // Default task.
-    grunt.registerTask("buildPipelineDesignerLib", [
+    grunt.registerTask("buildLibrary", [
         "clean",
         "concat",
         //"uglify",

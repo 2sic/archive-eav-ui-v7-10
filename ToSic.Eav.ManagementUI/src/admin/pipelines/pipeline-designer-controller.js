@@ -21,6 +21,13 @@
 
                 pipelineService.setAppId(appId);
 
+                $scope.findDataSourceOfElement = function fdsog(element) {
+                    var guid = element.attributes.guid.value;
+                    var list = $scope.pipelineData.DataSources;
+                    var found = $filter("filter")(list, { EntityGuid: guid })[0];
+                    return found;
+                };
+
                 // Get Data from PipelineService (Web API)
                 pipelineService.getPipeline($scope.PipelineEntityId)
                     .then(function(success) {
@@ -62,7 +69,8 @@
                     // If connection on Out-DataSource was removed, remove custom Endpoint
                     $scope.jsPlumbInstance.bind("connectionDetached", function(info) {
                         if (info.targetId == $scope.dataSourceIdPrefix + "Out") {
-                            var fixedEndpoints = angular.element(info.target).scope().dataSource.Definition().In;
+                            var element = angular.element(info.target);
+                            var fixedEndpoints = $scope.findDataSourceOfElement(element) /* element.scope() */.dataSource.Definition().In;
                             var label = info.targetEndpoint.getOverlay("endpointLabel").label;
                             if (fixedEndpoints.indexOf(label) == -1) {
                                 $timeout(function() {
@@ -199,8 +207,13 @@
                         return;
                     }
                     console.log(element);
-                    var dataSource = element.scope().dataSource;
-                    var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
+
+                    var dataSource = $scope.findDataSourceOfElement(element[0]);
+                    // old, using jQuery - var dataSource = element.scope().dataSource;
+
+
+                    var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
+                    // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
                     var params = {
                         uuid: uuid,
                         enabled: !dataSource.ReadOnly || dataSource.EntityGuid == "Out" // Endpoints on Out-DataSource must be always enabled
@@ -320,9 +333,9 @@
 
                 // Update DataSource Position on Drag
                 $scope.dataSourceDrag = function() {
-                    var $this = $(this);
+                    var $this = /* angular.element(this); /*/  $(this);
                     var offset = $this.offset();
-                    var dataSource = $this.scope().dataSource;
+                    var dataSource = $scope.findDataSourceOfElement($this).dataSource;// $this.scope().dataSource;
                     $scope.$apply(function() {
                         dataSource.VisualDesignerData.Top = Math.round(offset.top);
                         dataSource.VisualDesignerData.Left = Math.round(offset.left);
