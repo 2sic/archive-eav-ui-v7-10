@@ -65,7 +65,7 @@ var $eavUIConfig = {
                             { From: "unsaved1", Out: "Default", To: "Out", In: "ListPresentation" }
                         ]
                     },
-                    testParameters: null
+                    testParameters: "[Demo:Demo]=true"
                 },
                 metadataOfEntity: 4,
                 metadataOfAttribute: 2,

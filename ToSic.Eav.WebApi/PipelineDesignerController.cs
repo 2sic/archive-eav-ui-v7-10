@@ -97,8 +97,8 @@ namespace ToSic.Eav.WebApi
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
                     // Using a trick to add a special EOL-character to ensure we don't replace somethin in the middle
 					var partAssemblyAndType = (string)dataSource["PartAssemblyAndType"];
-                    if(partAssemblyAndType.EndsWith(", ToSic.Eav")) // only do this replace if really necessary to prevent side effects
-                        dataSource["PartAssemblyAndType"] = (partAssemblyAndType + "~").Replace(", ToSic.Eav~", ", ToSic.Eav.DataSources");
+                    if(partAssemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)) // only do this replace if really necessary to prevent side effects
+                        dataSource["PartAssemblyAndType"] = partAssemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
                     dataSourcesJson.Add(dataSource);
 				}
 				#endregion

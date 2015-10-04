@@ -162,18 +162,6 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        //[HttpPost]
-        //public bool SaveOne(EntityWithLanguages newData, [FromUri]int appId)
-        //   {
-        //       ImportEntity importEntity = CreateImportEntity(newData, appId);
-
-        //       // Run import
-        //       var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-        //       import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
-
-        //       return true;
-        //   }
-
         private static ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
         {
             var newData = editInfo.Entity;

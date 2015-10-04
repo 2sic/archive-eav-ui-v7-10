@@ -15,30 +15,30 @@
 })();
 
 (function() {
-	'use strict';
+	"use strict";
 
 	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
 
-	var eavFieldTemplates = angular.module('eavFieldTemplates', ['formly', 'formlyBootstrap', 'ui.bootstrap', 'eavLocalization', 'eavEditTemplates'], ["formlyConfigProvider", function (formlyConfigProvider) {
+	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates"], ["formlyConfigProvider", function (formlyConfigProvider) {
 
 	    formlyConfigProvider.setType({
-	        name: 'string-default',
-	        template: '<input class="form-control" ng-model="value.Value">',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        name: "string-default",
+	        template: "<input class=\"form-control\" ng-model=\"value.Value\">",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-dropdown',
-	        template: '<select class="form-control" ng-model="value.Value"></select>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-dropdown",
+	        template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: function defaultOptions(options) {
 				
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace('\r', '').split('\n');
+	                o = o.replace("\r", "").split("\n");
 	                o = o.map(function (e, i) {
-	                    var s = e.split(':');
+	                    var s = e.split(":");
 	                    return {
 	                        name: s[0],
 	                        value: s[1] ? s[1] : s[0]
@@ -49,10 +49,10 @@
 
 	            function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
 
-	            var ngOptions = options.templateOptions.ngOptions || 'option[to.valueProp || \'value\'] as option[to.labelProp || \'name\'] group by option[to.groupProp || \'group\'] for option in to.options';
+	            var ngOptions = options.templateOptions.ngOptions || "option[to.valueProp || 'value'] as option[to.labelProp || 'name'] group by option[to.groupProp || 'group'] for option in to.options";
 	            return {
 	                ngModelAttrs: _defineProperty({}, ngOptions, {
-	                    value: 'ng-options'
+	                    value: "ng-options"
 	                })
 	            };
 
@@ -60,72 +60,72 @@
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-textarea',
-	        template: '<textarea class="form-control" ng-model="value.Value"></textarea>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-textarea",
+	        template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.String.RowCount}}': { value: 'rows' },
-	                cols: { attribute: 'cols' }
+	                '{{to.settings.String.RowCount}}': { value: "rows" },
+	                cols: { attribute: "cols" }
 	            }
 	        }
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'number-default',
-	        template: '<input type="number" class="form-control" ng-model="value.Value">{{vm.isGoogleMap}}',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "number-default",
+	        template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.Number.Min}}': { value: 'min' },
-	                '{{to.settings.Number.Max}}': { value: 'max' },
-	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: 'pattern' }
+	                '{{to.settings.Number.Min}}': { value: "min" },
+	                '{{to.settings.Number.Max}}': { value: "max" },
+	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: "pattern" }
 	            }
 	        },
-	        controller: 'FieldTemplate-NumberCtrl as vm'
+	        controller: "FieldTemplate-NumberCtrl as vm"
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'boolean-default',
+	        name: "boolean-default",
 	        template: "<div class=\"checkbox\">\n\t<label>\n\t\t<input type=\"checkbox\"\n           class=\"formly-field-checkbox\"\n\t\t       ng-model=\"value.Value\">\n\t\t{{to.label}}\n\t\t{{to.required ? '*' : ''}}\n\t</label>\n</div>\n",
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'datetime-default',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
-	        template: '<div>' +
-                '<div class="input-group">' +
-                    '<div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;">' +
-                        '<i class="glyphicon glyphicon-calendar"></i>' +
-                    '</div>' +
-                    '<input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />' +
-				    '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>' +
-                '</div>',
+	        name: "datetime-default",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        template: "<div>" +
+                "<div class=\"input-group\">" +
+                    "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
+                        "<i class=\"glyphicon glyphicon-calendar\"></i>" +
+                    "</div>" +
+                    "<input class=\"form-control\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup />" +
+				    "<timepicker ng-show=\"to.settings.DateTime.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
+                "</div>",
 	        defaultOptions: {
 	            templateOptions: {
 	                datepickerOptions: {},
-	                datepickerPopup: 'dd.MM.yyyy'
+	                datepickerPopup: "dd.MM.yyyy"
 	            }
 	        }
 		});
 
 		formlyConfigProvider.setType({
-		    name: 'entity-default',
-		    templateUrl: 'fields/templates/entity-default.html',
-		    wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-		    controller: 'FieldTemplate-EntityCtrl'
+		    name: "entity-default",
+		    templateUrl: "fields/templates/entity-default.html",
+		    wrapper: ["bootstrapLabel", "bootstrapHasError"],
+		    controller: "FieldTemplate-EntityCtrl"
 		});
 
 	}]);
 
-	eavFieldTemplates.controller('FieldTemplate-NumberCtrl', function () {
+	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
 		var vm = this;
 		// ToDo: Implement Google Map
 	});
 
 
-	eavFieldTemplates.controller('FieldTemplate-EntityCtrl', ["$scope", "$http", "$filter", "$modal", "eavManagementDialog", function ($scope, $http, $filter, $modal, eavManagementDialog) {
+	eavFieldTemplates.controller("FieldTemplate-EntityCtrl", ["$scope", "$http", "$filter", "$modal", "eavManagementDialog", function ($scope, $http, $filter, $modal, eavManagementDialog) {
 
 	    if (!$scope.to.settings.Entity)
 	        $scope.to.settings.Entity = {};
@@ -152,12 +152,12 @@
 	    $scope.openNewEntityDialog = function () {
 
 	        var modalInstance = $modal.open({
-	            template: '<div style="padding:20px;"><edit-content-group edit="vm.edit"></edit-content-group></div>',
+	            template: "<div style=\"padding:20px;\"><edit-content-group edit=\"vm.edit\"></edit-content-group></div>",
 	            controller: ["entityType", function (entityType) {
 	                var vm = this;
 	                vm.edit = { contentTypeName: entityType };
 	            }],
-	            controllerAs: 'vm',
+	            controllerAs: "vm",
 	            resolve: {
 	                entityType: function () {
 	                    return $scope.to.settings.Entity.EntityType;
@@ -173,8 +173,8 @@
 
 	    $scope.getAvailableEntities = function () {
 	        $http({
-	            method: 'GET',
-	            url: 'eav/EntityPicker/getavailableentities',
+	            method: "GET",
+	            url: "eav/EntityPicker/getavailableentities",
 	            params: {
 	                contentTypeName: $scope.to.settings.Entity.EntityType,
 	                appId: eavManagementDialog.appId
@@ -186,7 +186,7 @@
 	    };
 
 	    $scope.getEntityText = function (entityId) {
-	        var entities = $filter('filter')($scope.availableEntities, { Value: entityId });
+	        var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
 	        return entities.length > 0 ? entities[0].Text : "(Entity not found)";
 	    };
 
@@ -252,7 +252,18 @@
 
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
                 });
+                vm.willPublish = vm.items[0].Entity.IsPublished;
             });
+
+        vm.willPublish = false;
+
+        vm.togglePublish = function() {
+            vm.willPublish = !vm.willPublish;
+            angular.forEach(vm.items, function(v, i) {
+                vm.items[i].Entity.IsPublished = vm.willPublish;
+            });
+        };
+
 
     }]);
 
@@ -397,7 +408,9 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('form/edit-many-entities.html',
-    "<div ng-if=\"vm.items != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><span icon=eye-open tooltip=\"{{ 'Status.Published' | translate }}\"></span> <button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button class=\"btn pull-right\"><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate }}\"></span></button> <button class=\"btn pull-right\" ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button></div>"
+    "<div ng-if=\"vm.items != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <button class=\"btn pull-right\"><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate\r" +
+    "\n" +
+    "}}\"></span></button> <button class=\"btn pull-right\" ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button></div>"
   );
 
 
@@ -429,38 +442,38 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
 (function () {
-	'use strict';
+	"use strict";
 
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module('eavLocalization', ['formly', "EavConfiguration"], ["formlyConfigProvider", function (formlyConfigProvider) {
+	var eavLocalization = angular.module("eavLocalization", ["formly", "EavConfiguration"], ["formlyConfigProvider", function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([
 			{
-				name: 'eavLocalization',
-				templateUrl: 'localization/formly-localization-wrapper.html'
+				name: "eavLocalization",
+				templateUrl: "localization/formly-localization-wrapper.html"
 			}
 		]);
 
 	}]);
 
-	eavLocalization.directive('eavLanguageSwitcher', function () {
+	eavLocalization.directive("eavLanguageSwitcher", function () {
 		return {
-			restrict: 'E',
-			templateUrl: 'localization/language-switcher.html',
+			restrict: "E",
+			templateUrl: "localization/language-switcher.html",
 			controller: ["$scope", "languages", function($scope, languages) {
 				$scope.languages = languages;
 			}]
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationScopeControl', function () {
+	eavLocalization.directive("eavLocalizationScopeControl", function () {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			transclude: true,
-			template: '',
+			template: "",
 			link: function (scope, element, attrs) {
 			},
 			controller: ["$scope", "$filter", "eavDefaultValueService", "languages", function ($scope, $filter, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
@@ -496,13 +509,13 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 					// Decide which value to edit:
 					// 1. If there is a value with current dimension on it, use it
-					valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+					valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 						return v.Dimensions[langConf.currentLanguage] !== undefined;
 					})[0];
 
 					// 2. Use default language value
 					if (valueToEdit === undefined)
-						valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+						valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 							return v.Dimensions[langConf.defaultLanguage] !== undefined;
 						})[0];
 
@@ -530,15 +543,15 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 				// Handle language switch
 				scope.langConf = langConf; // Watch does only work on scope variables
-				scope.$watch('langConf.currentLanguage', function (newValue, oldValue) {
+				scope.$watch("langConf.currentLanguage", function (newValue, oldValue) {
 					if (oldValue === undefined || newValue == oldValue)
 						return;
 					initCurrentValue();
-					console.log('switched language from ' + oldValue + ' to ' + newValue);
+					console.log("switched language from " + oldValue + " to " + newValue);
 				});
 
 				// ToDo: Could cause performance issues (deep watch array)...
-				scope.$watch('model[options.key].Values', function(newValue, oldValue) {
+				scope.$watch("model[options.key].Values", function(newValue, oldValue) {
 					initCurrentValue();
 				}, true);
 
@@ -548,17 +561,17 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationMenu', function() {
+	eavLocalization.directive("eavLocalizationMenu", function() {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			scope: {
-				fieldModel: '=fieldModel',
-				options: '=options',
-                value: '=value'
+				fieldModel: "=fieldModel",
+				options: "=options",
+                value: "=value"
 			},
-			templateUrl: 'localization/localization-menu.html',
+			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
-			controllerAs: 'vm',
+			controllerAs: "vm",
 			controller: ["$scope", "languages", function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
@@ -572,10 +585,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 				vm.infoMessage = function () {
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
-				        return 'auto (default)';
+				        return "auto (default)";
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
-				        return '';
-				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				        return "";
+				    return "in " + Object.keys($scope.value.Dimensions).join(", ");
 				};
 
 				vm.tooltip = function () {
@@ -584,9 +597,9 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				    angular.forEach($scope.value.Dimensions, function (value, key) {
 				        (value ? usedIn : editableIn).push(key);
 				    });
-				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    var tooltip = "editable in " + editableIn.join(", ");
 				    if (usedIn.length > 0)
-				        tooltip += ', also used in ' + usedIn.join(', ');
+				        tooltip += ", also used in " + usedIn.join(", ");
 				    return tooltip;
 				};
 
@@ -599,7 +612,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
 				    autoTranslate: function(languageKey) {
-				        alert('This action is not implemented yet.');
+				        alert("This action is not implemented yet.");
 				    },
 				    copyFrom: function (languageKey) {
 				        if ($scope.options.templateOptions.disabled)
@@ -623,10 +636,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		};
 	});
 
-	eavLocalization.directive('eavTreatTimeUtc', function () {
+	eavLocalization.directive("eavTreatTimeUtc", function () {
 	    var directive = {
-	        restrict: 'A',
-	        require: ['ngModel'],
+	        restrict: "A",
+	        require: ["ngModel"],
             compile: compile,
 	        link: link
 	    };

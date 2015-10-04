@@ -18,6 +18,9 @@ namespace ToSic.Eav.WebApi.Formats
         public Metadata Metadata { get; set; }
         #endregion
         public GroupAssignment Group { get; set; }
+
+        // this is not needed on the server, but must be passed through so it's still attached to this item if in use
+        public dynamic Prefill { get; set; }
     }
 
     public class EntityWithHeader

@@ -170,7 +170,7 @@ namespace ToSic.Eav.Import
         {
             #region try to get AttributeSet or otherwise cancel & log error
 
-            // todo: tag:optimize try to cache the attribute-set definition, because this causes DB calls for no reason on each and every entity
+            // todo: tag:cache try to cache the attribute-set definition, because this causes DB calls for no reason on each and every entity
             var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
             if (attributeSet == null)	// AttributeSet not Found
             {
@@ -179,13 +179,13 @@ namespace ToSic.Eav.Import
             }
             #endregion
 
-            // todo: should perform entityexists from cache
+            // todo: tag:cache should perform entityexists from cache
             // Update existing Entity
             if (importEntity.EntityGuid.HasValue && Context.Entities.EntityExists(importEntity.EntityGuid.Value))
             {
                 #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
                 // Get existing, published Entity
-                // todo: should perform get from cache...
+                // todo: tag:cache should perform get from cache...
                 var existingEntities = Context.Entities.GetEntitiesByGuid(importEntity.EntityGuid.Value);
                 Entity existingEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First();    // get draft first, otherwise the published
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists") { ImportEntity = importEntity });

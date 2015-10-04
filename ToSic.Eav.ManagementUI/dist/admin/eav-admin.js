@@ -668,7 +668,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-import-export/content-import.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title><span translate=Content.Import.Title></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=Content.Import.TitleSteps translate-values=\"{step: vm.viewStateSelected}\"></span></h3></div><div ng-switch=vm.viewStateSelected><div ng-switch-when=1><div class=modal-body><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields></formly-form><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div></div><div class=modal-footer><button type=button class=\"btn btn-default\" ng-click=vm.evaluateContent() ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=Content.Import.Commands.Preview></button></div></div><div ng-switch-when=0><div class=modal-body><img src=\"/Scripts/images/ui-ajax-loader.gif\"> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div></div><div ng-switch-when=2><div class=modal-body><div ng-if=vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluationResult.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div></div><div class=modal-footer><button type=button class=\"btn pull-left\" ng-click=vm.back() icon=arrow-left></button> <button type=button class=\"btn btn-default\" ng-click=vm.importContent() translate=Content.Import.Commands.Import ng-disabled=!vm.evaluationResult.Succeeded></button></div></div><div ng-switch-when=3><div class=modal-body><span ng-show=vm.importResult.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.importResult.Succeeded translate=Content.Import.Messages.ImportFailed></span></div></div><pre>{{vm.formValues | json}}</pre></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title><span translate=Content.Import.Title></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=Content.Import.TitleSteps translate-values=\"{step: vm.viewStateSelected}\"></span></h3></div><div ng-switch=vm.viewStateSelected><div ng-switch-when=1><div class=modal-body><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields></formly-form><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div></div><div class=modal-footer><button type=button class=\"btn btn-default pull-left\" ng-click=vm.evaluateContent() ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=Content.Import.Commands.Preview></button></div></div><div ng-switch-when=0><div class=modal-body><img src=\"/Scripts/images/ui-ajax-loader.gif\"> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div></div><div ng-switch-when=2><div class=modal-body><div ng-if=vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluationResult.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div></div><div class=modal-footer><button type=button class=\"btn pull-left\" ng-click=vm.back() icon=arrow-left></button> <button type=button class=\"btn btn-default pull-left\" ng-click=vm.importContent() translate=Content.Import.Commands.Import ng-disabled=!vm.evaluationResult.Succeeded></button></div></div><div ng-switch-when=3><div class=modal-body><span ng-show=vm.importResult.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.importResult.Succeeded translate=Content.Import.Messages.ImportFailed></span></div></div><pre>{{vm.formValues | json}}</pre></div>"
   );
 
 
@@ -698,7 +698,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-field-edit.html',
-    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover\"><thead><tr><th translate=Fields.Table.Name></th><th translate=Fields.Table.DataType>Data Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=\"true\"></td><td><select ng-model=item.Type ng-options=\"o for o in vm.types track by o\"></select></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-primary\" type=button ng-click=vm.ok()></button></div>"
+    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover\"><thead><tr><th translate=Fields.Table.Name></th><th translate=Fields.Table.DataType>Data Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=\"true\"></td><td><select ng-model=item.Type ng-options=\"o for o in vm.types track by o\"></select></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-primary pull-left\" type=button ng-click=vm.ok()></button></div>"
   );
 
 
@@ -1378,7 +1378,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", ["$modalInstance", "appId", "pipelineService", "eavAdminDialogs", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
+	controller("PipelineManagement", ["$modalInstance", "appId", "pipelineService", "eavAdminDialogs", "eavConfig", function ($modalInstance, appId, pipelineService, eavAdminDialogs, eavConfig) {
 	    var vm = this;
         vm.appId = appId;
 
@@ -1419,12 +1419,16 @@ angular.module("PipelineManagement", [
         };
 
         vm.add = function add() {
-            eavAdminDialogs.openItemNew(pipelineService.dataPipelineAttributeSetId, vm.refresh);
+            var items = [{
+                    ContentTypeName: "DataPipeline",
+                    Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
+                }];
+            eavAdminDialogs.openEditItems(items, vm.refresh);
         };
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
-        };
+        }; 
 
         vm.design = function design(item) {
             return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);
@@ -1689,16 +1693,16 @@ angular.module("EavAdminUi", ["ng",
 ])
     .factory("eavAdminDialogs", ["$modal", "eavConfig", "eavManagementSvc", "contentTypeSvc", "$window", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
 
-        var svc = {};
+            var svc = {};
 
-        //#region Content Items dialogs
-        svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
+            //#region List of Content Items dialogs
+            svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
                 return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region content import export
+            //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
@@ -1709,9 +1713,9 @@ angular.module("EavAdminUi", ["ng",
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 
-        //#endregion
+            //#endregion
 
-        //#region ContentType dialogs
+            //#region ContentType dialogs
 
             svc.openContentTypeEdit = function octe(item, closeCallback) {
                 var resolve = svc.CreateResolve({ item: item });
@@ -1722,9 +1726,9 @@ angular.module("EavAdminUi", ["ng",
                 var resolve = svc.CreateResolve({ contentType: item });
                 return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
         
-        //#region Item - new, edit
+            //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
                 svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
             };
@@ -1743,9 +1747,9 @@ angular.module("EavAdminUi", ["ng",
                     svc.CreateResolve({ entityId: entityId }),
                     closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Metadata - mainly new
+            //#region Metadata - mainly new
             svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
                 var metadata = {};
                 switch (targetType) {
@@ -1768,22 +1772,22 @@ angular.module("EavAdminUi", ["ng",
 
                 svc.openEditItems(items, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Permissions Dialog
+            //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, targetGuid: targetGuid });
                 return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Pipeline Designer
+            //#region Pipeline Designer
             svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
                 var url = eavConfig.adminUrls.pipelineDesigner(appId, pipelineId);
                 $window.open(url);
                 return;
             };
-        //#endregion
+            //#endregion
 
 
 
@@ -1929,7 +1933,7 @@ angular.module("eavNgSvcs", ["ng"])
 					StaticName: contentTypeName
 				},
 				Attributes: {},
-                Published: true
+                IsPublished: true
 			};
 		};
         
@@ -1982,6 +1986,11 @@ angular.module("EavServices")
             return svc;
         };
     }]);
+/* The main component for language inclusion
+ * Ensure the dependencies work, that the url-schema is prepared etc.
+ * 
+ */
+
 (function () {
     angular.module("EavServices")
 
@@ -2005,7 +2014,10 @@ angular.module("EavServices")
         $rootScope.$on("$translatePartialLoaderStructureChanged", function () {
             $translate.refresh();
         });
-    }]);
+    }])
+
+    //.factory("")
+    ;
 })();
 // By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
 // but the "root" component must get it from the url
@@ -2243,18 +2255,14 @@ angular.module("EavServices")
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);
                     else { // Create new Entity
-                        alert("Try to create new");
-                        var items = [
-                            {
+                        var items = [{
                                 ContentTypeName: contentTypeName,
                                 Metadata: {
                                     TargetType: assignmentObjectTypeId,
                                     KeyType: "guid",
                                     Key: keyGuid
-                                }
-                            }
-                        ];
-                        eavAdminDialogs.openEditItems(items, function() { alert('callback after save'); });
+                                }}];
+                        eavAdminDialogs.openEditItems(items);
                     }
                 });
             }
