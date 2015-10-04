@@ -77,11 +77,11 @@ angular.module("EavAdminUi", ["ng",
         
             //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
-                svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
+                return svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                svc.openEditItems([{ EntityId: entityId }], closeCallback);
+                return svc.openEditItems([{ EntityId: entityId }], closeCallback);
             };
 
             svc.openEditItems = function oel(items, closeCallback) {
