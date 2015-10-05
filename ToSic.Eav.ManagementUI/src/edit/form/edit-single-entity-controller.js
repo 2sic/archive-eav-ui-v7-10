@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
