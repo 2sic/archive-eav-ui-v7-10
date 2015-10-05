@@ -148,8 +148,10 @@ namespace ToSic.Eav.WebApi
         public bool SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         { 
             var convertedItems = new List<ImportEntity>();
+
             foreach (var entity in items)
-                convertedItems.Add(CreateImportEntity(entity, appId));
+                if (entity.Header.Group != null && !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
+                    convertedItems.Add(CreateImportEntity(entity, appId));
 
             // Run import
             var import = new Import.Import(null, appId, User.Identity.Name, 

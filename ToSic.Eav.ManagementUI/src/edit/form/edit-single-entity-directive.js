@@ -10,7 +10,8 @@
 			scope: {
 			    entity: "=",
                 header: "=",
-				registerEditControl: "="
+                registerEditControl: "=",
+                readOnly: "="
 			},
 			controller: "EditEntityFormCtrl",
 			controllerAs: "vm"

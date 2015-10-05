@@ -13,8 +13,7 @@
 	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
-	    formlyConfigProvider.setType({
-	        name: "string-dropdown",
+	    formlyConfigProvider.setType({ name: "string-dropdown",
 	        template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
 	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: function defaultOptions(options) {

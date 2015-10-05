@@ -2,8 +2,14 @@
     <eav-language-switcher></eav-language-switcher>
 
     <div ng-repeat="p in vm.items">
-        <h4>{{p.Header.Title ? p.Header.Title : 'Edit'}}</h4>
-        <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl"></eav-edit-entity-form>
+        <h4>
+            {{p.Header.Title ? p.Header.Title : 'Edit'}}
+            <span ng-if="p.Header.Group.SlotCanBeEmpty">
+                <span ng-if="p.Header.Group.SlotIsEmpty" icon="ban-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed."></span>
+                <span ng-if="!p.Header.Group.SlotIsEmpty" icon="ok-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is open for editing. Click here to lock / remove it and revert to default."></span>
+            </span>
+        </h4>
+        <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" read-only="p.Header.Group.SlotIsEmpty"></eav-edit-entity-form>
     </div>
 
 

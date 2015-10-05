@@ -41,6 +41,22 @@ namespace ToSic.Eav.WebApi.Formats
 
         public int Index { get; set; }
 
+        /// <summary>
+        /// "Add" informs the save-routine that it is an additional slot
+        /// </summary>
         public bool Add { get; set; }
+
+ 
+        /// <summary>
+        /// Determines that an empty slot is allowed / possible
+        /// This will usually affect the UI in the possible options
+        /// </summary>
+        public bool SlotCanBeEmpty { get; set; }
+       /// <summary>
+        /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
+        /// It may even mean that the slot must be blanked now
+        /// </summary>
+        public bool SlotIsEmpty { get; set; }
     }
+
 }

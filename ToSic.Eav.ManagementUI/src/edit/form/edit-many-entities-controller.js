@@ -82,6 +82,11 @@
             });
         };
 
+        vm.toggleSlotIsEmpty = function (item) {
+            if (!item.Header.Group)
+                item.Header.Group = {};
+            item.Header.Group.SlotIsEmpty = !item.Header.Group.SlotIsEmpty;
+        };
 
     });
 

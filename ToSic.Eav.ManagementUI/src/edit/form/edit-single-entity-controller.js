@@ -50,7 +50,8 @@
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 			                description: $sce.trustAsHtml(e.Metadata.All.Notes),
 			                settings: e.Metadata,
-                            header: $scope.header
+			                header: $scope.header,
+                            disabled: $scope.readOnly // todo: check 2rm
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 			            expressionProperties: {
