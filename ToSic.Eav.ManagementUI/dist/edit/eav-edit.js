@@ -12,6 +12,13 @@
 
 
 })();
+// this changes JSON-serialization for dates, 
+// because we usually want the time to be the same across time zones and NOT keeping the same moment
+Date.prototype.toJSON = function() {
+    var x = new Date(this);
+    x.setHours(x.getHours() - x.getTimezoneOffset() / 60);
+    return x.toISOString();
+};
 
 (function() {
 	"use strict";
@@ -534,9 +541,11 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 					}
 
 
-				    // Assign default language if no dimension is set
+                    // todo: discuss w/2rm 2dm changed this 2015-10-05 - I think the false was wrong
+				    // Assign default language if no dimension is set - new: if multiple languages are in use!!!
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
-					    fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = false;
+                        if(langConf.languages.length > 0)
+				            fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = true; // false;
 
 					var valueToEdit;
 

@@ -59,9 +59,11 @@
 					}
 
 
-				    // Assign default language if no dimension is set
+                    // todo: discuss w/2rm 2dm changed this 2015-10-05 - I think the false was wrong
+				    // Assign default language if no dimension is set - new: if multiple languages are in use!!!
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
-					    fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = false;
+                        if(langConf.languages.length > 0)
+				            fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = true; // false;
 
 					var valueToEdit;
 

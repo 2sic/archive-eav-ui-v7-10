@@ -131,6 +131,7 @@
     <Content Include="src\admin\pipelines\query-stats.html" />
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
+    <Content Include="src\edit\fields\date-reconfigure-json.js" />
     <Content Include="src\edit\fields\eav-label.css" />
     <Content Include="src\edit\fields\eav-label.html" />
     <Content Include="src\edit\ml-entities\entity-enhancer.js" />
@@ -144,7 +145,7 @@
     <Content Include="src\edit\form\edit-single-entity-directive.js" />
     <Content Include="src\edit\localization\language-switcher.html" />
     <Content Include="src\edit\localization\multilevel-dropdown-menu.css" />
-    <Content Include="src\edit\services\entity-store.js" />
+    <Content Include="src\edit\services\entitiesSvc.js" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
     <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
     <Content Include="src\edit\form\edit-single-entity.html" />
