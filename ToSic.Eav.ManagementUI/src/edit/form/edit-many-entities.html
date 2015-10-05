@@ -8,8 +8,12 @@
                 <span ng-if="p.Header.Group.SlotIsEmpty" icon="ban-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed."></span>
                 <span ng-if="!p.Header.Group.SlotIsEmpty" icon="ok-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is open for editing. Click here to lock / remove it and revert to default."></span>
             </span>
+            <span class="pull-right" ng-click="p.collapse = !p.collapse">
+                <span ng-if="p.collapse" icon="plus-sign"></span>
+                <span ng-if="!p.collapse" icon="minus-sign"></span>
+            </span>
         </h4>
-        <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" read-only="p.Header.Group.SlotIsEmpty"></eav-edit-entity-form>
+        <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" read-only="p.Header.Group.SlotIsEmpty" ng-hide="p.collapse"></eav-edit-entity-form>
     </div>
 
 
