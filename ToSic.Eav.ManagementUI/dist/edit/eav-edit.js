@@ -348,7 +348,7 @@
 			                settings: e.Metadata,
                             header: $scope.header
 			            },
-			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
+			            hide: (e.Metadata.All.VisibleInEditUI === false ? true : false),
 			            expressionProperties: {
 			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
 			            }
