@@ -2,7 +2,8 @@
 (function () {
 	'use strict';
 
-	angular.module('eavEditEntity').service('eavDefaultValueService', function () {
+	angular.module('eavEditEntity')
+        .service('eavDefaultValueService', function () {
 		// Returns a typed default value from the string representation
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;

@@ -1,7 +1,7 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, eavManagementSvc, eavAdminDialogs) {
+    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -123,10 +123,9 @@ angular.module("EavServices")
                 var contentTypeName = "|Config " + dataSourceFullName; // todo refactor centralize
                 var assignmentObjectTypeId = 4; // todo refactor centralize
                 var keyGuid = dataSource.EntityGuid;
-                var preventRedirect = true;
 
                 // Query for existing Entity
-                eavManagementSvc.getAssignedItems(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
+                metadataSvc.getMetadata(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
                     var success = result.data;
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);

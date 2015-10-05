@@ -38,7 +38,7 @@ angular.module("EavAdminUi", ["ng",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
+    .factory("eavAdminDialogs", function ($modal, eavConfig, contentTypeSvc, $window) {
 
             var svc = {};
 

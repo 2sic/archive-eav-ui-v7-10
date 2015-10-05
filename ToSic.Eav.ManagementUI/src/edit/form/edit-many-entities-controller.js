@@ -35,14 +35,25 @@
             return dirty;
         };
 
-        vm.save = function () {
-            entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
+        $scope.state.setPristine = function() {
+            angular.forEach(vm.registeredControls, function(e, i) {
+                e.setPristine();
+            });
         };
 
+        vm.save = function () {
+            entitiesSvc.saveMany(appId, vm.items).then(function(result) {
+                $scope.state.setPristine();
+                vm.afterSaveEvent(result);
+            });
+        };
+
+        // todo: get toaster to work
         // todo: translate
         vm.saveAndKeepOpen = function () {
-                uiNotification.note("Saving", "", true);
-            entitiesSvc.saveMany(appId, vm.items).then(function () {
+            uiNotification.note("Saving", "", true);
+            entitiesSvc.saveMany(appId, vm.items).then(function() {
+                $scope.state.setPristine();
                 uiNotification.note("Saved", "", true);
             });
         };

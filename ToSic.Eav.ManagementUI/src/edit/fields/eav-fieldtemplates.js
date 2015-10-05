@@ -115,7 +115,7 @@
 	});
 
 
-	eavFieldTemplates.controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $modal, eavManagementDialog) {
+	eavFieldTemplates.controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $modal, appId) {
 
 	    if (!$scope.to.settings.Entity)
 	        $scope.to.settings.Entity = {};
@@ -167,7 +167,7 @@
 	            url: "eav/EntityPicker/getavailableentities",
 	            params: {
 	                contentTypeName: $scope.to.settings.Entity.EntityType,
-	                appId: eavManagementDialog.appId
+	                appId: appId
 	                // ToDo: dimensionId: $scope.configuration.DimensionId
 	            }
 	        }).then(function (data) {

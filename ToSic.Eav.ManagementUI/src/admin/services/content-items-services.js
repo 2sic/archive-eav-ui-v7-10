@@ -1,6 +1,6 @@
 
 angular.module("EavServices")
-    .factory("contentItemsSvc", function($http, entitiesSvc, eavManagementSvc, svcCreator) {
+    .factory("contentItemsSvc", function($http, entitiesSvc, metadataSvc, svcCreator) {
             return function createContentItemsSvc(appId, contentType) {
                 var svc = {};
                 svc.contentType = contentType;

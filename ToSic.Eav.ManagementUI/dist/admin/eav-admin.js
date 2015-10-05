@@ -1483,7 +1483,7 @@ angular.module("EavServices", [
 ]);
 
 angular.module("EavServices")
-    .factory("contentItemsSvc", ["$http", "entitiesSvc", "eavManagementSvc", "svcCreator", function($http, entitiesSvc, eavManagementSvc, svcCreator) {
+    .factory("contentItemsSvc", ["$http", "entitiesSvc", "metadataSvc", "svcCreator", function($http, entitiesSvc, metadataSvc, svcCreator) {
             return function createContentItemsSvc(appId, contentType) {
                 var svc = {};
                 svc.contentType = contentType;
@@ -1654,7 +1654,7 @@ angular.module("EavServices")
 
         svc.autoEnableAsNeeded = function (evt) {
             evt = window.event || evt;
-            var ctrlAndShiftPressed = evt.ctrlKey && evt.shiftKey;
+            var ctrlAndShiftPressed = evt.ctrlKey;
             if (ctrlAndShiftPressed)
                 svc.on = !svc.on;
         };
@@ -1701,7 +1701,7 @@ angular.module("EavAdminUi", ["ng",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", ["$modal", "eavConfig", "eavManagementSvc", "contentTypeSvc", "$window", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
+    .factory("eavAdminDialogs", ["$modal", "eavConfig", "contentTypeSvc", "$window", function ($modal, eavConfig, contentTypeSvc, $window) {
 
             var svc = {};
 
@@ -1854,10 +1854,6 @@ angular.module("EavAdminUi", ["ng",
 ;
 /*  this file contains various eav-angular services
  *  1. the basic configuration enforcing html5 mode
- *  2. a management-dialog which simply gets the appid if in the url
- *  3. eavManagementSvc - provides some services to retrieve metadata and similar for eav-management dialogs
- *  4. svcCreator - a helper to quickly create services
- *  5. entitiesSvc - a service to get/delete entities
  */
 
 angular.module("eavNgSvcs", ["ng"])
@@ -1870,102 +1866,9 @@ angular.module("eavNgSvcs", ["ng"])
             });
         } ])
 
-    /// Provide state-information related to the current open dialog
-    .factory("eavManagementDialog", ["$location", function($location){
-        var result = {};
-        var srch = $location.search();
-        result.appId = srch.AppId || srch.appId || srch.appid;
-        return result;
-    }])
-
-    /// Management actions which are rather advanced metadata kind of actions
-    .factory("eavManagementSvc", ["$http", "eavManagementDialog", function($http, eavManagementDialog) {
-        var svc = {};
-
-        // Retrieve extra content-type info
-        svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
-            alert("using the wrong method - should use the content-type controller. Will work for now, change code please");
-            return $http.get("eav/contenttype/get", { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
-        };
-
-        // Find all items assigned to a GUID
-        svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
-            return $http.get("eav/metadata/getassignedentities", {
-                params: {
-                    appId: eavManagementDialog.appId,
-                    assignmentObjectTypeId: assignedToId,
-                    keyType: "guid",
-                    key: keyGuid,
-                    contentType: contentTypeName
-                }
-            });
-        };
-        return svc;
-    }])
-
-    /// Standard entity commands like get one, many etc.
-    .factory("entitiesSvc", ["$http", "eavManagementDialog", function ($http, eavManagementDialog) {
-        var svc = {};
-
-        svc.get = function get(contentType, id) {
-            return id ?
-                $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId } })
-                : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
-        };
-
-		svc.getMultiLanguage = function getMultiLanguage(appId, contentType, id) {
-			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
-		};
-
-		svc.getManyForEditing = function (appId, items) {
-		    return $http.post("eav/entities/getmanyforediting", items, { params: { appId: appId } });
-		};
-
-		svc.saveMany = function (appId, items) {
-		    return $http.post("eav/entities/savemany", items, { params: { appId: appId } });
-		};
-
-        svc.delete = function del(type, id) {
-            return $http.delete("eav/entities/delete", {
-                params: {
-                    'contentType': type,
-                    'id': id,
-                    'appId': eavManagementDialog.appId
-                }
-            });
-        };
-
-		svc.newEntity = function(contentTypeName) {
-			return {
-				Id: null,
-				Guid: generateUUID(),
-				Type: {
-					StaticName: contentTypeName
-				},
-				Attributes: {},
-                IsPublished: true
-			};
-		};
-        
-		svc.save = function save(appId, newData) {
-		    return $http.post("eav/entities/save", newData, { params: { appId: appId } });
-		};
-
-        return svc;
-    }])
 
 ;
 
-// Generate Guid - code from http://stackoverflow.com/a/8809472
-function generateUUID() {
-    var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = (d + Math.random() * 16) % 16 | 0;
-        d = Math.floor(d / 16);
-        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-    return uuid;
-}
 
 angular.module("EavServices")
     .factory("historySvc", ["$http", "svcCreator", function($http, svcCreator) { 
@@ -2099,9 +2002,31 @@ angular.module("EavServices")
         return results === null ? "" : decodeURIComponent(results.replace(/\+/g, " "));
     }
 }());
+// metadata
+// retrieves metadata for an entity or an attribute
 
 angular.module("EavServices")
-    .factory("permissionsSvc", ["$http", "eavConfig", "entitiesSvc", "eavManagementSvc", "svcCreator", "contentTypeSvc", function($http, eavConfig, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
+    /// Management actions which are rather advanced metadata kind of actions
+    .factory("metadataSvc", ["$http", "appId", function($http, appId) {
+        var svc = {};
+
+        // Find all items assigned to a GUID
+        svc.getMetadata = function getMetadata(assignedToId, keyGuid, contentTypeName) {
+            return $http.get("eav/metadata/getassignedentities", {
+                params: {
+                    appId: appId,
+                    assignmentObjectTypeId: assignedToId,
+                    keyType: "guid",
+                    key: keyGuid,
+                    contentType: contentTypeName
+                }
+            });
+        };
+        return svc;
+    }]);
+
+angular.module("EavServices")
+    .factory("permissionsSvc", ["$http", "eavConfig", "entitiesSvc", "metadataSvc", "svcCreator", "contentTypeSvc", function($http, eavConfig, entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
         var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid
@@ -2116,7 +2041,7 @@ angular.module("EavServices")
 
             svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
                 // todo: refactor this - get out of the eavmanagemnetsvc
-                return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
+                return metadataSvc.getMetadata(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
             }));
 
             // Get ID of this content-type 
@@ -2135,7 +2060,7 @@ angular.module("EavServices")
 // PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", ["$resource", "$q", "$filter", "eavConfig", "$http", "contentTypeSvc", "eavManagementSvc", "eavAdminDialogs", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, eavManagementSvc, eavAdminDialogs) {
+    .factory("pipelineService", ["$resource", "$q", "$filter", "eavConfig", "$http", "contentTypeSvc", "metadataSvc", "eavAdminDialogs", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -2257,10 +2182,9 @@ angular.module("EavServices")
                 var contentTypeName = "|Config " + dataSourceFullName; // todo refactor centralize
                 var assignmentObjectTypeId = 4; // todo refactor centralize
                 var keyGuid = dataSource.EntityGuid;
-                var preventRedirect = true;
 
                 // Query for existing Entity
-                eavManagementSvc.getAssignedItems(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
+                metadataSvc.getMetadata(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
                     var success = result.data;
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);

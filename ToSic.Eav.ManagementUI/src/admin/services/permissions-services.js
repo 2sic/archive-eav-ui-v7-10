@@ -1,6 +1,6 @@
 
 angular.module("EavServices")
-    .factory("permissionsSvc", function($http, eavConfig, entitiesSvc, eavManagementSvc, svcCreator, contentTypeSvc) {
+    .factory("permissionsSvc", function($http, eavConfig, entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
         var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid
@@ -15,7 +15,7 @@ angular.module("EavServices")
 
             svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
                 // todo: refactor this - get out of the eavmanagemnetsvc
-                return eavManagementSvc.getAssignedItems(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
+                return metadataSvc.getMetadata(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
             }));
 
             // Get ID of this content-type 

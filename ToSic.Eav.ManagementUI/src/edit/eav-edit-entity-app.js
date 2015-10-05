@@ -6,7 +6,6 @@
         "formly",
         "ui.bootstrap",
         "eavFieldTemplates",
-        "eavNgSvcs",
         "EavServices",
         "eavEditTemplates"
 	]);
