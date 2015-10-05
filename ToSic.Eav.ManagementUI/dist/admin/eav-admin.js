@@ -124,6 +124,23 @@
     contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter"];
 }());
 (function () {
+
+    angular.module("ContentExportApp")
+         .factory("contentExportService", contentExportService);
+
+
+    function contentExportService() {
+        var srvc = {
+            exportContent: exportContent,
+        };
+        return srvc;
+
+        function exportContent(args) {
+            window.open("/api/eav/ContentExport/ExportContent?appId=" + args.AppId + "&language=" + args.Language + "&defaultLanguage=" + args.DefaultLanguage + "&contentType=" + args.ContentType + "&recordExport=" + args.RecordExport + "&resourcesReferences=" + args.ResourcesReferences + "&languageReferences=" + args.LanguageReferences, "_self", "");
+        }
+    }
+}());
+(function () {
     angular.module("ContentFormlyTypes", [
         "naif.base64",
         "formly",
@@ -178,10 +195,11 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, uiDebug, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
+        uiDebug.extendViewModel(vm);
 
         vm.formValues = {};
 
@@ -292,7 +310,7 @@
             $modalInstance.dismiss("cancel");
         };
     }
-    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter"];
+    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "uiDebug", "$modalInstance", "$filter"];
 }());
 (function () {
 
@@ -459,9 +477,11 @@
 
 
     /// Manage the list of content-types
-    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
+    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, uiDebug, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
+
+        uiDebug.extendViewModel(vm);
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
@@ -522,8 +542,9 @@
         vm.openImport = function openImport(item) {
             return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
+
     }
-    contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "$translate"];
+    contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "uiDebug", "$translate"];
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
@@ -669,7 +690,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-import-export/content-import.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title><span translate=Content.Import.Title></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=Content.Import.TitleSteps translate-values=\"{step: vm.viewStateSelected}\"></span></h3></div><div ng-switch=vm.viewStateSelected><div ng-switch-when=1><div class=modal-body><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields></formly-form><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div></div><div class=modal-footer><button type=button class=\"btn btn-default pull-left\" ng-click=vm.evaluateContent() ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=Content.Import.Commands.Preview></button></div></div><div ng-switch-when=0><div class=modal-body><img src=\"/Scripts/images/ui-ajax-loader.gif\"> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div></div><div ng-switch-when=2><div class=modal-body><div ng-if=vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluationResult.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div></div><div class=modal-footer><button type=button class=\"btn pull-left\" ng-click=vm.back() icon=arrow-left></button> <button type=button class=\"btn btn-default pull-left\" ng-click=vm.importContent() translate=Content.Import.Commands.Import ng-disabled=!vm.evaluationResult.Succeeded></button></div></div><div ng-switch-when=3><div class=modal-body><span ng-show=vm.importResult.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.importResult.Succeeded translate=Content.Import.Messages.ImportFailed></span></div></div><pre>{{vm.formValues | json}}</pre></div>"
+    "<div ng-click=vm.maybeEnableDebug($event)><div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title><span translate=Content.Import.Title></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=Content.Import.TitleSteps translate-values=\"{step: vm.viewStateSelected}\"></span></h3></div><div ng-switch=vm.viewStateSelected><div ng-switch-when=1><div class=modal-body><div translate=Content.Import.Help></div><formly-form form=vm.form model=vm.formValues fields=vm.formFields></formly-form><div class=text-warning translate=Content.Import.Messages.BackupContentBefore></div></div><div class=modal-footer><button type=button class=\"btn btn-default pull-left\" ng-click=vm.evaluateContent() ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=Content.Import.Commands.Preview></button></div></div><div ng-switch-when=0><div class=modal-body><img src=\"/Scripts/images/ui-ajax-loader.gif\"> {{'Content.Import.Messages.WaitingForResponse' | translate}}</div></div><div ng-switch-when=2><div class=modal-body><div ng-if=vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Detail.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><h5 translate=Content.Import.Evaluation.Detail.File.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.File.ElementCount translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.LanguageCount translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li><li translate=Content.Import.Evaluation.Detail.File.Attributes translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(', ')}\"></li></ul><h5 translate=Content.Import.Evaluation.Detail.Entities.Title></h5><ul><li translate=Content.Import.Evaluation.Detail.Entities.Create translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Update translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.Delete translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li><li translate=Content.Import.Evaluation.Detail.Entities.AttributesIgnored translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(', ')}\"></li></ul><div class=text-warning translate=Content.Import.Messages.ImportCanTakeSomeTime></div></div><div ng-if=!vm.evaluationResult.Succeeded><h4 translate=Content.Import.Evaluation.Error.Title translate-values=\"{filename: vm.formValues.File.filename}\"></h4><ul><li ng-repeat=\"error in vm.evaluationResult.Detail\"><div><span translate=Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}></span></div><div ng-if=error.ErrorDetail><i translate=Content.Import.Evaluation.Error.Detail translate-values=\"{detail: error.ErrorDetail}\"></i></div><div ng-if=error.LineNumber><i translate=Content.Import.Evaluation.Error.LineNumber&quot; translate-values=\"{number: error.LineNumber}\"></i></div><div ng-if=error.LineDetail><i translate=Content.Import.Evaluation.Error.LineDetail translate-values=\"{detail: error.LineDetail}\"></i></div></li></ul></div></div><div class=modal-footer><button type=button class=\"btn pull-left\" ng-click=vm.back() icon=arrow-left></button> <button type=button class=\"btn btn-default pull-left\" ng-click=vm.importContent() translate=Content.Import.Commands.Import ng-disabled=!vm.evaluationResult.Succeeded></button></div></div><div ng-switch-when=3><div class=modal-body><span ng-show=vm.importResult.Succeeded translate=Content.Import.Messages.ImportSucceeded></span> <span ng-hide=vm.importResult.Succeeded translate=Content.Import.Messages.ImportFailed></span></div></div><div ng-if=vm.debug><h3>Debug infos</h3><pre>{{vm.formValues | json}}</pre></div></div></div>"
   );
 
 
@@ -709,7 +730,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types.html',
-    "<div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><div ng-controller=\"List as vm\" class=ng-cloak><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <button icon=record title=\"{{ 'ContentTypes.Buttons.ChangeScope' | translate }}\" type=button class=btn ng-click=vm.changeScope()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div></div><div><h3>todo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div>"
+    "<div ng-controller=\"List as vm\" ng-click=vm.maybeEnableDebug($event)><div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <span ng-if=vm.debug><button icon=record title=\"{{ 'ContentTypes.Buttons.ChangeScope' | translate }}\" type=button class=btn ng-click=vm.changeScope()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button></span><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div><div ng-if=vm.debug><h3>todo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div></div>"
   );
 
 
@@ -2403,3 +2424,30 @@ angular.module("EavServices")
             };
         }]
     );
+// uiDebug
+// will add
+// vm.debug -> shows if in debug mode - bind ng-ifs to this
+// vm.maybeEnableDebug - a method which checks for ctrl+shift-click and if yes, changes debug state
+//
+// How to use
+// 1. add uiDebug to your controller dependencies like:    contentImportController(appId, ..., uiDebug, $modalInstance, $filter)
+// 2. add a line after creating your vm-object like:       uiDebug.extendViewModel(vm);
+// 3. add a click event as far out as possible on html:    <div ng-click="vm.maybeEnableDebug($event)">
+// 4. wrap your hidden stuff in an ng-if:                  <div ng-if="vm.debug">
+
+angular.module("EavServices")
+    .factory("uiDebug", function () {
+        var svc = {};
+
+        svc.extendViewModel = function extendViewModel(viewModel) {
+            viewModel.debug = false;
+            viewModel.maybeEnableDebug = function maybeEnableDebug(evt) {
+                evt = window.event || evt;
+                var ctrlAndShiftPressed = evt.ctrlKey && evt.shiftKey;
+                if (ctrlAndShiftPressed)
+                    viewModel.debug = !viewModel.debug;
+            };
+        };
+
+        return svc;
+    });

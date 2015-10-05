@@ -7,9 +7,11 @@
 
 
     /// Manage the list of content-types
-    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, $translate) {
+    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, uiDebug, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
+
+        uiDebug.extendViewModel(vm);
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
@@ -70,6 +72,7 @@
         vm.openImport = function openImport(item) {
             return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
+
     }
 
     /// Edit or add a content-type

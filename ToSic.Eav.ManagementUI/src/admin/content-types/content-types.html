@@ -1,17 +1,18 @@
-﻿<div class="modal-header">
-    <h3 class="modal-title" translate="ContentTypes.Title"></h3>
-</div>
-<div class="modal-body">
-    <div ng-controller="List as vm" class="ng-cloak">
+﻿<div ng-controller="List as vm" ng-click="vm.maybeEnableDebug($event)">
+    <div class="modal-header">
+        <h3 class="modal-title" translate="ContentTypes.Title"></h3>
+    </div>
+    <div class="modal-body">
         <!-- Buttons on top -->
         <button icon="plus" title="{{ 'General.Buttons.Add' | translate }}" type="button" class="btn btn-default" ng-click="vm.edit()"></button>
 
         <button icon="repeat" title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn" ng-click="vm.refresh()"></button>
 
-        <button icon="record" title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn" ng-click="vm.changeScope()"></button>
+        <span ng-if="vm.debug">
+            <button icon="record" title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn" ng-click="vm.changeScope()"></button>
 
-        <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>
-
+            <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>
+        </span>
         <!-- Table of content types for editing -->
         <table class="table table-hover">
             <thead>
@@ -54,12 +55,12 @@
         </table>
 
     </div>
-</div>
-<div>
+    <div ng-if="vm.debug">
 
-    <h3>todo</h3>
-    <ol>
-        <li>get validators to work on all dialogs</li>
-        <li>this dialog doesn't refresh properly when I add/change stuff</li>
-    </ol>
+        <h3>todo</h3>
+        <ol>
+            <li>get validators to work on all dialogs</li>
+            <li>this dialog doesn't refresh properly when I add/change stuff</li>
+        </ol>
+    </div>
 </div>
