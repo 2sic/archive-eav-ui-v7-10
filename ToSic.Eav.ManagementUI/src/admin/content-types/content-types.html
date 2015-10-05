@@ -1,4 +1,4 @@
-﻿<div ng-controller="List as vm" ng-click="vm.maybeEnableDebug($event)">
+﻿<div ng-controller="List as vm" ng-click="vm.debug.autoEnableAsNeeded($event)">
     <div class="modal-header">
         <h3 class="modal-title" translate="ContentTypes.Title"></h3>
     </div>
@@ -8,7 +8,7 @@
 
         <button icon="repeat" title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn" ng-click="vm.refresh()"></button>
 
-        <span ng-if="vm.debug">
+        <span ng-if="vm.debug.on">
             <button icon="record" title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn" ng-click="vm.changeScope()"></button>
 
             <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>

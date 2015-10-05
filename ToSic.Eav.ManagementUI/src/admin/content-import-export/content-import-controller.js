@@ -3,11 +3,11 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, uiDebug, $modalInstance, $filter) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter) {
         var translate = $filter("translate");
 
         var vm = this;
-        uiDebug.extendViewModel(vm);
+        vm.debug = debugState;
 
         vm.formValues = {};
 
