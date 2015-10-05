@@ -1,8 +1,8 @@
-﻿<div ng-controller="List as vm">
+﻿<div ng-controller="List as vm" ng-click="vm.maybeEnableDebug($event)">
     <div class="modal-header">
         <h3 class="modal-title" translate="ContentTypes.Title"></h3>
     </div>
-    <div class="modal-body" ng-click="vm.maybeEnableDebug($event)">
+    <div class="modal-body">
         <!-- Buttons on top -->
         <button icon="plus" title="{{ 'General.Buttons.Add' | translate }}" type="button" class="btn btn-default" ng-click="vm.edit()"></button>
 
