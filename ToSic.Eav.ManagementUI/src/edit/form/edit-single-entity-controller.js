@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -15,7 +15,8 @@
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; }
+		    isValid: function () { return vm.form.$valid; },
+            isDirty: function() { return vm.form.$dirty; }
 		};
 
 		// Register this control in the parent control
@@ -50,7 +51,7 @@
 			                settings: e.Metadata,
                             header: $scope.header
 			            },
-			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
+			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 			            expressionProperties: {
 			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
 			            }

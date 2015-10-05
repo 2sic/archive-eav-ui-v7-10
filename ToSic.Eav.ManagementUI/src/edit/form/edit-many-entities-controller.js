@@ -26,6 +26,15 @@
             return valid;
         };
 
+        $scope.state.isDirty = function() {
+            var dirty = false;
+            angular.forEach(vm.registeredControls, function(e, i) {
+                if (e.isDirty())
+                    dirty = true;
+            });
+            return dirty;
+        };
+
         vm.save = function () {
             entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
         };

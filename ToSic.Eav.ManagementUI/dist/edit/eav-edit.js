@@ -234,6 +234,15 @@
             return valid;
         };
 
+        $scope.state.isDirty = function() {
+            var dirty = false;
+            angular.forEach(vm.registeredControls, function(e, i) {
+                if (e.isDirty())
+                    dirty = true;
+            });
+            return dirty;
+        };
+
         vm.save = function () {
             entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
         };
@@ -288,7 +297,8 @@
             restrict: "E",
             scope: {
                 itemList: "=",
-                afterSaveEvent: "="
+                afterSaveEvent: "=",
+                state: "="
             },
             controller: "EditEntities",
             controllerAs: "vm"
@@ -304,7 +314,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller("EditEntityFormCtrl", ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "$sce", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce) {
+    app.controller("EditEntityFormCtrl", ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "$sce", "debugState", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -314,7 +324,8 @@
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; }
+		    isValid: function () { return vm.form.$valid; },
+            isDirty: function() { return vm.form.$dirty; }
 		};
 
 		// Register this control in the parent control
@@ -349,7 +360,7 @@
 			                settings: e.Metadata,
                             header: $scope.header
 			            },
-			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
+			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 			            expressionProperties: {
 			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
 			            }
@@ -421,7 +432,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('form/edit-many-entities.html',
-    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button class=btn ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span> <span class=pull-right ng-if=false>todo: show more buttons... <button class=btn><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate }}\"></span></button></span><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
+    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><h4>{{p.Header.Title ? p.Header.Title : 'Edit'}}</h4><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button class=btn ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span> <span class=pull-right ng-if=false>todo: show more buttons... <button class=btn><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate }}\"></span></button></span><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
   );
 
 
@@ -446,7 +457,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/edit-entity-wrapper.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><eav-edit-entities item-list=vm.itemList after-save-event=vm.afterSave></eav-edit-entities></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><eav-edit-entities item-list=vm.itemList after-save-event=vm.afterSave state=vm.state></eav-edit-entities></div>"
   );
 
 }]);
@@ -828,22 +839,32 @@ function enhanceEntity(entity) {
 	// The controller for the main form directive
 	app.controller("EditEntityWrapperCtrl", ["$q", "$http", "$scope", "items", "$modalInstance", function editEntityCtrl($q, $http, $scope, items, $modalInstance) {
 
-		var vm = this;
+	    var vm = this;
 	    vm.itemList = items;
 
-        // this is the callback after saving - needed to close everything
-		vm.afterSave = function (result) {
-		    if (result.status === 200)
-		        vm.close();
-		    else {
-		        alert("Something went wrong - maybe parts worked, maybe not. Sorry :("); 
-		    }
+	    // this is the callback after saving - needed to close everything
+	    vm.afterSave = function(result) {
+	        if (result.status === 200)
+	            vm.close();
+	        else {
+	            alert("Something went wrong - maybe parts worked, maybe not. Sorry :(");
+	        }
+	    };
 
-		};
-		
-		vm.close = function () {
+	    vm.state = {
+	        isDirty: function() {
+	            throw "Inner control must override this function.";
+	        }
+	    };
+
+	    vm.close = function () {
 		    $modalInstance.dismiss("cancel");
 		};
+
+	    $scope.$on('modal.closing', function(e) {
+	        if (vm.state.isDirty() && !confirm("You have unsaved changes. Do you really want to exit?"))
+	            e.preventDefault();
+	    });
 	}]);
 
 })();

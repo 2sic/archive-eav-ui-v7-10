@@ -10,7 +10,8 @@
             restrict: "E",
             scope: {
                 itemList: "=",
-                afterSaveEvent: "="
+                afterSaveEvent: "=",
+                state: "="
             },
             controller: "EditEntities",
             controllerAs: "vm"
