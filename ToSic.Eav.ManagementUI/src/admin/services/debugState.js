@@ -17,7 +17,7 @@ angular.module("EavServices")
 
         svc.autoEnableAsNeeded = function (evt) {
             evt = window.event || evt;
-            var ctrlAndShiftPressed = evt.ctrlKey;// && evt.shiftKey;
+            var ctrlAndShiftPressed = evt.ctrlKey;
             if (ctrlAndShiftPressed)
                 svc.on = !svc.on;
         };

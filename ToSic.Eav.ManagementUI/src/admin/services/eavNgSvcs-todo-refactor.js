@@ -28,12 +28,6 @@ angular.module("eavNgSvcs", ["ng"])
     .factory("eavManagementSvc", function($http, eavManagementDialog) {
         var svc = {};
 
-        // Retrieve extra content-type info
-        svc.getContentTypeDefinition = function getContentTypeDefinition(contentTypeName) {
-            alert("using the wrong method - should use the content-type controller. Will work for now, change code please");
-            return $http.get("eav/contenttype/get", { params: { appId: eavManagementDialog.appId, contentTypeId: contentTypeName } });
-        };
-
         // Find all items assigned to a GUID
         svc.getAssignedItems = function getAssignedItems(assignedToId, keyGuid, contentTypeName) {
             return $http.get("eav/metadata/getassignedentities", {
@@ -53,22 +47,28 @@ angular.module("eavNgSvcs", ["ng"])
     .factory("entitiesSvc", function ($http, eavManagementDialog) {
         var svc = {};
 
-        svc.get = function get(contentType, id) {
-            return id ?
-                $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId } })
-                : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
-        };
+        //svc.get = function get(contentType, id) {
+        //    return id ?
+        //        $http.get("eav/entities/getone", { params: { 'contentType': contentType, 'id': id, 'appId': eavManagementDialog.appId } })
+        //        : $http.get("eav/entities/getentities", { params: { 'contentType': contentType, 'appId': eavManagementDialog.appId }});
+        //};
 
-		svc.getMultiLanguage = function getMultiLanguage(appId, contentType, id) {
-			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
-		};
+		//svc.getMultiLanguage = function getMultiLanguage(appId, contentType, id) {
+		//	return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
+		//};
 
 		svc.getManyForEditing = function (appId, items) {
 		    return $http.post("eav/entities/getmanyforediting", items, { params: { appId: appId } });
 		};
 
 		svc.saveMany = function (appId, items) {
-		    return $http.post("eav/entities/savemany", items, { params: { appId: appId } });
+		    // first clean up unnecessary nodes - just to make sure we don't miss-read the JSONs transferred
+		    var removeTempValue = function(value, key) { delete value._currentValue; };
+		    var itmCopy = angular.copy(items);
+		    for (var ei = 0; ei < itmCopy.length; ei++)
+		        angular.forEach(itmCopy[ei].Entity.Attributes, removeTempValue);
+
+		    return $http.post("eav/entities/savemany", itmCopy, { params: { appId: appId } });
 		};
 
         svc.delete = function del(type, id) {
