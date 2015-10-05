@@ -1,0 +1,13 @@
+﻿<div>
+    <label for="{{id}}" class="control-label {{to.labelSrOnly ? 'sr-only' : ''}}" ng-if="to.label">
+        {{to.label}}
+        {{to.required ? '*' : ''}}
+        <a ng-click="to.showDescription = !to.showDescription" href="javascript:void(0);" ng-if="to.description && to.description != ''"  title="{{to.description}}">
+            <i class="glyphicon glyphicon-info-sign"></i>
+        </a>
+    </label>
+    <p ng-if="to.showDescription" class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
+        <!--{{to.description}}-->
+    </p>
+    <formly-transclude></formly-transclude>
+</div>

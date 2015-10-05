@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -46,7 +46,7 @@
 			            templateOptions: {
 			                required: !!e.Metadata.All.Required,
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
-			                description: e.Metadata.All.Notes,
+			                description: $sce.trustAsHtml(e.Metadata.All.Notes),
 			                settings: e.Metadata,
                             header: $scope.header
 			            },
