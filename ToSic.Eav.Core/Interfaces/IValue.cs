@@ -13,7 +13,7 @@ namespace ToSic.Eav
         IEnumerable<ILanguage> Languages { get; }
         string Serialized {get;}
 
-        object ObjectValue { get; }
+        object SerializableObject { get; }
 	}
 
 	/// <summary>

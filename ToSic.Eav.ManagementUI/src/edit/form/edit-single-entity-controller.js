@@ -47,7 +47,8 @@
 			                required: !!e.Metadata.All.Required,
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 			                description: e.Metadata.All.Notes,
-			                settings: e.Metadata
+			                settings: e.Metadata,
+                            header: $scope.header
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
 			            expressionProperties: {

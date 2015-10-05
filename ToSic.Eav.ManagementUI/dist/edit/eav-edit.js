@@ -340,7 +340,8 @@
 			                required: !!e.Metadata.All.Required,
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 			                description: e.Metadata.All.Notes,
-			                settings: e.Metadata
+			                settings: e.Metadata,
+                            header: $scope.header
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
 			            expressionProperties: {
@@ -389,7 +390,8 @@
 		    templateUrl: "form/edit-single-entity.html",
 			restrict: "E",
 			scope: {
-				entity: "=",
+			    entity: "=",
+                header: "=",
 				registerEditControl: "="
 			},
 			controller: "EditEntityFormCtrl",
@@ -408,7 +410,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('form/edit-many-entities.html',
-    "<div ng-if=\"vm.items != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <button class=\"btn pull-right\"><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate\r" +
+    "<div ng-if=\"vm.items != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <button class=\"btn pull-right\"><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate\r" +
     "\n" +
     "}}\"></span></button> <button class=\"btn pull-right\" ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button></div>"
   );
@@ -787,6 +789,10 @@ function enhanceEntity(entity) {
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;
 			var d = e.templateOptions.settings.DefaultValue;
+
+		    if (e.templateOptions.header.Prefill && e.templateOptions.header.Prefill[e.key]) {
+			    d = e.templateOptions.header.Prefill[e.key];
+			}
 
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
