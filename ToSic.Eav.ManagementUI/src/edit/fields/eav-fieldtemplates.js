@@ -4,18 +4,19 @@
 
 	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
 
-	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates"], function (formlyConfigProvider) {
+	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates"])
+        .config(function (formlyConfigProvider) {
 
 	    formlyConfigProvider.setType({
 	        name: "string-default",
 	        template: "<input class=\"form-control\" ng-model=\"value.Value\">",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
 	        name: "string-dropdown",
 	        template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: function defaultOptions(options) {
 				
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
@@ -47,7 +48,7 @@
 	    formlyConfigProvider.setType({
 	        name: "string-textarea",
 	        template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
 	                '{{to.settings.String.RowCount}}': { value: "rows" },
@@ -59,7 +60,7 @@
 	    formlyConfigProvider.setType({
 	        name: "number-default",
 	        template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
 	                '{{to.settings.Number.Min}}': { value: "min" },
@@ -73,12 +74,12 @@
 	    formlyConfigProvider.setType({
 	        name: "boolean-default",
 	        template: "<div class=\"checkbox\">\n\t<label>\n\t\t<input type=\"checkbox\"\n           class=\"formly-field-checkbox\"\n\t\t       ng-model=\"value.Value\">\n\t\t{{to.label}}\n\t\t{{to.required ? '*' : ''}}\n\t</label>\n</div>\n",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
 	        name: "datetime-default",
-	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
 	        template: "<div>" +
                 "<div class=\"input-group\">" +
                     "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
@@ -98,10 +99,14 @@
 		formlyConfigProvider.setType({
 		    name: "entity-default",
 		    templateUrl: "fields/templates/entity-default.html",
-		    wrapper: ["bootstrapLabel", "bootstrapHasError"],
+		    wrapper: ["eavLabel", "bootstrapHasError"],
 		    controller: "FieldTemplate-EntityCtrl"
 		});
 
+	    formlyConfigProvider.setWrapper({
+	        name: 'eavLabel',
+            templateUrl: "fields/eav-label.html"
+	    });
 	});
 
 	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
