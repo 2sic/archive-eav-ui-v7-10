@@ -118,7 +118,7 @@ namespace ToSic.Eav.WebApi
                             {
                                 Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
                                 {
-                                    Value = v.ObjectValue,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
+                                    Value = v.SerializableObject,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
                                     Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
                                 }).ToArray()
                             }

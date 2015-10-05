@@ -8,7 +8,8 @@
 		    templateUrl: "form/edit-single-entity.html",
 			restrict: "E",
 			scope: {
-				entity: "=",
+			    entity: "=",
+                header: "=",
 				registerEditControl: "="
 			},
 			controller: "EditEntityFormCtrl",

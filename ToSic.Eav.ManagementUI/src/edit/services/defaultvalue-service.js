@@ -8,6 +8,10 @@
 			var e = fieldConfig;
 			var d = e.templateOptions.settings.DefaultValue;
 
+		    if (e.templateOptions.header.Prefill && e.templateOptions.header.Prefill[e.key]) {
+			    d = e.templateOptions.header.Prefill[e.key];
+			}
+
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
 					return d !== undefined ? d.toLowerCase() == 'true' : false;
