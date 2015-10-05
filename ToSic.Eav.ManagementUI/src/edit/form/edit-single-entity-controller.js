@@ -15,7 +15,8 @@
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; }
+		    isValid: function () { return vm.form.$valid; },
+            isDirty: function() { return vm.form.$dirty; }
 		};
 
 		// Register this control in the parent control
