@@ -21,6 +21,7 @@ namespace ToSic.Eav.WebApi.Formats
 
         // this is not needed on the server, but must be passed through so it's still attached to this item if in use
         public dynamic Prefill { get; set; }
+        public string Title { get; set; }
     }
 
     public class EntityWithHeader

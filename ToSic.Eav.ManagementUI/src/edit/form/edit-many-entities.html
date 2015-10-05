@@ -2,6 +2,7 @@
     <eav-language-switcher></eav-language-switcher>
 
     <div ng-repeat="p in vm.items">
+        <h4>{{p.Header.Title ? p.Header.Title : 'Edit'}}</h4>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl"></eav-edit-entity-form>
     </div>
 

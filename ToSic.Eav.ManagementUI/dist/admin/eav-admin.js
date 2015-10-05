@@ -625,8 +625,9 @@
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
+            var title = metadataType == "All" ? "General" : metadataType;
             return item.Metadata[metadataType] !== undefined
-                ? { EntityId: item.Metadata[metadataType].Id, Title: "General" }  // if defined, return the entity-number to edit
+                ? { EntityId: item.Metadata[metadataType].Id, Title: title }  // if defined, return the entity-number to edit
                 : {
                     ContentTypeName: "@" + metadataType,        // otherwise the content type for new-assegnment
                     Metadata: {
@@ -634,7 +635,7 @@
                         KeyType: "number",
                         TargetType: eavConfig.metadataOfAttribute
                     },
-                    Title: metadataType
+                    Title: title
                 };      
         };
     }
