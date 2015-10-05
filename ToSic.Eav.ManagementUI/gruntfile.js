@@ -61,18 +61,18 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: admin.cwd,
-                        src: ["**", "!**/*Spec.js"],
+                        src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: admin.tmp
                     },
                     {
                         expand: true,
                         cwd: editUi.cwd,
-                        src: ["**", "!**/*Spec.js"],
+                        src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: editUi.tmp
                     }
                 ]
             },
-            i18n: {
+            i18n: { 
                 files: [
                     {
                         expand: true,
@@ -280,7 +280,7 @@ module.exports = function(grunt) {
     grunt.registerTask("quickDebug", "quickly log a test", function() {
         grunt.log(admin.cwdJs);
     });
-
+     
     // External task - read http://www.thomasboyt.com/2013/09/01/maintainable-grunt.html
     // note that for a reason I don't understand, ...
     // the options in each file override the other ones
@@ -288,6 +288,7 @@ module.exports = function(grunt) {
     // since library-preparation is not a common action, this is sufficient for now
     //grunt.task.loadTasks("grunt-tasks/angular-set");
     //grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
+    //grunt.task.loadTasks("grunt-tasks/jsplumb-clean");
     //grunt.task.loadTasks("grunt-tasks/i18n");
 
 };

@@ -15,7 +15,6 @@ namespace ToSic.Eav.WebApi.Formats
         public bool IsPublished;
         public string TitleAttributeName;
         public Dictionary<string, Attribute> Attributes;
-        public Metadata Metadata;
         public int AppId;
     }
 
@@ -44,7 +43,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool HasMetadata
         {
-            get { return _targetType != 0; }
+            get { return _targetType != Constants.DefaultAssignmentObjectTypeId; }
         }
 
         private int _targetType = 0;

@@ -43,7 +43,7 @@ namespace ToSic.Eav.BLL.Parts
                 Context.SqlDb.Entities.Where(
                     e =>
                         e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue &&
-                        !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);// ref:extract _appId);
+                        !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);
         }
 
         /// <summary>

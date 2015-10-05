@@ -54,9 +54,11 @@ namespace ToSic.Eav.WebApi
 		/// <param name="eavConnectionString">optional EAV Connection String</param>
 		public PipelineDesignerController(string userName, string eavConnectionString = null)
 		{
+            // TODO URGENT - TRYING TO GET THIS TO WORK - HAS SIDE EFFECTS ON OTHER SERVICES
+            // Must discuss w/2bg, seems to work now anyhow...
 			// Preserving circular reference
-			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-			GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
 
 			_userName = userName;
 
@@ -91,7 +93,13 @@ namespace ToSic.Eav.WebApi
 				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
 				{
 					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
-					dataSourcesJson.Add(dataSource);
+					
+                    // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
+                    // Using a trick to add a special EOL-character to ensure we don't replace somethin in the middle
+					var partAssemblyAndType = (string)dataSource["PartAssemblyAndType"];
+                    if(partAssemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)) // only do this replace if really necessary to prevent side effects
+                        dataSource["PartAssemblyAndType"] = partAssemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
+                    dataSourcesJson.Add(dataSource);
 				}
 				#endregion
 			}

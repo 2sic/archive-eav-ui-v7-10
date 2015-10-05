@@ -56,32 +56,42 @@ namespace ToSic.Eav.DataSources
 			var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
 			#region init all DataPipelineParts
 			var dataSources = new Dictionary<string, IDataSource>();
-			foreach (var dataPipelinePart in dataPipelineParts)
-			{
-				#region Init Configuration Provider
-				var configurationProvider = new ValueCollectionProvider();
-				var settingsPropertySource = new AssignedEntityValueProvider("settings", dataPipelinePart.EntityGuid, metaDataSource);
-				configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
-				configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
+		    foreach (var dataPipelinePart in dataPipelineParts)
+		    {
+		        #region Init Configuration Provider
 
-				// attach all propertyProviders
-				if (configurationPropertyAccesses != null)
-					foreach (var propertyProvider in configurationPropertyAccesses)
-					{
-						if (propertyProvider.Name == null)
-							throw new NullReferenceException("PropertyProvider must have a Name");
-						configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
-					}
+		        var configurationProvider = new ValueCollectionProvider();
+		        var settingsPropertySource = new AssignedEntityValueProvider("settings", dataPipelinePart.EntityGuid,
+		            metaDataSource);
+		        configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
+		        configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
 
-				#endregion
+		        // attach all propertyProviders
+		        if (configurationPropertyAccesses != null)
+		            foreach (var propertyProvider in configurationPropertyAccesses)
+		            {
+		                if (propertyProvider.Name == null)
+		                    throw new NullReferenceException("PropertyProvider must have a Name");
+		                configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
+		            }
 
-				var dataSource = DataSource.GetDataSource(dataPipelinePart["PartAssemblyAndType"][0].ToString(), source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
-			    dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
-				//ConfigurationProvider.configList = dataSource.Configuration;
+		        #endregion
 
-				dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
-			}
-			dataSources.Add("Out", outSource);
+
+		        // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
+		        var assemblyAndType = dataPipelinePart["PartAssemblyAndType"][0].ToString();
+		        if (assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld))
+		            assemblyAndType = assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
+
+		        var dataSource = DataSource.GetDataSource(assemblyAndType,
+		            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
+		        dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
+		        //ConfigurationProvider.configList = dataSource.Configuration;
+
+		        dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+
+		    }
+		    dataSources.Add("Out", outSource);
 			#endregion
 
 			InitWirings(dataPipeline, dataSources);

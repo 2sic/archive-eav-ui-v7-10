@@ -1,0 +1,27 @@
+﻿<div ng-if="vm.items != null">
+    <eav-language-switcher></eav-language-switcher>
+
+    <div ng-repeat="p in vm.items">
+        <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl"></eav-edit-entity-form>
+    </div>
+
+
+
+    <button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-primary submit-button">
+        <span icon="ok" tooltip="{{ 'Button.Save' | translate }}"></span>
+    </button>
+
+    <!-- note: published status will apply to all - so the first is taken for identification if published -->
+    <span ng-if="vm.willPublish" icon="eye-open" tooltip="{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}" ng-click="vm.togglePublish()"></span>
+    <span ng-if="!vm.willPublish" icon="eye-close" tooltip="{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}" ng-click="vm.togglePublish()"></span>
+
+    <button class="btn pull-right">
+        <span icon="option-horizontal" tooltip="{{ 'Button.MoreOptions' | translate
+}}"></span>
+    </button>
+
+    <button class="btn pull-right" ng-click="vm.saveAndKeepOpen()">
+        <span icon="check" tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
+    </button>
+    
+</div>

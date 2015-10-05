@@ -1,37 +1,37 @@
 ﻿
 (function () {
-	'use strict';
+	"use strict";
 
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module('eavLocalization', ['formly', "EavConfiguration"], function (formlyConfigProvider) {
+	var eavLocalization = angular.module("eavLocalization", ["formly", "EavConfiguration"], function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([
 			{
-				name: 'eavLocalization',
-				templateUrl: 'localization/formly-localization-wrapper.html'
+				name: "eavLocalization",
+				templateUrl: "localization/formly-localization-wrapper.html"
 			}
 		]);
 
 	});
 
-	eavLocalization.directive('eavLanguageSwitcher', function () {
+	eavLocalization.directive("eavLanguageSwitcher", function () {
 		return {
-			restrict: 'E',
-			templateUrl: 'localization/language-switcher.html',
+			restrict: "E",
+			templateUrl: "localization/language-switcher.html",
 			controller: function($scope, languages) {
 				$scope.languages = languages;
 			}
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationScopeControl', function () {
+	eavLocalization.directive("eavLocalizationScopeControl", function () {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			transclude: true,
-			template: '',
+			template: "",
 			link: function (scope, element, attrs) {
 			},
 			controller: function ($scope, $filter, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
@@ -43,17 +43,21 @@
 
 					// Set base value object if not defined
 					if (!scope.model[scope.options.key])
-						scope.model[scope.options.key] = { Values: [] };
+						scope.model.addAttribute(scope.options.key);
 
 					var fieldModel = scope.model[scope.options.key];
 
 					// If current language = default language and there are no values, create an empty value object
-					if (langConf.currentLanguage == langConf.defaultLanguage) {
-						if (fieldModel.Values.length === 0) {
-						    var defaultValue = eavDefaultValueService(scope.options);
-						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
-						}
+					if (fieldModel.Values.length === 0) {
+					    if (langConf.currentLanguage == langConf.defaultLanguage) {
+					        var defaultValue = eavDefaultValueService(scope.options);
+					        fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
+					    }
+					    else { // There are no values - value must be edited in default language first
+					        return;
+					    }
 					}
+
 
 				    // Assign default language if no dimension is set
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
@@ -63,13 +67,13 @@
 
 					// Decide which value to edit:
 					// 1. If there is a value with current dimension on it, use it
-					valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+					valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 						return v.Dimensions[langConf.currentLanguage] !== undefined;
 					})[0];
 
 					// 2. Use default language value
 					if (valueToEdit === undefined)
-						valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+						valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 							return v.Dimensions[langConf.defaultLanguage] !== undefined;
 						})[0];
 
@@ -97,15 +101,15 @@
 
 				// Handle language switch
 				scope.langConf = langConf; // Watch does only work on scope variables
-				scope.$watch('langConf.currentLanguage', function (newValue, oldValue) {
+				scope.$watch("langConf.currentLanguage", function (newValue, oldValue) {
 					if (oldValue === undefined || newValue == oldValue)
 						return;
 					initCurrentValue();
-					console.log('switched language from ' + oldValue + ' to ' + newValue);
+					console.log("switched language from " + oldValue + " to " + newValue);
 				});
 
 				// ToDo: Could cause performance issues (deep watch array)...
-				scope.$watch('model[options.key].Values', function(newValue, oldValue) {
+				scope.$watch("model[options.key].Values", function(newValue, oldValue) {
 					initCurrentValue();
 				}, true);
 
@@ -115,17 +119,17 @@
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationMenu', function() {
+	eavLocalization.directive("eavLocalizationMenu", function() {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			scope: {
-				fieldModel: '=fieldModel',
-				options: '=options',
-                value: '=value'
+				fieldModel: "=fieldModel",
+				options: "=options",
+                value: "=value"
 			},
-			templateUrl: 'localization/localization-menu.html',
+			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
-			controllerAs: 'vm',
+			controllerAs: "vm",
 			controller: function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
@@ -139,10 +143,10 @@
 
 				vm.infoMessage = function () {
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
-				        return 'auto (default)';
+				        return "auto (default)";
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
-				        return '';
-				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				        return "";
+				    return "in " + Object.keys($scope.value.Dimensions).join(", ");
 				};
 
 				vm.tooltip = function () {
@@ -151,9 +155,9 @@
 				    angular.forEach($scope.value.Dimensions, function (value, key) {
 				        (value ? usedIn : editableIn).push(key);
 				    });
-				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    var tooltip = "editable in " + editableIn.join(", ");
 				    if (usedIn.length > 0)
-				        tooltip += ', also used in ' + usedIn.join(', ');
+				        tooltip += ", also used in " + usedIn.join(", ");
 				    return tooltip;
 				};
 
@@ -166,7 +170,7 @@
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
 				    autoTranslate: function(languageKey) {
-				        alert('This action is not implemented yet.');
+				        alert("This action is not implemented yet.");
 				    },
 				    copyFrom: function (languageKey) {
 				        if ($scope.options.templateOptions.disabled)
@@ -190,10 +194,10 @@
 		};
 	});
 
-	eavLocalization.directive('eavTreatTimeUtc', function () {
+	eavLocalization.directive("eavTreatTimeUtc", function () {
 	    var directive = {
-	        restrict: 'A',
-	        require: ['ngModel'],
+	        restrict: "A",
+	        require: ["ngModel"],
             compile: compile,
 	        link: link
 	    };

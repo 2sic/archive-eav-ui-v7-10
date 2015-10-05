@@ -5,7 +5,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", function ($modalInstance, appId, pipelineService, eavAdminDialogs) {
+	controller("PipelineManagement", function ($modalInstance, appId, pipelineService, eavAdminDialogs, eavConfig) {
 	    var vm = this;
         vm.appId = appId;
 
@@ -46,12 +46,16 @@ angular.module("PipelineManagement", [
         };
 
         vm.add = function add() {
-            eavAdminDialogs.openItemNew(pipelineService.dataPipelineAttributeSetId, vm.refresh);
+            var items = [{
+                    ContentTypeName: "DataPipeline",
+                    Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
+                }];
+            eavAdminDialogs.openEditItems(items, vm.refresh);
         };
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
-        };
+        }; 
 
         vm.design = function design(item) {
             return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);

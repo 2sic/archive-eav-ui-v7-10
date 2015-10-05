@@ -15,6 +15,8 @@ namespace ToSic.Eav.Serializers
         public bool IncludeGuid { get; set; }
         public bool IncludePublishingInfo { get; set; }
 
+        public bool IncludeMetadata { get; set; }
+
         public bool IncludeAllEditingInfos { get; set; }
         #endregion
 
@@ -135,6 +137,12 @@ namespace ToSic.Eav.Serializers
                     {
                         entity.GetPublished().RepositoryId, 
                     });
+            }
+
+            if (IncludeMetadata)
+            {
+                if(entity.Metadata.HasMetadata)
+                    entityValues.Add("Metadata", entity.Metadata);
             }
 
             if (!entityValues.ContainsKey("Title"))

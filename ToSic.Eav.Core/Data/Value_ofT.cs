@@ -46,7 +46,7 @@ namespace ToSic.Eav.Data
             }
         }
 
-        public object ObjectValue
+        public object SerializableObject
         {
             get { return ((IValue<T>)this).TypedContents; }
         }

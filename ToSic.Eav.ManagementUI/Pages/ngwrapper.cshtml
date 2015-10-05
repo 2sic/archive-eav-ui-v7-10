@@ -17,12 +17,9 @@
     @*Only load jQuery & jsPlumb for the pipeline designer, others don't need it and it's much faster!*@
     @if (ng == "pipeline-designer")
     {
-        <script src="/dist/lib/pipeline/set.min.js"></script>
-        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+        <script src="/dist/lib/pipeline/jq.min.js"></script>
     }
 
-    @* ToDo: Move to dist folder? *@
-    <script src="~/EAV/js/src/eav.js"></script>
 
     @*Default Set / Standard Components for Admin UI*@
     <script src="/dist/lib/angular/set.min.js"></script>
@@ -31,8 +28,8 @@
     <link rel="stylesheet" href="/dist/lib/angular/set.min.css" />
 
     @* Default Set / re-used components *@
-    <script src="/eav/AngularServices/eav-configuration.js"></script>
-    <script src="/eav/AngularServices/eav4Ng.js"></script>
+    <script src="/eav/angularservices/eav-configuration.js"></script>
+    <script src="/eav/angularservices/eav4Ng.js"></script>
 
     <link rel="stylesheet" href="/dist/admin/eav-admin.min.css" />
 
@@ -49,6 +46,13 @@
     {
         <script src="/dist/admin/eav-admin.js"></script>
     }
+
+    @if (ng == "pipeline-designer")
+    {
+        <script src="/dist/lib/pipeline/set.min.js"></script>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+    }
+
 </head>
 <body>
 
@@ -70,7 +74,8 @@
         <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
     }
 
-
+    <!-- 2dm - not sure if I need this - just found it in the pipeline designer -->
+    <!-- <toaster-container></toaster-container>-->
 
 
 </body>

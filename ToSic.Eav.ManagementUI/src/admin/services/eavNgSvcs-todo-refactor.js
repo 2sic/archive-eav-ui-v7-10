@@ -63,6 +63,14 @@ angular.module("eavNgSvcs", ["ng"])
 			return $http.get("eav/entities/getone", { params: { contentType: contentType, id: id, appId: appId, format: "multi-language" } });
 		};
 
+		svc.getManyForEditing = function (appId, items) {
+		    return $http.post("eav/entities/getmanyforediting", items, { params: { appId: appId } });
+		};
+
+		svc.saveMany = function (appId, items) {
+		    return $http.post("eav/entities/savemany", items, { params: { appId: appId } });
+		};
+
         svc.delete = function del(type, id) {
             return $http.delete("eav/entities/delete", {
                 params: {
@@ -76,11 +84,12 @@ angular.module("eavNgSvcs", ["ng"])
 		svc.newEntity = function(contentTypeName) {
 			return {
 				Id: null,
-				Guid: null,
+				Guid: generateUUID(),
 				Type: {
-					Name: contentTypeName
+					StaticName: contentTypeName
 				},
-				Attributes: {}
+				Attributes: {},
+                IsPublished: true
 			};
 		};
         
@@ -92,3 +101,14 @@ angular.module("eavNgSvcs", ["ng"])
     })
 
 ;
+
+// Generate Guid - code from http://stackoverflow.com/a/8809472
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+}

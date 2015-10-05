@@ -36,11 +36,21 @@
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
 
+
         vm.liveEval = function admin() {
             $translate("General.Questions.SystemInput").then(function (msg) {
                 var inp = prompt(msg);
                 if(inp)
                     eval(inp); // jshint ignore:line
+            });
+        };
+
+        // this is to change the scope of the items being shown
+        vm.changeScope = function admin() {
+            $translate("ContentTypes.Buttons.ChangeScopeQuestion").then(function (msg) {
+                var inp = prompt(msg);
+                if (inp)
+                    svc.setScope(inp);
             });
         };
 

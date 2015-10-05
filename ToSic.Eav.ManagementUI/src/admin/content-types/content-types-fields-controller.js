@@ -1,11 +1,12 @@
-(function () { 
+/*jshint laxbreak:true */
+(function () {
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
         .controller("FieldsAdd", contentTypeFieldAddController)
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $translate) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $translate, eavConfig) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
@@ -49,16 +50,23 @@
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
-            var exists = item.Metadata[metadataType] !== undefined;
+            // assemble an array of 2 items for editing
+            var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
+            eavAdminDialogs.openEditItems(items, svc.liveListReload);
+        };
 
-            if (exists) {
-                eavAdminDialogs.openItemEditWithEntityId(
-                    item.Metadata[metadataType].Id,
-                    svc.liveListReload);
-            } else {
-                eavAdminDialogs.openMetadataNew(appId, "attribute", item.Id, '@' + metadataType,
-                    svc.liveListReload);
-            }
+        vm.createItemDefinition = function createItemDefinition(item, metadataType) {
+            return item.Metadata[metadataType] !== undefined
+                ? { EntityId: item.Metadata[metadataType].Id, Title: "General" }  // if defined, return the entity-number to edit
+                : {
+                    ContentTypeName: "@" + metadataType,        // otherwise the content type for new-assegnment
+                    Metadata: {
+                        Key: item.Id,
+                        KeyType: "number",
+                        TargetType: eavConfig.metadataOfAttribute
+                    },
+                    Title: metadataType
+                };      
         };
     }
 

@@ -119,10 +119,17 @@ namespace ToSic.Eav.BLL
                                      e.EntityID,
                                      e.EntityGUID,
                                      e.AttributeSetID,
-                                     e.KeyGuid,
-                                     e.KeyNumber,
-                                     e.KeyString,
-                                     e.AssignmentObjectTypeID,
+                                     Metadata = new Metadata
+                                     {
+                                         TargetType = e.AssignmentObjectTypeID,
+                                         KeyGuid = e.KeyGuid,
+                                         KeyNumber = e.KeyNumber,
+                                         KeyString = e.KeyString
+                                     },
+                                     //e.KeyGuid,
+                                     //e.KeyNumber,
+                                     //e.KeyString,
+                                     //e.AssignmentObjectTypeID,
                                      e.IsPublished,
                                      e.PublishedEntityId,
                                      Modified = e.ChangeLogModified.Timestamp,
@@ -167,7 +174,7 @@ namespace ToSic.Eav.BLL
             foreach (var e in entitiesValues)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetID];
-                var entityModel = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.AssignmentObjectTypeID, contentType, e.IsPublished, relationships, e.Modified);
+                var entityModel = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified);
 
                 var entityAttributes = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
 
@@ -191,41 +198,41 @@ namespace ToSic.Eav.BLL
                 #region Add metadata-lists based on AssignmentObjectTypes
 
                 // unclear why #1 is handled in a special way - why should this not be cached? I believe 1 means no specific assignment
-                if (e.AssignmentObjectTypeID != 1 && !entitiesOnly)
+                if (e.Metadata.HasMetadata && !entitiesOnly)
                 {
                     // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
-                    if (e.KeyGuid.HasValue)
+                    if (e.Metadata.KeyGuid.HasValue)
                     {
                         // Ensure that this assignment-Type (like 4 = entity-assignment) already has a dictionary for storage
-                        if (!metadataForGuid.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-                            metadataForGuid.Add(e.AssignmentObjectTypeID, new Dictionary<Guid, IEnumerable<IEntity>>());
+                        if (!metadataForGuid.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                            metadataForGuid.Add(e.Metadata.TargetType, new Dictionary<Guid, IEnumerable<IEntity>>());
 
                         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
-                        if (!metadataForGuid[e.AssignmentObjectTypeID].ContainsKey(e.KeyGuid.Value)) // ensure Guid
-                            metadataForGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value] = new List<IEntity>();
+                        if (!metadataForGuid[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyGuid.Value)) // ensure Guid
+                            metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value] = new List<IEntity>();
 
                         // Now all containers must exist, add this item
-                        ((List<IEntity>)metadataForGuid[e.AssignmentObjectTypeID][e.KeyGuid.Value]).Add(entityModel);
+                        ((List<IEntity>)metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value]).Add(entityModel);
                     }
-                    if (e.KeyNumber.HasValue)
+                    if (e.Metadata.KeyNumber.HasValue)
                     {
-                        if (!metadataForNumber.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-                            metadataForNumber.Add(e.AssignmentObjectTypeID, new Dictionary<int, IEnumerable<IEntity>>());
+                        if (!metadataForNumber.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                            metadataForNumber.Add(e.Metadata.TargetType, new Dictionary<int, IEnumerable<IEntity>>());
 
-                        if (!metadataForNumber[e.AssignmentObjectTypeID].ContainsKey(e.KeyNumber.Value)) // ensure Guid
-                            metadataForNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value] = new List<IEntity>();
+                        if (!metadataForNumber[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyNumber.Value)) // ensure Guid
+                            metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value] = new List<IEntity>();
 
-                        ((List<IEntity>)metadataForNumber[e.AssignmentObjectTypeID][e.KeyNumber.Value]).Add(entityModel);
+                        ((List<IEntity>)metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value]).Add(entityModel);
                     }
-                    if (!string.IsNullOrEmpty(e.KeyString))
+                    if (!string.IsNullOrEmpty(e.Metadata.KeyString))
                     {
-                        if (!metadataForString.ContainsKey(e.AssignmentObjectTypeID)) // ensure AssignmentObjectTypeID
-                            metadataForString.Add(e.AssignmentObjectTypeID, new Dictionary<string, IEnumerable<IEntity>>());
+                        if (!metadataForString.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                            metadataForString.Add(e.Metadata.TargetType, new Dictionary<string, IEnumerable<IEntity>>());
 
-                        if (!metadataForString[e.AssignmentObjectTypeID].ContainsKey(e.KeyString)) // ensure Guid
-                            metadataForString[e.AssignmentObjectTypeID][e.KeyString] = new List<IEntity>();
+                        if (!metadataForString[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyString)) // ensure Guid
+                            metadataForString[e.Metadata.TargetType][e.Metadata.KeyString] = new List<IEntity>();
 
-                        ((List<IEntity>)metadataForString[e.AssignmentObjectTypeID][e.KeyString]).Add(entityModel);
+                        ((List<IEntity>)metadataForString[e.Metadata.TargetType][e.Metadata.KeyString]).Add(entityModel);
                     }
                 }
 
@@ -285,9 +292,10 @@ namespace ToSic.Eav.BLL
             {
                 try
                 {
-                    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], relationship.ChildEntityID.HasValue ? entities[relationship.ChildEntityID.Value] : null));
+                    if(entities.ContainsKey(relationship.ParentEntityID) && (!relationship.ChildEntityID.HasValue || entities.ContainsKey(relationship.ChildEntityID.Value)))
+                        relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityID], relationship.ChildEntityID.HasValue ? entities[relationship.ChildEntityID.Value] : null));
                 }
-                catch (KeyNotFoundException) { } // may occour if not all entities are loaded
+                catch (KeyNotFoundException) { } // may occour if not all entities are loaded - edited 2rm 2015-09-29: Should not occur anymore
             }
             #endregion
 

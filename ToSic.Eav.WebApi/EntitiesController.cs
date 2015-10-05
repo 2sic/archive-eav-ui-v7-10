@@ -25,8 +25,9 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            var found = InitialDS.List[id];
-            if (contentType != null && found.Type.Name != contentType)
+            // must use cache, because it shows both published  unpublished
+            var found = DataSource.GetCache(null, appId).List[id];
+            if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
         }
@@ -36,7 +37,6 @@ namespace ToSic.Eav.WebApi
             var found = GetEntityOrThrowError(contentType, id, appId);
             return Serializer.Prepare(found);
 	    }
-
 
         /// <summary>
 		/// Get all Entities of specified Type
@@ -62,6 +62,7 @@ namespace ToSic.Eav.WebApi
 
             Serializer.IncludeGuid = true;
 	        Serializer.IncludePublishingInfo = true;
+	        Serializer.IncludeMetadata = true;
 
             return Serializer.Prepare(typeFilter.LightList);
         }
@@ -92,7 +93,7 @@ namespace ToSic.Eav.WebApi
 	    //    return typeFilter.LightList.Count();
 	    //}
 
-        public dynamic /* Formats.EntityWithLanguages */ GetOne(int appId, string contentType, int id, string format = "multi-language")
+        public EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
         {
             switch (format)
             {
@@ -100,21 +101,24 @@ namespace ToSic.Eav.WebApi
                     Serializer.IncludeAllEditingInfos = true;
 
                     var found = GetEntityOrThrowError(contentType, id, appId);
-
+                    var maybeDraft = found.GetDraft();
+                    if (maybeDraft != null)
+                        found = maybeDraft;
                     //return Serializer.Prepare(found);
 
-                    var ce = new Formats.EntityWithLanguages()
+                    var ce = new EntityWithLanguages()
                     {
                         AppId = appId,
                         Id = found.EntityId,
                         Guid = found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
+                        IsPublished = found.IsPublished,
                         TitleAttributeName = found.Title == null ? null : found.Title.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                             {
                                 Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
                                 {
-                                    Value = v.ObjectValue,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
+                                    Value = v.SerializableObject,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
                                     Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
                                 }).ToArray()
                             }
@@ -126,13 +130,45 @@ namespace ToSic.Eav.WebApi
             }
         }
 
+        [HttpPost]
+        public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
+        {
+            return items.Select(p => new EntityWithHeader
+            {
+                Header = p,
+                Entity = p.EntityId != 0 ? GetOne(appId, p.ContentTypeName, p.EntityId) : null
+            }).ToList();
+        }
 
-	    [HttpPost]
-	    public bool Save(EntityWithLanguages newData, [FromUri]int appId)
-	    {
+
+        #endregion
+
+
+        [HttpPost]
+        public bool SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
+        { 
+            var convertedItems = new List<ImportEntity>();
+            foreach (var entity in items)
+                convertedItems.Add(CreateImportEntity(entity, appId));
+
+            // Run import
+            var import = new Import.Import(null, appId, User.Identity.Name, 
+                leaveExistingValuesUntouched: false, 
+                preserveUndefinedValues: false,
+                preventDraftSave: false);
+            import.RunImport(null, convertedItems.ToArray(), true, true);
+
+            return true;
+        }
+
+
+        private static ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
+        {
+            var newData = editInfo.Entity;
+            var metadata = editInfo.Header.Metadata;
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
-            if (newData.Id == 0)
+            if (newData.Id == 0 && newData.Guid == Guid.Empty)
             {   // New entity
                 importEntity.EntityGuid = Guid.NewGuid();
             }
@@ -140,27 +176,33 @@ namespace ToSic.Eav.WebApi
             {
                 importEntity.EntityGuid = newData.Guid;
             }
-            importEntity.IsPublished = true; // todo 2rm - newData.IsPublished;
+            importEntity.IsPublished = newData.IsPublished;
                                              // todo 2rm - date picker shouldn't have time zones (maybe talk to 2tk before fixing the  bug)
 
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
 
+            importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
+
             // Metadata if we have
-            if (newData.Metadata != null && newData.Metadata.HasMetadata)
+            if (metadata != null && metadata.HasMetadata)
             {
-                importEntity.AssignmentObjectTypeId = newData.Metadata.TargetType;
-                importEntity.KeyGuid = newData.Metadata.KeyGuid;
-                importEntity.KeyNumber = newData.Metadata.KeyNumber;
-                importEntity.KeyString = newData.Metadata.KeyString;
+                importEntity.AssignmentObjectTypeId = metadata.TargetType;
+                importEntity.KeyGuid = metadata.KeyGuid;
+                importEntity.KeyNumber = metadata.KeyNumber;
+                importEntity.KeyString = metadata.KeyString;
             }
 
             // Attributes
             importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
-            var attributeSet = EavDataController.Instance(appId: appId).AttribSet.GetAttributeSet(newData.Type.StaticName);
+
+            // throw new Exception("error - must get cache to load correct cache first");
+            var attributeSet = DataSource.GetCache(null, appId).GetContentType(newData.Type.StaticName);
+            
             foreach (var attribute in newData.Attributes)
             {
-                var attributeType = attributeSet.GetAttributeByName(attribute.Key).Type;
+                var attDef = attributeSet.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
+                var attributeType = attDef.Type;
 
                 foreach (var value in attribute.Value.Values)
                 {
@@ -178,14 +220,10 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            // Run import
-            var import = new Import.Import(null, appId, User.Identity.Name, leaveExistingValuesUntouched: false, preserveUndefinedValues: false);
-            import.RunImport(null, new ImportEntity[] { importEntity }, true, true);
+            return importEntity;
+        }
 
-            return true;
-	    }
-
-        #endregion
+        
 
 
         #region Delete calls

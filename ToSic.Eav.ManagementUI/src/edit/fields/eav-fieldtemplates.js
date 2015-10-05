@@ -1,29 +1,29 @@
 ﻿
 (function() {
-	'use strict';
+	"use strict";
 
 	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
 
-	var eavFieldTemplates = angular.module('eavFieldTemplates', ['formly', 'formlyBootstrap', 'ui.bootstrap', 'eavLocalization', 'eavEditTemplates'], function (formlyConfigProvider) {
+	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates"], function (formlyConfigProvider) {
 
 	    formlyConfigProvider.setType({
-	        name: 'string-default',
-	        template: '<input class="form-control" ng-model="value.Value">',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        name: "string-default",
+	        template: "<input class=\"form-control\" ng-model=\"value.Value\">",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-dropdown',
-	        template: '<select class="form-control" ng-model="value.Value"></select>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-dropdown",
+	        template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: function defaultOptions(options) {
 				
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace('\r', '').split('\n');
+	                o = o.replace("\r", "").split("\n");
 	                o = o.map(function (e, i) {
-	                    var s = e.split(':');
+	                    var s = e.split(":");
 	                    return {
 	                        name: s[0],
 	                        value: s[1] ? s[1] : s[0]
@@ -34,10 +34,10 @@
 
 	            function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
 
-	            var ngOptions = options.templateOptions.ngOptions || 'option[to.valueProp || \'value\'] as option[to.labelProp || \'name\'] group by option[to.groupProp || \'group\'] for option in to.options';
+	            var ngOptions = options.templateOptions.ngOptions || "option[to.valueProp || 'value'] as option[to.labelProp || 'name'] group by option[to.groupProp || 'group'] for option in to.options";
 	            return {
 	                ngModelAttrs: _defineProperty({}, ngOptions, {
-	                    value: 'ng-options'
+	                    value: "ng-options"
 	                })
 	            };
 
@@ -45,79 +45,79 @@
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-textarea',
-	        template: '<textarea class="form-control" ng-model="value.Value"></textarea>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-textarea",
+	        template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.String.RowCount}}': { value: 'rows' },
-	                cols: { attribute: 'cols' }
+	                '{{to.settings.String.RowCount}}': { value: "rows" },
+	                cols: { attribute: "cols" }
 	            }
 	        }
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'number-default',
-	        template: '<input type="number" class="form-control" ng-model="value.Value">{{vm.isGoogleMap}}',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "number-default",
+	        template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.Number.Min}}': { value: 'min' },
-	                '{{to.settings.Number.Max}}': { value: 'max' },
-	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: 'pattern' }
+	                '{{to.settings.Number.Min}}': { value: "min" },
+	                '{{to.settings.Number.Max}}': { value: "max" },
+	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: "pattern" }
 	            }
 	        },
-	        controller: 'FieldTemplate-NumberCtrl as vm'
+	        controller: "FieldTemplate-NumberCtrl as vm"
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'boolean-default',
+	        name: "boolean-default",
 	        template: "<div class=\"checkbox\">\n\t<label>\n\t\t<input type=\"checkbox\"\n           class=\"formly-field-checkbox\"\n\t\t       ng-model=\"value.Value\">\n\t\t{{to.label}}\n\t\t{{to.required ? '*' : ''}}\n\t</label>\n</div>\n",
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'datetime-default',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
-	        template: '<div>' +
-                '<div class="input-group">' +
-                    '<div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;">' +
-                        '<i class="glyphicon glyphicon-calendar"></i>' +
-                    '</div>' +
-                    '<input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />' +
-				    '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>' +
-                '</div>',
+	        name: "datetime-default",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        template: "<div>" +
+                "<div class=\"input-group\">" +
+                    "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
+                        "<i class=\"glyphicon glyphicon-calendar\"></i>" +
+                    "</div>" +
+                    "<input class=\"form-control\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup />" +
+				    "<timepicker ng-show=\"to.settings.DateTime.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
+                "</div>",
 	        defaultOptions: {
 	            templateOptions: {
 	                datepickerOptions: {},
-	                datepickerPopup: 'dd.MM.yyyy'
+	                datepickerPopup: "dd.MM.yyyy"
 	            }
 	        }
 		});
 
 		formlyConfigProvider.setType({
-		    name: 'entity-default',
-		    templateUrl: 'fields/templates/entity-default.html',
-		    wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-		    controller: 'FieldTemplate-EntityCtrl'
+		    name: "entity-default",
+		    templateUrl: "fields/templates/entity-default.html",
+		    wrapper: ["bootstrapLabel", "bootstrapHasError"],
+		    controller: "FieldTemplate-EntityCtrl"
 		});
 
 	});
 
-	eavFieldTemplates.controller('FieldTemplate-NumberCtrl', function () {
+	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
 		var vm = this;
 		// ToDo: Implement Google Map
 	});
 
 
-	eavFieldTemplates.controller('FieldTemplate-EntityCtrl', function ($scope, $http, $filter, $modal, eavManagementDialog) {
+	eavFieldTemplates.controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $modal, eavManagementDialog) {
 
 	    if (!$scope.to.settings.Entity)
 	        $scope.to.settings.Entity = {};
 
 	    $scope.availableEntities = [];
 
-	    if ($scope.model[$scope.options.key] === null || $scope.model[$scope.options.key].Values[0].Value === "")
+	    if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
 	        $scope.model[$scope.options.key] = { Values: [{ Value: [], Dimensions: {} }] };
 
 	    $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
@@ -137,12 +137,12 @@
 	    $scope.openNewEntityDialog = function () {
 
 	        var modalInstance = $modal.open({
-	            template: '<div style="padding:20px;"><edit-content-group edit="vm.edit"></edit-content-group></div>',
+	            template: "<div style=\"padding:20px;\"><edit-content-group edit=\"vm.edit\"></edit-content-group></div>",
 	            controller: function (entityType) {
 	                var vm = this;
 	                vm.edit = { contentTypeName: entityType };
 	            },
-	            controllerAs: 'vm',
+	            controllerAs: "vm",
 	            resolve: {
 	                entityType: function () {
 	                    return $scope.to.settings.Entity.EntityType;
@@ -158,8 +158,8 @@
 
 	    $scope.getAvailableEntities = function () {
 	        $http({
-	            method: 'GET',
-	            url: 'eav/EntityPicker/getavailableentities',
+	            method: "GET",
+	            url: "eav/EntityPicker/getavailableentities",
 	            params: {
 	                contentTypeName: $scope.to.settings.Entity.EntityType,
 	                appId: eavManagementDialog.appId
@@ -171,7 +171,7 @@
 	    };
 
 	    $scope.getEntityText = function (entityId) {
-	        var entities = $filter('filter')($scope.availableEntities, { Value: entityId });
+	        var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
 	        return entities.length > 0 ? entities[0].Text : "(Entity not found)";
 	    };
 

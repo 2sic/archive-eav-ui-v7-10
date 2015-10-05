@@ -16,8 +16,9 @@ var $eavUIConfig = {
 // if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
     angular.module("EavConfiguration", [])
         .constant("languages", $eavUIConfig.languages)
-        .factory("eavConfig", function($location) {
+        .factory("eavConfig", function ($location) {
 
+            // todo: this shouldn't be in use any more
             var getItemFormUrl = function(mode, params, preventRedirect) {
                 params.ManagementMode = mode + "Item";
                 if (!params.ReturnUrl)
@@ -34,17 +35,7 @@ var $eavUIConfig = {
                     defaultParams: {}
                 },
                 dialogClass: "eavDialog",
-                itemForm: {
-                    getNewItemUrl: function(attributeSetId, assignmentObjectTypeId, params, preventRedirect, prefill) {
-                        if (prefill)
-                            params.prefill = JSON.stringify(prefill);
-                        return getItemFormUrl("New", angular.extend({ AttributeSetId: attributeSetId, AssignmentObjectTypeId: assignmentObjectTypeId }, params), preventRedirect);
-                    },
-                    getEditItemUrl: function(entityId, params, preventRedirect) {
-                        return getItemFormUrl("Edit", angular.extend({ EntityId: entityId }, params), preventRedirect);
-                    }
-                },
-                adminUrls: { // $eavUIConfig.urls,
+                adminUrls: { 
                     pipelineDesigner: function (appId, pipelineId) {
                         return "/Pages/ngwrapper.cshtml?ng=pipeline-designer&AppId=" + appId + "&pipelineId=" + pipelineId;
                     }
@@ -52,9 +43,6 @@ var $eavUIConfig = {
                 languages: $eavUIConfig.languages,
 
                 pipelineDesigner: {
-                    //getUrl: function(appId, pipelineId) {
-                    //    return '/Pages/PipelineDesigner.aspx?AppId=' + appId + '&PipelineId=' + pipelineId;
-                    //},
                     outDataSource: {
                         className: "SexyContentTemplate",
                         in: ["Content", "Presentation", "ListContent", "ListPresentation"],
@@ -66,7 +54,7 @@ var $eavUIConfig = {
                         dataSources: [
                             {
                                 entityGuid: "unsaved1",
-                                partAssemblyAndType: "ToSic.Eav.DataSources.App, ToSic.Eav",
+                                partAssemblyAndType: "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
                                 visualDesignerData: { Top: 300, Left: 440 }
                             }
                         ],
@@ -77,12 +65,11 @@ var $eavUIConfig = {
                             { From: "unsaved1", Out: "Default", To: "Out", In: "ListPresentation" }
                         ]
                     },
-                    testParameters: null
+                    testParameters: "[Demo:Demo]=true"
                 },
                 metadataOfEntity: 4,
                 metadataOfAttribute: 2,
 
-                // new
                 contentType: {
                     defaultScope: null 
                 }

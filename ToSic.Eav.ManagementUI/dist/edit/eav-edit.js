@@ -1,146 +1,44 @@
-/* global angular */
+/* Main object with dependencies, used in wrappers and other places */
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
+	angular.module("eavEditEntity", [
+        "formly",
+        "ui.bootstrap",
+        "eavFieldTemplates",
+        "eavNgSvcs",
+        "EavServices",
+        "eavEditTemplates"
+	]);
 
-	// Main directive that renders an entity edit form
-	app.directive('eavEditEntity', function() {
-		return {
-			templateUrl: 'edit-entity.html',
-			restrict: 'E',
-			scope: {
-				contentTypeName: '@contentTypeName',
-				entityId: '@entityId',
-				registerEditControl: '=registerEditControl'
-			},
-			controller: 'EditEntityCtrl',
-			controllerAs: 'vm'
-		};
-	});
-
-	// The controller for the main form directive
-    app.controller('EditEntityCtrl', ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "entitiesSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
-
-		var vm = this;
-		vm.editInDefaultLanguageFirst = function () {
-			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
-		};
-
-		vm.save = function () {
-		    entitiesSvc.save(appId, vm.entity);
-		};
-
-		// The control object is available outside the directive
-		// Place functions here that should be available from the parent of the directive
-		vm.control = {
-			isValid: function() { return vm.form.$valid; },
-			save: vm.save
-		};
-
-		// Register this control in the parent control
-		if($scope.registerEditControl)
-			$scope.registerEditControl(vm.control);
-
-		vm.model = null;
-		vm.entity = null;
-
-		vm.formFields = null;
-
-
-		var loadContentType = function () {
-
-		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.Name }).getFields()
-			.then(function (result) {
-			    vm.debug = result;
-
-			    // Transform EAV content type configuration to formFields (formly configuration)
-			    angular.forEach(result.data, function (e, i) {
-
-			        if (e.Metadata.All === undefined)
-			            e.Metadata.All = {};
-
-			        vm.formFields.push({
-			            key: e.StaticName,
-			            type: getType(e),
-			            templateOptions: {
-			                required: !!e.Metadata.All.Required,
-			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
-			                description: e.Metadata.All.Notes,
-			                settings: e.Metadata
-			            },
-			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
-			            //defaultValue: parseDefaultValue(e)
-			            expressionProperties: {
-			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
-			            }
-			        });
-			    });
-			});
-		};
-
-	    // Load existing entity if defined
-		
-		if (!!$scope.entityId) {
-		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
-                .then(function (result) {
-                    vm.entity = enhanceEntity(result.data);
-                    loadContentType();
-                });
-		} else {
-		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
-		    loadContentType();
-		}
-
-		// Returns the field type for an attribute configuration
-		var getType = function(attributeConfiguration) {
-			var e = attributeConfiguration;
-			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String !== undefined ? e.Metadata.String.InputType : null;
-
-			subType = subType ? subType.toLowerCase() : null;
-
-			// Special case: override subtype for string-textarea
-			if (type === 'string' && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
-				subType = 'textarea';
-
-			// Use subtype 'default' if none is specified - or type does not exist
-			if (!subType || !formlyConfig.getType(type + '-' + subType))
-				subType = 'default';
-
-			return (type + '-' + subType);
-		};
-	}]);
-    
-	
 
 })();
 
 (function() {
-	'use strict';
+	"use strict";
 
 	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
 
-	var eavFieldTemplates = angular.module('eavFieldTemplates', ['formly', 'formlyBootstrap', 'ui.bootstrap', 'eavLocalization', 'eavEditTemplates'], ["formlyConfigProvider", function (formlyConfigProvider) {
+	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates"], ["formlyConfigProvider", function (formlyConfigProvider) {
 
 	    formlyConfigProvider.setType({
-	        name: 'string-default',
-	        template: '<input class="form-control" ng-model="value.Value">',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        name: "string-default",
+	        template: "<input class=\"form-control\" ng-model=\"value.Value\">",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-dropdown',
-	        template: '<select class="form-control" ng-model="value.Value"></select>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-dropdown",
+	        template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: function defaultOptions(options) {
 				
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace('\r', '').split('\n');
+	                o = o.replace("\r", "").split("\n");
 	                o = o.map(function (e, i) {
-	                    var s = e.split(':');
+	                    var s = e.split(":");
 	                    return {
 	                        name: s[0],
 	                        value: s[1] ? s[1] : s[0]
@@ -151,10 +49,10 @@
 
 	            function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
 
-	            var ngOptions = options.templateOptions.ngOptions || 'option[to.valueProp || \'value\'] as option[to.labelProp || \'name\'] group by option[to.groupProp || \'group\'] for option in to.options';
+	            var ngOptions = options.templateOptions.ngOptions || "option[to.valueProp || 'value'] as option[to.labelProp || 'name'] group by option[to.groupProp || 'group'] for option in to.options";
 	            return {
 	                ngModelAttrs: _defineProperty({}, ngOptions, {
-	                    value: 'ng-options'
+	                    value: "ng-options"
 	                })
 	            };
 
@@ -162,79 +60,79 @@
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'string-textarea',
-	        template: '<textarea class="form-control" ng-model="value.Value"></textarea>',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "string-textarea",
+	        template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.String.RowCount}}': { value: 'rows' },
-	                cols: { attribute: 'cols' }
+	                '{{to.settings.String.RowCount}}': { value: "rows" },
+	                cols: { attribute: "cols" }
 	            }
 	        }
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'number-default',
-	        template: '<input type="number" class="form-control" ng-model="value.Value">{{vm.isGoogleMap}}',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
+	        name: "number-default",
+	        template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
 	        defaultOptions: {
 	            ngModelAttrs: {
-	                '{{to.settings.Number.Min}}': { value: 'min' },
-	                '{{to.settings.Number.Max}}': { value: 'max' },
-	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: 'pattern' }
+	                '{{to.settings.Number.Min}}': { value: "min" },
+	                '{{to.settings.Number.Max}}': { value: "max" },
+	                '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: "pattern" }
 	            }
 	        },
-	        controller: 'FieldTemplate-NumberCtrl as vm'
+	        controller: "FieldTemplate-NumberCtrl as vm"
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'boolean-default',
+	        name: "boolean-default",
 	        template: "<div class=\"checkbox\">\n\t<label>\n\t\t<input type=\"checkbox\"\n           class=\"formly-field-checkbox\"\n\t\t       ng-model=\"value.Value\">\n\t\t{{to.label}}\n\t\t{{to.required ? '*' : ''}}\n\t</label>\n</div>\n",
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization']
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"]
 	    });
 
 	    formlyConfigProvider.setType({
-	        name: 'datetime-default',
-	        wrapper: ['bootstrapLabel', 'bootstrapHasError', 'eavLocalization'],
-	        template: '<div>' +
-                '<div class="input-group">' +
-                    '<div class="input-group-addon" style="cursor:pointer;" ng-click="to.isOpen = true;">' +
-                        '<i class="glyphicon glyphicon-calendar"></i>' +
-                    '</div>' +
-                    '<input class="form-control" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />' +
-				    '<timepicker ng-show="to.settings.DateTime.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>' +
-                '</div>',
+	        name: "datetime-default",
+	        wrapper: ["bootstrapLabel", "bootstrapHasError", "eavLocalization"],
+	        template: "<div>" +
+                "<div class=\"input-group\">" +
+                    "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
+                        "<i class=\"glyphicon glyphicon-calendar\"></i>" +
+                    "</div>" +
+                    "<input class=\"form-control\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup />" +
+				    "<timepicker ng-show=\"to.settings.DateTime.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
+                "</div>",
 	        defaultOptions: {
 	            templateOptions: {
 	                datepickerOptions: {},
-	                datepickerPopup: 'dd.MM.yyyy'
+	                datepickerPopup: "dd.MM.yyyy"
 	            }
 	        }
 		});
 
 		formlyConfigProvider.setType({
-		    name: 'entity-default',
-		    templateUrl: 'fields/templates/entity-default.html',
-		    wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-		    controller: 'FieldTemplate-EntityCtrl'
+		    name: "entity-default",
+		    templateUrl: "fields/templates/entity-default.html",
+		    wrapper: ["bootstrapLabel", "bootstrapHasError"],
+		    controller: "FieldTemplate-EntityCtrl"
 		});
 
 	}]);
 
-	eavFieldTemplates.controller('FieldTemplate-NumberCtrl', function () {
+	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
 		var vm = this;
 		// ToDo: Implement Google Map
 	});
 
 
-	eavFieldTemplates.controller('FieldTemplate-EntityCtrl', ["$scope", "$http", "$filter", "$modal", "eavManagementDialog", function ($scope, $http, $filter, $modal, eavManagementDialog) {
+	eavFieldTemplates.controller("FieldTemplate-EntityCtrl", ["$scope", "$http", "$filter", "$modal", "eavManagementDialog", function ($scope, $http, $filter, $modal, eavManagementDialog) {
 
 	    if (!$scope.to.settings.Entity)
 	        $scope.to.settings.Entity = {};
 
 	    $scope.availableEntities = [];
 
-	    if ($scope.model[$scope.options.key] === null || $scope.model[$scope.options.key].Values[0].Value === "")
+	    if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
 	        $scope.model[$scope.options.key] = { Values: [{ Value: [], Dimensions: {} }] };
 
 	    $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
@@ -254,12 +152,12 @@
 	    $scope.openNewEntityDialog = function () {
 
 	        var modalInstance = $modal.open({
-	            template: '<div style="padding:20px;"><edit-content-group edit="vm.edit"></edit-content-group></div>',
+	            template: "<div style=\"padding:20px;\"><edit-content-group edit=\"vm.edit\"></edit-content-group></div>",
 	            controller: ["entityType", function (entityType) {
 	                var vm = this;
 	                vm.edit = { contentTypeName: entityType };
 	            }],
-	            controllerAs: 'vm',
+	            controllerAs: "vm",
 	            resolve: {
 	                entityType: function () {
 	                    return $scope.to.settings.Entity.EntityType;
@@ -275,8 +173,8 @@
 
 	    $scope.getAvailableEntities = function () {
 	        $http({
-	            method: 'GET',
-	            url: 'eav/EntityPicker/getavailableentities',
+	            method: "GET",
+	            url: "eav/EntityPicker/getavailableentities",
 	            params: {
 	                contentTypeName: $scope.to.settings.Entity.EntityType,
 	                appId: eavManagementDialog.appId
@@ -288,7 +186,7 @@
 	    };
 
 	    $scope.getEntityText = function (entityId) {
-	        var entities = $filter('filter')($scope.availableEntities, { Value: entityId });
+	        var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
 	        return entities.length > 0 ? entities[0].Text : "(Entity not found)";
 	    };
 
@@ -303,21 +201,228 @@
 	}]);
 
 })();
+/* global angular */
+(function () {
+    "use strict";
+
+    var app = angular.module("eavEditEntity");
+
+    // The controller for the main form directive
+    app.controller("EditEntities", ["appId", "$http", "$scope", "entitiesSvc", "uiNotification", function editEntityCtrl(appId, $http, $scope, entitiesSvc, uiNotification) {
+
+        var vm = this;
+        
+        vm.registeredControls = [];
+        vm.registerEditControl = function (control) {
+            vm.registeredControls.push(control);
+        };
+
+        vm.afterSaveEvent = $scope.afterSaveEvent;
+
+        vm.isValid = function () {
+            var valid = true;
+            angular.forEach(vm.registeredControls, function (e, i) {
+                if (!e.isValid())
+                    valid = false;
+            });
+            return valid;
+        };
+
+        vm.save = function () {
+            entitiesSvc.saveMany(appId, vm.items).then(vm.afterSaveEvent);
+        };
+
+        // todo: translate
+        vm.saveAndKeepOpen = function () {
+                uiNotification.note("Saving", "", true);
+            entitiesSvc.saveMany(appId, vm.items).then(function () {
+                uiNotification.note("Saved", "", true);
+            });
+        };
+        vm.items = null;
+
+        entitiesSvc.getManyForEditing(appId, $scope.itemList)
+            .then(function (result) {
+                vm.items = result.data;
+                angular.forEach(vm.items, function (v, i) {
+
+                    // If the entity is null, it does not exist yet. Create a new one
+                    if (!vm.items[i].Entity && !!vm.items[i].Header.ContentTypeName)
+                        vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header.ContentTypeName);
+
+                    vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
+                });
+                vm.willPublish = vm.items[0].Entity.IsPublished;
+            });
+
+        vm.willPublish = false;
+
+        vm.togglePublish = function() {
+            vm.willPublish = !vm.willPublish;
+            angular.forEach(vm.items, function(v, i) {
+                vm.items[i].Entity.IsPublished = vm.willPublish;
+            });
+        };
+
+
+    }]);
+
+
+
+})();
+
+(function () {
+    "use strict";
+
+    var app = angular.module("eavEditEntity");
+
+    app.directive("eavEditEntities", function () {
+        return {
+            templateUrl: "form/edit-many-entities.html",
+            restrict: "E",
+            scope: {
+                itemList: "=",
+                afterSaveEvent: "="
+            },
+            controller: "EditEntities",
+            controllerAs: "vm"
+        };
+    });
+
+
+})();
+
+(function () {
+	"use strict";
+
+	var app = angular.module("eavEditEntity"); 
+
+	// The controller for the main form directive
+    app.controller("EditEntityFormCtrl", ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc) {
+
+		var vm = this;
+		vm.editInDefaultLanguageFirst = function () {
+			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
+		};
+
+		// The control object is available outside the directive
+		// Place functions here that should be available from the parent of the directive
+		vm.control = {
+			isValid: function() { return vm.form.$valid; }
+		};
+
+		// Register this control in the parent control
+		if($scope.registerEditControl)
+			$scope.registerEditControl(vm.control);
+
+		vm.model = null;
+		vm.entity = $scope.entity;
+
+		vm.formFields = null;
+
+
+		var loadContentType = function () {
+
+		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.StaticName }).getFields()
+			.then(function (result) {
+			    vm.debug = result;
+
+			    // Transform EAV content type configuration to formFields (formly configuration)
+			    angular.forEach(result.data, function (e, i) {
+
+			        if (e.Metadata.All === undefined)
+			            e.Metadata.All = {};
+
+			        vm.formFields.push({
+			            key: e.StaticName,
+			            type: getType(e),
+			            templateOptions: {
+			                required: !!e.Metadata.All.Required,
+			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
+			                description: e.Metadata.All.Notes,
+			                settings: e.Metadata,
+                            header: $scope.header
+			            },
+			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
+			            expressionProperties: {
+			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
+			            }
+			        });
+			    });
+			});
+		};
+
+	    // Load existing entity if defined
+		if (vm.entity !== null)
+		    loadContentType();
+
+
+		// Returns the field type for an attribute configuration
+		var getType = function(attributeConfiguration) {
+			var e = attributeConfiguration;
+			var type = e.Type.toLowerCase();
+			var subType = e.Metadata.String !== undefined ? e.Metadata.String.InputType : null;
+
+			subType = subType ? subType.toLowerCase() : null;
+
+			// Special case: override subtype for string-textarea
+			if (type === "string" && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
+				subType = "textarea";
+
+			// Use subtype 'default' if none is specified - or type does not exist
+			if (!subType || !formlyConfig.getType(type + "-" + subType))
+				subType = "default";
+
+			return (type + "-" + subType);
+		};
+	}]);
+    
+	
+
+})();
+
+(function () {
+	"use strict";
+
+	angular.module("eavEditEntity")
+        .directive("eavEditEntityForm", function () {
+		return {
+		    templateUrl: "form/edit-single-entity.html",
+			restrict: "E",
+			scope: {
+			    entity: "=",
+                header: "=",
+				registerEditControl: "="
+			},
+			controller: "EditEntityFormCtrl",
+			controllerAs: "vm"
+		};
+	});
+	
+
+})();
 angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateCache) {
   'use strict';
-
-  $templateCache.put('edit-entity.html',
-    "<div ng-show=vm.editInDefaultLanguageFirst()>Please edit this in the default language first.</div><div ng-show=!vm.editInDefaultLanguageFirst()><formly-form ng-submit=vm.onSubmit() form=vm.form model=vm.entity.Attributes fields=vm.formFields></formly-form><a ng-click=\"vm.showDebug = !vm.showDebug;\">Debug</a><div ng-if=vm.showDebug><h3>Debug</h3><pre>{{vm.entity | json}}</pre><pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre></div></div>"
-  );
-
 
   $templateCache.put('fields/templates/entity-default.html',
     "<div class=eav-entityselect><div ui-tree=options data-empty-place-holder-enabled=false><ol ui-tree-nodes ng-model=chosenEntities><li ng-repeat=\"item in chosenEntities\" ui-tree-node class=eav-entityselect-item><div ui-tree-handle><span title=\"{{getEntityText(item) + ' (' + item + ')'}}\">{{getEntityText(item)}}</span> <a data-nodrag title=\"Remove this item\" ng-click=remove(this) class=eav-entityselect-item-remove>[remove]</a></div></li></ol></div><select class=\"eav-entityselect-selector form-control\" ng-model=selectedEntity ng-change=addEntity() ng-show=\"to.settings.Entity.AllowMultiValue || chosenEntities.length < 1\"><option value=\"\">-- choose --</option><option value=new ng-if=createEntityAllowed()>-- new --</option><option ng-repeat=\"item in availableEntities\" ng-disabled=\"chosenEntities.indexOf(item.Value) != -1\" value={{item.Value}}>{{item.Text}}</option></select></div>"
   );
 
 
+  $templateCache.put('form/edit-many-entities.html',
+    "<div ng-if=\"vm.items != null\"><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <button class=\"btn pull-right\"><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate\r" +
+    "\n" +
+    "}}\"></span></button> <button class=\"btn pull-right\" ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button></div>"
+  );
+
+
+  $templateCache.put('form/edit-single-entity.html',
+    "<div ng-show=vm.editInDefaultLanguageFirst()>Please edit this in the default language first.</div><div ng-show=!vm.editInDefaultLanguageFirst()><formly-form ng-submit=vm.onSubmit() form=vm.form model=vm.entity.Attributes fields=vm.formFields></formly-form><a ng-click=\"vm.showDebug = !vm.showDebug;\">Debug</a><div ng-if=vm.showDebug><h3>Debug</h3><pre>{{vm.entity | json}}</pre><pre>{{vm.debug | json}}</pre><pre>{{vm.formFields | json}}</pre></div></div>"
+  );
+
+
   $templateCache.put('localization/formly-localization-wrapper.html',
-    "<eav-localization-scope-control></eav-localization-scope-control><div ng-if=\"value !== null\"><eav-localization-menu field-model=model[options.key] options=options value=value></eav-localization-menu><formly-transclude></formly-transclude></div><p class=bg-info style=padding:12px ng-if=!value>Please create the value for <i>'{{to.label}}'</i> in the default language before translating it.</p>"
+    "<eav-localization-scope-control></eav-localization-scope-control><div ng-if=!!value><eav-localization-menu field-model=model[options.key] options=options value=value></eav-localization-menu><formly-transclude></formly-transclude></div><p class=bg-info style=padding:12px ng-if=!value>Please create the value for <i>'{{to.label}}'</i> in the default language before translating it.</p>"
   );
 
 
@@ -332,45 +437,45 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/edit-entity-wrapper.html',
-    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><div xng-controller=\"EditEntityWrapperCtrl as vm\"><eav-language-switcher></eav-language-switcher><eav-edit-entity content-type-name={{vm.contentTypeName}} entity-id={{vm.entityId}} register-edit-control=vm.registerEditControl></eav-edit-entity><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-primary submit-button\">Save</button></div></div>"
+    "<div class=modal-header><button class=\"btn pull-right\" type=button icon=remove ng-click=vm.close()></button><h3 class=modal-title>Edit entity</h3></div><div class=modal-body><eav-edit-entities item-list=vm.itemList after-save-event=vm.afterSave></eav-edit-entities></div>"
   );
 
 }]);
 
 
 (function () {
-	'use strict';
+	"use strict";
 
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module('eavLocalization', ['formly', "EavConfiguration"], ["formlyConfigProvider", function (formlyConfigProvider) {
+	var eavLocalization = angular.module("eavLocalization", ["formly", "EavConfiguration"], ["formlyConfigProvider", function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([
 			{
-				name: 'eavLocalization',
-				templateUrl: 'localization/formly-localization-wrapper.html'
+				name: "eavLocalization",
+				templateUrl: "localization/formly-localization-wrapper.html"
 			}
 		]);
 
 	}]);
 
-	eavLocalization.directive('eavLanguageSwitcher', function () {
+	eavLocalization.directive("eavLanguageSwitcher", function () {
 		return {
-			restrict: 'E',
-			templateUrl: 'localization/language-switcher.html',
+			restrict: "E",
+			templateUrl: "localization/language-switcher.html",
 			controller: ["$scope", "languages", function($scope, languages) {
 				$scope.languages = languages;
 			}]
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationScopeControl', function () {
+	eavLocalization.directive("eavLocalizationScopeControl", function () {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			transclude: true,
-			template: '',
+			template: "",
 			link: function (scope, element, attrs) {
 			},
 			controller: ["$scope", "$filter", "eavDefaultValueService", "languages", function ($scope, $filter, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
@@ -382,17 +487,21 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 					// Set base value object if not defined
 					if (!scope.model[scope.options.key])
-						scope.model[scope.options.key] = { Values: [] };
+						scope.model.addAttribute(scope.options.key);
 
 					var fieldModel = scope.model[scope.options.key];
 
 					// If current language = default language and there are no values, create an empty value object
-					if (langConf.currentLanguage == langConf.defaultLanguage) {
-						if (fieldModel.Values.length === 0) {
-						    var defaultValue = eavDefaultValueService(scope.options);
-						    fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
-						}
+					if (fieldModel.Values.length === 0) {
+					    if (langConf.currentLanguage == langConf.defaultLanguage) {
+					        var defaultValue = eavDefaultValueService(scope.options);
+					        fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
+					    }
+					    else { // There are no values - value must be edited in default language first
+					        return;
+					    }
 					}
+
 
 				    // Assign default language if no dimension is set
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
@@ -402,13 +511,13 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 					// Decide which value to edit:
 					// 1. If there is a value with current dimension on it, use it
-					valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+					valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 						return v.Dimensions[langConf.currentLanguage] !== undefined;
 					})[0];
 
 					// 2. Use default language value
 					if (valueToEdit === undefined)
-						valueToEdit = $filter('filter')(fieldModel.Values, function(v, i) {
+						valueToEdit = $filter("filter")(fieldModel.Values, function(v, i) {
 							return v.Dimensions[langConf.defaultLanguage] !== undefined;
 						})[0];
 
@@ -436,15 +545,15 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 				// Handle language switch
 				scope.langConf = langConf; // Watch does only work on scope variables
-				scope.$watch('langConf.currentLanguage', function (newValue, oldValue) {
+				scope.$watch("langConf.currentLanguage", function (newValue, oldValue) {
 					if (oldValue === undefined || newValue == oldValue)
 						return;
 					initCurrentValue();
-					console.log('switched language from ' + oldValue + ' to ' + newValue);
+					console.log("switched language from " + oldValue + " to " + newValue);
 				});
 
 				// ToDo: Could cause performance issues (deep watch array)...
-				scope.$watch('model[options.key].Values', function(newValue, oldValue) {
+				scope.$watch("model[options.key].Values", function(newValue, oldValue) {
 					initCurrentValue();
 				}, true);
 
@@ -454,17 +563,17 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		};
 	});
 
-	eavLocalization.directive('eavLocalizationMenu', function() {
+	eavLocalization.directive("eavLocalizationMenu", function() {
 		return {
-			restrict: 'E',
+			restrict: "E",
 			scope: {
-				fieldModel: '=fieldModel',
-				options: '=options',
-                value: '=value'
+				fieldModel: "=fieldModel",
+				options: "=options",
+                value: "=value"
 			},
-			templateUrl: 'localization/localization-menu.html',
+			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
-			controllerAs: 'vm',
+			controllerAs: "vm",
 			controller: ["$scope", "languages", function ($scope, languages) {
 				var vm = this;
 				vm.fieldModel = $scope.fieldModel;
@@ -478,10 +587,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 				vm.infoMessage = function () {
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
-				        return 'auto (default)';
+				        return "auto (default)";
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
-				        return '';
-				    return 'in ' + Object.keys($scope.value.Dimensions).join(', ');
+				        return "";
+				    return "in " + Object.keys($scope.value.Dimensions).join(", ");
 				};
 
 				vm.tooltip = function () {
@@ -490,9 +599,9 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				    angular.forEach($scope.value.Dimensions, function (value, key) {
 				        (value ? usedIn : editableIn).push(key);
 				    });
-				    var tooltip = 'editable in ' + editableIn.join(', ');
+				    var tooltip = "editable in " + editableIn.join(", ");
 				    if (usedIn.length > 0)
-				        tooltip += ', also used in ' + usedIn.join(', ');
+				        tooltip += ", also used in " + usedIn.join(", ");
 				    return tooltip;
 				};
 
@@ -505,7 +614,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
 				    autoTranslate: function(languageKey) {
-				        alert('This action is not implemented yet.');
+				        alert("This action is not implemented yet.");
 				    },
 				    copyFrom: function (languageKey) {
 				        if ($scope.options.templateOptions.disabled)
@@ -529,10 +638,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		};
 	});
 
-	eavLocalization.directive('eavTreatTimeUtc', function () {
+	eavLocalization.directive("eavTreatTimeUtc", function () {
 	    var directive = {
-	        restrict: 'A',
-	        require: ['ngModel'],
+	        restrict: "A",
+	        require: ["ngModel"],
             compile: compile,
 	        link: link
 	    };
@@ -555,6 +664,122 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 	    }
 	});
 })();
+
+
+// Note: the entity-reader is meant for admin-purposes. 
+// It does not try to do fallback, because the admin-UI MUST know the real data
+function enhanceEntity(entity) {
+    var enhancer = this; 
+
+    enhancer.enhanceWithCount = function (obj) {
+        obj.count = function () {
+            var key, count = 0;
+            for (key in this)
+                if (this.hasOwnProperty(key) && typeof this[key] != 'function')
+                    count++;
+            return count;
+        };
+    }; 
+
+    // this will enhance a Values with necessary methods
+    enhancer.enhanceVs = function (vs) {
+        vs.hasLanguage = function (language) { return this.Dimensions.hasOwnProperty(language); };
+        vs.setLanguage = function (language, shareMode) { this.Dimensions[language] = shareMode; };
+        vs.languageMode = function(language) { return (this.hasLanguage(language)) ? this.Dimensions[language] : null; };
+
+        // ToDo: Fix enhance dimensions - or use alternative Object.keys(vs.Dimensions).length
+        //if(typeof vs.Dimensions != "undefined")
+            //enhancer.enhanceWithCount(vs.Dimensions);
+        return vs;
+    };
+
+    // this will enhance an attribute
+    enhancer.enhanceAtt = function(att) {
+        att.getVsWithLanguage = function(language) {
+            // try to find it based on the language - it then has a property matching the language
+            for (var v = 0; v < this.Values.length; v++)
+                if (this.Values[v].hasLanguage(language))
+                    return this.Values[v];
+
+            // if we don't find it, we must report it back as such
+            return null;
+        };
+
+        att.setLanguageToVs = function(vs, language, shareMode) {
+            // check if it's already there, if yes, just ensure shareMode, then done
+            if (vs.hasLanguage(language))
+                return vs.setLanguage(language, shareMode);
+
+            // otherwise find the language if it's anywhere else and remove that first; 
+            // note that this might delete a value set, so we should only do it after checking if it wasn't already right
+            this.removeLanguage(language);
+
+            // now set it anew
+            return vs.setLanguage(language, shareMode);
+        };
+
+        att.removeLanguage = function(language) {
+            var value = this.getVsWithLanguage(language);
+            if (value === null)
+                return;
+            delete value.Dimensions[language];
+
+            // check if the vs still has any properties left, if not, remove it entirely - unless it's the last one...
+            if (Object.keys(value.Dimensions).length === 0 && this.Values.length > 0)
+                this.removeVs(value);
+        };
+
+        att.removeVs = function(vs) {
+            for (var v = 0; v < this.Values.length; v++)
+                if (this.Values[v] === vs)
+                    this.Values.splice(v, 1);
+        };
+
+        // todo: when adding VS - ensure the events are added too...
+        att.addVs = function(value, language, shareMode) {
+            var dimensions = {};
+            dimensions[language] = (shareMode === null ? true : shareMode);
+            var newVs = { "Value": value, "Dimensions": dimensions };
+            // ToDo: enhancer.enhanceWithCount(newVs.Dimensions);
+            this.Values.push(enhancer.enhanceVs(newVs));
+        };
+
+        // Now go through the Values and give them more commands
+        for (var v = 0; v < att.Values.length; v++)
+            enhancer.enhanceVs(att.Values[v]);
+
+        return att;
+    };
+
+    // this will enhance an entity
+    enhancer.enhanceEntity = function(ent) {
+        ent.getTitle = function() {
+            ent.getAttribute(ent.TitleAttributeName);
+        };
+
+        ent.hasAttribute = function(attrName) {
+            return ent.Attributes[attrName] !== undefined;
+        };
+
+        ent.getAttribute = function(attrName) {
+            return ent.Attributes[attrName];
+        };
+
+        // ToDo: Discuss with 2dm 
+        ent.Attributes.addAttribute = function (attrName) {
+            ent.Attributes[attrName] = { Values: [] };
+            enhancer.enhanceAtt(ent.Attributes[attrName]);
+        };
+
+        for (var attKey in ent.Attributes)
+            if(ent.Attributes.hasOwnProperty(attKey) && typeof(ent.Attributes[attKey]) != 'function')
+                enhancer.enhanceAtt(ent.Attributes[attKey]);
+
+        return ent;
+    };
+
+    return enhancer.enhanceEntity(entity);
+}
 /* global angular */
 (function () {
 	'use strict';
@@ -564,6 +789,10 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;
 			var d = e.templateOptions.settings.DefaultValue;
+
+		    if (e.templateOptions.header.Prefill && e.templateOptions.header.Prefill[e.key]) {
+			    d = e.templateOptions.header.Prefill[e.key];
+			}
 
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
@@ -583,41 +812,26 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 })();
 /* global angular */
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity');
+	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller('EditEntityWrapperCtrl', ["$q", "$http", "$scope", "contentTypeName", "entityId", "$modalInstance", function editEntityCtrl($q, $http, $scope, contentTypeName, entityId, $modalInstance) {
+	app.controller("EditEntityWrapperCtrl", ["$q", "$http", "$scope", "items", "$modalInstance", function editEntityCtrl($q, $http, $scope, items, $modalInstance) {
 
 		var vm = this;
-		vm.contentTypeName = contentTypeName;
-		vm.entityId = entityId;
+	    vm.itemList = items;
+
+        // this is the callback after saving - needed to close everything
+		vm.afterSave = function (result) {
+		    if (result.status === 200)
+		        vm.close();
+		    else {
+		        alert("Something went wrong - maybe parts worked, maybe not. Sorry :("); 
+		    }
+
+		};
 		
-		vm.registeredControls = [];
-		vm.registerEditControl = function (control) {
-			vm.registeredControls.push(control);
-		};
-
-		vm.isValid = function () {
-			var valid = true;
-			angular.forEach(vm.registeredControls, function (e, i) {
-				if (!e.isValid())
-					valid = false;
-			});
-			return valid;
-		};
-
-		vm.save = function () {
-			var savePromises = [];
-			angular.forEach(vm.registeredControls, function (e, i) {
-				savePromises.push(e.save());
-			});
-			$q.all(savePromises).then(function () {
-			    $modalInstance.dismiss("cancel");
-			});
-		};
-
 		vm.close = function () {
 		    $modalInstance.dismiss("cancel");
 		};

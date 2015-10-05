@@ -20,6 +20,8 @@
             eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
         };
 
+        vm.refresh = svc.liveListReload;
+
         vm.items = svc.liveList();
 
         vm.dynamicColumns = [];

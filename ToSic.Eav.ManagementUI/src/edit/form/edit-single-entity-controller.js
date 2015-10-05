@@ -1,41 +1,21 @@
-﻿/* global angular */
+﻿
 (function () {
-	'use strict';
+	"use strict";
 
-	var app = angular.module('eavEditEntity', ['formly', 'ui.bootstrap', 'eavFieldTemplates', 'eavNgSvcs', "EavServices" /* 'ContentTypeFieldServices' */, 'eavEditTemplates']);
-
-	// Main directive that renders an entity edit form
-	app.directive('eavEditEntity', function() {
-		return {
-			templateUrl: 'edit-entity.html',
-			restrict: 'E',
-			scope: {
-				contentTypeName: '@contentTypeName',
-				entityId: '@entityId',
-				registerEditControl: '=registerEditControl'
-			},
-			controller: 'EditEntityCtrl',
-			controllerAs: 'vm'
-		};
-	});
+	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-    app.controller('EditEntityCtrl', function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, entitiesSvc) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
 			return false; // ToDo: Use correct language information, e.g. eavLanguageService.currentLanguage != eavLanguageService.defaultLanguage && !$scope.entityId;
 		};
 
-		vm.save = function () {
-		    entitiesSvc.save(appId, vm.entity);
-		};
-
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-			isValid: function() { return vm.form.$valid; },
-			save: vm.save
+			isValid: function() { return vm.form.$valid; }
 		};
 
 		// Register this control in the parent control
@@ -43,14 +23,14 @@
 			$scope.registerEditControl(vm.control);
 
 		vm.model = null;
-		vm.entity = null;
+		vm.entity = $scope.entity;
 
 		vm.formFields = null;
 
 
 		var loadContentType = function () {
 
-		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.Name }).getFields()
+		    contentTypeFieldSvc(appId, { StaticName: vm.entity.Type.StaticName }).getFields()
 			.then(function (result) {
 			    vm.debug = result;
 
@@ -67,12 +47,12 @@
 			                required: !!e.Metadata.All.Required,
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 			                description: e.Metadata.All.Notes,
-			                settings: e.Metadata
+			                settings: e.Metadata,
+                            header: $scope.header
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI ? !e.Metadata.All.VisibleInEditUI : false),
-			            //defaultValue: parseDefaultValue(e)
 			            expressionProperties: {
-			                'templateOptions.disabled': 'options.templateOptions.disabled' // Needed for dynamic update of the disabled property
+			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
 			            }
 			        });
 			    });
@@ -80,17 +60,9 @@
 		};
 
 	    // Load existing entity if defined
-		
-		if (!!$scope.entityId) {
-		    entitiesSvc.getMultiLanguage(appId, $scope.contentTypeName, $scope.entityId)
-                .then(function (result) {
-                    vm.entity = enhanceEntity(result.data);
-                    loadContentType();
-                });
-		} else {
-		    vm.entity = enhanceEntity(entitiesSvc.newEntity($scope.contentTypeName));
+		if (vm.entity !== null)
 		    loadContentType();
-		}
+
 
 		// Returns the field type for an attribute configuration
 		var getType = function(attributeConfiguration) {
@@ -101,14 +73,14 @@
 			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (type === 'string' && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
-				subType = 'textarea';
+			if (type === "string" && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
+				subType = "textarea";
 
 			// Use subtype 'default' if none is specified - or type does not exist
-			if (!subType || !formlyConfig.getType(type + '-' + subType))
-				subType = 'default';
+			if (!subType || !formlyConfig.getType(type + "-" + subType))
+				subType = "default";
 
-			return (type + '-' + subType);
+			return (type + "-" + subType);
 		};
 	});
     

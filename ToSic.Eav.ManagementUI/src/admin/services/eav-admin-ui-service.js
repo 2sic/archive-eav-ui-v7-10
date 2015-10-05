@@ -40,16 +40,16 @@ angular.module("EavAdminUi", ["ng",
 ])
     .factory("eavAdminDialogs", function ($modal, eavConfig, eavManagementSvc, contentTypeSvc, $window) {
 
-        var svc = {};
+            var svc = {};
 
-        //#region Content Items dialogs
-        svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
+            //#region List of Content Items dialogs
+            svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
                 return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region content import export
+            //#region content import export
             svc.openContentImport = function ocimp(appId, staticName, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
@@ -60,9 +60,9 @@ angular.module("EavAdminUi", ["ng",
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 
-        //#endregion
+            //#endregion
 
-        //#region ContentType dialogs
+            //#region ContentType dialogs
 
             svc.openContentTypeEdit = function octe(item, closeCallback) {
                 var resolve = svc.CreateResolve({ item: item });
@@ -73,19 +73,20 @@ angular.module("EavAdminUi", ["ng",
                 var resolve = svc.CreateResolve({ contentType: item });
                 return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
         
-        //#region Item - new, edit
+            //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
-                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: contentTypeId}), closeCallback );
+                return svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
             };
 
             svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
-                return svc.openItemEditWithEntityIdX(svc.CreateResolve({ mode: "edit", entityId: entityId, contentTypeName:null }), closeCallback );
+                return svc.openEditItems([{ EntityId: entityId }], closeCallback);
             };
 
-            svc.openItemEditWithEntityIdX = function oieweix(resolve, callbacks) {
-            	return svc.OpenModal("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, callbacks);
+            svc.openEditItems = function oel(items, closeCallback) {
+                var resolve = svc.CreateResolve({ items: items });
+                return svc.OpenModal("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, closeCallback);
             };
 
             svc.openItemHistory = function ioh(entityId, closeCallback) {
@@ -93,61 +94,54 @@ angular.module("EavAdminUi", ["ng",
                     svc.CreateResolve({ entityId: entityId }),
                     closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Metadata - mainly new
+            //#region Metadata - mainly new
             svc.openMetadataNew = function omdn(appId, targetType, targetId, metadataType, closeCallback) {
-                var key = {};//, assignmentType;
+                var metadata = {};
                 switch (targetType) {
                     case "entity":
-                        key.keyGuid = targetId;
-                        key.assignmentType = eavConfig.metadataOfEntity;
+                        metadata.Key = targetId;
+                        metadata.KeyType = "guid";
+                        metadata.TargetType = eavConfig.metadataOfEntity;
                         break;
                     case "attribute":
-                        key.keyNumber = targetId;
-                        key.assignmentType = eavConfig.metadataOfAttribute;
+                        metadata.Key = targetId;
+                        metadata.KeyType = "number";
+                        metadata.TargetType = eavConfig.metadataOfAttribute;
                         break;
-                    default: throw "targetType unknown, only accepts entity or attribute";
+                    default: throw "targetType unknown, only accepts entity or attribute for now";
                 }
-                // return eavManagementSvc.getContentTypeDefinition(metadataType)
-                return contentTypeSvc(appId).getDetails(metadataType)
-                    .then(function (result) {
-                    //if (useDummyContentEditor) {
-                        var resolve = svc.CreateResolve({ mode: "new", entityId: null, contentTypeName: metadataType });
-                        alert(metadataType);
-                        resolve = angular.extend(resolve, svc.CreateResolve(key));
-                        return svc.openItemEditWithEntityIdX(resolve, { close: closeCallback });
-                    //} else {
+                var items = [{
+                    ContentTypeName: metadataType,
+                    Metadata: metadata
+                }];
 
-                    //    var attSetId = result.data.AttributeSetId;
-                    //    var url = eavConfig.itemForm
-                    //        .getNewItemUrl(attSetId, assignmentType, key, false);
-
-                    //    return PromiseWindow.open(url).then(null, function(error) { if (error == "closed") closeCallback(); });
-                    //}
-                });
+                svc.openEditItems(items, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Permissions Dialog
+            //#region Permissions Dialog
             svc.openPermissionsForGuid = function opfg(appId, targetGuid, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, targetGuid: targetGuid });
                 return svc.OpenModal("permissions/permissions.html", "PermissionList as vm", "lg", resolve, closeCallback);
             };
-        //#endregion
+            //#endregion
 
-        //#region Pipeline Designer
+            //#region Pipeline Designer
             svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
                 var url = eavConfig.adminUrls.pipelineDesigner(appId, pipelineId);
                 $window.open(url);
                 return;
             };
-        //#endregion
+            //#endregion
 
 
 
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
+                if (typeof (callbacks) === "undefined")
+                    return;
                 if (typeof (callbacks) === "function") // if it's only one callback, use it for all close-cases
                     callbacks = { close: callbacks };
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
