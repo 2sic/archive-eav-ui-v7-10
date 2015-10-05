@@ -6,7 +6,7 @@
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
 
                 // Init
@@ -467,13 +467,10 @@
                         pipelineService.queryPipeline($scope.PipelineEntityId).then(function(success) {
                             // Show Result in a UI-Dialog
                             uiNotification.clear();
-                            eavDialogService.open({
-                                title: "Query result",
-                                content: "<div><div>The Full result was logged to the Browser Console. Further down you'll find more debug-infos. </div>"
-                                    + "<h3>Parameters used</h3><div>" + ($scope.pipelineData.Pipeline.TestParameters.length > 5 ? $scope.pipelineData.Pipeline.TestParameters.replace("\n", "<br>") : "no test params specified") + "</div> "
-                                    + "<h3>Query result - executed in " + success.QueryTimer.Milliseconds + "ms (" + success.QueryTimer.Ticks + "tx)</h3><div> <pre id=\"pipelineQueryResult\">" + $filter("json")(success.Query) + "</pre>" + showConnectionTable(success) + "</div>"
-                                    + "</div"
-                            });
+
+                            var resolve = eavAdminDialogs.CreateResolve({ testParams: $scope.pipelineData.Pipeline.TestParameters, result: success });
+                            eavAdminDialogs.OpenModal("pipelines/query-stats.html", "QueryStats as vm", "lg", resolve);
+
                             $timeout(function() {
                                 showEntityCountOnStreams(success);
                             });
@@ -483,40 +480,6 @@
                         });
                     };
 
-                    // Create html-table with connection debug-info
-                    var showConnectionTable = function(result) {
-                        var srcTbl = "<h3>Sources</h3>" +
-                            "<table><tr><th>Guid</th><th>Type</th><th>Config</th></tr>";
-                        var src = result.Sources;
-                        for (var s in src) {
-                            if (s[0] != "$") {
-                                srcTbl += "<tr><td><pre>" + s.substring(0, 13) + "...</pre></td><td>" + src[s].Type + "</td><td>";
-                                var cnf = src[s].Configuration;
-                                for (var c in cnf)
-                                    if (c[0] != "$")
-                                        srcTbl += "<b>" + c + "</b>" + "=" + cnf[c] + "</br>";
-                                srcTbl += "</td></tr>";
-                            }
-                        }
-                        srcTbl += "</table>";
-
-
-                        srcTbl += "<h3>Streams</h3>" +
-                            "<table><tr><th>Source</th><th>Target</th><th>Items</th><th>Err</th></tr>";
-                        src = result.Streams;
-                        for (var sr in src) {
-                            if (sr[0] != "$") {
-                                srcTbl += "<tr><td><pre>"
-                                    + src[sr].Source.substring(0, 13) + ":" + src[sr].SourceOut + "</pre></td><td><pre>"
-                                    + src[sr].Target.substring(0, 13) + ":" + src[sr].TargetIn + "</pre></td><td>"
-                                    + src[sr].Count + "</td><td>"
-                                    + src[sr].Error + "</td></tr>";
-                            }
-                        }
-                        srcTbl += "</table>";
-
-                        return srcTbl;
-                    };
 
                     var showEntityCountOnStreams = function(result) {
                         angular.forEach(result.Streams, function(stream) {

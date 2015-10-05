@@ -730,7 +730,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types.html',
-    "<div ng-controller=\"List as vm\" ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <span ng-if=vm.debug.on><button icon=record title=\"{{ 'ContentTypes.Buttons.ChangeScope' | translate }}\" type=button class=btn ng-click=vm.changeScope()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button></span><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div><div ng-if=vm.debug><h3>todo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div></div>"
+    "<div ng-controller=\"List as vm\" ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><h3 class=modal-title translate=ContentTypes.Title></h3></div><div class=modal-body><button icon=plus title=\"{{ 'General.Buttons.Add' | translate }}\" type=button class=\"btn btn-default\" ng-click=vm.edit()></button> <button icon=repeat title=\"{{ 'General.Buttons.Refresh' | translate }}\" type=button class=btn ng-click=vm.refresh()></button> <span ng-if=vm.debug.on><button icon=record title=\"{{ 'ContentTypes.Buttons.ChangeScope' | translate }}\" type=button class=btn ng-click=vm.changeScope()></button> <button icon=flash title=\"{{ 'General.Buttons.System' | translate }}\" type=button class=btn ng-click=vm.liveEval()></button></span><table class=\"table table-hover\"><thead><tr><th translate=ContentTypes.TypesTable.Name></th><th translate=ContentTypes.TypesTable.Description></th><th translate=ContentTypes.TypesTable.Fields></th><th translate=ContentTypes.TypesTable.Items></th><th translate=ContentTypes.TypesTable.Actions></th><th></th></tr></thead><tbody><tr ng-if=vm.items.isLoaded ng-repeat=\"item in vm.items | orderBy:'Name'\"><td><a ng-click=vm.edit(item) target=_self>{{item.Name}}</a></td><td>{{item.Description}}</td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editFields(item)><span icon=cog>&nbsp;{{item.Fields}}</span></button></td><td><button type=button class=\"btn btn-xs btn-default\" ng-click=vm.editItems(item)><span icon=list>&nbsp;{{item.Items}}</span></button></td><td class=text-nowrap><button icon=export tooltip=\"{{ 'ContentTypes.Buttons.Export' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openExport(item)></button> <button icon=import tooltip=\"{{ 'ContentTypes.Buttons.Import' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.openImport(item)></button> <button icon=user type=button class=\"btn btn-xs\" ng-click=vm.permissions(item) ng-if=vm.isGuid(item.StaticName)></button></td><td><button icon=remove type=button class=\"btn btn-xs\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100>{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td></tr></tbody></table></div><div ng-if=vm.debug.on><h3>Notes / Debug / ToDo</h3><ol><li>get validators to work on all dialogs</li><li>this dialog doesn't refresh properly when I add/change stuff</li></ol></div></div>"
   );
 
 
@@ -746,6 +746,11 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
   $templateCache.put('pipelines/pipelines.html',
     "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Pipeline.Manage.Title></h3></div><div class=\"modal-body ng-cloak\"><div translate=Pipeline.Manage.Intro></div><div><button icon=plus type=button class=\"btn btn-default\" ng-click=vm.add()></button> <button icon=repeat type=button class=btn ng-click=vm.refresh()></button> <button icon=flash type=button class=btn ng-click=vm.liveEval()></button><table class=\"table table-striped table-hover\"><thead><tr><th translate=Pipeline.Manage.Table.Id></th><th translate=Pipeline.Manage.Table.Name></th><th translate=Pipeline.Manage.Table.Description></th><th translate=Pipeline.Manage.Table.Actions></th></tr></thead><tbody><tr ng-repeat=\"pipeline in vm.pipelines | orderBy:'Name'\"><td>{{pipeline.Id}}</td><td><a ng-click=vm.edit(pipeline)>{{pipeline.Name}}</a></td><td>{{pipeline.Description}}</td><td class=text-nowrap><button icon=edit title=\"{{ 'General.Buttons.Edit' | translate }}\" class=\"btn btn-xs btn-default\" ng-click=vm.design(pipeline)></button> <button icon=user title=\"{{ 'General.Buttons.Permissions' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.permissions(pipeline)></button> <button icon=duplicate title=\"{{ 'General.Buttons.Copy' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.clone(pipeline)></button> <button icon=remove title=\"{{ 'General.Buttons.Delete' | translate }}\" type=button class=\"btn btn-xs\" ng-click=vm.delete(pipeline)></button></td></tr><tr ng-if=!vm.pipelines.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div></div>"
+  );
+
+
+  $templateCache.put('pipelines/query-stats.html',
+    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Pipeline.Stats.Title></h3></div><div class=modal-body><div translate=Pipeline.Stats.Intro></div><div><h3 translate=Pipeline.Stats.ParamTitle></h3><div translate=Pipeline.Stats.ExecutedIn translate-values=\"{ ms: vm.timeUsed, ticks: vm.ticksUsed }\"></div><div><ul><li ng-repeat=\"param in vm.testParameters\">{{param}}</li></ul></div></div><div><h3 translate=Pipeline.Stats.QueryTitle></h3><pre>{{vm.result | json}}</pre></div><div><h3 translate=Pipeline.Stats.SourcesAndStreamsTitle></h3><h4 translate=Pipeline.Stats.Sources.Title></h4><table><tr><th translate=Pipeline.Stats.Sources.Guid></th><th translate=Pipeline.Stats.Sources.Type></th><th translate=Pipeline.Stats.Sources.Config></th></tr><tr ng-repeat=\"s in vm.sources\"><td tooltip={{s}}><pre>{{s.Guid.substring(0, 13)}}...</pre></td><td>{{s.Type}}</td><td tooltip={{s.Configuration}}><ol><li ng-repeat=\"(key, value) in s.Configuration\"><b>{{key}}</b>=<em>{{value}}</em></li></ol></td></tr></table><h4 translate=Pipeline.Stats.Streams.Title></h4><table><tr><th translate=Pipeline.Stats.Streams.Source></th><th translate=Pipeline.Stats.Streams.Target></th><th translate=Pipeline.Stats.Streams.Items></th><th translate=Pipeline.Stats.Streams.Error></th></tr><tr ng-repeat=\"sr in vm.streams\"><td><pre>{{sr.Source.substring(0, 13) + \":\" + sr.SourceOut}}</pre></td><td><pre>{{sr.Target.substring(0, 13) + \":\" + sr.TargetIn}}</pre></td><td><span>{{sr.Count}}</span></td><td><span>{{sr.Error}}</span></td></tr></table></div></div>"
   );
 
 }]);
@@ -790,7 +795,6 @@ angular.module("PipelineDesigner", [
         "PipelineDesigner.filters",
         "ngResource",
         "EavConfiguration",
-        "eavDialogService",
         "EavServices",
         "eavTemplates",
         "eavNgSvcs",
@@ -843,7 +847,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "$timeout", "$filter", "uiNotification", "eavDialogService", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavDialogService, eavAdminDialogs, $log, eavConfig, $q) {
+            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "$timeout", "$filter", "uiNotification", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
 
                 // Init
@@ -1304,13 +1308,10 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                         pipelineService.queryPipeline($scope.PipelineEntityId).then(function(success) {
                             // Show Result in a UI-Dialog
                             uiNotification.clear();
-                            eavDialogService.open({
-                                title: "Query result",
-                                content: "<div><div>The Full result was logged to the Browser Console. Further down you'll find more debug-infos. </div>"
-                                    + "<h3>Parameters used</h3><div>" + ($scope.pipelineData.Pipeline.TestParameters.length > 5 ? $scope.pipelineData.Pipeline.TestParameters.replace("\n", "<br>") : "no test params specified") + "</div> "
-                                    + "<h3>Query result - executed in " + success.QueryTimer.Milliseconds + "ms (" + success.QueryTimer.Ticks + "tx)</h3><div> <pre id=\"pipelineQueryResult\">" + $filter("json")(success.Query) + "</pre>" + showConnectionTable(success) + "</div>"
-                                    + "</div"
-                            });
+
+                            var resolve = eavAdminDialogs.CreateResolve({ testParams: $scope.pipelineData.Pipeline.TestParameters, result: success });
+                            eavAdminDialogs.OpenModal("pipelines/query-stats.html", "QueryStats as vm", "lg", resolve);
+
                             $timeout(function() {
                                 showEntityCountOnStreams(success);
                             });
@@ -1320,40 +1321,6 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                         });
                     };
 
-                    // Create html-table with connection debug-info
-                    var showConnectionTable = function(result) {
-                        var srcTbl = "<h3>Sources</h3>" +
-                            "<table><tr><th>Guid</th><th>Type</th><th>Config</th></tr>";
-                        var src = result.Sources;
-                        for (var s in src) {
-                            if (s[0] != "$") {
-                                srcTbl += "<tr><td><pre>" + s.substring(0, 13) + "...</pre></td><td>" + src[s].Type + "</td><td>";
-                                var cnf = src[s].Configuration;
-                                for (var c in cnf)
-                                    if (c[0] != "$")
-                                        srcTbl += "<b>" + c + "</b>" + "=" + cnf[c] + "</br>";
-                                srcTbl += "</td></tr>";
-                            }
-                        }
-                        srcTbl += "</table>";
-
-
-                        srcTbl += "<h3>Streams</h3>" +
-                            "<table><tr><th>Source</th><th>Target</th><th>Items</th><th>Err</th></tr>";
-                        src = result.Streams;
-                        for (var sr in src) {
-                            if (sr[0] != "$") {
-                                srcTbl += "<tr><td><pre>"
-                                    + src[sr].Source.substring(0, 13) + ":" + src[sr].SourceOut + "</pre></td><td><pre>"
-                                    + src[sr].Target.substring(0, 13) + ":" + src[sr].TargetIn + "</pre></td><td>"
-                                    + src[sr].Count + "</td><td>"
-                                    + src[sr].Error + "</td></tr>";
-                            }
-                        }
-                        srcTbl += "</table>";
-
-                        return srcTbl;
-                    };
 
                     var showEntityCountOnStreams = function(result) {
                         angular.forEach(result.Streams, function(stream) {
@@ -1478,55 +1445,33 @@ angular.module("PipelineManagement", [
         };
         vm.close = function () { $modalInstance.dismiss("cancel"); };
     }]);
-// todo: get rid of this
+/*jshint laxbreak:true */
+(function() {
 
-// it's only used in the pipeline-designer-controller, and seems to be to open modal-dialogs to edit something
+    angular.module("PipelineDesigner")
+        .controller("QueryStats", ["testParams", "result", "$modalInstance", function (testParams, result, $modalInstance) {
+                var vm = this;
+                var success = result;
+                vm.testParameters = testParams.split("\n");
+                vm.timeUsed = success.QueryTimer.Milliseconds;
+                vm.ticksUsed = success.QueryTimer.Ticks;
+                vm.result = success.Query;
 
-// won't be necessary any more when Formly works
+                vm.sources = success.Sources;
+                vm.streams = success.Streams;
 
-angular.module('eavDialogService', ["EavConfiguration"])
-    .factory('eavDialogService', ["eavConfig", function (eavConfig) {
-		return {
-			open: function (params) {
+                vm.connections = "todo";
 
-				params = $.extend({
-					url: "",
-					width: 950,
-					height: 600,
-					onClose: function () { },
-					title: null
-				}, params);
 
-				if (window.top.EavEditDialogs === null)
-					window.top.EavEditDialogs = [];
+                vm.close = function () {
+                    $modalInstance.dismiss("cancel");
+                };
 
-				var dialogElement;
-				if (params.url)
-					dialogElement = '<div id="EavNewEditDialog"' + window.top.EavEditDialogs.length + '"><iframe style="position:absolute; top:0; right:0; left:0; bottom:0; height:100%; width:100%; border:0" src="' + params.url + '"></iframe></div>';
-				else if (params.content)
-					dialogElement = params.content;
-				else
-					dialogElement = '<div>no url and no content specified</div>';
 
-				window.top.jQuery(dialogElement).dialog({
-					title: params.title,
-					autoOpen: true,
-					modal: true,
-					width: params.width,
-					dialogClass: eavConfig.dialogClass,
-					height: params.height,
-					close: function (event, ui) {
-						$(this).remove();
-						params.onClose();
-						window.top.EavEditDialogs.pop();
-					}
-				});
 
-				window.top.EavEditDialogs.push(dialogElement);
-			}
-		};
-	}]
-);
+            }]
+        );
+})();
 // Init the main eav services module
 angular.module("EavServices", [
     "ng",                   // Angular for $http etc.

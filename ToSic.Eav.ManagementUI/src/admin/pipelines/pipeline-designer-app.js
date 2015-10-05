@@ -2,7 +2,6 @@ angular.module("PipelineDesigner", [
         "PipelineDesigner.filters",
         "ngResource",
         "EavConfiguration",
-        "eavDialogService",
         "EavServices",
         "eavTemplates",
         "eavNgSvcs",
