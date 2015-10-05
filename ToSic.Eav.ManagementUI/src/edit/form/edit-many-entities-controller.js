@@ -5,9 +5,10 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, uiNotification) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, uiNotification, debugState) {
 
         var vm = this;
+        vm.debug = debugState;
         
         vm.registeredControls = [];
         vm.registerEditControl = function (control) {

@@ -1,4 +1,4 @@
-﻿<div ng-click="vm.maybeEnableDebug($event)">
+﻿<div ng-click="vm.debug.autoEnableAsNeeded($event)">
     <!-- HEADER -->
     <div class="modal-header">
         <button class="btn pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
@@ -86,7 +86,7 @@
         </div>
         <!-- END IMPORT RESULT -->
 
-        <div ng-if="vm.debug">
+        <div ng-if="vm.debug.on">
             <h3>Debug infos</h3>
             <pre>{{vm.formValues | json}}</pre>
         </div>

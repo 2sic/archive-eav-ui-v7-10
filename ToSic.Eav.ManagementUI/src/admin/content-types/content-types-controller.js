@@ -7,11 +7,11 @@
 
 
     /// Manage the list of content-types
-    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, uiDebug, $translate) {
+    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, debugState, $translate) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
-        uiDebug.extendViewModel(vm);
+        vm.debug = debugState;
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
