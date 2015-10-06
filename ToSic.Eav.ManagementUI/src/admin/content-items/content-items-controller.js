@@ -37,6 +37,18 @@
             if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.Id + ") ?"))
                 svc.delete(item.Id);
         };
+
+        vm.openDuplicate = function openDuplicate(item) {
+            var items = [
+                {
+                    ContentTypeName: contentType,
+                    DuplicateEntity: item.Id
+                }
+            ];
+            eavAdminDialogs.openEditItems(items, svc.liveListReload);
+
+        };
+
         vm.close = function () { $modalInstance.dismiss("cancel"); };
 
     }

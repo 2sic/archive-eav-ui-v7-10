@@ -551,7 +551,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 				    // Assign default language if no dimension is set - new: if multiple languages are in use!!!
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
                         if(langConf.languages.length > 0)
-				            fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = true; // false;
+				            fieldModel.Values[0].Dimensions[langConf.defaultLanguage] = false; // set to "not-read-only"
 
 					var valueToEdit;
 

@@ -33,7 +33,8 @@
                     </div>
                 </td>
                 <td>
-                    <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)">                    </button>
+                    <button icon="duplicate" type="button" class="btn btn-xs" ng-click="vm.openDuplicate(item)"></button>
+                    <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"> </button>
                 </td>
                 <td ng-repeat="col in vm.dynamicColumns">
                     <div style="height: 20px; max-width: 100px; position: relative; overflow: hidden; text-overflow: ellipsis" tooltip="{{item[col.StaticName]}}">{{item[col.StaticName].toString().substring(0,25)}}</div>

@@ -93,24 +93,23 @@ namespace ToSic.Eav.WebApi
 	    //    return typeFilter.LightList.Count();
 	    //}
 
-        public EntityWithLanguages GetOne(int appId, string contentType, int id, string format = "multi-language")
+        public EntityWithLanguages GetOne(int appId, string contentType, int id, int? duplicateFrom, string format = "multi-language")
         {
             switch (format)
             {
                 case "multi-language":
                     Serializer.IncludeAllEditingInfos = true;
 
-                    var found = GetEntityOrThrowError(contentType, id, appId);
+                    var found = GetEntityOrThrowError(contentType, duplicateFrom.HasValue ? duplicateFrom.Value : id, appId);
                     var maybeDraft = found.GetDraft();
                     if (maybeDraft != null)
-                        found = maybeDraft;
-                    //return Serializer.Prepare(found);
+                        found = maybeDraft;                    
 
                     var ce = new EntityWithLanguages()
                     {
                         AppId = appId,
-                        Id = found.EntityId,
-                        Guid = found.EntityGuid,
+                        Id = duplicateFrom.HasValue ? 0 : found.EntityId,
+                        Guid = duplicateFrom.HasValue ? Guid.Empty: found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
                         TitleAttributeName = found.Title == null ? null : found.Title.Name,
@@ -136,7 +135,7 @@ namespace ToSic.Eav.WebApi
             return items.Select(p => new EntityWithHeader
             {
                 Header = p,
-                Entity = p.EntityId != 0 ? GetOne(appId, p.ContentTypeName, p.EntityId) : null
+                Entity = p.EntityId != 0 || p.DuplicateEntity.HasValue ? GetOne(appId, p.ContentTypeName, p.EntityId, p.DuplicateEntity) : null
             }).ToList();
         }
 
@@ -150,7 +149,7 @@ namespace ToSic.Eav.WebApi
             var convertedItems = new List<ImportEntity>();
 
             foreach (var entity in items)
-                if (entity.Header.Group != null && !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
+                if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
                     convertedItems.Add(CreateImportEntity(entity, appId));
 
             // Run import
