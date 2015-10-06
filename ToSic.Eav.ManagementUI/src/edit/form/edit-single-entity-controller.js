@@ -80,12 +80,12 @@
 		var getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String !== undefined ? e.Metadata.String.InputType : null;
+			var subType = e.Metadata.String ? e.Metadata.String.InputType : null;
 
 			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (type === "string" && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
+			if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
 				subType = "textarea";
 
 			// Use subtype 'default' if none is specified - or type does not exist

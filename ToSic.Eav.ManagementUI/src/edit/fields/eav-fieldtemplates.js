@@ -21,7 +21,7 @@
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace("\r", "").replace("").split("\n");
+	                o = o.replace(/\r/g, "").split("\n");
 	                o = o.map(function (e, i) {
 	                    var s = e.split(":");
 	                    return {
@@ -94,6 +94,7 @@
 	            }
 	        },
 	        link: function (scope, el, attrs) {
+                // Server delivers value as string, so convert it to UTC date
 	            function convertDateToUTC(date) { return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); }
                 if (scope.value && scope.value.Value && typeof(scope.value.Value) === 'string')
                     scope.value.Value = convertDateToUTC(new Date(scope.value.Value));

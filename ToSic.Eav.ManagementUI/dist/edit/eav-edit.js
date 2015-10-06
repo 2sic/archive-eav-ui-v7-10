@@ -42,7 +42,7 @@ Date.prototype.toJSON = function() {
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace("\r", "").replace("").split("\n");
+	                o = o.replace(/\r/g, "").split("\n");
 	                o = o.map(function (e, i) {
 	                    var s = e.split(":");
 	                    return {
@@ -115,6 +115,7 @@ Date.prototype.toJSON = function() {
 	            }
 	        },
 	        link: function (scope, el, attrs) {
+                // Server delivers value as string, so convert it to UTC date
 	            function convertDateToUTC(date) { return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); }
                 if (scope.value && scope.value.Value && typeof(scope.value.Value) === 'string')
                     scope.value.Value = convertDateToUTC(new Date(scope.value.Value));
@@ -419,12 +420,12 @@ Date.prototype.toJSON = function() {
 		var getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String !== undefined ? e.Metadata.String.InputType : null;
+			var subType = e.Metadata.String ? e.Metadata.String.InputType : null;
 
 			subType = subType ? subType.toLowerCase() : null;
 
 			// Special case: override subtype for string-textarea
-			if (type === "string" && e.Metadata.String !== undefined && e.Metadata.String.RowCount > 1)
+			if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
 				subType = "textarea";
 
 			// Use subtype 'default' if none is specified - or type does not exist
