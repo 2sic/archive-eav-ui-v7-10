@@ -42,7 +42,7 @@ Date.prototype.toJSON = function() {
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace("\r", "").split("\n");
+	                o = o.replace("\r", "").replace("").split("\n");
 	                o = o.map(function (e, i) {
 	                    var s = e.split(":");
 	                    return {
@@ -354,9 +354,9 @@ Date.prototype.toJSON = function() {
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-		    isValid: function () { return vm.form && vm.form.$valid; },
-		    isDirty: function () { return !vm.form || vm.form.$dirty; },
-		    setPristine: function () { vm.form.$setPristine(); }
+		    isValid: function () { return vm.formFields.length === 0 || vm.form && vm.form.$valid; },
+		    isDirty: function () { return (vm.form && vm.form.$dirty); },
+		    setPristine: function () { if(vm.form) vm.form.$setPristine(); }
 		};
 
 		// Register this control in the parent control
@@ -852,7 +852,7 @@ function enhanceEntity(entity) {
 		// Returns a typed default value from the string representation
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;
-			var d = e.templateOptions.settings.DefaultValue;
+			var d = e.templateOptions.settings.All.DefaultValue;
 
 		    if (e.templateOptions.header.Prefill && e.templateOptions.header.Prefill[e.key]) {
 			    d = e.templateOptions.header.Prefill[e.key];
