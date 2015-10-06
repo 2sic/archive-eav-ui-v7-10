@@ -43,6 +43,14 @@
                 };
             };
 
+            svc.ensureGuid = function ensureGuid(item) {
+                var ent = item.Entity;
+                if ((ent.Id === null || ent.Id === 0) && (ent.Guid === null || typeof (ent.Guid) === "undefined" || ent.Guid === "00000000-0000-0000-0000-000000000000")) {
+                    item.Entity.Guid = generateUuid();
+                    item.Header.Guid = item.Entity.Guid;
+                }
+            };
+
             svc.save = function save(appId, newData) {
                 return $http.post("eav/entities/save", newData, { params: { appId: appId } });
             };
