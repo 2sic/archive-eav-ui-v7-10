@@ -1,5 +1,3 @@
-﻿<ul class="nav nav-pills" style="margin-left:0; margin-bottom: 15px;">
-	<li ng-repeat="l in languages.languages" ng-class="{ active: languages.currentLanguage == l.key }" >
-		<a ng-click="languages.currentLanguage = l.key;" href="javascript:void(0);">{{l.name}}</a>
-	</li>
-</ul>
+﻿<tabset>
+    <tab ng-repeat="l in languages.languages" heading="{{ l.name.substring(0, l.name.indexOf('(') > 0 ? l.name.indexOf('(') - 1 : 100 ) }}" ng-click="languages.currentLanguage = l.key" tooltip="{{l.name}}"></tab>
+</tabset>
