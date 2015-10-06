@@ -114,7 +114,7 @@
         "Title": "Manage Content / Data",
         "Table": {
           "Id": "ID",
-          "Published": "Publ",
+          "Status": "Status",
           "Title": "Title",
           "Actions": ""
         },
