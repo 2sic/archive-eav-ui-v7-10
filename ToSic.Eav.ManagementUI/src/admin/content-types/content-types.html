@@ -14,11 +14,11 @@
             <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>
         </span>
         <!-- Table of content types for editing -->
-        <table class="table table-hover">
+        <table class="table table-hover" style="table-layout: fixed; width: 100%">
             <thead>
                 <tr>
-                    <th translate="ContentTypes.TypesTable.Name"></th>
-                    <th translate="ContentTypes.TypesTable.Description"></th>
+                    <th translate="ContentTypes.TypesTable.Name" style="width: 150px"></th>
+                    <th translate="ContentTypes.TypesTable.Description" style="width: 300px"></th>
                     <th translate="ContentTypes.TypesTable.Fields"></th>
                     <th translate="ContentTypes.TypesTable.Items"></th>
                     <th translate="ContentTypes.TypesTable.Actions"></th>
@@ -27,8 +27,8 @@
             </thead>
             <tbody>
                 <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'">
-                    <td><a ng-click="vm.edit(item)" target="_self">{{item.Name}}</a></td>
-                    <td>{{item.Description}}</td>
+                    <td class="text-nowrap" style="width: 150px"><a ng-click="vm.edit(item)" target="_self">{{item.Name}}</a></td>
+                    <td class="text-nowrap" style="width: 100px"><span class="text-nowrap" style="width: 75px">{{item.Description}}</span></td>
                     <td>
                         <button type="button" class="btn btn-xs btn-default" ng-click="vm.editFields(item)">
                             <span icon="cog">&nbsp;{{item.Fields}}</span>
