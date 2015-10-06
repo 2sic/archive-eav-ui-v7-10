@@ -15,8 +15,8 @@
 		// The control object is available outside the directive
 		// Place functions here that should be available from the parent of the directive
 		vm.control = {
-		    isValid: function () { return vm.form.$valid; },
-		    isDirty: function () { return vm.form.$dirty; },
+		    isValid: function () { return vm.form && vm.form.$valid; },
+		    isDirty: function () { return !vm.form || vm.form.$dirty; },
 		    setPristine: function () { vm.form.$setPristine(); }
 		};
 
@@ -27,7 +27,7 @@
 		vm.model = null;
 		vm.entity = $scope.entity;
 
-		vm.formFields = null;
+		vm.formFields = [];
 
 
 		var loadContentType = function () {
@@ -51,15 +51,24 @@
 			                description: $sce.trustAsHtml(e.Metadata.All.Notes),
 			                settings: e.Metadata,
 			                header: $scope.header,
-                            disabled: $scope.readOnly // todo: check 2rm
+                            langReadOnly: false // Will be set by the language directive to override the disabled state
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
-			            expressionProperties: {
-			                'templateOptions.disabled': "options.templateOptions.disabled" // Needed for dynamic update of the disabled property
+			            expressionProperties: { // Needed for dynamic update of the disabled property
+			                'templateOptions.disabled': 'options.templateOptions.disabled'
+			            },
+			            watcher: {
+			                expression: function (field, scope, stop) {
+			                    return (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) || field.templateOptions.langReadOnly;
+			                },
+			                listener: function(field, newValue, oldValue, scope, stopWatching) {
+			                    field.templateOptions.disabled = newValue;
+			                }
 			            }
 			        });
 			    });
-			});
+
+		    });
 		};
 
 	    // Load existing entity if defined
