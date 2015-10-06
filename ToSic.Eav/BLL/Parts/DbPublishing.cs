@@ -8,14 +8,14 @@ namespace ToSic.Eav.BLL.Parts
         public DbPublishing(EavDataController c) : base(c) { }
 
 
-        /// <summary>
-        /// Publish a Draft Entity
-        /// </summary>
-        /// <param name="entityId">ID of the Draft-Entity</param>
-        public Entity PublishEntity(int entityId)
-        {
-            return PublishEntity(entityId, true);
-        }
+        ///// <summary>
+        ///// Publish a Draft Entity
+        ///// </summary>
+        ///// <param name="entityId">ID of the Draft-Entity</param>
+        //public Entity PublishEntity(int entityId)
+        //{
+        //    return PublishEntity(entityId, true);
+        //}
 
         /// <summary>
         /// Publish a Draft-Entity
@@ -23,7 +23,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="entityId">ID of the Draft-Entity</param>
         /// <param name="autoSave">Call SaveChanges() automatically?</param>
         /// <returns>The published Entity</returns>
-        internal Entity PublishEntity(int entityId, bool autoSave = true)
+        public Entity PublishEntity(int entityId, bool autoSave = true)
         {
             var unpublishedEntity = Context.Entities.GetEntity(entityId);
             if (unpublishedEntity.IsPublished)
