@@ -92,8 +92,13 @@
 	                datepickerOptions: {},
 	                datepickerPopup: "dd.MM.yyyy"
 	            }
-	        }
-		});
+	        },
+	        link: function (scope, el, attrs) {
+	            function convertDateToUTC(date) { return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); }
+                if (scope.value && scope.value.Value && typeof(scope.value.Value) === 'string')
+                    scope.value.Value = convertDateToUTC(new Date(scope.value.Value));
+            }
+	    });
 
 		formlyConfigProvider.setType({
 		    name: "entity-default",
