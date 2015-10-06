@@ -132,11 +132,12 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
-            return items.Select(p => new EntityWithHeader
+            var list = items.Select(p => new EntityWithHeader
             {
                 Header = p,
                 Entity = p.EntityId != 0 || p.DuplicateEntity.HasValue ? GetOne(appId, p.ContentTypeName, p.EntityId, p.DuplicateEntity) : null
             }).ToList();
+            return list;
         }
 
 
