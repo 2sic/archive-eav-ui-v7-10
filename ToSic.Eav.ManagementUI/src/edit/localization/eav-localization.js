@@ -96,7 +96,7 @@
 					var writable = (langConf.currentLanguage == langConf.defaultLanguage) ||
                         (scope.value && scope.value.Dimensions[langConf.currentLanguage] === false);
 
-					scope.to.disabled = !writable;
+					scope.to.langReadOnly = !writable;
 				};
 
 				initCurrentValue();

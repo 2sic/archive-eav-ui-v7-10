@@ -66,7 +66,8 @@
                         KeyType: "number",
                         TargetType: eavConfig.metadataOfAttribute
                     },
-                    Title: title
+                    Title: title,
+                    Prefill: { Name: item.StaticName }
                 };      
         };
     }

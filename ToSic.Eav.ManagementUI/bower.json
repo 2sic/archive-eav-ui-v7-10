@@ -9,7 +9,7 @@
     "ocLazyLoad": "1.0.4",
     "angular-translate": "2.7.2",
     "angular-translate-loader-partial": "2.7.2",
-    "angular-formly": "6.24.23",
+    "angular-formly": "7.1.2",
     "angular-formly-templates-bootstrap": "6.0.0",
     "angular-bootstrap-file-field": "~0.1.3",
     "angular-base64-upload": "~0.1.12",
