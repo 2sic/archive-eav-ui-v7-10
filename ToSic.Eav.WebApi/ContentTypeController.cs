@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Http;
 using ToSic.Eav.BLL;
@@ -73,7 +74,8 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<dynamic> GetFields(int appId, string staticName)
         {
             SetAppIdAndUser(appId);
-	        return CurrentContext.ContentType.GetContentTypeConfiguration(staticName).OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder).Select(a =>
+
+            return CurrentContext.ContentType.GetContentTypeConfiguration(staticName).OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder).Select(a =>
 		        new
 		        {
 			        Id = a.Item1.AttributeId,

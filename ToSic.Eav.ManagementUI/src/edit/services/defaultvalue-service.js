@@ -7,7 +7,7 @@
 		// Returns a typed default value from the string representation
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;
-			var d = e.templateOptions.settings.DefaultValue;
+			var d = e.templateOptions.settings.All.DefaultValue;
 
 		    if (e.templateOptions.header.Prefill && e.templateOptions.header.Prefill[e.key]) {
 			    d = e.templateOptions.header.Prefill[e.key];
