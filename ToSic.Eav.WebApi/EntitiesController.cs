@@ -144,7 +144,7 @@ namespace ToSic.Eav.WebApi
 
 
         [HttpPost]
-        public bool SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         { 
             var convertedItems = new List<ImportEntity>();
 
@@ -159,7 +159,19 @@ namespace ToSic.Eav.WebApi
                 preventDraftSave: false);
             import.RunImport(null, convertedItems.ToArray(), true, true);
 
-            return true;
+            // find / update IDs of items updated
+            var cache = DataSource.GetCache(null, appId);
+            var foundItems = items.Select(e =>
+            {
+                var foundEntity = cache.LightList.FirstOrDefault(c => e.Entity.Guid == c.EntityGuid);
+                if (foundEntity.GetDraft() != null)
+                    return foundEntity.GetDraft();
+                return foundEntity;
+            });
+
+            var IdList = foundItems.ToDictionary(f => f.EntityGuid, f => f.EntityId);
+
+            return IdList;
         }
 
 

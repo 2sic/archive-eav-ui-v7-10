@@ -18,7 +18,20 @@
                 for (var ei = 0; ei < itmCopy.length; ei++)
                     angular.forEach(itmCopy[ei].Entity.Attributes, removeTempValue);
 
-                return $http.post("eav/entities/savemany", itmCopy, { params: { appId: appId } });
+                return $http.post("eav/entities/savemany", itmCopy, { params: { appId: appId } }).then(function (serverKeys) {
+                    var syncUpdatedKeys = function(value, key) {
+                        // first ensure we don't break something
+                        var ent = value.Entity;
+                        if ((ent.Id === null || ent.Id === 0) && (ent.Guid !== null || typeof (ent.Guid) !== "undefined" || ent.Guid !== "00000000-0000-0000-0000-000000000000")) {
+                            // try to find it in the return material to re-assign it
+                            var newId = serverKeys.data[ent.Guid];
+                            value.Entity.Id = newId;
+                            value.Header.ID = newId;
+                        }
+                    };
+                    angular.forEach(items, syncUpdatedKeys);
+                    // todo: re-sync IDs returned from server
+                });
             };
 
             svc.delete = function del(type, id) {
