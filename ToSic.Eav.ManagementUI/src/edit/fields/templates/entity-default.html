@@ -1,12 +1,14 @@
 ﻿<div class="eav-entityselect">
 	<div ui-tree="options" data-empty-place-holder-enabled="false">
 		<ol ui-tree-nodes ng-model="chosenEntities">
-			<li ng-repeat="item in chosenEntities" ui-tree-node class="eav-entityselect-item">
-				<div ui-tree-handle>
-					<span title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
-					<a data-nodrag title="Remove this item" ng-click="remove(this)" class="eav-entityselect-item-remove">[remove]</a>
-				</div>
-			</li>
+		    <li ng-repeat="item in chosenEntities" ui-tree-node class="eav-entityselect-item">
+		        <div ui-tree-handle>
+		            <span title="{{getEntityText(item) + ' (' + item + ')'}}"><i icon="resize-vertical"></i>{{getEntityText(item)}}</span>
+		            <a data-nodrag title="Remove this item" ng-click="remove(this)" class="eav-entityselect-item-remove">
+		                <i icon="remove"></i>
+		            </a>
+		        </div>
+		    </li>
 		</ol>
 	</div>
 
