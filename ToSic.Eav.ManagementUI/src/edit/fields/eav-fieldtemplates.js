@@ -21,7 +21,7 @@
 	            // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
 	            if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
 	                var o = options.templateOptions.settings.String.DropdownValues;
-	                o = o.replace("\r", "").split("\n");
+	                o = o.replace("\r", "").replace("").split("\n");
 	                o = o.map(function (e, i) {
 	                    var s = e.split(":");
 	                    return {
