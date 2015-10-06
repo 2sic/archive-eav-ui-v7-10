@@ -164,10 +164,12 @@ namespace ToSic.Eav.WebApi
             var foundItems = items.Select(e =>
             {
                 var foundEntity = cache.LightList.FirstOrDefault(c => e.Entity.Guid == c.EntityGuid);
+                if (foundEntity == null)
+                    return null;
                 if (foundEntity.GetDraft() != null)
                     return foundEntity.GetDraft();
                 return foundEntity;
-            });
+            }).Where(e => e != null);
 
             var IdList = foundItems.ToDictionary(f => f.EntityGuid, f => f.EntityId);
 
