@@ -30,7 +30,8 @@
                         }
                     };
                     angular.forEach(items, syncUpdatedKeys);
-                    // todo: re-sync IDs returned from server
+
+                    return serverKeys;
                 });
             };
 
