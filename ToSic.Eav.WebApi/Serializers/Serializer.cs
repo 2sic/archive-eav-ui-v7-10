@@ -114,7 +114,11 @@ namespace ToSic.Eav.Serializers
             {
 				var value = entity.GetBestValue(v.Name, new[] { language }, true);
                 if (v.Type == "Entity" && value is Data.EntityRelationship)
-                    return ((Data.EntityRelationship) value).Select(p => new {Id = p.EntityId, Title = p.GetBestValue("EntityTitle").ToString()}).ToList();
+                    return ((Data.EntityRelationship) value).Select(p => new
+                    {
+                        Id = p.EntityId,
+                        Title = p.GetBestValue("EntityTitle")?.ToString()
+                    }).ToList();
 				return value;
 				
             }, StringComparer.OrdinalIgnoreCase);

@@ -2,13 +2,13 @@
 	<div ui-tree="options" data-empty-placeholder-enabled="false">
 		<ol ui-tree-nodes ng-model="chosenEntities">
 			<li ng-repeat="item in chosenEntities" ui-tree-node class="eav-entityselect-item">
-			    <div ui-tree-handle>
+				<div ui-tree-handle>
 			        <i icon="move" class="pull-left eav-entityselect-sort" ng-show="to.settings.Entity.AllowMultiValue"></i>
 			        <span title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
 			        <a data-nodrag title="Remove this item" ng-click="remove(this)" class="eav-entityselect-item-remove">
 			            <i icon="remove-circle"></i>
 			        </a>
-			    </div>
+				</div>
 			</li>
 		</ol>
 	</div>

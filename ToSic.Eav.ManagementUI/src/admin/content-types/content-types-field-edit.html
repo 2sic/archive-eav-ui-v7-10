@@ -3,11 +3,12 @@
     <h3 class="modal-title" translate="Fields.TitleEdit"></h3>
 </div>
 <div class="modal-body">
-    <table class="table table-hover">
+    <table class="table table-hover table-manage-eav">
         <thead>
         <tr>
-            <th translate="Fields.Table.Name"></th>
-            <th translate="Fields.Table.DataType">Data Type</th>
+            <th translate="Fields.Table.Name" style="width: 200px"></th>
+            <th translate="Fields.Table.DataType" style="width: 150px">Data Type</th>
+            <th></th>
             <!-- <th translate="Fields.Table.InputType">Input Type</th> -->
         </tr>
         </thead>
@@ -15,14 +16,11 @@
         <tr ng-repeat="item in vm.items">
             <td><input ng-model="item.StaticName" ng-required="true"/></td>
             <td><select ng-model="item.Type" ng-options="o for o in vm.types track by o"></select></td>
-            <!-- <td></td> -->
-        </tr>
-        <tr ng-if="!vm.items.length">
-            <td colspan="100" translate="General.Messages.NothingFound"></td>
+             <td></td> 
         </tr>
         </tbody>
     </table>
 </div>
 <div class="modal-footer">
-    <button icon="ok" class="btn btn-primary pull-left" type="button" ng-click="vm.ok()"></button>
+    <button icon="ok" class="btn btn-default pull-left" type="button" ng-click="vm.ok()"></button>
 </div>

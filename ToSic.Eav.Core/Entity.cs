@@ -188,7 +188,7 @@ namespace ToSic.Eav.Data
                 switch (attributeName)
                 {
                     case "EntityTitle":
-                        result = Title[dimensions];
+                        result = Title?[dimensions];
 		                attribute = Title;
                         break;
                     case "EntityId":

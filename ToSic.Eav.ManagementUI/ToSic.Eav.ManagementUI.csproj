@@ -131,7 +131,15 @@
     <Content Include="src\admin\pipelines\query-stats.html" />
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
+    <Content Include="src\edit\fields\datetime-default.js" />
+    <Content Include="src\edit\fields\number-default.js" />
+    <Content Include="src\edit\fields\entity-default.js" />
+    <Content Include="src\edit\fields\string-textarea.js" />
+    <Content Include="src\edit\fields\string-dropdown.js" />
+    <Content Include="src\edit\fields\string-default.js" />
     <Content Include="src\edit\fields\date-reconfigure-json.js" />
+    <Content Include="src\edit\fields\boolean-default.js" />
+    <Content Include="src\edit\fields\_eav-field-templates.js" />
     <Content Include="src\edit\fields\eav-label.css" />
     <Content Include="src\edit\fields\eav-label.html" />
     <Content Include="src\edit\ml-entities\entity-enhancer.js" />

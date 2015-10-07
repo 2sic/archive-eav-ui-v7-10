@@ -6,17 +6,17 @@
 		<button icon="plus" ng-click="vm.add()" class="btn btn-default"></button>
 
 		<!-- Table of content types for editing -->
-		<table class="table table-hover">
+		<table class="table table-hover table-manage-eav">
 			<thead>
 				<tr>
-					<th translate="Fields.Table.Title"></th>
-					<th translate="Fields.Table.Name"></th> 
-					<th translate="Fields.Table.Edit"></th>
-					<th translate="Fields.Table.Label"></th>
+					<th translate="Fields.Table.Title" class="mini-btn-1"></th>
+					<th translate="Fields.Table.Name" style="width: 200px"></th> 
+					<th translate="Fields.Table.DataType" style="width: 100px"></th>
+					<th translate="Fields.Table.Label" style="width: 150px" ></th>
 					<!--<th translate="Fields.Table.InputType"></th>-->
-					<th translate="Fields.Table.Notes"></th>
-					<th translate="Fields.Table.Sort"></th>
-					<th translate="Fields.Table.Action"></th>
+					<th translate="Fields.Table.Notes" style="width: 250px"></th>
+					<th translate="Fields.Table.Sort" class="mini-btn-2"></th>
+					<th translate="Fields.Table.Action" class="mini-btn-1"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -26,13 +26,18 @@
 							
 						</button>
 					</td>
-					<td><span tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
-					<td class="text-nowrap">
-						<button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)"> {{item.Type}}</button>
-					</td>
-					<td>{{item.Metadata['@All'].Attributes.Name.DefaultValue.TypedContents}}</td>
+					<td><a tooltip="{{ 'Id: ' + item.Id}}" ng-click="vm.createOrEditMetadata(item, item.Type)">{{item.StaticName}}</a></td>
+				    <td class="text-nowrap">
+				        {{item.Type}}
+				        <!-- <button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)"> {{item.Type}}</button> -->
+				    </td>
+                    <td class="text-nowrap">
+                        {{item.Metadata.All.Name}}
+                    </td>
 					<!--<td>-</td>-->
-					<td>{{item.Metadata['@All'].Attributes.Notes.DefaultValue.TypedContents}}</td>
+                    <td class="text-nowrap">
+                        {{item.Metadata.All.Notes}}
+                    </td>
 
 					<td class="text-nowrap">
 						<button icon="arrow-up" type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)"></button>

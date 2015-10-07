@@ -48,7 +48,20 @@ namespace ToSic.Eav.Data
 
         public object SerializableObject
         {
-            get { return ((IValue<T>)this).TypedContents; }
+            get
+            {
+                var typedObject = ((IValue<T>)this).TypedContents;
+
+                // special case with list of related entities - should return array of guids
+                var maybeRelationshipList = typedObject as EntityRelationship;
+                if (maybeRelationshipList != null)
+                {
+                    var entityGuids = maybeRelationshipList.Select(e => e.EntityGuid);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+                    return entityGuids.ToList();
+                }
+
+                return typedObject;
+            }
         }
 
         public Value(T typedContents)

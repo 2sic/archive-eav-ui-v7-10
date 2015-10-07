@@ -14,32 +14,34 @@
             <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>
         </span>
         <!-- Table of content types for editing -->
-        <table class="table table-hover">
+        <table class="table table-hover" style="table-layout: fixed; width: 100%">
             <thead>
                 <tr>
-                    <th translate="ContentTypes.TypesTable.Name"></th>
-                    <th translate="ContentTypes.TypesTable.Description"></th>
-                    <th translate="ContentTypes.TypesTable.Fields"></th>
-                    <th translate="ContentTypes.TypesTable.Items"></th>
-                    <th translate="ContentTypes.TypesTable.Actions"></th>
-                    <th> </th>
+                    <th translate="ContentTypes.TypesTable.Items" class="col-id"></th>
+                    <th translate="ContentTypes.TypesTable.Name" style="width: 50%"></th>
+                    <th translate="ContentTypes.TypesTable.Description" style="width: 50%"></th>
+                    <th translate="ContentTypes.TypesTable.Fields" class="mini-btn-2"></th>
+                    <th translate="ContentTypes.TypesTable.Actions" class="mini-btn-3"></th>
+                    <th style="width: 40px"> </th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'">
-                    <td><a ng-click="vm.edit(item)" target="_self">{{item.Name}}</a></td>
-                    <td>{{item.Description}}</td>
+                    <td style="text-align: center"> {{item.Items}} </td>
                     <td>
-                        <button type="button" class="btn btn-xs btn-default" ng-click="vm.editFields(item)">
-                            <span icon="cog">&nbsp;{{item.Fields}}</span>
-                        </button>
+                        <a class="text-nowrap hide-overflow-text" style="max-width: 400px" ng-click="vm.editItems(item)" target="_self" tooltip="{{item.Name}}">{{item.Name}}</a>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-xs btn-default" ng-click="vm.editItems(item)">
-                            <span icon="list">&nbsp;{{item.Items}}</span>
+                        <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
+                            <span icon="list">&nbsp;{{item.Fields}}</span>
                         </button>
                     </td>
+
                     <td class="text-nowrap">
+                        <button icon="info-sign" tooltip="{{ 'ContentTypes.Buttons.Rename' | translate }}" type="button" class="btn btn-xs" ng-click="vm.edit(item)"></button>
                         <button icon="export" tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openExport(item)"></button>
                         <button icon="import" tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openImport(item)"></button>
                         <button icon="user" type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"></button>
