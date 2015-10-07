@@ -35,12 +35,15 @@ module.exports = function (grunt) {
 
             // promise-window just to be sure we can use it till all old dialogs have been removed
 			"bower_components/promise-window/dist/promise-window.min.js",
-
+			
+			// required for field templates
+			"bower_components/angular-ui-tree/dist/angular-ui-tree.min.js"
 		],
 		cssFiles: [
             "bower_components/bootstrap/dist/css/bootstrap.min.css",
             "bower_components/bootstrap/dist/css/bootstrap-theme.min.css",
-            "bower_components/angularjs-toaster/toaster.min.css"
+            "bower_components/angularjs-toaster/toaster.min.css",
+						"bower_components/angular-ui-tree/dist/angular-ui-tree.min.css"
 		],
 		fontFiles: [
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2",

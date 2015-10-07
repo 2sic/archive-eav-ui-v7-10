@@ -19,7 +19,8 @@
     "angularjs-toaster": "0.4.15",
     "angular-google-maps": "~2.2.0",
     "jquery": "2.1.4",
-    "jquery-ui": "1.11.4"
+    "jquery-ui": "1.11.4",
+    "angular-ui-tree": "~2.9.0"
   },
   "private": true,
   "resolutions": {
