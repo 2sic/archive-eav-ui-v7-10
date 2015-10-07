@@ -193,7 +193,7 @@ namespace ToSic.Eav.WebApi
                 importEntity.EntityGuid = newData.Guid;
             }
             importEntity.IsPublished = newData.IsPublished;
-                                             // todo 2rm - date picker shouldn't have time zones (maybe talk to 2tk before fixing the  bug)
+
 
             // Content type
             importEntity.AttributeSetStaticName = newData.Type.StaticName;
@@ -217,7 +217,7 @@ namespace ToSic.Eav.WebApi
             
             foreach (var attribute in newData.Attributes)
             {
-                var attDef = attributeSet.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
+                var attDef = attributeSet[attribute.Key];//.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
                 var attributeType = attDef.Type;
 
                 foreach (var value in attribute.Value.Values)

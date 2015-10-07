@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ToSic.Eav.Data
 {
@@ -37,6 +38,15 @@ namespace ToSic.Eav.Data
 		/// Dictionary with all Attribute Definitions
         /// </summary>
         public IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
+
+        public IAttributeBase this[string fieldName]
+        {
+            get {
+                var found = AttributeDefinitions.Where(a => a.Value.Name == fieldName).Select(x => x.Value).FirstOrDefault();
+                return found; 
+            }
+        }
+
         #endregion
 
         /// <summary>

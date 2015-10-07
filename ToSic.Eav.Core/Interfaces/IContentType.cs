@@ -31,6 +31,9 @@ namespace ToSic.Eav
         /// </summary>
         IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
 
+        // A simple indexer to get an attribute
+        IAttributeBase this[string fieldName] { get; }
+
         /// <summary>
         /// Get the scope of the Content Type
         /// </summary>
