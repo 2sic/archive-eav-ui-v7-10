@@ -37,6 +37,9 @@ module.exports = function (grunt) {
             // promise-window just to be sure we can use it till all old dialogs have been removed
 			"bower_components/promise-window/dist/promise-window.min.js",
 
+            // dropzone for uploads
+            "bower_components/dropzone/dist/dropzone.js"
+
 		],
 		cssFiles: [
             "bower_components/bootstrap/dist/css/bootstrap.min.css",

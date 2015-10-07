@@ -20,7 +20,8 @@
     "angular-google-maps": "~2.2.0",
     "jquery": "2.1.4",
     "jquery-ui": "1.11.4",
-    "angular-ui-tree": "~2.9.0"
+    "angular-ui-tree": "~2.9.0",
+    "dropzone": "4.0.1"
   },
   "private": true,
   "resolutions": {
