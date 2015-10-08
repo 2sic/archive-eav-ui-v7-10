@@ -131,6 +131,7 @@
     <Content Include="src\admin\pipelines\query-stats.html" />
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
+    <Content Include="src\edit\fields\empty-default.js" />
     <Content Include="src\edit\fields\datetime-default.js" />
     <Content Include="src\edit\fields\number-default.js" />
     <Content Include="src\edit\fields\entity-default.js" />
@@ -139,9 +140,14 @@
     <Content Include="src\edit\fields\string-default.js" />
     <Content Include="src\edit\fields\date-reconfigure-json.js" />
     <Content Include="src\edit\fields\boolean-default.js" />
+    <Content Include="src\edit\fields\templates\empty-default.html" />
+    <Content Include="src\edit\fields\templates\boolean-default.html" />
     <Content Include="src\edit\fields\_eav-field-templates.js" />
-    <Content Include="src\edit\fields\eav-label.css" />
-    <Content Include="src\edit\fields\eav-label.html" />
+    <Content Include="src\edit\wrappers\field-group.html" />
+    <Content Include="src\edit\wrappers\field-group.js" />
+    <Content Include="src\edit\wrappers\eav-label.js" />
+    <Content Include="src\edit\wrappers\eav-label.css" />
+    <Content Include="src\edit\wrappers\eav-label.html" />
     <Content Include="src\edit\ml-entities\entity-enhancer.js" />
     <Content Include="src\admin\services\svc-creator.js" />
     <Content Include="src\admin\services\toaster.js" />
@@ -154,8 +160,8 @@
     <Content Include="src\edit\localization\language-switcher.html" />
     <Content Include="src\edit\localization\multilevel-dropdown-menu.css" />
     <Content Include="src\edit\services\entitiesSvc.js" />
-    <Content Include="src\edit\wrappers\edit-entity-wrapper.html" />
-    <Content Include="src\edit\wrappers\edit-entity-wrapper.js" />
+    <Content Include="src\edit\form\main-form.html" />
+    <Content Include="src\edit\form\main-form.js" />
     <Content Include="src\edit\form\edit-single-entity.html" />
     <Content Include="src\edit\form\edit-single-entity-controller.js" />
     <Content Include="src\edit\fields\eav-fieldtemplates.js" />

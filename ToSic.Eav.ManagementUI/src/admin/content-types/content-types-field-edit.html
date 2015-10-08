@@ -15,7 +15,7 @@
         <tbody>
         <tr ng-repeat="item in vm.items">
             <td><input ng-model="item.StaticName" ng-required="true"/></td>
-            <td><select ng-model="item.Type" ng-options="o for o in vm.types track by o"></select></td>
+            <td><select ng-model="item.Type" ng-options="o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' "></select></td>
              <td></td> 
         </tr>
         </tbody>

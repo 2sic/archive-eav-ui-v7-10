@@ -135,9 +135,18 @@ namespace ToSic.Eav.WebApi
         {
             // clean up content-type names in case it's using the nice-name instead of the static name...
             var cache = DataSource.GetCache(null, appId);
-            foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)))
+            foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
                 var ct = cache.GetContentType(itm.ContentTypeName);
+                if (ct == null)
+                {
+                    if (itm.ContentTypeName.StartsWith("@"))
+                    {
+                        items.Remove(itm);
+                        continue;
+                    }
+                    throw new Exception("Can't find content type " + itm.ContentTypeName);
+                }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
             };

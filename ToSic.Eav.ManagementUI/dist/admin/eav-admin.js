@@ -560,7 +560,7 @@
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    function contentTypeEditController(appId, item, contentTypeSvc, $modalInstance) {
+    function contentTypeEditController(appId, item, contentTypeSvc, translate, $modalInstance) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
@@ -576,7 +576,7 @@
             $modalInstance.dismiss("cancel");
         };
     }
-    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "$modalInstance"];
+    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "translate", "$modalInstance"];
 
 }());
 /*jshint laxbreak:true */
@@ -734,7 +734,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-field-edit.html',
-    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 200px\"></th><th translate=Fields.Table.DataType style=\"width: 150px\">Data Type</th><th></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=\"true\"></td><td><select ng-model=item.Type ng-options=\"o for o in vm.types track by o\"></select></td><td></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-default pull-left\" type=button ng-click=vm.ok()></button></div>"
+    "<div class=modal-header><button icon=remove class=\"btn pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 200px\"></th><th translate=Fields.Table.DataType style=\"width: 150px\">Data Type</th><th></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=\"true\"></td><td><select ng-model=item.Type ng-options=\"o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' \"></select></td><td></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-default pull-left\" type=button ng-click=vm.ok()></button></div>"
   );
 
 
@@ -1762,7 +1762,7 @@ angular.module("EavAdminUi", ["ng",
 
             svc.openEditItems = function oel(items, closeCallback) {
                 var resolve = svc.CreateResolve({ items: items });
-                return svc.OpenModal("wrappers/edit-entity-wrapper.html", "EditEntityWrapperCtrl as vm", "lg", resolve, closeCallback);
+                return svc.OpenModal("form/main-form.html", "EditEntityWrapperCtrl as vm", "lg", resolve, closeCallback);
             };
 
             svc.openItemHistory = function ioh(entityId, closeCallback) {

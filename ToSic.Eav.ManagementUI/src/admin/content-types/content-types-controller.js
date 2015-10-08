@@ -77,7 +77,7 @@
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    function contentTypeEditController(appId, item, contentTypeSvc, $modalInstance) {
+    function contentTypeEditController(appId, item, contentTypeSvc, translate, $modalInstance) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 

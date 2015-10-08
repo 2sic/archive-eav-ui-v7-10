@@ -53,7 +53,7 @@
 
     @if (ng == "content")
     {
-        <div eav-app="eavEditEntity" ng-include="'wrappers/edit-entity-wrapper.html'" ng-controller="EditEntityWrapperCtrl as vm" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+        <div eav-app="eavEditEntity" ng-include="'form/main-form.html'" ng-controller="EditEntityWrapperCtrl as vm" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
     }
     @if (ng == "content-types")
     {

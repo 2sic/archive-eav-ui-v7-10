@@ -37,35 +37,59 @@
 			    vm.debug = result;
 
 			    // Transform EAV content type configuration to formFields (formly configuration)
+		            var lastGroupHeadingId = 0;
 			    angular.forEach(result.data, function (e, i) {
 
 			        if (e.Metadata.All === undefined)
 			            e.Metadata.All = {};
 
-			        vm.formFields.push({
+			        var fieldType = getType(e);
+
+                    // always remember the last heading so all the following fields know to look there for collapse-setting
+			        var isFieldHeading = (fieldType === "empty-default");
+			        if(isFieldHeading)  
+			            lastGroupHeadingId = i;
+
+			        var nextField = {
 			            key: e.StaticName,
-			            type: getType(e),
+			            type: fieldType,
 			            templateOptions: {
 			                required: !!e.Metadata.All.Required,
 			                label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
 			                description: $sce.trustAsHtml(e.Metadata.All.Notes),
 			                settings: e.Metadata,
 			                header: $scope.header,
-                            langReadOnly: false // Will be set by the language directive to override the disabled state
+                            canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
+			                fieldGroup: vm.formFields[lastGroupHeadingId],
+			                langReadOnly: false // Will be set by the language directive to override the disabled state
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
-			            expressionProperties: { // Needed for dynamic update of the disabled property
-			                'templateOptions.disabled': 'options.templateOptions.disabled'
+			            expressionProperties: {
+			                // Needed for dynamic update of the disabled property
+			                'templateOptions.disabled': 'options.templateOptions.disabled' 
 			            },
-			            watcher: {
-			                expression: function (field, scope, stop) {
-			                    return (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) || field.templateOptions.langReadOnly;
+			            watcher: [
+			                {
+			                    expression: function(field, scope, stop) {
+			                        return (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) || field.templateOptions.langReadOnly;
+			                    },
+			                    listener: function(field, newValue, oldValue, scope, stopWatching) {
+			                        field.templateOptions.disabled = newValue;
+			                    }
 			                },
-			                listener: function(field, newValue, oldValue, scope, stopWatching) {
-			                    field.templateOptions.disabled = newValue;
+                            {   // handle collapse / open
+                                expression: function (field, scope, stop) {
+                                    // only change values if it can collapse...
+			                        return (field.templateOptions.canCollapse) ? field.templateOptions.fieldGroup.templateOptions.collapseGroup : null;
+			                    },
+			                    listener: function (field, newValue, oldValue, scope, stopWatching) {
+			                        if (field.templateOptions.canCollapse)
+			                            field.templateOptions.collapse = newValue;
+			                    }
 			                }
-			            }
-			        });
+			            ]
+			        };
+			        vm.formFields.push(nextField);
 			    });
 
 		    });
