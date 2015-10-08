@@ -13,7 +13,7 @@
 	    // this is the callback after saving - needed to close everything
 	    vm.afterSave = function(result) {
 	        if (result.status === 200)
-	            vm.close();
+	            vm.close(result);
 	        else {
 	            alert("Something went wrong - maybe parts worked, maybe not. Sorry :(");
 	        }
@@ -25,8 +25,8 @@
 	        }
 	    };
 
-	    vm.close = function () {
-		    $modalInstance.dismiss("cancel");
+	    vm.close = function (result) {
+		    $modalInstance.close(result);
 		};
 
 	    $scope.$on('modal.closing', function(e) {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.UI;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
@@ -132,6 +133,15 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
+            // clean up content-type names in case it's using the nice-name instead of the static name...
+            var cache = DataSource.GetCache(null, appId);
+            foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)))
+            {
+                var ct = cache.GetContentType(itm.ContentTypeName);
+                if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
+                    itm.ContentTypeName = ct.StaticName;
+            };
+
             var list = items.Select(p => new EntityWithHeader
             {
                 Header = p,

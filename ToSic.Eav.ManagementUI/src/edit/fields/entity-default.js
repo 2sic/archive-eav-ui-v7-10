@@ -15,7 +15,7 @@ angular.module("eavFieldTemplates")
         });
 
     })
-    .controller("FieldTemplate-EntityCtrl", function($scope, $http, $filter, $modal, appId) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $modal, appId, eavAdminDialogs) {
 
         if (!$scope.to.settings.Entity)
             $scope.to.settings.Entity = {};
@@ -28,7 +28,7 @@ angular.module("eavFieldTemplates")
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
 
         $scope.addEntity = function() {
-            if ($scope.selectedEntity == "new")
+            if ($scope.selectedEntity === "new")
                 $scope.openNewEntityDialog();
             else
                 $scope.chosenEntities.push($scope.selectedEntity);
@@ -40,29 +40,21 @@ angular.module("eavFieldTemplates")
         };
 
         $scope.openNewEntityDialog = function() {
+            function reload(result) {
+                if (result.data === null || result.data === undefined)
+                    return;
 
-            var modalInstance = $modal.open({
-                template: "<div style=\"padding:20px;\"><edit-content-group edit=\"vm.edit\"></edit-content-group></div>",
-                controller: function(entityType) {
-                    var vm = this;
-                    vm.edit = { contentTypeName: entityType };
-                },
-                controllerAs: "vm",
-                resolve: {
-                    entityType: function() {
-                        return $scope.to.settings.Entity.EntityType;
-                    }
-                }
-            });
+                $scope.getAvailableEntities().then(function () {
+                    $scope.chosenEntities.push(Object.keys(result.data)[0]);
+                });
+            }
 
-            modalInstance.result.then(function() {
-                $scope.getAvailableEntities();
-            });
+            eavAdminDialogs.openItemNew($scope.to.settings.Entity.EntityType, reload);
 
         };
 
         $scope.getAvailableEntities = function() {
-            $http({
+            return $http({
                 method: "GET",
                 url: "eav/EntityPicker/getavailableentities",
                 params: {

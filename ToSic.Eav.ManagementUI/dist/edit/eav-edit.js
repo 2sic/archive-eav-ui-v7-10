@@ -118,7 +118,7 @@ angular.module("eavFieldTemplates")
         });
 
     }])
-    .controller("FieldTemplate-EntityCtrl", ["$scope", "$http", "$filter", "$modal", "appId", function($scope, $http, $filter, $modal, appId) {
+    .controller("FieldTemplate-EntityCtrl", ["$scope", "$http", "$filter", "$modal", "appId", "eavAdminDialogs", function ($scope, $http, $filter, $modal, appId, eavAdminDialogs) {
 
         if (!$scope.to.settings.Entity)
             $scope.to.settings.Entity = {};
@@ -131,7 +131,7 @@ angular.module("eavFieldTemplates")
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
 
         $scope.addEntity = function() {
-            if ($scope.selectedEntity == "new")
+            if ($scope.selectedEntity === "new")
                 $scope.openNewEntityDialog();
             else
                 $scope.chosenEntities.push($scope.selectedEntity);
@@ -143,29 +143,21 @@ angular.module("eavFieldTemplates")
         };
 
         $scope.openNewEntityDialog = function() {
+            function reload(result) {
+                if (result.data === null || result.data === undefined)
+                    return;
 
-            var modalInstance = $modal.open({
-                template: "<div style=\"padding:20px;\"><edit-content-group edit=\"vm.edit\"></edit-content-group></div>",
-                controller: ["entityType", function(entityType) {
-                    var vm = this;
-                    vm.edit = { contentTypeName: entityType };
-                }],
-                controllerAs: "vm",
-                resolve: {
-                    entityType: function() {
-                        return $scope.to.settings.Entity.EntityType;
-                    }
-                }
-            });
+                $scope.getAvailableEntities().then(function () {
+                    $scope.chosenEntities.push(Object.keys(result.data)[0]);
+                });
+            }
 
-            modalInstance.result.then(function() {
-                $scope.getAvailableEntities();
-            });
+            eavAdminDialogs.openItemNew($scope.to.settings.Entity.EntityType, reload);
 
         };
 
         $scope.getAvailableEntities = function() {
-            $http({
+            return $http({
                 method: "GET",
                 url: "eav/EntityPicker/getavailableentities",
                 params: {
@@ -995,9 +987,9 @@ function enhanceEntity(entity) {
             svc.newEntity = function(header) {
                 return {
                     Id: null,
-                    Guid: Header.Guid, // generateUuid(),
+                    Guid: header.Guid, // generateUuid(),
                     Type: {
-                        StaticName: Header.ContentTypeName // contentTypeName
+                        StaticName: header.ContentTypeName // contentTypeName
                     },
                     Attributes: {},
                     IsPublished: true
@@ -1046,7 +1038,7 @@ function enhanceEntity(entity) {
 	    // this is the callback after saving - needed to close everything
 	    vm.afterSave = function(result) {
 	        if (result.status === 200)
-	            vm.close();
+	            vm.close(result);
 	        else {
 	            alert("Something went wrong - maybe parts worked, maybe not. Sorry :(");
 	        }
@@ -1058,8 +1050,8 @@ function enhanceEntity(entity) {
 	        }
 	    };
 
-	    vm.close = function () {
-		    $modalInstance.dismiss("cancel");
+	    vm.close = function (result) {
+		    $modalInstance.close(result);
 		};
 
 	    $scope.$on('modal.closing', function(e) {
