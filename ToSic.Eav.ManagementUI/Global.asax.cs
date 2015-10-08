@@ -17,40 +17,8 @@ namespace ToSic.Eav.ManagementUI
                 routeTemplate: "api/EAV/{controller}/{action}"
             );
 
-
-
             new Configuration().ConfigureDefaultMappings(Factory.Container);
             Factory.Container.RegisterType(typeof(IEavValueConverter), typeof(NeutralValueConverter), new InjectionConstructor());
-        }
-
-        protected void Session_Start(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_AuthenticateRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_Error(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Session_End(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_End(object sender, EventArgs e)
-        {
-
         }
     }
 }

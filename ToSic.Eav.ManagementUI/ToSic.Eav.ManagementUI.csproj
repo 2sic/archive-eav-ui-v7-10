@@ -111,7 +111,6 @@
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
-    <Content Include="Scripts\images\ui-ajax-loader.gif" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export-service.js" />
@@ -177,36 +176,13 @@
     <Content Include="src\edit\ml-entities\specs\eav-content-ml.spec.js" />
     <Content Include="src\edit\ml-entities\tests\SpecRunner.html" />
     <Content Include="gruntfile.js" />
-    <Content Include="CSS\bootstrap-theme.min.css" />
-    <Content Include="CSS\bootstrap.min.css" />
     <Content Include="bower.json" />
     <Content Include="EAV\AngularServices\eav-configuration.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />
-    <Content Include="Scripts\angular-animate.min.js" />
-    <Content Include="Scripts\angular-resource.min.js" />
-    <Content Include="Scripts\angular-ui-tree.min.css" />
-    <Content Include="Scripts\angular-ui-tree.min.js" />
-    <Content Include="Scripts\angular.min.js" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Scripts\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Scripts\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="Scripts\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="Scripts\images\ui-icons_222222_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_454545_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_888888_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="Scripts\jquery-1.9.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.10.3.css" />
-    <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
     <Content Include="src\admin\content-items\content-edit-controller.js" />
     <Content Include="src\admin\content-items\content-edit.html" />
     <Content Include="src\admin\content-items\content-items-controller.js" />
@@ -246,8 +222,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
     <Content Include="src\i18n\admin-en.json" />
@@ -259,16 +233,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Site.master.cs">
-      <DependentUpon>Site.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.master.designer.cs">
-      <DependentUpon>Site.master</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\edit\ml-entities\specs\helpers\" />
