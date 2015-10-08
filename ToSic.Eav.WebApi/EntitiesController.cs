@@ -109,7 +109,7 @@ namespace ToSic.Eav.WebApi
                     {
                         AppId = appId,
                         Id = duplicateFrom.HasValue ? 0 : found.EntityId,
-                        Guid = duplicateFrom.HasValue ? Guid.Empty: found.EntityGuid,
+                        Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
                         Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
                         TitleAttributeName = found.Title == null ? null : found.Title.Name,
@@ -137,6 +137,13 @@ namespace ToSic.Eav.WebApi
                 Header = p,
                 Entity = p.EntityId != 0 || p.DuplicateEntity.HasValue ? GetOne(appId, p.ContentTypeName, p.EntityId, p.DuplicateEntity) : null
             }).ToList();
+
+            // make sure the header has the right "new" guid as well - as this is the primary one to work with
+            // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
+            foreach(var i in list.Where(i => i.Header.Guid == null).ToArray()) // must do toarray, to prevent re-checking after setting the guid
+                i.Header.Guid = (i.Entity != null && i.Entity.Guid != null && i.Entity.Guid != Guid.Empty) 
+                    ? i.Entity.Guid 
+                    : Guid.NewGuid();
             return list;
         }
 
@@ -148,6 +155,16 @@ namespace ToSic.Eav.WebApi
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         { 
             var convertedItems = new List<ImportEntity>();
+
+            foreach (var i in items)
+                // must do toarray, to prevent re-checking after setting the guid
+                i.Entity.Guid = i.Header.Guid.Value;
+
+            // check valid Guids, because they are held in 2 places, and they MUST always be the same
+
+
+            if (items.FirstOrDefault(i => i.Header.Guid != i.Entity.Guid) != null)
+                throw new Exception("Guids are out of Sync - will stop for your protection");
 
             foreach (var entity in items)
                 if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
@@ -164,7 +181,7 @@ namespace ToSic.Eav.WebApi
             var cache = DataSource.GetCache(null, appId);
             var foundItems = items.Select(e =>
             {
-                var foundEntity = cache.LightList.FirstOrDefault(c => e.Entity.Guid == c.EntityGuid);
+                var foundEntity = cache.LightList.FirstOrDefault(c => e.Header.Guid == c.EntityGuid);
                 if (foundEntity == null)
                     return null;
                 if (foundEntity.GetDraft() != null)
@@ -185,8 +202,10 @@ namespace ToSic.Eav.WebApi
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
             if (newData.Id == 0 && newData.Guid == Guid.Empty)
-            {   // New entity
-                importEntity.EntityGuid = Guid.NewGuid();
+            {   // this is not allowed any more - all must have a GUID - either as loaded, or as given "new" by the client
+                throw new Exception("Item must have a GUID");
+                // New entity
+                // importEntity.EntityGuid = Guid.NewGuid();
             }
             else
             {

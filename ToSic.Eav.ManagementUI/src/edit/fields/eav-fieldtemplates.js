@@ -4,7 +4,7 @@
 
 	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
 
-	var eavFieldTemplates = angular.module("eavFieldTemplates", ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates", "ui.tree"])
+	var eavFieldTemplates = angular.module("eavFieldTemplates")//, ["formly", "formlyBootstrap", "ui.bootstrap", "eavLocalization", "eavEditTemplates", "ui.tree"])
         .config(function (formlyConfigProvider) {
 
 

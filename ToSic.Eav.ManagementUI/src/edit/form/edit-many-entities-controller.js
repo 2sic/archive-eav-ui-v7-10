@@ -66,11 +66,11 @@
 
                     // If the entity is null, it does not exist yet. Create a new one
                     if (!vm.items[i].Entity && !!vm.items[i].Header.ContentTypeName)
-                        vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header.ContentTypeName);
+                        vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header);
 
-                    else {
-                        entitiesSvc.ensureGuid(vm.items[i]);
-                    }
+                    //else {
+                    //    entitiesSvc.ensureGuid(vm.items[i]);
+                    //}
 
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
                 });

@@ -11,6 +11,9 @@ namespace ToSic.Eav.WebApi.Formats
         // simple entity identifier (to edit existing)...
         public int EntityId { get; set; }
 
+        // the Guid
+        public Guid? Guid { get; set; }
+
         // ...or content-type (for new)
         public string ContentTypeName { get; set; }
 
