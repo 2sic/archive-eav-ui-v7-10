@@ -48,9 +48,9 @@
             svc.newEntity = function(header) {
                 return {
                     Id: null,
-                    Guid: Header.Guid, // generateUuid(),
+                    Guid: header.Guid, // generateUuid(),
                     Type: {
-                        StaticName: Header.ContentTypeName // contentTypeName
+                        StaticName: header.ContentTypeName // contentTypeName
                     },
                     Attributes: {},
                     IsPublished: true
