@@ -6,7 +6,7 @@ angular.module("eavFieldTemplates")
     .config(function(formlyConfigProvider) {
         formlyConfigProvider.setType({
             name: "empty-default",
-            templateUrl: "fields/templates/empty-default.html",
+            templateUrl: "fields/empty/empty-default.html",
             wrapper: ["fieldGroup"]
         });
     });

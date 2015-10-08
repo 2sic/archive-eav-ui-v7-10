@@ -33,7 +33,7 @@ angular.module("eavFieldTemplates")
     .config(["formlyConfigProvider", function(formlyConfigProvider) {
         formlyConfigProvider.setType({
             name: "boolean-default",
-            templateUrl: "fields/templates/boolean-default.html",
+            templateUrl: "fields/boolean/boolean-default.html",
             wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
         });
     }]);
@@ -109,7 +109,7 @@ angular.module("eavFieldTemplates")
     .config(["formlyConfigProvider", function(formlyConfigProvider) {
         formlyConfigProvider.setType({
             name: "empty-default",
-            templateUrl: "fields/templates/empty-default.html",
+            templateUrl: "fields/empty/empty-default.html",
             wrapper: ["fieldGroup"]
         });
     }]);
@@ -124,7 +124,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "entity-default",
-            templateUrl: "fields/templates/entity-default.html",
+            templateUrl: "fields/entity/entity-default.html",
             wrapper: ["eavLabel", "bootstrapHasError"],
             controller: "FieldTemplate-EntityCtrl"
         });
@@ -599,23 +599,23 @@ angular.module("eavFieldTemplates")
 angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('fields/templates/boolean-default.html',
+  $templateCache.put('fields/boolean/boolean-default.html',
     "<div class=checkbox><label><input type=checkbox class=formly-field-checkbox ng-model=value.Value> {{to.label}} {{to.required ? '*' : ''}}</label></div>"
   );
 
 
-  $templateCache.put('fields/templates/empty-default.html',
+  $templateCache.put('fields/empty/empty-default.html',
     "<span></span>"
   );
 
 
-  $templateCache.put('fields/templates/entity-default.html',
+  $templateCache.put('fields/entity/entity-default.html',
     "<div class=eav-entityselect><div ui-tree=options data-empty-placeholder-enabled=false><ol ui-tree-nodes ng-model=chosenEntities><li ng-repeat=\"item in chosenEntities\" ui-tree-node class=eav-entityselect-item><div ui-tree-handle><i icon=move class=\"pull-left eav-entityselect-sort\" ng-show=to.settings.Entity.AllowMultiValue></i> <span title=\"{{getEntityText(item) + ' (' + item + ')'}}\">{{getEntityText(item)}}</span> <a data-nodrag title=\"Remove this item\" ng-click=remove(this) class=eav-entityselect-item-remove><i icon=remove></i></a></div></li></ol></div><select class=\"eav-entityselect-selector form-control\" ng-model=selectedEntity ng-change=addEntity() ng-show=\"to.settings.Entity.AllowMultiValue || chosenEntities.length < 1\"><option value=\"\">-- choose --</option><option value=new ng-if=createEntityAllowed()>-- new --</option><option ng-repeat=\"item in availableEntities\" ng-disabled=\"chosenEntities.indexOf(item.Value) != -1\" value={{item.Value}}>{{item.Text}}</option></select></div>"
   );
 
 
   $templateCache.put('form/edit-many-entities.html',
-    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><h3><span ng-click=\"p.collapse = !p.collapse\">{{p.Header.Title ? p.Header.Title : 'Edit'}}</span> <span ng-if=p.Header.Group.SlotCanBeEmpty><span ng-if=p.Header.Group.SlotIsEmpty icon=ban-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed.\"></span> <span ng-if=!p.Header.Group.SlotIsEmpty icon=ok-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is open for editing. Click here to lock / remove it and revert to default.\"></span></span> <span class=pull-right ng-click=\"p.collapse = !p.collapse\"><span ng-if=p.collapse icon=plus-sign></span> <span ng-if=!p.collapse icon=minus-sign></span></span></h3><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl ng-hide=p.collapse></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-default submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button class=btn ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span> <span class=pull-right ng-if=false>todo: show more buttons... <button class=btn><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate }}\"></span></button></span><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
+    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\"><h3 class=clickable><span ng-click=\"p.collapse = !p.collapse\">{{p.Header.Title ? p.Header.Title : 'Edit'}}</span> <span ng-if=p.Header.Group.SlotCanBeEmpty><span ng-if=p.Header.Group.SlotIsEmpty icon=ban-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed.\"></span> <span ng-if=!p.Header.Group.SlotIsEmpty icon=ok-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is open for editing. Click here to lock / remove it and revert to default.\"></span></span> <span class=\"pull-right clickable\" ng-click=\"p.collapse = !p.collapse\"><span ng-if=p.collapse icon=plus-sign></span> <span ng-if=!p.collapse icon=minus-sign></span></span></h3><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl ng-hide=p.collapse></eav-edit-entity-form></div><button ng-disabled=!vm.isValid() ng-click=vm.save() class=\"btn btn-default submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button class=btn ng-click=vm.saveAndKeepOpen()><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> <span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\" ng-click=vm.togglePublish()></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span> <span class=pull-right ng-if=false>todo: show more buttons... <button class=btn><span icon=option-horizontal tooltip=\"{{ 'Button.MoreOptions' | translate }}\"></span></button></span><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
   );
 
 
@@ -650,7 +650,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/field-group.html',
-    "<div><span class=\"pull-right btn-sm\" ng-click=\"to.collapseGroup = !to.collapseGroup\"><span ng-if=to.collapseGroup icon=plus-sign></span> <span ng-if=!to.collapseGroup icon=minus-sign></span></span><h4 ng-click=\"to.collapseGroup = !to.collapseGroup\">{{to.label}}</h4><div ng-if=!to.collapseGroup style=\"padding: 5px\" ng-bind-html=to.description></div><formly-transclude></formly-transclude></div>"
+    "<div><span class=\"pull-right btn-sm clickable\" ng-click=\"to.collapseGroup = !to.collapseGroup\"><span ng-if=to.collapseGroup icon=plus-sign></span> <span ng-if=!to.collapseGroup icon=minus-sign></span></span><h4 class=clickable ng-click=\"to.collapseGroup = !to.collapseGroup\">{{to.label}}</h4><div ng-if=!to.collapseGroup style=\"padding: 5px\" ng-bind-html=to.description></div><formly-transclude></formly-transclude></div>"
   );
 
 }]);

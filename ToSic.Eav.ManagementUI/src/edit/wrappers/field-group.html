@@ -1,9 +1,9 @@
 ﻿<div>
-    <span class="pull-right btn-sm" ng-click="to.collapseGroup = !to.collapseGroup">
+    <span class="pull-right btn-sm clickable" ng-click="to.collapseGroup = !to.collapseGroup">
         <span ng-if="to.collapseGroup" icon="plus-sign"></span>
         <span ng-if="!to.collapseGroup" icon="minus-sign"></span>
     </span>
-    <h4 ng-click="to.collapseGroup = !to.collapseGroup">{{to.label}}</h4>
+    <h4 class="clickable" ng-click="to.collapseGroup = !to.collapseGroup">{{to.label}}</h4>
     <div ng-if="!to.collapseGroup" style="padding: 5px;" ng-bind-html="to.description">
     </div>
     <formly-transclude></formly-transclude>

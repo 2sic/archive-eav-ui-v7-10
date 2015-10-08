@@ -9,7 +9,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "entity-default",
-            templateUrl: "fields/templates/entity-default.html",
+            templateUrl: "fields/entity/entity-default.html",
             wrapper: ["eavLabel", "bootstrapHasError"],
             controller: "FieldTemplate-EntityCtrl"
         });
