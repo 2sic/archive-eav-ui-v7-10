@@ -258,6 +258,10 @@ namespace ToSic.Eav.WebApi
                 var attDef = attributeSet[attribute.Key];//.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
                 var attributeType = attDef.Type;
 
+                // don't save anything of the type empty - this is heading-only
+                if(attributeType == "Empty")
+                    continue;
+
                 foreach (var value in attribute.Value.Values)
                 {
                     var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
