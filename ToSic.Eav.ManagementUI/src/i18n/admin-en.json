@@ -170,7 +170,7 @@
         "DoP": "this is a draft of another published item",
         "D": "not published at the moment",
         "HD": "has draft: {{id}}",
-        "HP": "will replace published: {{id}}"
+        "HP": "will replace published"
       },
       "Export": {
         "Title": "Export Content / Data",

@@ -20,11 +20,14 @@
             <tbody>
             <tr ng-repeat="item in vm.items">
                 <td class="text-nowrap" style="text-align: right">
-                    <span tooltip="{{item.Guid}}">{{item.Id}}</span>
+                    <span tooltip="Id: {{item.Id}}
+RepoId: {{item.RepositoryId}}
+Guid: {{item.Guid}}">{{item.RepositoryId}}</span>
                 </td>
                 <td class="text-nowrap">
                     <span class="glyphicon" ng-class="{'glyphicon-ok-circle': item.IsPublished, 'glyphicon-ban-circle' : !item.IsPublished && !item.Published, 'glyphicon-record' : !item.IsPublished && item.Published }" tooltip="{{ 'Content.Publish.' + (item.IsPublished ? 'PnV': item.Published ? 'DoP' : 'D') | translate }}"></span>
-                    <span icon="{{ item.Draft ? 'paperclip' : item.Published ? 'export' : '' }}" tooltip="{{ (item.Draft ? 'Content.Publish.HD' :'') | translate:'{ id: item.Draft.RepositoryId}' }}{{ (item.Published ? 'Content.Publish.HP' :'') | translate:'{ id: item.Published.RepositoryId}' }}"></span>
+                    <span icon="{{ item.Draft ? 'paperclip' : item.Published ? 'export' : '' }}" tooltip="{{ (item.Draft ? 'Content.Publish.HD' :'') | translate:'{ id: item.Draft.RepositoryId}' }}
+{{ (item.Published ? 'Content.Publish.HP' :'') | translate }} #{{ item.Published.RepositoryId }}"></span>
                     <span ng-if="item.Metadata" tooltip="Metadata for type {{ item.Metadata.TargetType}}, id {{ item.Metadata.KeyNumber }}{{ item.Metadata.KeyString }}{{ item.Metadata.KeyGuid }}" icon="tag"></span>
                 </td>
                 <td class="text-nowrap">

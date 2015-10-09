@@ -13,10 +13,16 @@
 		</ol>
 	</div>
 
-	<select class="eav-entityselect-selector form-control" ng-model="selectedEntity" ng-change="addEntity()" ng-show="to.settings.Entity.AllowMultiValue || chosenEntities.length < 1">
-		<option value="">-- choose --</option>
-		<option value="new" ng-if="createEntityAllowed()">-- new --</option>
-		<option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
-	</select>
+    <select class="eav-entityselect-selector form-control" ng-model="selectedEntity" ng-change="addEntity()" ng-show="to.settings.Entity.AllowMultiValue || chosenEntities.length < 1">
+        <option value="">-- choose --</option>
+        <option value="new" ng-if="createEntityAllowed()">-- new --</option>
+        <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
+    </select>
 
+
+    <select class="eav-entityselect-selector form-control" ng-model="selectedEntity" ng-change="addEntity()" ng-show="to.settings.Entity.AllowMultiValue || chosenEntities.length < 1">
+        <option value="">-- choose --</option>
+        <option value="new" ng-if="createEntityAllowed()">-- new --</option>
+        <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
+    </select>
 </div>
