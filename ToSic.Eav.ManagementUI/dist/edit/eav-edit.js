@@ -22,7 +22,9 @@ angular.module("eavFieldTemplates",
         "formlyBootstrap",
         "ui.bootstrap",
         "eavLocalization",
-        "eavEditTemplates"
+        "eavEditTemplates",
+    //    "eavEditTemplates", 
+        "ui.tree"
     ]
 );
 /* 
