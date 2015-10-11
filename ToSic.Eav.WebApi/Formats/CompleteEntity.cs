@@ -10,8 +10,10 @@ namespace ToSic.Eav.WebApi.Formats
     public class EntityWithLanguages
     {
         public int Id;
-        [NonSerialized]
-        public Guid Guid;
+        [NonSerialized] public Guid Guid;
+
+        [NonSerialized] public int RepoId;
+
         public Type Type;
         public bool IsPublished;
         public string TitleAttributeName;

@@ -18,6 +18,7 @@ namespace ToSic.Eav.Import
         private readonly bool _leaveExistingValuesUntouched;
         private readonly bool _preserveUndefinedValues;
         private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
+        private readonly bool LargeImport;
         #endregion
 
         #region Properties
@@ -29,20 +30,21 @@ namespace ToSic.Eav.Import
             get { return _importLog; }
         }
 
-        bool PreventDraftSave { get; set; }
+        bool PreventUpdateOnDraftEntities { get; set; }
         #endregion
 
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true, bool preventDraftSave = true)
+        public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
             Context = EavDataController.Instance(zoneId, appId);
 
             Context.UserName = userName;
             _leaveExistingValuesUntouched = leaveExistingValuesUntouched;
             _preserveUndefinedValues = preserveUndefinedValues;
-            PreventDraftSave = preventDraftSave;
+            PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
+            LargeImport = largeImport;
         }
 
         /// <summary>
@@ -53,6 +55,7 @@ namespace ToSic.Eav.Import
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
             Context.PurgeAppCacheOnSave = false;
 
+            #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
             if (Context.SqlDb.Connection.State != ConnectionState.Open)
                 Context.SqlDb.Connection.Open();
@@ -60,44 +63,61 @@ namespace ToSic.Eav.Import
             var transaction = Context.SqlDb.Connection.BeginTransaction();
 
 			// Enhance the SQL timeout for imports
-			Context.SqlDb.CommandTimeout = 3600;
+            // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
+            // todo: on any error, cancel/rollback the transaction
+            if (LargeImport)
+                Context.SqlDb.CommandTimeout = 3600;
+            #endregion
 
-            // import AttributeSets if any were included
-            if (newAttributeSets != null)
+            try // run import, but rollback transaction if necessary
             {
-                foreach (var attributeSet in newAttributeSets)
-                    ImportAttributeSet(attributeSet);
 
-                Context.Relationships.ImportEntityRelationshipsQueue();
+                #region import AttributeSets if any were included
 
-				Context.AttribSet.EnsureSharedAttributeSets();
+                if (newAttributeSets != null)
+                {
+                    foreach (var attributeSet in newAttributeSets)
+                        ImportAttributeSet(attributeSet);
 
-                Context.SqlDb.SaveChanges();
+                    Context.Relationships.ImportEntityRelationshipsQueue();
+
+                    Context.AttribSet.EnsureSharedAttributeSets();
+
+                    Context.SqlDb.SaveChanges();
+                }
+
+                #endregion
+
+                #region import Entities
+                if (newEntities != null)
+                {
+                    foreach (var entity in newEntities)
+                        PersistOneImportEntity(entity);
+
+                    Context.Relationships.ImportEntityRelationshipsQueue();
+
+                    Context.SqlDb.SaveChanges();
+                }
+                #endregion
+
+                // Commit DB Transaction
+                if (commitTransaction)
+                {
+                    transaction.Commit();
+                    Context.SqlDb.Connection.Close();
+                }
+
+                // Purge Cache
+                if (purgeCache)
+                    DataSource.GetCache(Context.ZoneId, Context.AppId).PurgeCache(Context.ZoneId, Context.AppId);
+
+                return transaction;
             }
-
-            // import Entities
-            if (newEntities != null)
+            catch (Exception ex)
             {
-                foreach (var entity in newEntities)
-                    PersistOneImportEntity(entity);
-
-                Context.Relationships.ImportEntityRelationshipsQueue();
-
-                Context.SqlDb.SaveChanges();
+                transaction.Rollback();
+                throw ex;
             }
-
-            // Commit DB Transaction
-            if (commitTransaction)
-            {
-                transaction.Commit();
-                Context.SqlDb.Connection.Close();
-            }
-
-            // Purge Cache
-            if (purgeCache)
-                DataSource.GetCache(Context.ZoneId, Context.AppId).PurgeCache(Context.ZoneId, Context.AppId);
-
-            return transaction;
         }
 
         /// <summary>
@@ -168,91 +188,102 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void PersistOneImportEntity(ImportEntity importEntity)
         {
+            var cache = DataSource.GetCache(null, Context.AppId);
+
             #region try to get AttributeSet or otherwise cancel & log error
 
-            // todo: tag:cache try to cache the attribute-set definition, because this causes DB calls for no reason on each and every entity
-            var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
-            if (attributeSet == null)	// AttributeSet not Found
+            // var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
+            var attributeSet = cache.GetContentType(importEntity.AttributeSetStaticName);
+            if (attributeSet == null) // AttributeSet not Found
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found") { ImportEntity = importEntity, ImportAttributeSet = new ImportAttributeSet { StaticName = importEntity.AttributeSetStaticName } });
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
+                {
+                    ImportEntity = importEntity,
+                    ImportAttributeSet = new ImportAttributeSet {StaticName = importEntity.AttributeSetStaticName}
+                });
+                return;
+            }
+
+            #endregion
+
+            // Find existing Enties - meaning both draft and non-draft
+            List<IEntity> existingEntities = null;
+            if (importEntity.EntityGuid.HasValue)
+                existingEntities = cache.LightList.Where(e => e.EntityGuid == importEntity.EntityGuid.Value).ToList();
+
+            #region Simplest case - add (nothing existing to update)
+            if (existingEntities == null || !existingEntities.Any())
+            {
+                Context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, null);
+                return;
+            }
+
+            #endregion
+
+            #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
+
+            if (!importEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0)
+            {
+                var publishedId = existingEntities.First().EntityId;
+                Context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, publishedId);
+                return;
+            }
+
+            #endregion 
+
+            #region Update-Scenario - much more complex to decide what to change/update etc.
+
+            #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
+
+            // Get existing, published Entity
+            var editableVersionOfTheEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
+            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", importEntity));
+        
+
+            #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
+
+            // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
+            if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
+            {
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed", importEntity));
+                return;
+            }
+
+            // Delete secondary Draft-Entity if updating to published the import requires drafts to be killed and a draft exists (if any)
+            // BUT only delete if it's a secondary entity, keep if it's the primary
+            // note: this seems to be handled at save-level...
+            //var publishedEntity = editableVersionOfTheEntity.GetPublished();
+            //if (!editableVersionOfTheEntity.IsPublished && publishedEntity != null) 
+            //{
+            //    var draftIdToDelete = editableVersionOfTheEntity.EntityId;
+            //    editableVersionOfTheEntity = publishedEntity; // move editable to the primary (so the IDs don't change)
+            //    Context.Entities.DeleteEntity(draftIdToDelete); // delete the draft
+            //    _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Draft-Entity deleted", importEntity));
+            //}
+
+            #endregion
+
+            #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
+            if (editableVersionOfTheEntity.Type.StaticName != importEntity.AttributeSetStaticName)
+            {
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", importEntity));
                 return;
             }
             #endregion
 
-            // todo: tag:cache should perform entityexists from cache
-            // Update existing Entity
-            if (importEntity.EntityGuid.HasValue && Context.Entities.EntityExists(importEntity.EntityGuid.Value))
-            {
-                #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
-                // Get existing, published Entity
-                // todo: tag:cache should perform get from cache...
-                var existingEntities = Context.Entities.GetEntitiesByGuid(importEntity.EntityGuid.Value);
-                Entity existingEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First();    // get draft first, otherwise the published
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists") { ImportEntity = importEntity });
 
-                if (PreventDraftSave)
-                {
-                    try
-                    {
-                        existingEntity = existingEntities.Count() == 1
-                            ? existingEntities.First()
-                            : existingEntities.Single(e => e.IsPublished);
-                    }
-                    catch (Exception ex)
-                    {
-                        _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
-                            "Unable find existing published Entity. " + ex.Message) {ImportEntity = importEntity,});
-                        return;
-                    }
 
-                    // Prevent updating Draft-Entity
-                    if (!existingEntity.IsPublished)
-                    {
-                        _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
-                            "Importing a Draft-Entity is not allowed") {ImportEntity = importEntity,});
-                        return;
-                    }
+            #endregion
 
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity after draft-check is") { ImportEntity = importEntity });
+            var newValues = importEntity.Values;
+            if (_leaveExistingValuesUntouched) // Skip values that are already present in existing Entity
+                newValues = newValues.Where(v => editableVersionOfTheEntity.Attributes.All(ev => ev.Value.Name != v.Key))
+                    .ToDictionary(v => v.Key, v => v.Value);
 
-                }
+            Context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
+                preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
 
-                // Ensure entity has same AttributeSet
-                if (existingEntity.Set.StaticName != importEntity.AttributeSetStaticName)
-                {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "EntityGuid already exists in different AttributeSet") { ImportEntity = importEntity, });
-                    return;
-                }
-
-                #endregion
-
-                #region Delete Draft-Entity (if any)
-
-                if (PreventDraftSave)
-                {
-                    var draftEntityId = Context.Publishing.GetDraftEntityId(existingEntity.EntityID);
-                    if (draftEntityId.HasValue)
-                    {
-                        _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Draft-Entity deleted")
-                        {
-                            ImportEntity = importEntity,
-                        });
-                        Context.Entities.DeleteEntity(draftEntityId.Value);
-                    }
-                }
-                #endregion
-
-                var newValues = importEntity.Values;
-                if (_leaveExistingValuesUntouched)	// Skip values that are already present in existing Entity
-                    newValues = newValues.Where(v => existingEntity.Values.All(ev => ev.Attribute.StaticName != v.Key)).ToDictionary(v => v.Key, v => v.Value);
-
-                Context.Entities.UpdateEntity(existingEntity.EntityID, newValues, updateLog: _importLog, preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
-            }
-            // Add new Entity
-            else
-            {
-                Context.Entities.AddEntity(attributeSet.AttributeSetID, importEntity, _importLog, importEntity.IsPublished);
-            }
+            #endregion
         }
     }
 }

@@ -46,13 +46,14 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        internal void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid entityGuid)
+        internal void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid? entityGuid, int? entityId)
         {
             _entityRelationshipsQueue.Add(new EntityRelationshipQueueItem
             {
                 AttributeId = attributeId,
                 ChildEntityGuids = newValue,
-                ParentEntityGuid = entityGuid
+                ParentEntityGuid = entityGuid,
+                ParentEntityId = entityId
             });
         }
 
@@ -63,7 +64,9 @@ namespace ToSic.Eav.BLL.Parts
         {
             foreach (var relationship in _entityRelationshipsQueue)
             {
-                var entity = Context.Entities.GetEntity(relationship.ParentEntityGuid);
+                var entity = relationship.ParentEntityGuid.HasValue 
+                        ? Context.Entities.GetEntity(relationship.ParentEntityGuid.Value)
+                        : Context.Entities.GetEntity(relationship.ParentEntityId.Value);
                 var childEntityIds = new List<int?>();
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
@@ -90,8 +93,10 @@ namespace ToSic.Eav.BLL.Parts
         private class EntityRelationshipQueueItem
         {
             public int AttributeId { get; set; }
-            public Guid ParentEntityGuid { get; set; }
+            public Guid? ParentEntityGuid { get; set; }
             public List<Guid?> ChildEntityGuids { get; set; }
+
+            public int? ParentEntityId { get; set; }
         }
 
         #endregion

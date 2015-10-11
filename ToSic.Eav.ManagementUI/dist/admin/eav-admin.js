@@ -396,8 +396,8 @@
         });
 
         vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.Id + ") ?"))
-                svc.delete(item.Id);
+            if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.RepositoryId + ") ?"))
+                svc.delete(item.RepositoryId);
         };
 
         vm.openDuplicate = function openDuplicate(item) {

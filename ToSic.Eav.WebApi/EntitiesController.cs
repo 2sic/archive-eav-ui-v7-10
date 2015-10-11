@@ -106,21 +106,22 @@ namespace ToSic.Eav.WebApi
                     if (maybeDraft != null)
                         found = maybeDraft;                    
 
-                    var ce = new EntityWithLanguages()
+                    var ce = new EntityWithLanguages
                     {
                         AppId = appId,
-                        Id = duplicateFrom.HasValue ? 0 : found.EntityId,
+                        Id = duplicateFrom.HasValue ? 0 : found.EntityId, 
+                        RepoId = duplicateFrom.HasValue ? 0 : found.RepositoryId,
                         Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
-                        Type = new Formats.Type() { Name = found.Type.Name, StaticName = found.Type.StaticName },
+                        Type = new Formats.Type { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
-                        TitleAttributeName = found.Title == null ? null : found.Title.Name,
+                        TitleAttributeName = found.Title?.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                             {
-                                Values = a.Value.Values == null ? new ValueSet[0] : a.Value.Values.Select(v => new Formats.ValueSet()
+                                Values = a.Value.Values?.Select(v => new ValueSet
                                 {
                                     Value = v.SerializableObject,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
                                     Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
-                                }).ToArray()
+                                }).ToArray() ?? new ValueSet[0]
                             }
                         )
                     };
@@ -160,7 +161,7 @@ namespace ToSic.Eav.WebApi
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
             foreach(var i in list.Where(i => i.Header.Guid == Guid.Empty).ToArray()) // must do toarray, to prevent re-checking after setting the guid
-                i.Header.Guid = (i.Entity != null && i.Entity.Guid != null && i.Entity.Guid != Guid.Empty) 
+                i.Header.Guid = (i.Entity != null && i.Entity.Guid != Guid.Empty) 
                     ? i.Entity.Guid 
                     : Guid.NewGuid();
             return list;
@@ -173,22 +174,23 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         { 
-            var convertedItems = new List<ImportEntity>();
+            var entitiesToImport = new List<ImportEntity>();
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
-                i.Entity.Guid = i.Header.Guid; //Value;
+                i.Entity.Guid = i.Header.Guid; 
 
             foreach (var entity in items)
                 if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
-                    convertedItems.Add(CreateImportEntity(entity, appId));
+                    entitiesToImport.Add(CreateImportEntity(entity, appId));
 
             // Create Import-controller & run import
             var importController = new Import.Import(null, appId, User.Identity.Name, 
                 leaveExistingValuesUntouched: false, 
                 preserveUndefinedValues: false,
-                preventDraftSave: false);
-            importController.RunImport(null, convertedItems.ToArray(), true, true);
+                preventUpdateOnDraftEntities: false,
+                largeImport: false);
+            importController.RunImport(null, entitiesToImport.ToArray(), true, true);
 
 
             // find / update IDs of items updated to return to client
@@ -290,7 +292,7 @@ namespace ToSic.Eav.WebApi
 	        if (appId.HasValue)
 	            AppId = appId.Value;
 	        var finalAppId = appId ?? AppId;
-            var found = InitialDS.List[id];
+            var found = DataSource.GetCache(null, finalAppId).List[id];// InitialDS.List[id];
             if (found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             if (!(CurrentContext.Entities.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)

@@ -96,9 +96,9 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<ImportLogItem> importLog, bool isPublished = true)
+        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<ImportLogItem> importLog, int? publishedTarget)
         {
-            return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished);
+            return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: !publishedTarget.HasValue, publishedEntityId: publishedTarget);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        public Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true)
+        public Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true, int? publishedEntityId = null)
         {
             // Prevent duplicate add of FieldProperties
             if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
@@ -147,7 +147,8 @@ namespace ToSic.Eav.BLL.Parts
                 ChangeLogIDCreated = changeId,
                 ChangeLogIDModified = changeId,
                 EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
-                IsPublished = isPublished
+                IsPublished = isPublished,
+                PublishedEntityId = isPublished ? null : publishedEntityId
             };
 
             if (attributeSet != null)
@@ -174,7 +175,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         internal Entity CloneEntity(Entity sourceEntity, bool assignNewEntityGuid = false)
         {
-            var clone = Context.DbS.CopyEntity(sourceEntity);
+            var clone = Context.DbS.CopyEfEntity(sourceEntity);
 
             Context.SqlDb.AddToEntities(clone);
 
@@ -209,7 +210,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update an Entity
         /// </summary>
-        /// <param name="entityId">EntityID</param>
+        /// <param name="repositoryId">EntityId as in the repository (so the draft would have that id)</param>
         /// <param name="newValues">new Values of this Entity</param>
         /// <param name="autoSave">auto save Changes to DB</param>
         /// <param name="dimensionIds">DimensionIds for all Values</param>
@@ -218,10 +219,10 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <returns>the updated Entity</returns>
-        public Entity UpdateEntity(int entityId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
+        public Entity UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
         {
-            var entity = Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
-            var draftEntityId = Context.Publishing.GetDraftEntityId(entityId);
+            var entity = Context.SqlDb.Entities.Single(e => e.EntityID == repositoryId);
+            var draftEntityId = Context.Publishing.GetDraftEntityId(repositoryId);
 
             #region Unpublished Save (Draft-Saves)
             // Current Entity is published but Update as a draft
@@ -229,12 +230,18 @@ namespace ToSic.Eav.BLL.Parts
             {
                 // Prevent duplicate Draft
                 if (draftEntityId.HasValue)
-                    throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", entityId, draftEntityId));
+                    throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", repositoryId, draftEntityId));
+
+                throw new InvalidOperationException("It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
 
                 // create a new Draft-Entity
                 entity = CloneEntity(entity);
                 entity.IsPublished = false;
-                entity.PublishedEntityId = entityId;
+                entity.PublishedEntityId = repositoryId;
+                
+                // must save so we have a real entityId/repositoryId for later assignments
+                Context.SqlDb.SaveChanges();
+                entity = Context.SqlDb.Entities.Single(e => e.EntityID == Context.Publishing.GetDraftEntityId(repositoryId));
             }
             // Prevent editing of Published if there's a draft
             else if (entity.IsPublished && draftEntityId.HasValue)
@@ -242,6 +249,17 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception(string.Format("Update Entity not allowed because a draft exists with EntityId {0}", draftEntityId));
             }
             #endregion
+
+            #region If draft but should be published, correct what's necessary
+            // Update as Published but Current Entity is a Draft-Entity
+            if (!entity.IsPublished && isPublished)
+            {
+                if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
+                    Context.Versioning.SaveEntityToDataTimeline(entity);
+                entity = Context.Publishing.ClearDraftAndSetPublished(repositoryId); // must save intermediate because otherwise we get duplicate IDs
+            }
+            #endregion
+
 
             if (dimensionIds == null)
                 dimensionIds = new List<int>(0);
@@ -258,13 +276,6 @@ namespace ToSic.Eav.BLL.Parts
             else
                 UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
 
-            // Update as Published but Current Entity is a Draft-Entity
-            if (!entity.IsPublished && isPublished)
-            {
-                if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-                    Context.Versioning.SaveEntityToDataTimeline(entity);
-                entity = Context.Publishing.PublishEntity(entityId, false);
-            }
 
             entity.ChangeLogIDModified = Context.Versioning.GetChangeLogId();
 

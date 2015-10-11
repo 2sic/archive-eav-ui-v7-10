@@ -27,7 +27,7 @@ namespace ToSic.Eav.BLL.Parts
             // Add all Values with Dimensions
             foreach (var eavValue in source.Values.ToList())
             {
-                var value = Context.DbS.CopyEntity(eavValue);
+                var value = Context.DbS.CopyEfEntity(eavValue);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ValuesDimensions)
                     value.ValuesDimensions.Add(new ValueDimension
@@ -92,16 +92,16 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(Entity currentEntity, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
+        internal object UpdateValueByImport(Entity entityInDb, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newValue is ValueImportModel<List<Guid>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), currentEntity.EntityGUID);
-                    if (newValue is ValueImportModel<List<Guid?>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value, currentEntity.EntityGUID);
+                    if (newValue is ValueImportModel<List<Guid>> || newValue is ValueImportModel<List<Guid?>>)
+                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
+                    //if (newValue is ValueImportModel<List<Guid?>>)
+                    //    Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value.Select(p => (Guid?)p).ToList(), currentEntity.EntityGUID, null);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -109,7 +109,7 @@ namespace ToSic.Eav.BLL.Parts
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, currentEntity, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
+                    return UpdateSimpleValue(attribute, entityInDb, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
             }
         }
 

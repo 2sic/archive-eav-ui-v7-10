@@ -20,14 +20,44 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Publish a Draft-Entity
         /// </summary>
-        /// <param name="entityId">ID of the Draft-Entity</param>
+        /// <param name="unpublishedEntityId">ID of the Draft-Entity</param>
         /// <param name="autoSave">Call SaveChanges() automatically?</param>
         /// <returns>The published Entity</returns>
-        public Entity PublishEntity(int entityId, bool autoSave = true)
+        //public Entity PublishEntity(int entityId, bool autoSave = true)
+        //{
+        //    var unpublishedEntity = Context.Entities.GetEntity(entityId);
+        //    if (unpublishedEntity.IsPublished)
+        //        throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
+
+        //    Entity publishedEntity;
+
+        //    // Publish Draft-Entity
+        //    if (!unpublishedEntity.PublishedEntityId.HasValue)
+        //    {
+        //        unpublishedEntity.IsPublished = true;
+        //        publishedEntity = unpublishedEntity;
+        //    }
+        //    // Replace currently published Entity with draft Entity and delete the draft
+        //    else
+        //    {
+        //        publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
+        //        Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+
+        //        // delete the Draft Entity
+        //        Context.Entities.DeleteEntity(unpublishedEntity, false);
+        //    }
+
+        //    if (autoSave)
+        //        Context.SqlDb.SaveChanges();
+
+        //    return publishedEntity;
+        //}
+
+        public Entity ClearDraftAndSetPublished(int unpublishedEntityId)
         {
-            var unpublishedEntity = Context.Entities.GetEntity(entityId);
+            var unpublishedEntity = Context.Entities.GetEntity(unpublishedEntityId);
             if (unpublishedEntity.IsPublished)
-                throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
+                throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
 
             Entity publishedEntity;
 
@@ -41,14 +71,11 @@ namespace ToSic.Eav.BLL.Parts
             else
             {
                 publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-                Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+                publishedEntity.IsPublished = true;
 
                 // delete the Draft Entity
                 Context.Entities.DeleteEntity(unpublishedEntity, false);
             }
-
-            if (autoSave)
-                Context.SqlDb.SaveChanges();
 
             return publishedEntity;
         }

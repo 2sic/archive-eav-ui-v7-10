@@ -13,10 +13,11 @@ namespace ToSic.Eav.Import
         public Exception Exception { get; set; }
         public string Message { get; private set; }
 
-        public ImportLogItem(EventLogEntryType entryType, string message)
+        public ImportLogItem(EventLogEntryType entryType, string message, ImportEntity importEntity = null)
         {
             EntryType = entryType;
             Message = message;
+            ImportEntity = importEntity;
         }
     }
 }

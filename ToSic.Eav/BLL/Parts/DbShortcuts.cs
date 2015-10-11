@@ -14,7 +14,7 @@ namespace ToSic.Eav.BLL.Parts
         /// Clone an Entity in Entity Framework 4
         /// </summary>
         /// <remarks>Source: http://www.codeproject.com/Tips/474296/Clone-an-Entity-in-Entity-Framework </remarks>
-        public T CopyEntity<T>(T entity) where T : EntityObject
+        public T CopyEfEntity<T>(T entity) where T : EntityObject
         {
             bool copyKeys = false;
             var clone =  Context.SqlDb.CreateObject<T>();
