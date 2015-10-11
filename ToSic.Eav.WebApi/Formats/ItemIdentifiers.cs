@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Formats
         public int EntityId { get; set; }
 
         // the Guid
-        public Guid? Guid { get; set; }
+        public Guid Guid { get; set; } // not 
 
         // ...or content-type (for new)
         public string ContentTypeName { get; set; }

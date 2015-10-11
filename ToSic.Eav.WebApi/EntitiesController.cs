@@ -159,7 +159,7 @@ namespace ToSic.Eav.WebApi
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-            foreach(var i in list.Where(i => i.Header.Guid == null).ToArray()) // must do toarray, to prevent re-checking after setting the guid
+            foreach(var i in list.Where(i => i.Header.Guid == Guid.Empty).ToArray()) // must do toarray, to prevent re-checking after setting the guid
                 i.Header.Guid = (i.Entity != null && i.Entity.Guid != null && i.Entity.Guid != Guid.Empty) 
                     ? i.Entity.Guid 
                     : Guid.NewGuid();
@@ -175,28 +175,23 @@ namespace ToSic.Eav.WebApi
         { 
             var convertedItems = new List<ImportEntity>();
 
+            // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
-                // must do toarray, to prevent re-checking after setting the guid
-                i.Entity.Guid = i.Header.Guid.Value;
-
-            // check valid Guids, because they are held in 2 places, and they MUST always be the same
-
-
-            if (items.FirstOrDefault(i => i.Header.Guid != i.Entity.Guid) != null)
-                throw new Exception("Guids are out of Sync - will stop for your protection");
+                i.Entity.Guid = i.Header.Guid; //Value;
 
             foreach (var entity in items)
                 if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
                     convertedItems.Add(CreateImportEntity(entity, appId));
 
-            // Run import
-            var import = new Import.Import(null, appId, User.Identity.Name, 
+            // Create Import-controller & run import
+            var importController = new Import.Import(null, appId, User.Identity.Name, 
                 leaveExistingValuesUntouched: false, 
                 preserveUndefinedValues: false,
                 preventDraftSave: false);
-            import.RunImport(null, convertedItems.ToArray(), true, true);
+            importController.RunImport(null, convertedItems.ToArray(), true, true);
 
-            // find / update IDs of items updated
+
+            // find / update IDs of items updated to return to client
             var cache = DataSource.GetCache(null, appId);
             var foundItems = items.Select(e =>
             {
@@ -214,31 +209,27 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private static ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
+        private ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
         {
-            var newData = editInfo.Entity;
+            var newEntity = editInfo.Entity;
             var metadata = editInfo.Header.Metadata;
+
+            #region initial data quality checks
+            if (newEntity.Id == 0 && newEntity.Guid == Guid.Empty)
+                throw new Exception("Item must have a GUID");
+            #endregion
+
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
             var importEntity = new ImportEntity();
-            if (newData.Id == 0 && newData.Guid == Guid.Empty)
-            {   // this is not allowed any more - all must have a GUID - either as loaded, or as given "new" by the client
-                throw new Exception("Item must have a GUID");
-                // New entity
-                // importEntity.EntityGuid = Guid.NewGuid();
-            }
-            else
-            {
-                importEntity.EntityGuid = newData.Guid;
-            }
-            importEntity.IsPublished = newData.IsPublished;
 
+            #region Guids, Ids, Published, Content-Types
+            importEntity.EntityGuid = newEntity.Guid;
+            importEntity.IsPublished = newEntity.IsPublished;
+            importEntity.AttributeSetStaticName = newEntity.Type.StaticName;
+            #endregion
 
-            // Content type
-            importEntity.AttributeSetStaticName = newData.Type.StaticName;
-
-            importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
-
-            // Metadata if we have
+            #region Metadata if we have any
+            importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;  // default case
             if (metadata != null && metadata.HasMetadata)
             {
                 importEntity.AssignmentObjectTypeId = metadata.TargetType;
@@ -246,16 +237,17 @@ namespace ToSic.Eav.WebApi
                 importEntity.KeyNumber = metadata.KeyNumber;
                 importEntity.KeyString = metadata.KeyString;
             }
+            #endregion
 
             // Attributes
             importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
 
-            // throw new Exception("error - must get cache to load correct cache first");
-            var attributeSet = DataSource.GetCache(null, appId).GetContentType(newData.Type.StaticName);
             
-            foreach (var attribute in newData.Attributes)
+            // only transfer the fields / values which exist in the content-type definition
+            var attributeSet = DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
+            foreach (var attribute in newEntity.Attributes)
             {
-                var attDef = attributeSet[attribute.Key];//.AttributeDefinitions.First(a => a.Value.Name == attribute.Key).Value;// .GetAttributeByName(attribute.Key).Type;
+                var attDef = attributeSet[attribute.Key];
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is heading-only
