@@ -66,10 +66,12 @@
 			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 			            expressionProperties: {
 			                // Needed for dynamic update of the disabled property
-			                'templateOptions.disabled': 'options.templateOptions.disabled' 
+			                'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
+                            //'templateOptions.disabled': 'options.templateOptions.disabled'
 			            },
 			            watcher: [
 			                {
+                                // changes when a entity becomes enabled / disabled
 			                    expression: function(field, scope, stop) {
 			                        return (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) || field.templateOptions.langReadOnly;
 			                    },

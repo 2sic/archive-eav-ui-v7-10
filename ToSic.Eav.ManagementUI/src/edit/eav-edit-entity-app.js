@@ -8,7 +8,9 @@
         "eavFieldTemplates",
         "EavServices",
         "eavEditTemplates"
-	]);
+	])
+
+    ;
 
 
 })();

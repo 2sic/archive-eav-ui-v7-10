@@ -3,12 +3,12 @@
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider) {
+    .config(function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-default",
             template: "<input class=\"form-control\" ng-model=\"value.Value\">",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
+            wrapper: defaultFieldWrappers // ["eavLabel", "bootstrapHasError", "eavLocalization"]
         });
 
     });

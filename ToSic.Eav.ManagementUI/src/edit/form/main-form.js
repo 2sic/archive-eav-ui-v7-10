@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $modalInstance) {
+	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $modalInstance, $window) {
 
 	    var vm = this;
 	    vm.itemList = items;
@@ -29,10 +29,14 @@
 		    $modalInstance.close(result);
 		};
 
-	    $scope.$on('modal.closing', function(e) {
+	    $scope.$on('modal.closing', vm.maybeLeave);
+
+	    vm.maybeLeave = function maybeLeave(e) {
 	        if (vm.state.isDirty() && !confirm("You have unsaved changes. Do you really want to exit?"))
 	            e.preventDefault();
-	    });
+	    };
+
+	    $window.onbeforeunload = vm.maybeLeave;
 	});
 
 })();
