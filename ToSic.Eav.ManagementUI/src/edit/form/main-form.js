@@ -29,14 +29,21 @@
 		    $modalInstance.close(result);
 		};
 
-	    $scope.$on('modal.closing', vm.maybeLeave);
+	    var askBeforeLeavingText = "You have unsaved changes.";
 
 	    vm.maybeLeave = function maybeLeave(e) {
-	        if (vm.state.isDirty() && !confirm("You have unsaved changes. Do you really want to exit?"))
+	        if (vm.state.isDirty() && !confirm(askBeforeLeavingText + " Do you really want to exit?"))
 	            e.preventDefault();
 	    };
 
-	    $window.onbeforeunload = vm.maybeLeave;
+	    $scope.$on('modal.closing', vm.maybeLeave);
+	    $window.addEventListener('beforeunload', function (e) {
+	        if (vm.state.isDirty()) {
+	            (e || window.event).returnValue = askBeforeLeavingText; //Gecko + IE
+	            return askBeforeLeavingText; //Gecko + Webkit, Safari, Chrome etc.
+	        }
+	        return null;
+	    });
 	});
 
 })();
