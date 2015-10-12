@@ -25,7 +25,7 @@ RepoId: {{item.RepositoryId}}
 Guid: {{item.Guid}}">{{item.Id}}</span>
                 </td>
                 <td class="text-nowrap">
-                    <span class="glyphicon" ng-class="{'glyphicon-eye-open': item.IsPublished, 'glyphicon-eye-close' : !item.IsPublished && !item.Published, 'glyphicon-eye-close' : !item.IsPublished && item.Published }" tooltip="{{ 'Content.Publish.' + (item.IsPublished ? 'PnV': item.Published ? 'DoP' : 'D') | translate }}"></span>
+                    <span class="glyphicon" ng-class="{'glyphicon-eye-open': item.IsPublished, 'glyphicon-eye-close' : !item.IsPublished}" tooltip="{{ 'Content.Publish.' + (item.IsPublished ? 'PnV': item.Published ? 'DoP' : 'D') | translate }}"></span>
                     <span icon="{{ item.Draft ? 'link' : item.Published ? 'link' : '' }}" tooltip="{{ (item.Draft ? 'Content.Publish.HD' :'') | translate:'{ id: item.Draft.RepositoryId}' }}
 {{ (item.Published ? 'Content.Publish.HP' :'') | translate }} #{{ item.Published.RepositoryId }}"></span>
                     <span ng-if="item.Metadata" tooltip="Metadata for type {{ item.Metadata.TargetType}}, id {{ item.Metadata.KeyNumber }}{{ item.Metadata.KeyString }}{{ item.Metadata.KeyGuid }}" icon="tag"></span>
