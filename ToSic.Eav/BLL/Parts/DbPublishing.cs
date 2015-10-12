@@ -21,37 +21,37 @@ namespace ToSic.Eav.BLL.Parts
         /// Publish a Draft-Entity
         /// </summary>
         /// <param name="unpublishedEntityId">ID of the Draft-Entity</param>
-        /// <param name="autoSave">Call SaveChanges() automatically?</param>
+        /// <param name="autoSave">Call SaveChanges() automatically? Set to false if you want to do further DB changes</param>
         /// <returns>The published Entity</returns>
-        //public Entity PublishEntity(int entityId, bool autoSave = true)
-        //{
-        //    var unpublishedEntity = Context.Entities.GetEntity(entityId);
-        //    if (unpublishedEntity.IsPublished)
-        //        throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
+        public Entity PublishDraftInDbEntity(int entityId, bool autoSave)
+        {
+            var unpublishedEntity = Context.Entities.GetEntity(entityId);
+            if (unpublishedEntity.IsPublished)
+                throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
 
-        //    Entity publishedEntity;
+            Entity publishedEntity;
 
-        //    // Publish Draft-Entity
-        //    if (!unpublishedEntity.PublishedEntityId.HasValue)
-        //    {
-        //        unpublishedEntity.IsPublished = true;
-        //        publishedEntity = unpublishedEntity;
-        //    }
-        //    // Replace currently published Entity with draft Entity and delete the draft
-        //    else
-        //    {
-        //        publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-        //        Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+            // Publish Draft-Entity
+            if (!unpublishedEntity.PublishedEntityId.HasValue)
+            {
+                unpublishedEntity.IsPublished = true;
+                publishedEntity = unpublishedEntity;
+            }
+            // Replace currently published Entity with draft Entity and delete the draft
+            else
+            {
+                publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
+                Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
-        //        // delete the Draft Entity
-        //        Context.Entities.DeleteEntity(unpublishedEntity, false);
-        //    }
+                // delete the Draft Entity
+                Context.Entities.DeleteEntity(unpublishedEntity, false);
+            }
 
-        //    if (autoSave)
-        //        Context.SqlDb.SaveChanges();
+            if (autoSave)
+                Context.SqlDb.SaveChanges();
 
-        //    return publishedEntity;
-        //}
+            return publishedEntity;
+        }
 
         public Entity ClearDraftAndSetPublished(int unpublishedEntityId)
         {

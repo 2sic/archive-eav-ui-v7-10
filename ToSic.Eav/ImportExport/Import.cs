@@ -249,18 +249,6 @@ namespace ToSic.Eav.Import
                 return;
             }
 
-            // Delete secondary Draft-Entity if updating to published the import requires drafts to be killed and a draft exists (if any)
-            // BUT only delete if it's a secondary entity, keep if it's the primary
-            // note: this seems to be handled at save-level...
-            //var publishedEntity = editableVersionOfTheEntity.GetPublished();
-            //if (!editableVersionOfTheEntity.IsPublished && publishedEntity != null) 
-            //{
-            //    var draftIdToDelete = editableVersionOfTheEntity.EntityId;
-            //    editableVersionOfTheEntity = publishedEntity; // move editable to the primary (so the IDs don't change)
-            //    Context.Entities.DeleteEntity(draftIdToDelete); // delete the draft
-            //    _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Draft-Entity deleted", importEntity));
-            //}
-
             #endregion
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
