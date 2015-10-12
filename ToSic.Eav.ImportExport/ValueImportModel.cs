@@ -60,11 +60,11 @@ namespace ToSic.Eav.Import
 
             switch (type)
             {
-                case "String":
-                case "Hyperlink":
+                case "String": // todo: replace with AttributeTypeEnum...
+                case "Hyperlink":// todo: replace with AttributeTypeEnum...
                     valueModel = new ValueImportModel<string>(importEntity) { Value = value };
                     break;
-                case "Number":
+                case "Number":// todo: replace with AttributeTypeEnum...
                     decimal typedDecimal;
                     var isDecimal = Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
                     decimal? typedDecimalNullable = null;

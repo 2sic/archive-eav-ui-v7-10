@@ -123,13 +123,13 @@ namespace ToSic.Eav.BLL.Parts
         internal object GetTypedValue(IValueImportModel value, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
         {
             object typedValue;
-            if (value is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean"))
+            if (value is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean")) // todo replace with AttributeTypeEnum.Boolean.ToString() and then test
                 typedValue = ((ValueImportModel<bool?>)value).Value;
-            else if (value is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime"))
+            else if (value is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime")) // todo: replace with AttributeTypeEnum...
                 typedValue = ((ValueImportModel<DateTime?>)value).Value;
-            else if (value is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number"))
+            else if (value is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number")) // todo: replace with AttributeTypeEnum...
                 typedValue = ((ValueImportModel<decimal?>)value).Value;
-            else if (value is ValueImportModel<string> && (attributeType == null || attributeType == "String" || attributeType == "Hyperlink"))
+            else if (value is ValueImportModel<string> && (attributeType == null || attributeType == "String" || attributeType == "Hyperlink")) // todo: replace with AttributeTypeEnum...
                 typedValue = ((ValueImportModel<string>)value).Value;
             else if (value is ValueImportModel<List<Guid>> && multiValuesSeparator != null)
             {

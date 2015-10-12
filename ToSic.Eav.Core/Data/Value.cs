@@ -50,16 +50,16 @@ namespace ToSic.Eav.Data
             {
                 switch (attributeType)
                 {
-                    case "Boolean":
+                    case "Boolean": // todo: replace with AttributeTypeEnum.Boolean.ToString() and test
                         typedModel = new Value<bool?>(string.IsNullOrEmpty(stringValue) ? (bool?)null : bool.Parse(stringValue));
                         break;
-                    case "DateTime":
+                    case "DateTime": // todo: replace with AttributeTypeEnum...
                         typedModel = new Value<DateTime?>(string.IsNullOrEmpty(stringValue) ? (DateTime?)null : DateTime.Parse(stringValue));
                         break;
-                    case "Number":
+                    case "Number": // todo: replace with AttributeTypeEnum...
                         typedModel = new Value<decimal?>(string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture));
                         break;
-                    case "Entity":
+                    case "Entity": // todo: replace with AttributeTypeEnum...
                         var entityIds = value as IEnumerable<int?>;
                         typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
                         break;

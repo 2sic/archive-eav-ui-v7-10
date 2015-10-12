@@ -253,7 +253,7 @@ namespace ToSic.Eav.WebApi
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is heading-only
-                if(attributeType == "Empty")
+                if(attributeType == AttributeTypeEnum.Empty.ToString())
                     continue;
 
                 foreach (var value in attribute.Value.Values)

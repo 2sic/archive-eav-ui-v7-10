@@ -60,13 +60,13 @@ namespace ToSic.Eav.Data
         {
             switch (definition.Type)
             {
-                case "Boolean":
+                case "Boolean": // todo: replace with AttributeTypeEnum.Boolean.ToString() and test
                     return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "DateTime":
+                case "DateTime": // todo: replace with AttributeTypeEnum...
                     return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "Number":
+                case "Number":// todo: replace with AttributeTypeEnum...
                     return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "Entity":
+                case "Entity":// todo: replace with AttributeTypeEnum...
                     return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { EntityRelationshipDefaultValue } };
                 default:
                     return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);

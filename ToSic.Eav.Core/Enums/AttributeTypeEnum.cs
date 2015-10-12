@@ -16,6 +16,9 @@
 		/// <summary>Number Attribute Type</summary>
 		Number,
 		/// <summary>String Attribute Type</summary>
-		String
+		String,
+        /// <summary>Empty for titles etc.
+        /// </summary>
+        Empty
 	}
 }

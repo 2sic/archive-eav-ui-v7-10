@@ -46,11 +46,11 @@ namespace ToSic.Eav.ValueProvider
             {
                 switch (valueObject.GetType().Name)
                 {
-                    case "String":
+                    case "String": // todo: replace with AttributeTypeEnum...
                         return FormatString((string)valueObject, format);
-                    case "Boolean":
+                    case "Boolean": // todo: replace with AttributeTypeEnum...
                         return ((bool)valueObject).ToString(formatProvider).ToLower();
-                    case "DateTime":
+                    case "DateTime": // todo: replace with AttributeTypeEnum...
                     case "Double":
                     case "Single":
                     case "Int32":
