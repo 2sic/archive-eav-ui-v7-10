@@ -221,7 +221,10 @@ angular.module("eavFieldTemplates")
             },
             controller: "FieldTemplate-NumberCtrl as vm"
         });
-    }]);
+    }]).controller("FieldTemplate-NumberCtrl", function () {
+        var vm = this;
+        // ToDo: Implement Google Map
+    });
 /* 
  * Field: String - Default
  */
@@ -231,10 +234,18 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-default",
-            template: "<input class=\"form-control\" ng-model=\"value.Value\">",
-            wrapper: defaultFieldWrappers // ["eavLabel", "bootstrapHasError", "eavLocalization"]
+            template: "<input class=\"form-control\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">",
+            wrapper: defaultFieldWrappers, // ["eavLabel", "bootstrapHasError", "eavLocalization"]
+            controller: "FieldTemplate-StringCtrl as vm"
         });
 
+    }]).controller("FieldTemplate-StringCtrl", ["$scope", function ($scope) {
+        var vm = this;
+        var validationRegexString = ".*";
+        var stringSettings = $scope.options.templateOptions.settings.String;
+        if (stringSettings && stringSettings.ValidationRegExJavaScript)
+            validationRegexString = stringSettings.ValidationRegExJavaScript;
+        vm.regexPattern = new RegExp(validationRegexString, 'i');
     }]);
 /* 
  * Field: String - Dropdown
@@ -596,18 +607,18 @@ angular.module("eavFieldTemplates")
 		    $modalInstance.close(result);
 		};
 
-	    var askBeforeLeavingText = "You have unsaved changes.";
+	    var unsavedChangesText = "You have unsaved changes.";
 
 	    vm.maybeLeave = function maybeLeave(e) {
-	        if (vm.state.isDirty() && !confirm(askBeforeLeavingText + " Do you really want to exit?"))
+	        if (vm.state.isDirty() && !confirm(unsavedChangesText + " Do you really want to exit?"))
 	            e.preventDefault();
 	    };
 
 	    $scope.$on('modal.closing', vm.maybeLeave);
 	    $window.addEventListener('beforeunload', function (e) {
 	        if (vm.state.isDirty()) {
-	            (e || window.event).returnValue = askBeforeLeavingText; //Gecko + IE
-	            return askBeforeLeavingText; //Gecko + Webkit, Safari, Chrome etc.
+	            (e || window.event).returnValue = unsavedChangesText; //Gecko + IE
+	            return unsavedChangesText; //Gecko + Webkit, Safari, Chrome etc.
 	        }
 	        return null;
 	    });

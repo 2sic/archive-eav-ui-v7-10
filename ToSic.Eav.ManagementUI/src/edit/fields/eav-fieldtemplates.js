@@ -14,11 +14,4 @@
 	    //});
 	});
 
-	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
-		var vm = this;
-		// ToDo: Implement Google Map
-	});
-
-
-
 })();

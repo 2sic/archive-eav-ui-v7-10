@@ -17,4 +17,7 @@ angular.module("eavFieldTemplates")
             },
             controller: "FieldTemplate-NumberCtrl as vm"
         });
+    }).controller("FieldTemplate-NumberCtrl", function () {
+        var vm = this;
+        // ToDo: Implement Google Map
     });

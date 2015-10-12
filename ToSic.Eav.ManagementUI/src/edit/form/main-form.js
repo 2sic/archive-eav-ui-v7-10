@@ -29,18 +29,18 @@
 		    $modalInstance.close(result);
 		};
 
-	    var askBeforeLeavingText = "You have unsaved changes.";
+	    var unsavedChangesText = "You have unsaved changes.";
 
 	    vm.maybeLeave = function maybeLeave(e) {
-	        if (vm.state.isDirty() && !confirm(askBeforeLeavingText + " Do you really want to exit?"))
+	        if (vm.state.isDirty() && !confirm(unsavedChangesText + " Do you really want to exit?"))
 	            e.preventDefault();
 	    };
 
 	    $scope.$on('modal.closing', vm.maybeLeave);
 	    $window.addEventListener('beforeunload', function (e) {
 	        if (vm.state.isDirty()) {
-	            (e || window.event).returnValue = askBeforeLeavingText; //Gecko + IE
-	            return askBeforeLeavingText; //Gecko + Webkit, Safari, Chrome etc.
+	            (e || window.event).returnValue = unsavedChangesText; //Gecko + IE
+	            return unsavedChangesText; //Gecko + Webkit, Safari, Chrome etc.
 	        }
 	        return null;
 	    });
