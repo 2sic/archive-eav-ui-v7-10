@@ -98,13 +98,6 @@ angular.module("eavFieldTemplates")
 	    //});
 	}]);
 
-	eavFieldTemplates.controller("FieldTemplate-NumberCtrl", function () {
-		var vm = this;
-		// ToDo: Implement Google Map
-	});
-
-
-
 })();
 /* 
  * Field: Empty - Default: this is usually a title/group section
@@ -1041,9 +1034,9 @@ function enhanceEntity(entity) {
 
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
-					return d !== undefined ? d.toLowerCase() == 'true' : false;
+					return d !== undefined && d !== null ? d.toLowerCase() == 'true' : false;
 				case 'datetime':
-					return d !== undefined ? new Date(d) : null;
+					return d !== undefined && d !== null ? new Date(d) : null;
 				case 'entity':
 					return []; 
 				case 'number':

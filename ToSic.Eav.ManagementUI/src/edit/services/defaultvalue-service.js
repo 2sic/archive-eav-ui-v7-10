@@ -15,9 +15,9 @@
 
 			switch (e.type.split('-')[0]) {
 				case 'boolean':
-					return d !== undefined ? d.toLowerCase() == 'true' : false;
+					return d !== undefined && d !== null ? d.toLowerCase() == 'true' : false;
 				case 'datetime':
-					return d !== undefined ? new Date(d) : null;
+					return d !== undefined && d !== null ? new Date(d) : null;
 				case 'entity':
 					return []; 
 				case 'number':
