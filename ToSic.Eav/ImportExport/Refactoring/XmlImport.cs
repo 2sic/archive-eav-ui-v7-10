@@ -306,7 +306,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             var import = new Import.Import(_zoneId, _appId, userId, leaveExistingValuesUntouched: false, preserveUndefinedValues: true);
             Timer.Start();
-            import.RunImport(null, Entities, true, true);
+            import.RunImport(null, Entities);
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
             return true;

@@ -50,11 +50,13 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities, bool commitTransaction = true, bool purgeCache = true)
+        public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities)
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
             Context.PurgeAppCacheOnSave = false;
-            
+            var commitTransaction = true;
+            bool purgeCache = true;
+
             // Enhance the SQL timeout for imports
             // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
             // todo: on any error, cancel/rollback the transaction
@@ -85,6 +87,24 @@ namespace ToSic.Eav.Import
                     Context.AttribSet.EnsureSharedAttributeSets();
 
                     Context.SqlDb.SaveChanges();
+
+                    // Commit DB Transaction and refresh cache
+                    //if (commitTransaction)
+                    //{
+                    transaction.Commit();
+
+                    // refresh the cache
+                    var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+                    cache.PurgeCache(Context.ZoneId, Context.AppId);
+                    var x = cache.LightList.First(); // re-read something
+
+                    // re-start transaction
+                    transaction = Context.SqlDb.Connection.BeginTransaction();
+
+
+
+
+                    //}
                 }
 
                 #endregion
@@ -102,11 +122,8 @@ namespace ToSic.Eav.Import
                 #endregion
 
                 // Commit DB Transaction
-                if (commitTransaction)
-                {
-                    transaction.Commit();
-                    Context.SqlDb.Connection.Close();
-                }
+                transaction.Commit();
+                Context.SqlDb.Connection.Close();
 
                 // Purge Cache
                 if (purgeCache)

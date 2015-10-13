@@ -176,7 +176,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         public static void Import(this Import.ImportEntity importEntity, int zoneId, int appId, string userName)
         {
             var import = new Eav.Import.Import(zoneId, appId, userName, false);
-            import.RunImport(null, new[] { importEntity }, true, true);
+            import.RunImport(null, new[] { importEntity });
         }
     }
 }

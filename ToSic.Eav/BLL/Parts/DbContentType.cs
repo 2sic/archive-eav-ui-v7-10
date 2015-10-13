@@ -14,7 +14,7 @@ namespace ToSic.Eav.BLL.Parts
         private AttributeSet GetAttributeSetByStaticName(string staticName)
         {
             return Context.SqlDb.AttributeSets.FirstOrDefault(a =>
-                a.AppID == Context.AppId && a.StaticName == staticName
+                a.AppID == Context.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
                 );
         }
 
