@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Persistence;
 
@@ -108,6 +109,11 @@ namespace ToSic.Eav
 				dsrcValueSort,
 				dsrcRelationshipFilter
 			};
+
+		    // try to access cache before we start the import, to ensure it's available afterwards (very, very important!)
+		    var cache = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
+		    var x = cache.LightList.First();
+
             var import = new Import.Import(Constants.DefaultZoneId, Constants.MetaDataAppId, _userName);
 			import.RunImport(attributeSets, null);
 

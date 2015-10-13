@@ -54,6 +54,12 @@ namespace ToSic.Eav.Import
         {
             // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
             Context.PurgeAppCacheOnSave = false;
+            
+            // Enhance the SQL timeout for imports
+            // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
+            // todo: on any error, cancel/rollback the transaction
+            if (LargeImport)
+                Context.SqlDb.CommandTimeout = 3600;
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
@@ -62,11 +68,6 @@ namespace ToSic.Eav.Import
 
             var transaction = Context.SqlDb.Connection.BeginTransaction();
 
-			// Enhance the SQL timeout for imports
-            // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
-            // todo: on any error, cancel/rollback the transaction
-            if (LargeImport)
-                Context.SqlDb.CommandTimeout = 3600;
             #endregion
 
             try // run import, but rollback transaction if necessary
