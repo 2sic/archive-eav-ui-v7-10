@@ -28,7 +28,7 @@ angular.module("eavFieldTemplates",
         "ui.tree"
     ]
 )
-    .constant("defaultFieldWrappers", ["eavLabel", "bootstrapHasError", "eavLocalization"])
+    .constant("defaultFieldWrappers", ["collapsible", "eavLabel", "bootstrapHasError", "eavLocalization"])
 ;
 /* 
  * Field: Boolean - Default
@@ -39,7 +39,7 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "boolean-default",
             templateUrl: "fields/boolean/boolean-default.html",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"]
+            wrapper: ["collapsible", "bootstrapHasError", "eavLocalization"]
         });
     }]);
 // this changes JSON-serialization for dates, 
@@ -54,11 +54,11 @@ Date.prototype.toJSON = function() {
  */
 
 angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", function(formlyConfigProvider) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "datetime-default",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             template: "<div>" +
                 "<div class=\"input-group\">" +
                     "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
@@ -123,7 +123,7 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "entity-default",
             templateUrl: "fields/entity/entity-default.html",
-            wrapper: ["eavLabel", "bootstrapHasError"],
+            wrapper: ["collapsible", "eavLabel", "bootstrapHasError"],
             controller: "FieldTemplate-EntityCtrl"
         });
 
@@ -200,11 +200,11 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", function(formlyConfigProvider) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
         formlyConfigProvider.setType({
             name: "number-default",
             template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {
                     '{{to.settings.Number.Min}}': { value: "min" },
@@ -245,12 +245,12 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", function(formlyConfigProvider) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-dropdown",
             template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             defaultOptions: function defaultOptions(options) {
 
                 // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
@@ -284,12 +284,12 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", function(formlyConfigProvider) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-textarea",
             template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {
                     '{{to.settings.String.RowCount}}': { value: "rows" },
@@ -622,7 +622,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
   'use strict';
 
   $templateCache.put('fields/boolean/boolean-default.html',
-    "<div class=checkbox><label><input type=checkbox class=formly-field-checkbox ng-model=value.Value> {{to.label}} {{to.required ? '*' : ''}}</label></div>"
+    "<div class=\"checkbox checkbox-labeled\"><input type=checkbox class=formly-field-checkbox ng-model=value.Value><div ng-include=\"'wrappers/eav-label.html'\"></div></div>"
   );
 
 
@@ -666,8 +666,13 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
   );
 
 
+  $templateCache.put('wrappers/collapsible.html',
+    "<div ng-show=!to.collapse><formly-transclude></formly-transclude></div>"
+  );
+
+
   $templateCache.put('wrappers/eav-label.html',
-    "<div ng-show=!to.collapse><label for={{id}} class=\"control-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}\" ng-if=to.label>{{to.label}} {{to.required ? '*' : ''}} <a tabindex=-1 ng-click=\"to.showDescription = !to.showDescription\" href=javascript:void(0); ng-if=\"to.description && to.description != ''\" title={{to.description}}><i icon=info-sign></i></a></label><p ng-if=to.showDescription class=bg-info style=\"padding: 5px\" ng-bind-html=to.description></p><formly-transclude></formly-transclude></div>"
+    "<div><label for={{id}} class=\"control-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}\" ng-if=to.label>{{to.label}} {{to.required ? '*' : ''}} <a tabindex=-1 ng-click=\"to.showDescription = !to.showDescription\" href=javascript:void(0); ng-if=\"to.description && to.description != ''\" title={{to.description}}><i icon=info-sign></i></a></label><p ng-if=to.showDescription class=bg-info style=\"padding: 5px\" ng-bind-html=to.description></p><formly-transclude></formly-transclude></div>"
   );
 
 
@@ -1133,6 +1138,18 @@ function enhanceEntity(entity) {
     //    });
     //    return uuid;
     //}
+})();
+
+(function () {
+    "use strict";
+
+    angular.module("eavFieldTemplates")
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
+            formlyConfigProvider.setWrapper({
+                name: 'collapsible',
+                templateUrl: "wrappers/collapsible.html"
+            });
+        }]);
 })();
 
 (function() {

@@ -12,5 +12,5 @@ angular.module("eavFieldTemplates",
         "ui.tree"
     ]
 )
-    .constant("defaultFieldWrappers", ["eavLabel", "bootstrapHasError", "eavLocalization"])
+    .constant("defaultFieldWrappers", ["collapsible", "eavLabel", "bootstrapHasError", "eavLocalization"])
 ;

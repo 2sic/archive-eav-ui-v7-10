@@ -3,11 +3,11 @@
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider) {
+    .config(function (formlyConfigProvider, defaultFieldWrappers) {
         formlyConfigProvider.setType({
             name: "number-default",
             template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {
                     '{{to.settings.Number.Min}}': { value: "min" },

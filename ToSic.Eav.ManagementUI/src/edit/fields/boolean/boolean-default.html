@@ -1,6 +1,7 @@
-﻿<div class="checkbox">
-    <label>
+﻿<div class="checkbox checkbox-labeled">
+    <!--<label>-->
         <input type="checkbox" class="formly-field-checkbox" ng-model="value.Value">
-        {{to.label}} {{to.required ? '*' : ''}}
-    </label>
+        <div ng-include="'wrappers/eav-label.html'"></div>
+        <!--{{to.label}} {{to.required ? '*' : ''}}-->
+    <!--</label>-->
 </div>

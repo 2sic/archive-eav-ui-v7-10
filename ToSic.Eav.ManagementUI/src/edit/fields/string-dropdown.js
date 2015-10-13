@@ -3,12 +3,12 @@
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider) {
+    .config(function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-dropdown",
             template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             defaultOptions: function defaultOptions(options) {
 
                 // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select

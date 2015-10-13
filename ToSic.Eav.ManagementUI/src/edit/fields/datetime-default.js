@@ -3,11 +3,11 @@
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider) {
+    .config(function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "datetime-default",
-            wrapper: ["eavLabel", "bootstrapHasError", "eavLocalization"],
+            wrapper: defaultFieldWrappers,
             template: "<div>" +
                 "<div class=\"input-group\">" +
                     "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
