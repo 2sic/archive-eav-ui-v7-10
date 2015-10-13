@@ -20,10 +20,10 @@
 
 
 
-    <button ng-disabled="!vm.isValid()" ng-click="vm.save()" class="btn btn-default submit-button">
+    <button ng-disabled="!vm.isValid() || vm.isWorking" ng-click="vm.save()" class="btn btn-default submit-button">
         <span icon="ok" tooltip="{{ 'Button.Save' | translate }}"></span>
     </button>
-    <button ng-disabled="!vm.isValid()" class="btn" ng-click="vm.saveAndKeepOpen()">
+    <button ng-disabled="!vm.isValid() || vm.isWorking" class="btn" ng-click="vm.saveAndKeepOpen()">
         <span icon="check" tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
     </button>
 

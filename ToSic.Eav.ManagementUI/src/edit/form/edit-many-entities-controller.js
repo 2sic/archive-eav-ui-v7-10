@@ -9,6 +9,7 @@
 
         var vm = this;
         vm.debug = debugState;
+        vm.isWorking = 0; // isWorking is > 0 when any $http request runs
         
         vm.registeredControls = [];
         vm.registerEditControl = function (control) {
@@ -42,19 +43,23 @@
         };
 
         vm.save = function () {
+            vm.isWorking++;
             entitiesSvc.saveMany(appId, vm.items).then(function(result) {
                 $scope.state.setPristine();
                 vm.afterSaveEvent(result);
+                vm.isWorking--;
             });
         };
 
         // todo: get toaster to work
         // todo: translate
         vm.saveAndKeepOpen = function () {
+            vm.isWorking++;
             uiNotification.note("Saving", "", true);
             entitiesSvc.saveMany(appId, vm.items).then(function() {
                 $scope.state.setPristine();
                 uiNotification.note("Saved", "", true);
+                vm.isWorking--;
             });
         };
         vm.items = null;
