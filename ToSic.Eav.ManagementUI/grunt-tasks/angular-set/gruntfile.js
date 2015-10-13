@@ -52,7 +52,7 @@ module.exports = function (grunt) {
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff",
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf",
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot",
-            "bower_components/bootstrap/fonts/glyphicons-halflings-regular.svc",
+            "bower_components/bootstrap/fonts/glyphicons-halflings-regular.svc"
 		],
         tmp: "tmp/lib/angular/",
         dist: "dist/lib/angular/",
