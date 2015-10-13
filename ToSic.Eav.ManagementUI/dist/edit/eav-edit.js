@@ -83,23 +83,6 @@ angular.module("eavFieldTemplates")
         });
 
     }]);
-
-(function() {
-	"use strict";
-
-	/* This app registers all field templates for EAV in the angularjs eavFieldTemplates app */
-
-	var eavFieldTemplates = angular.module("eavFieldTemplates")
-        .config(["formlyConfigProvider", function (formlyConfigProvider) {
-
-
-	    //formlyConfigProvider.setWrapper({
-	    //    name: 'eavLabel',
-        //    templateUrl: "wrappers/eav-label.html"
-	    //});
-	}]);
-
-})();
 /* 
  * Field: Empty - Default: this is usually a title/group section
  */
@@ -230,7 +213,7 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "string-default",
             template: "<input class=\"form-control input-lg\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">",
-            wrapper: defaultFieldWrappers, // ["eavLabel", "bootstrapHasError", "eavLocalization"]
+            wrapper: defaultFieldWrappers, 
             controller: "FieldTemplate-StringCtrl as vm"
         });
 

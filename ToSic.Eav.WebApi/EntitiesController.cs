@@ -190,7 +190,7 @@ namespace ToSic.Eav.WebApi
                 preserveUndefinedValues: false,
                 preventUpdateOnDraftEntities: false,
                 largeImport: false);
-            importController.RunImport(null, entitiesToImport.ToArray(), true, true);
+            importController.RunImport(null, entitiesToImport.ToArray());
 
 
             // find / update IDs of items updated to return to client

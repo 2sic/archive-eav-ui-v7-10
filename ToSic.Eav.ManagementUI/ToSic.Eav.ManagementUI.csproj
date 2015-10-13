@@ -168,7 +168,6 @@
     <Content Include="src\edit\form\main-form.js" />
     <Content Include="src\edit\form\edit-single-entity.html" />
     <Content Include="src\edit\form\edit-single-entity-controller.js" />
-    <Content Include="src\edit\fields\eav-fieldtemplates.js" />
     <Content Include="src\edit\fields\entity\entity-default.css" />
     <Content Include="src\edit\fields\entity\entity-default.html" />
     <Content Include="src\edit\localization\formly-localization-wrapper.html" />

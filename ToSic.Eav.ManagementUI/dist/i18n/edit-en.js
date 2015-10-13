@@ -24,8 +24,9 @@
   },
   "FieldType": {
     "Entity": {
-      "Choose": "-- choose --",
-      "New": "-- new --"
+      "Choose": "-- choose item --",
+      "New": "-- create new --",
+      "EntityNotFound": "(item not found)"
     }
   },
   "Dialog1": {
