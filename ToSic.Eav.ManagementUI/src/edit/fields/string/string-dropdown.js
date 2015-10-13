@@ -7,7 +7,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-dropdown",
-            template: "<select class=\"form-control\" ng-model=\"value.Value\"></select>",
+            template: "<select class=\"form-control input-lg\" ng-model=\"value.Value\"></select>",
             wrapper: defaultFieldWrappers,
             defaultOptions: function defaultOptions(options) {
 

@@ -13,9 +13,9 @@
         </ol>
     </div>
 
-    <select class="eav-entityselect-selector form-control" ng-model="selectedEntity" ng-change="addEntity()" ng-show="to.settings.Entity.AllowMultiValue || chosenEntities.length < 1">
-        <option value="">-- choose --</option>
-        <option value="new" ng-if="createEntityAllowed()">-- new --</option>
+    <select class="eav-entityselect-selector form-control input-lg" ng-model="selectedEntity" ng-change="addEntity()" ng-show="to.settings.Entity.AllowMultiValue || chosenEntities.length < 1">
+        <option value="" translate="FieldType.Entity.Choose"></option>
+        <option value="new" ng-if="createEntityAllowed()" translate="FieldType.Entity.New"></option>
         <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
     </select>
 

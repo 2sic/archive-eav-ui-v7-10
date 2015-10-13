@@ -38,14 +38,19 @@ module.exports = function (grunt) {
 			"bower_components/promise-window/dist/promise-window.min.js",
 
             // dropzone for uploads
-            "bower_components/dropzone/dist/dropzone.js"
+            "bower_components/dropzone/dist/dropzone.js",
+
+            // switch for toggle-feature
+            "bower_components/angular-ui-switch/angular-ui-switch.min.js"
 
 		],
 		cssFiles: [
             "bower_components/bootstrap/dist/css/bootstrap.min.css",
-            "bower_components/bootstrap/dist/css/bootstrap-theme.min.css",
+            // "bower_components/bootstrap/dist/css/bootstrap-theme.min.css",
+            "bower_components/Bootflat/bootflat/css/bootflat.min.css",
             "bower_components/angularjs-toaster/toaster.min.css",
-            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css"
+            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
+            "bower_components/angular-ui-switch/angular-ui-switch.min.css"
 		],
 		fontFiles: [
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2",

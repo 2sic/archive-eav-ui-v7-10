@@ -22,6 +22,12 @@
   "EditEntity": {
     "Title": "Edit"
   },
+  "FieldType": {
+    "Entity": {
+      "Choose": "-- choose --",
+      "New": "-- new --"
+    }
+  },
   "Dialog1": {
   },
   "dialog2": {

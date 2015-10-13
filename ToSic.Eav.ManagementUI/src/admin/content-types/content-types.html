@@ -4,14 +4,13 @@
     </div>
     <div class="modal-body">
         <!-- Buttons on top -->
-        <button icon="plus" title="{{ 'General.Buttons.Add' | translate }}" type="button" class="btn btn-default" ng-click="vm.edit()"></button>
+        <button title="{{ 'General.Buttons.Add' | translate }}" type="button" class="btn btn-primary btn-square" ng-click="vm.edit()"><i icon="plus"></i></button>
 
-        <button icon="repeat" title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn" ng-click="vm.refresh()"></button>
 
-        <span ng-if="vm.debug.on">
-            <button icon="record" title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn" ng-click="vm.changeScope()"></button>
-
-            <button icon="flash" title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn" ng-click="vm.liveEval()"></button>
+        <span class="btn-group" ng-if="vm.debug.on">
+            <button title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
+            <button title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.changeScope()"><i icon="record"></i></button>
+            <button title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.liveEval()"><i icon="flash"></i></button>
         </span>
         <!-- Table of content types for editing -->
         <table class="table table-hover" style="table-layout: fixed; width: 100%">
@@ -26,27 +25,27 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'">
-                    <td style="text-align: center"> {{item.Items}} </td>
-                    <td>
-                        <a class="text-nowrap hide-overflow-text" style="max-width: 400px" ng-click="vm.editItems(item)" target="_self" tooltip="{{item.Name}}">{{item.Name}}</a>
+                <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'" class="clickable-row" ng-click="vm.editItems(item)">
+                    <td style="text-align: center" class="clickable" > {{item.Items}} </td>
+                    <td class="clickable">
+                        <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Name}}">{{item.Name}}</span>
                     </td>
-                    <td>
+                    <td class="clickable">
                         <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
                     </td>
-                    <td>
+                    <td stop-event="click">
                         <button type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
                             <span icon="list">&nbsp;{{item.Fields}}</span>
                         </button>
                     </td>
 
-                    <td class="text-nowrap">
-                        <button icon="info-sign" tooltip="{{ 'General.Buttons.Rename' | translate }}" type="button" class="btn btn-xs" ng-click="vm.edit(item)"></button>
-                        <button icon="export" tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openExport(item)"></button>
-                        <button icon="import" tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs" ng-click="vm.openImport(item)"></button>
-                        <button icon="user" type="button" class="btn btn-xs" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"></button>
+                    <td class="text-nowrap" stop-event="click">
+                        <button tooltip="{{ 'General.Buttons.Rename' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)"><i icon="info-sign"></i></button>
+                        <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)"><i icon="export"></i></button>
+                        <button tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)"><i icon="import"></i></button>
+                        <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"><i icon="user"></i></button>
                     </td>
-                    <td>
+                    <td stop-event="click">
                         <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"></button>
                     </td>
                 </tr>

@@ -10,12 +10,13 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "entity-default",
             templateUrl: "fields/entity/entity-default.html",
-            wrapper: ["collapsible", "eavLabel", "bootstrapHasError"],
+            wrapper: ["eavLabel", "bootstrapHasError", "collapsible"],
             controller: "FieldTemplate-EntityCtrl"
         });
 
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $modal, appId, eavAdminDialogs) {
+        var translate = $filter("translate");
 
         if (!$scope.to.settings.Entity)
             $scope.to.settings.Entity = {};
@@ -69,7 +70,7 @@ angular.module("eavFieldTemplates")
 
         $scope.getEntityText = function(entityId) {
             var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
-            return entities.length > 0 ? entities[0].Text : "(Entity not found)";
+            return entities.length > 0 ? entities[0].Text : translate("FieldType.Entity.EntityNotFound"); // "(Entity not found)";
         };
 
         $scope.remove = function(item) {

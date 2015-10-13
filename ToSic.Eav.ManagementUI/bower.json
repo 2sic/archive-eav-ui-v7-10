@@ -22,7 +22,8 @@
     "jquery-ui": "1.11.4",
     "angular-ui-tree": "~2.9.0",
     "dropzone": "4.0.1",
-    "Bootflat": "2.0.4"
+    "Bootflat": "2.0.4",
+    "angular-ui-switch": "0.1.1"
   },
   "private": true,
   "resolutions": {

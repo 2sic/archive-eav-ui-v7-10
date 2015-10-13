@@ -1,9 +1,9 @@
 ﻿	<div class="modal-header">
-		<button icon="remove" class="btn pull-right" type="button" ng-click="vm.close()"></button>
+		<button class="btn btn-default btn-square pull-right" type="button" ng-click="vm.close()"><i icon="remove"></i></button>
 		<h3 class="modal-title" translate="Fields.Title"></h3>
 	</div>
 	<div class="modal-body">
-		<button icon="plus" ng-click="vm.add()" class="btn btn-default"></button>
+		<button icon="plus" ng-click="vm.add()" class="btn btn-primary btn-square"></button>
 
 		<!-- Table of content types for editing -->
 		<table class="table table-hover table-manage-eav">
@@ -20,31 +20,30 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="item in vm.items | orderBy: 'SortOrder'">
-					<td>
-						<button icon="{{item.IsTitle ? 'star' : 'star-empty'}}" type="button" class="btn btn-xs" ng-style="(item.IsTitle ? '' : 'color: transparent !important')" ng-click="vm.setTitle(item)">
-							
-						</button>
+				<tr ng-repeat="item in vm.items | orderBy: 'SortOrder'" class="clickable-row" ng-click="vm.createOrEditMetadata(item, item.Type)">
+					<td stop-event="click">
+					    <button type="button" class="btn btn-xs btn-square" ng-style="(item.IsTitle ? '' : 'color: transparent !important')" ng-click="vm.setTitle(item)">
+					        <i icon="{{item.IsTitle ? 'star' : 'star-empty'}}"></i>
+					    </button>
 					</td>
-					<td><a tooltip="{{ 'Id: ' + item.Id}}" ng-click="vm.createOrEditMetadata(item, item.Type)">{{item.StaticName}}</a></td>
-				    <td class="text-nowrap">
+					<td class="clickable" ><span tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
+				    <td class="text-nowrap clickable">
 				        {{item.Type}}
-				        <!-- <button icon="pencil" type="button" class="btn btn-xs" ng-click="vm.createOrEditMetadata(item, item.Type)"> {{item.Type}}</button> -->
 				    </td>
-                    <td class="text-nowrap">
+                    <td class="text-nowrap clickable">
                         {{item.Metadata.All.Name}}
                     </td>
 					<!--<td>-</td>-->
-                    <td class="text-nowrap">
+                    <td class="text-nowrap clickable">
                         {{item.Metadata.All.Notes}}
                     </td>
 
-					<td class="text-nowrap">
-						<button icon="arrow-up" type="button" class="btn btn-xs" ng-disabled="$first" ng-click="vm.moveUp(item)"></button>
-						<button icon="arrow-down" type="button" class="btn btn-xs" ng-disabled="$last" ng-click="vm.moveDown(item)"></button>
+					<td class="text-nowrap" stop-event="click">
+						<button icon="arrow-up" type="button" class="btn btn-xs btn-square" ng-disabled="$first" ng-click="vm.moveUp(item)"></button>
+						<button icon="arrow-down" type="button" class="btn btn-xs btn-square" ng-disabled="$last" ng-click="vm.moveDown(item)"></button>
 					</td>
-					<td>
-						<button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"></button>
+					<td stop-event="click">
+						<button icon="remove" type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(item)"></button>
 					</td>
 				</tr>
 				<tr ng-if="!vm.items.length">
