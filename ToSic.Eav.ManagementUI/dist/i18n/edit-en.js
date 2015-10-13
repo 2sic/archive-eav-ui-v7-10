@@ -24,9 +24,12 @@
   },
   "FieldType": {
     "Entity": {
-      "Choose": "-- choose item --",
+      "Choose": "-- choose item to add --",
       "New": "-- create new --",
-      "EntityNotFound": "(item not found)"
+      "EntityNotFound": "(item not found)",
+      "DragMove": "drag to re-order the list",
+      "Edit": "edit this item",
+      "Remove": "remove from list"
     }
   },
   "Dialog1": {

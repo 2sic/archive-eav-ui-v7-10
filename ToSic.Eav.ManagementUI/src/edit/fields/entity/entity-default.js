@@ -73,9 +73,16 @@ angular.module("eavFieldTemplates")
             return entities.length > 0 ? entities[0].Text : translate("FieldType.Entity.EntityNotFound"); // "(Entity not found)";
         };
 
-        $scope.remove = function(item) {
+        $scope.remove = function (item) {
             var index = $scope.chosenEntities.indexOf(item);
             $scope.chosenEntities.splice(index, 1);
+        };
+
+        $scope.edit = function (itemGuid) {
+            var entities = $filter("filter")($scope.availableEntities, { Value: itemGuid });
+            var id = entities[0].Id;
+
+            eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
         };
 
         // Initialize entities
