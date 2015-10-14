@@ -7,7 +7,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-textarea",
-            template: "<textarea class=\"form-control\" ng-model=\"value.Value\"></textarea>",
+            template: "<textarea class=\"form-control input-lg\" ng-model=\"value.Value\"></textarea>",
             wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {

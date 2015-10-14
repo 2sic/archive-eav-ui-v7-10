@@ -22,7 +22,12 @@ namespace ToSic.Eav.WebApi
             var dsrc = DataSource.GetInitialDataSource(null, appId);
             var entities = (from l in dsrc["Default"].List
                            where contentType == null || l.Value.Type == contentType
-                           select new { Value = l.Value.EntityGuid, Text = l.Value.Title == null || l.Value.Title[dimensionIds] == null || string.IsNullOrWhiteSpace(l.Value.Title[dimensionIds].ToString()) ? "(no Title, " + l.Key + ")" : l.Value.Title[dimensionIds] }).OrderBy(l => l.Text.ToString()).ToList();
+                           select new
+                           {
+                               Id = l.Value.EntityId,
+                               Value = l.Value.EntityGuid,
+                               Text = l.Value.Title == null || l.Value.Title[dimensionIds] == null || string.IsNullOrWhiteSpace(l.Value.Title[dimensionIds].ToString()) ? "(no Title, " + l.Key + ")" : l.Value.Title[dimensionIds]
+                           }).OrderBy(l => l.Text.ToString()).ToList();
 
             return entities;
         }

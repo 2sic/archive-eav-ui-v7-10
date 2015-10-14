@@ -1,0 +1,67 @@
+﻿
+/* field grouping */
+
+.group-entity {
+    border-right-color: darkgray;
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+
+.group-field-set {
+    border-right-color: blue;
+    border-right-style: solid;
+    border-right-width: 2px;
+    
+}
+
+/* must correct checkbox labels */
+
+.checkbox label, .radio label {
+    padding-left: 15px;
+}
+
+/* toggle-switch buttons */
+span.switch {
+    /*top: 13px;*/
+}
+
+.checkbox {
+    height: 34px;
+}
+
+.switch.checked.tosic-green {
+    background: #96d500;
+    background-color: #96D500;
+    border-color: #96d500;
+}
+
+.switch.checked.tosic-blue {
+    background: #0087F4;
+    background-color: #0087F4;
+    border-color: #0087F4;
+}
+
+
+/* this one adds a glyphicon - duplicate type from .glyphicon */
+
+
+/*.switch.inner-glyphicon small {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+    font-size: 20px;
+  line-height: 1;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.switch.inner-glyphicon.eye-open small:before {
+  content: "\e105";
+}
+.switch.inner-glyphicon.eye-close small:before {
+  content: "\e106";
+}*/

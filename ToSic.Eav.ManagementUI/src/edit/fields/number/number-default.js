@@ -6,7 +6,7 @@ angular.module("eavFieldTemplates")
     .config(function (formlyConfigProvider, defaultFieldWrappers) {
         formlyConfigProvider.setType({
             name: "number-default",
-            template: "<input type=\"number\" class=\"form-control\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
+            template: "<input type=\"number\" class=\"form-control input-lg\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
             wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {

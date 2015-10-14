@@ -7,7 +7,8 @@
         "ui.bootstrap",
         "eavFieldTemplates",
         "EavServices",
-        "eavEditTemplates"
+        "eavEditTemplates",
+        "uiSwitch"
 	])
 
     ;
