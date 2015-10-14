@@ -4,13 +4,12 @@
     <div ng-repeat="p in vm.items" class="group-entity">
         <h3 class="clickable" ng-click="p.collapse = !p.collapse">
             {{p.Header.Title ? p.Header.Title : 'Edit'}}
-            <span ng-if="p.Header.Group.SlotCanBeEmpty">
-                <span ng-if="p.Header.Group.SlotIsEmpty" icon="ban-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed."></span>
-                <span ng-if="!p.Header.Group.SlotIsEmpty" icon="ok-circle" ng-click="vm.toggleSlotIsEmpty(p)" tooltip="this item is open for editing. Click here to lock / remove it and revert to default."></span>
-            </span>
+
+            <switch ng-if="p.Header.Group.SlotCanBeEmpty" ng-model="p.slotIsUsed" ng-click="vm.toggleSlotIsEmpty(p)" class="tosic-blue" style="top: 6px;" stop-event="click" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></switch>
+
             <span class="pull-right clickable" style="font-size: smaller">
-                <span class="low-priority" ng-if="p.collapse" icon="plus-sign"></span>
-                <span class="low-priority" ng-if="!p.collapse" icon="minus-sign"></span>
+                <span class="low-priority collapse-entity-button" ng-if="p.collapse" icon="plus-sign"></span>
+                <span class="low-priority collapse-entity-button" ng-if="!p.collapse" icon="minus-sign"></span>
             </span>
         </h3>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" ng-hide="p.collapse"></eav-edit-entity-form>
@@ -28,9 +27,9 @@
         <!-- note: published status will apply to all - so the first is taken for identification if published -->
         <switch ng-model="vm.willPublish" class="tosic-blue" style="top: 13px;"></switch>
         &nbsp;
-        <span ng-click="vm.togglePublish()" style="font-size: 24px; height: 100px">
-            <span ng-if="vm.willPublish" icon="eye-open" tooltip="{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}"></span>
-            <span ng-if="!vm.willPublish" icon="eye-close" tooltip="{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}"></span>
+        <span ng-click="vm.togglePublish()" class="save-published-icon">
+            <i ng-if="vm.willPublish" icon="eye-open" tooltip="{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}"></i>
+            <i ng-if="!vm.willPublish" icon="eye-close" tooltip="{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}"></i>
         </span>
 
 

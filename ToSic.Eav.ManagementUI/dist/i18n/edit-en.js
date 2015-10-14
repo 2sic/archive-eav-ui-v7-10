@@ -27,7 +27,9 @@
   "General": {
   },
   "EditEntity": {
-    "Title": "Edit"
+    "Title": "Edit",
+    "SlotUsedtrue": "this item is open for editing. Click here to lock / remove it and revert to default.",
+    "SlotUsedfalse": "this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed."
   },
   "FieldType": {
     "Entity": {

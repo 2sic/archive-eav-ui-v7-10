@@ -303,6 +303,7 @@ angular.module("eavFieldTemplates")
     }]);
 /* global angular */
 (function () {
+    /* jshint laxbreak:true*/
     "use strict";
 
     var app = angular.module("eavEditEntity");
@@ -371,6 +372,11 @@ angular.module("eavFieldTemplates")
                         vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header);
 
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
+
+                    // set slot value - must be inverte for boolean-switch
+                    vm.items[i].slotIsUsed = (vm.items[i].Header.Group === null
+                        || vm.items[i].Header.Group.SlotIsEmpty === null
+                        || !vm.items[i].Header.GroupSlotIsEmpty);
                 });
                 vm.willPublish = vm.items[0].Entity.IsPublished;
             });
@@ -388,6 +394,7 @@ angular.module("eavFieldTemplates")
             if (!item.Header.Group)
                 item.Header.Group = {};
             item.Header.Group.SlotIsEmpty = !item.Header.Group.SlotIsEmpty;
+            item.slotIsUsed = !item.Header.Group.SlotIsEmpty;
         };
 
     }]);
@@ -634,7 +641,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('form/edit-many-entities.html',
-    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\" class=group-entity><h3 class=clickable ng-click=\"p.collapse = !p.collapse\">{{p.Header.Title ? p.Header.Title : 'Edit'}} <span ng-if=p.Header.Group.SlotCanBeEmpty><span ng-if=p.Header.Group.SlotIsEmpty icon=ban-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is locked and will stay empty/default. The values are shown for your convenience. Click here to unlock if needed.\"></span> <span ng-if=!p.Header.Group.SlotIsEmpty icon=ok-circle ng-click=vm.toggleSlotIsEmpty(p) tooltip=\"this item is open for editing. Click here to lock / remove it and revert to default.\"></span></span> <span class=\"pull-right clickable\" style=\"font-size: smaller\"><span class=low-priority ng-if=p.collapse icon=plus-sign></span> <span class=low-priority ng-if=!p.collapse icon=minus-sign></span></span></h3><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl ng-hide=p.collapse></eav-edit-entity-form></div><div><button ng-disabled=\"!vm.isValid() || vm.isWorking\" ng-click=vm.save(true) type=button class=\"btn btn-primary btn-lg btn-square submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button ng-disabled=\"!vm.isValid() || vm.isWorking\" class=\"btn btn-default btn-lg btn-square\" type=button ng-click=vm.save(false)><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> &nbsp;<switch ng-model=vm.willPublish class=tosic-blue style=\"top: 13px\"></switch>&nbsp; <span ng-click=vm.togglePublish() style=\"font-size: 24px; height: 100px\"><span ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\"></span> <span ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\"></span></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span></div><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
+    "<div ng-if=\"vm.items != null\" ng-click=vm.debug.autoEnableAsNeeded($event)><eav-language-switcher></eav-language-switcher><div ng-repeat=\"p in vm.items\" class=group-entity><h3 class=clickable ng-click=\"p.collapse = !p.collapse\">{{p.Header.Title ? p.Header.Title : 'Edit'}}<switch ng-if=p.Header.Group.SlotCanBeEmpty ng-model=p.slotIsUsed ng-click=vm.toggleSlotIsEmpty(p) class=tosic-blue style=\"top: 6px\" stop-event=click tooltip=\"{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}\"></switch><span class=\"pull-right clickable\" style=\"font-size: smaller\"><span class=\"low-priority collapse-entity-button\" ng-if=p.collapse icon=plus-sign></span> <span class=\"low-priority collapse-entity-button\" ng-if=!p.collapse icon=minus-sign></span></span></h3><eav-edit-entity-form entity=p.Entity header=p.Header register-edit-control=vm.registerEditControl ng-hide=p.collapse></eav-edit-entity-form></div><div><button ng-disabled=\"!vm.isValid() || vm.isWorking\" ng-click=vm.save(true) type=button class=\"btn btn-primary btn-lg btn-square submit-button\"><span icon=ok tooltip=\"{{ 'Button.Save' | translate }}\"></span></button> <button ng-disabled=\"!vm.isValid() || vm.isWorking\" class=\"btn btn-default btn-lg btn-square\" type=button ng-click=vm.save(false)><span icon=check tooltip=\"{{ 'Button.SaveAndKeepOpen' | translate }}\"></span></button> &nbsp;<switch ng-model=vm.willPublish class=tosic-blue style=\"top: 13px\"></switch>&nbsp; <span ng-click=vm.togglePublish() class=save-published-icon><i ng-if=vm.willPublish icon=eye-open tooltip=\"{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}\"></i> <i ng-if=!vm.willPublish icon=eye-close tooltip=\"{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}\"></i></span> <span ng-if=vm.debug.on><button tooltip=debug icon=zoom-in class=btn ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button></span></div><div ng-if=\"vm.debug.on && vm.showDebugItems\"><pre>{{ vm.items | json }}</pre></div></div>"
   );
 
 
@@ -664,7 +671,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/collapsible.html',
-    "<div ng-show=!to.collapse><formly-transclude></formly-transclude></div>"
+    "<div ng-show=!to.collapse class=group-field-set><formly-transclude></formly-transclude></div>"
   );
 
 
@@ -674,7 +681,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('wrappers/field-group.html',
-    "<div><h4 class=clickable ng-click=\"to.collapseGroup = !to.collapseGroup\">{{to.label}} <span class=\"pull-right btn-sm\"><span ng-if=to.collapseGroup class=low-priority icon=plus-sign></span> <span ng-if=!to.collapseGroup class=low-priority icon=minus-sign></span></span></h4><div ng-if=!to.collapseGroup style=\"padding: 5px\" ng-bind-html=to.description></div><formly-transclude></formly-transclude></div>"
+    "<div><h4 class=clickable ng-click=\"to.collapseGroup = !to.collapseGroup\">{{to.label}} <span class=\"pull-right btn-sm\"><span ng-if=to.collapseGroup class=\"low-priority collapse-fieldgroup-button\" icon=plus-sign></span> <span ng-if=!to.collapseGroup class=\"low-priority collapse-fieldgroup-button\" icon=minus-sign></span></span></h4><div ng-if=!to.collapseGroup style=\"padding: 5px\" ng-bind-html=to.description></div><formly-transclude></formly-transclude></div>"
   );
 
 }]);
@@ -1027,10 +1034,10 @@ function enhanceEntity(entity) {
 }
 /* global angular */
 (function () {
-	'use strict';
+	"use strict";
 
-	angular.module('eavEditEntity')
-        .service('eavDefaultValueService', function () {
+	angular.module("eavEditEntity")
+        .service("eavDefaultValueService", function () {
 		// Returns a typed default value from the string representation
 		return function parseDefaultValue(fieldConfig) {
 			var e = fieldConfig;
@@ -1040,14 +1047,14 @@ function enhanceEntity(entity) {
 			    d = e.templateOptions.header.Prefill[e.key];
 			}
 
-			switch (e.type.split('-')[0]) {
-				case 'boolean':
-					return d !== undefined && d !== null ? d.toLowerCase() == 'true' : false;
-				case 'datetime':
+			switch (e.type.split("-")[0]) {
+				case "boolean":
+					return d !== undefined && d !== null ? d.toLowerCase() == "true" : false;
+				case "datetime":
 					return d !== undefined && d !== null ? new Date(d) : null;
-				case 'entity':
+				case "entity":
 					return []; 
-				case 'number':
+				case "number":
 					return null;
 				default:
 					return d ? d : "";

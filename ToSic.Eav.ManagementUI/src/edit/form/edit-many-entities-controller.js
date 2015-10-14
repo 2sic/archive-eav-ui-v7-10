@@ -1,5 +1,6 @@
 ﻿/* global angular */
 (function () {
+    /* jshint laxbreak:true*/
     "use strict";
 
     var app = angular.module("eavEditEntity");
@@ -68,6 +69,11 @@
                         vm.items[i].Entity = entitiesSvc.newEntity(vm.items[i].Header);
 
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
+
+                    // set slot value - must be inverte for boolean-switch
+                    vm.items[i].slotIsUsed = (vm.items[i].Header.Group === null
+                        || vm.items[i].Header.Group.SlotIsEmpty === null
+                        || !vm.items[i].Header.GroupSlotIsEmpty);
                 });
                 vm.willPublish = vm.items[0].Entity.IsPublished;
             });
@@ -85,6 +91,7 @@
             if (!item.Header.Group)
                 item.Header.Group = {};
             item.Header.Group.SlotIsEmpty = !item.Header.Group.SlotIsEmpty;
+            item.slotIsUsed = !item.Header.Group.SlotIsEmpty;
         };
 
     });
