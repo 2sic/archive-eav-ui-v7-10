@@ -482,12 +482,11 @@
             })             
     ;
 }());
-(function () { 
+(function() {
 
     angular.module("ContentTypesApp")
         .controller("List", contentTypeListController)
-        .controller("Edit", contentTypeEditController)
-    ;
+        .controller("Edit", contentTypeEditController);
 
 
     /// Manage the list of content-types

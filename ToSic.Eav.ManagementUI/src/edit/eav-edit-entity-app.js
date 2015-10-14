@@ -8,7 +8,10 @@
         "eavFieldTemplates",
         "EavServices",
         "eavEditTemplates",
-        "uiSwitch"
+        "uiSwitch",
+        "toastr",
+        "ngAnimate"
+
 	])
 
     ;

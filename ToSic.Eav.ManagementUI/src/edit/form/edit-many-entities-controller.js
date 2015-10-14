@@ -5,7 +5,7 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, uiNotification, debugState) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, debugState) {
 
         var vm = this;
         vm.debug = debugState;
@@ -55,10 +55,11 @@
         // todo: translate
         vm.saveAndKeepOpen = function () {
             vm.isWorking++;
-            uiNotification.note("Saving", "", true);
+            toastr.info("saving and will leave window open...", "Saving...");
             entitiesSvc.saveMany(appId, vm.items).then(function() {
                 $scope.state.setPristine();
-                uiNotification.note("Saved", "", true);
+                toastr.clear();
+                toastr.success("saved", "Saving", { timeOut: 3000 });
                 vm.isWorking--;
             });
         };

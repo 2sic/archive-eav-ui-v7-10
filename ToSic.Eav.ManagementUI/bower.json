@@ -23,7 +23,8 @@
     "angular-ui-tree": "~2.9.0",
     "dropzone": "4.0.1",
     "Bootflat": "2.0.4",
-    "angular-ui-switch": "0.1.1"
+    "angular-ui-switch": "0.1.1",
+    "angular-toastr": "1.5.0"
   },
   "private": true,
   "resolutions": {

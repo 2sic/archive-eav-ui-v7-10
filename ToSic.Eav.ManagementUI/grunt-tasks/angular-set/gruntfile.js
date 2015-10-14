@@ -21,6 +21,9 @@ module.exports = function (grunt) {
 
 			// visual effects etc.
             "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+            "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
+
+            // old toaster - must remove in pipeline designer so I can remove here
             "bower_components/angularjs-toaster/toaster.min.js",
 
 			// i18n files
@@ -50,7 +53,10 @@ module.exports = function (grunt) {
             "bower_components/Bootflat/bootflat/css/bootflat.min.css",
             "bower_components/angularjs-toaster/toaster.min.css",
             "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
-            "bower_components/angular-ui-switch/angular-ui-switch.min.css"
+            "bower_components/angular-ui-switch/angular-ui-switch.min.css",
+
+            // toaster
+            "bower_components/angular-toastr/dist/angular-toastr.css"
 		],
 		fontFiles: [
             "bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2",
