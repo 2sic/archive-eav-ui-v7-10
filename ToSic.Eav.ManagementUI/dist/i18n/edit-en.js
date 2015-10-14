@@ -49,7 +49,7 @@
 
     "Unlink": "translate (unlink)",
     "LinkDefault": "link to default",
-    "GoogleTranslate": "Google-Translate from",
+    "GoogleTranslate": "machine-translate (Google)",
     "Copy": "copy from",
     "Use": "use from",
     "Share": "share from"

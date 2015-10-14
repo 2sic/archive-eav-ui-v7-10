@@ -48,7 +48,7 @@
             svc.newEntity = function(header) {
                 return {
                     Id: null,
-                    Guid: header.Guid, // generateUuid(),
+                    Guid: header.Guid, 
                     Type: {
                         StaticName: header.ContentTypeName // contentTypeName
                     },
@@ -57,13 +57,6 @@
                 };
             };
 
-            //svc.ensureGuid = function ensureGuid(item) {
-            //    var ent = item.Entity;
-            //    if ((ent.Id === null || ent.Id === 0) && (ent.Guid === null || typeof (ent.Guid) === "undefined" || ent.Guid === "00000000-0000-0000-0000-000000000000")) {
-            //        item.Entity.Guid = generateUuid();
-            //        item.Header.Guid = item.Entity.Guid;
-            //    }
-            //};
 
             svc.save = function save(appId, newData) {
                 return $http.post("eav/entities/save", newData, { params: { appId: appId } });
@@ -73,14 +66,4 @@
         });
 
 
-    // Generate Guid - code from http://stackoverflow.com/a/8809472
-    //function generateUuid() {
-    //    var d = new Date().getTime();
-    //    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    //        var r = (d + Math.random() * 16) % 16 | 0;
-    //        d = Math.floor(d / 16);
-    //        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    //    });
-    //    return uuid;
-    //}
 })();
