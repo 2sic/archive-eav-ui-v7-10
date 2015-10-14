@@ -3,10 +3,10 @@
 
     <div ng-repeat="p in vm.items" class="group-entity">
         <h3 class="clickable" ng-click="p.collapse = !p.collapse">
-            {{p.Header.Title ? p.Header.Title : 'Edit'}}
-
-            <switch ng-if="p.Header.Group.SlotCanBeEmpty" ng-model="p.slotIsUsed" ng-click="vm.toggleSlotIsEmpty(p)" class="tosic-blue" style="top: 6px;" stop-event="click" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></switch>
-
+            {{p.Header.Title ? p.Header.Title : 'EditEntity.DefaultTitle' | translate }}&nbsp;
+            <span ng-if="p.Header.Group.SlotCanBeEmpty"  ng-click="vm.toggleSlotIsEmpty(p)" stop-event="click">
+                <switch ng-model="p.slotIsUsed" class="tosic-blue" style="top: 6px;" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></switch>
+            </span>
             <span class="pull-right clickable" style="font-size: smaller">
                 <span class="low-priority collapse-entity-button" ng-if="p.collapse" icon="plus-sign"></span>
                 <span class="low-priority collapse-entity-button" ng-if="!p.collapse" icon="minus-sign"></span>

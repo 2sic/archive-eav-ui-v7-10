@@ -71,9 +71,9 @@
                     vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
 
                     // set slot value - must be inverte for boolean-switch
-                    vm.items[i].slotIsUsed = (vm.items[i].Header.Group === null
-                        || vm.items[i].Header.Group.SlotIsEmpty === null
-                        || !vm.items[i].Header.GroupSlotIsEmpty);
+                    var grp = vm.items[i].Header.Group;
+                    vm.items[i].slotIsUsed = (grp === null
+                        || grp.SlotIsEmpty !== true);
                 });
                 vm.willPublish = vm.items[0].Entity.IsPublished;
             });
