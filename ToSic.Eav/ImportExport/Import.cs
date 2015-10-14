@@ -63,6 +63,12 @@ namespace ToSic.Eav.Import
             if (LargeImport)
                 Context.SqlDb.CommandTimeout = 3600;
 
+            // Ensure cache is created
+            var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+            var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            cache.PurgeCache(Context.ZoneId, Context.AppId);
+            var x = cache.LightList.Any(); // re-read something
+
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
             if (Context.SqlDb.Connection.State != ConnectionState.Open)
@@ -94,9 +100,10 @@ namespace ToSic.Eav.Import
                     transaction.Commit();
 
                     // refresh the cache
-                    var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+                    y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+                    cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
                     cache.PurgeCache(Context.ZoneId, Context.AppId);
-                    var x = cache.LightList.First(); // re-read something
+                    x = cache.LightList.Any(); // re-read something
 
                     // re-start transaction
                     transaction = Context.SqlDb.Connection.BeginTransaction();
