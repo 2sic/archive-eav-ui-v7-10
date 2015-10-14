@@ -38,6 +38,7 @@
 
 				var scope = $scope;
 				var langConf = languages;
+			    var translate = $filter("translate");
 
 				var initCurrentValue = function() {
 
@@ -82,7 +83,7 @@
 					// 3. Use the first value if there is only one
 					if (valueToEdit === undefined) {
 						if (fieldModel.Values.length > 1)
-							throw "Default language value not found, but found multiple values - can't handle editing for " + $scope.options.key;
+						    throw translate("Errors.DefLangNotFound") + " " + $scope.options.key;
 						// Use the first value
 						valueToEdit = fieldModel.Values[0];
 					}
@@ -132,8 +133,12 @@
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
 			controllerAs: "vm",
-			controller: function ($scope, languages) {
-				var vm = this;
+			controller: function ($scope, languages, $filter) {
+			    var vm = this;
+			    var translate = $filter("translate");
+			    var lblDefault = translate("LangMenu.UseDefault");
+			    var lblIn = translate("LangMenu.In");
+
 				vm.fieldModel = $scope.fieldModel;
 				vm.languages = languages;
 				vm.hasLanguage = function(languageKey) {
@@ -145,10 +150,11 @@
 
 				vm.infoMessage = function () {
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
-				        return "auto (default)";
+				        return lblDefault;
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
 				        return "";
-				    return "in " + Object.keys($scope.value.Dimensions).join(", ");
+				    return translate("LangMenu.In", { languages: Object.keys($scope.value.Dimensions).join(", ") });
+				    // "in " + Object.keys($scope.value.Dimensions).join(", ");
 				};
 
 				vm.tooltip = function () {
@@ -157,14 +163,14 @@
 				    angular.forEach($scope.value.Dimensions, function (value, key) {
 				        (value ? usedIn : editableIn).push(key);
 				    });
-				    var tooltip = "editable in " + editableIn.join(", ");
+				    var tooltip = translate("LangMenu.EditableIn", { languages: editableIn.join(", ") }); // "editable in " + editableIn.join(", ");
 				    if (usedIn.length > 0)
-				        tooltip += ", also used in " + usedIn.join(", ");
+				        tooltip += translate("LangMenu.AlsoUsedIn", { languages: usedIn.join(", ") });// ", also used in " + usedIn.join(", ");
 				    return tooltip;
 				};
 
 				vm.actions = {
-				    translate: function translate() {
+				    translate: function trnslt() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
 				    },
@@ -172,11 +178,11 @@
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
 				    autoTranslate: function(languageKey) {
-				        alert("This action is not implemented yet.");
+				        alert(translate("LangMenu.NotImplemented"));
 				    },
 				    copyFrom: function (languageKey) {
 				        if ($scope.options.templateOptions.disabled)
-				            alert("Copy not possible: the field is disabled.");
+				            alert(translate("LangMenu.CopyNotPossible"));
 				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
 				        $scope.value.Value = value;
 				    },

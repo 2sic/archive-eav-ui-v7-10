@@ -171,8 +171,6 @@
     <Content Include="src\edit\fields\entity\entity-default.css" />
     <Content Include="src\edit\fields\entity\entity-default.html" />
     <Content Include="src\edit\localization\formly-localization-wrapper.html" />
-    <Content Include="src\edit\localization\images\locked.png" />
-    <Content Include="src\edit\localization\images\unlocked.png" />
     <Content Include="src\edit\localization\localization-menu.css" />
     <Content Include="src\edit\localization\eav-localization.js" />
     <Content Include="src\edit\localization\localization-menu.html" />

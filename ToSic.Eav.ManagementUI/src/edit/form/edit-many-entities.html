@@ -38,13 +38,6 @@
             <button tooltip="debug" icon="zoom-in" class="btn" ng-click="vm.showDebugItems = !vm.showDebugItems"></button>
         </span>
 
-        <span class="pull-right" ng-if="false">
-            todo: show more buttons...
-            <button class="btn">
-                <span icon="option-horizontal" tooltip="{{ 'Button.MoreOptions' | translate }}"></span>
-            </button>
-
-        </span>
     </div>
     <div ng-if="vm.debug.on && vm.showDebugItems">
         <pre>{{ vm.items | json }}</pre>
