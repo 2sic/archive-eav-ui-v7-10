@@ -23,7 +23,7 @@ module.exports = function (grunt) {
             "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
             "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
 
-            // old toaster - must remove in pipeline designer so I can remove here
+            // old toaster - todo: must remove in pipeline designer so I can remove here
             "bower_components/angularjs-toaster/toaster.min.js",
 
 			// i18n files
