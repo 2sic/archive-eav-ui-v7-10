@@ -12,5 +12,6 @@ angular.module("eavFieldTemplates",
         "ui.tree"
     ]
 )
+    // important: order of use is backwards, so the last is around the second-last, etc.
     .constant("defaultFieldWrappers", ["eavLabel", "bootstrapHasError", "eavLocalization", "collapsible"])
 ;
