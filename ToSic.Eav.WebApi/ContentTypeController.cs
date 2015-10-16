@@ -61,7 +61,11 @@ namespace ToSic.Eav.WebApi
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
             SetAppIdAndUser(appId);
-            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false);
+	        var changeStaticName = false;
+            bool.TryParse(item["ChangeStaticName"], out changeStaticName);
+            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false, 
+                changeStaticName, 
+                changeStaticName ? item["NewStaticName"] : item["StaticName"]);
 	        return true;
 	    }
         #endregion
@@ -103,6 +107,32 @@ namespace ToSic.Eav.WebApi
 	        return CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
 	    }
 
+	    [HttpGet]
+	    public Dictionary<string, string> InputTypes(int appId)
+	    {
+	        var types = new Dictionary<string, string>
+	        {
+                {"boolean-default", "default" },
+
+                {"custom-gps", "GPS Picker" },
+
+                {"datetime-default", "default (date / time picker)" },
+
+                {"empty-title", "default (title/field group)" },
+
+                {"entity-default", "default (entity picker)" },
+
+                {"number-default", "default (number input)" },
+
+
+	            {"string-default", "default (single or more lines)"},
+	            {"string-dropdown", "drop-down"},
+	            {"string-wysiwyg", "light WYSIWYG editor (recommended)"},
+                {"string-wysiwyg-adv", "WYSIWYG full (not recommended)" }
+	        };
+	        return types;
+	    }
+            
         [HttpGet]
 	    public int AddField(int appId, int contentTypeId, string staticName, string type, int sortOrder)
 	    {

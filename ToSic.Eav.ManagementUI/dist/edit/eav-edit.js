@@ -52,6 +52,34 @@ angular.module("eavFieldTemplates")
             wrapper: ["bootstrapHasError", "eavLocalization", "collapsible"]
         });
     }]);
+/* 
+ * Field: Custom - Default (basically something you should never see)
+ */
+
+angular.module("eavFieldTemplates")
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
+
+        formlyConfigProvider.setType({
+            name: "custom-gps",
+            templateUrl: "fields/custom/custom-gps.html",
+            wrapper: defaultFieldWrappers
+        });
+
+    }]);
+/* 
+ * Field: Custom - Default (basically something you should never see)
+ */
+
+angular.module("eavFieldTemplates")
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
+
+        formlyConfigProvider.setType({
+            name: "custom-default",
+            templateUrl: "fields/custom/custom-default.html",
+            wrapper: defaultFieldWrappers
+        });
+
+    }]);
 // this changes JSON-serialization for dates, 
 // because we usually want the time to be the same across time zones and NOT keeping the same moment
 Date.prototype.toJSON = function() {
@@ -626,7 +654,17 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
   'use strict';
 
   $templateCache.put('fields/boolean/boolean-default.html',
-    "<div class=\"checkbox checkbox-labeled\"><switch ng-model=value.Value class=\"tosic-green pull-left\"></switch><input type=checkbox class=formly-field-checkbox ng-model=value.Value style=\"display: none\"><div ng-include=\"'wrappers/eav-label.html'\"></div></div>"
+    "<div class=\"checkbox checkbox-labeled\"><switch ng-model=value.Value class=\"tosic-green pull-left\" ng-disabled=to.disabled></switch><input type=checkbox class=formly-field-checkbox ng-model=value.Value style=\"display: none\"><div ng-include=\"'wrappers/eav-label.html'\"></div></div>"
+  );
+
+
+  $templateCache.put('fields/custom-gps/custom-gps.html',
+    "<div class=\"alert alert-danger\">GPS-Picker - not implemented yet</div><input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value>"
+  );
+
+
+  $templateCache.put('fields/custom/custom-default.html',
+    "<div class=\"alert alert-danger\">ERROR - This is a custom field, you shouldn't see this. You only see this because the custom-dialog is missing.</div><input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value>"
   );
 
 

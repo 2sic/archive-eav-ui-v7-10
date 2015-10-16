@@ -18,7 +18,7 @@ namespace ToSic.Eav.BLL.Parts
                 );
         }
 
-        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet = null, bool alwaysShareConfig = false)
+        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
         {
             var ct = GetAttributeSetByStaticName(staticName);
 
@@ -37,6 +37,9 @@ namespace ToSic.Eav.BLL.Parts
 
             ct.Name = name;
             ct.Description = description;
+            ct.Scope = scope;
+            if (changeStaticName) // note that this is a very "deep" change
+                ct.StaticName = newStaticName;
             ct.ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName);
 
             Context.SqlDb.SaveChanges();

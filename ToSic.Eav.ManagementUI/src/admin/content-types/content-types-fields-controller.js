@@ -24,6 +24,7 @@
                 templateUrl: "content-types/content-types-field-edit.html",
                 controller: "FieldsAdd",
                 controllerAs: "vm",
+                size: "lg",
                 resolve: {
                     svc: function() { return svc; }
                 }
@@ -83,6 +84,21 @@
 
         vm.item = svc.newItem();
         vm.types = svc.types.liveList();
+
+        vm.possibleSubTypes = function possibleSubTypes(item) {
+            if (item.Type === "Custom") {
+                return {
+                    "gps": "GPS Picker" 
+                };
+            }
+            return {
+                "default": "default"
+            };
+        };
+
+        vm.resetSubTypes = function resetSubTypes(item) {
+            item.InputType = Object.keys(vm.possibleSubTypes(item))[0];
+        };
 
         vm.ok = function () {
             var items = vm.items;

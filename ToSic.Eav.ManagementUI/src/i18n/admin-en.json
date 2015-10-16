@@ -42,7 +42,7 @@
     "Entity": {
       "Short": "item(s)",
       "ShortTech": "Entity",
-      "Choice": "Other item(s) - aka Entity",
+      "Choice": "Entity (other content-items)",
       "Explanation": "one or more other content-items"
     },
     "Hyperlink": {
@@ -68,6 +68,12 @@
       "ShortTech": "Empty",
       "Choice": "Empty - for form-titles etc.",
       "Explanation": "use to structure your form"
+    },
+    "Custom": {
+      "Short": "custom",
+      "ShortTech": "Custom",
+      "Choice": "Custom - ui-tools or custom types",
+      "Explanation": "use for things like gps-pickers (which writes into multiple fields) or for custom-data which serializes something exotic into the db like an array, a custom json or anything "
     }
   },
   "ContentTypes": {

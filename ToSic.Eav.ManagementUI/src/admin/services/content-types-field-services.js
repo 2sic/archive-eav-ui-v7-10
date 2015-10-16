@@ -56,6 +56,7 @@ angular.module("EavServices")
                     ContentTypeId: svc.contentType.Id,
                     Id: 0,
                     Type: "String",
+                    InputType: "default",
                     StaticName: "",
                     IsTitle: svc.liveList().length === 0,
                     SortOrder: svc.liveList().length + svc.newItemCount++

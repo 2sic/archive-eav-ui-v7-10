@@ -561,11 +561,15 @@
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    function contentTypeEditController(appId, item, contentTypeSvc, $translate, $modalInstance) {
+    function contentTypeEditController(appId, item, contentTypeSvc, debugState, $translate, $modalInstance) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
+        vm.debug = debugState;
+
         vm.item = item;
+        vm.item.ChangeStaticName = false;
+        vm.item.NewStaticName = vm.item.StaticName; // in case you really, really want to change it
 
         vm.ok = function () {
             svc.save(item).then(function() {
@@ -577,7 +581,7 @@
             $modalInstance.dismiss("cancel");
         };
     }
-    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "$translate", "$modalInstance"];
+    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$modalInstance"];
 
 }());
 /*jshint laxbreak:true */
@@ -606,6 +610,7 @@
                 templateUrl: "content-types/content-types-field-edit.html",
                 controller: "FieldsAdd",
                 controllerAs: "vm",
+                size: "lg",
                 resolve: {
                     svc: function() { return svc; }
                 }
@@ -666,6 +671,21 @@
 
         vm.item = svc.newItem();
         vm.types = svc.types.liveList();
+
+        vm.possibleSubTypes = function possibleSubTypes(item) {
+            if (item.Type === "Custom") {
+                return {
+                    "gps": "GPS Picker" 
+                };
+            }
+            return {
+                "default": "default"
+            };
+        };
+
+        vm.resetSubTypes = function resetSubTypes(item) {
+            item.InputType = Object.keys(vm.possibleSubTypes(item))[0];
+        };
 
         vm.ok = function () {
             var items = vm.items;
@@ -745,12 +765,12 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-edit.html',
-    "<div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=ContentTypeEdit.Title></h3></div><div class=modal-body>{{ \"ContentTypeEdit.Name\" | translate }}:<br><input ng-model=\"vm.item.Name\"><br>{{ \"ContentTypeEdit.Description\" | translate }}:<br><input ng-model=\"vm.item.Description\"><br>{{ \"ContentTypeEdit.Scope\" | translate }}:<br><input disabled ng-model=\"vm.item.Scope\"></div><div class=modal-footer><button class=\"btn btn-primary btn-square pull-left\" type=button ng-click=vm.ok()><i icon=ok></i></button></div>"
+    "<div ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=ContentTypeEdit.Title></h3></div><div class=modal-body>{{ \"ContentTypeEdit.Name\" | translate }}:<br><input ng-model=vm.item.Name class=\"input-lg\"><br>{{ \"ContentTypeEdit.Description\" | translate }}:<br><input ng-model=vm.item.Description class=\"input-lg\"><br><div ng-if=vm.debug.on class=\"alert alert-danger\">Warning - the following settings should almost never be changed:</div>{{ \"ContentTypeEdit.Scope\" | translate }}:<br><input ng-disabled=!vm.debug.on ng-model=vm.item.Scope class=\"input-lg\"><div ng-if=vm.debug.on class=alert-danger><input type=checkbox class=input-lg ng-model=\"vm.item.ChangeStaticName\"> Really edit StaticName??? <input ng-model=vm.item.NewStaticName ng-disabled=!vm.item.ChangeStaticName class=\"input-lg\"></div></div><div class=modal-footer><button class=\"btn btn-primary btn-square pull-left btn-lg\" type=button ng-click=vm.ok()><i icon=ok></i></button></div></div>"
   );
 
 
   $templateCache.put('content-types/content-types-field-edit.html',
-    "<div class=modal-header><button icon=remove class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 280px\"></th><th translate=Fields.Table.DataType style=\"width: 150px\">Data Type</th><th></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=true class=input-lg style=\"width: 250px\"></td><td><select class=input-lg ng-model=item.Type ng-options=\"o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' \"></select></td><td></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-lg btn-primary btn-square pull-left\" type=button ng-click=vm.ok()></button></div>"
+    "<div class=modal-header><button icon=remove class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 270px\"></th><th translate=Fields.Table.DataType style=\"width: 220px\">Data Type</th><th translate=Fields.Table.InputType style=\"width: 220px\">Input Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=true class=input-lg style=\"width: 250px\"></td><td><select class=input-lg ng-model=item.Type style=\"width: 200px\" ng-options=\"o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' \" ng-change=vm.resetSubTypes(item)><option>-- select --</option></select></td><td><select class=input-lg ng-model=item.InputType style=\"width: 200px\" ng-options=\"key as value for (key, value) in vm.possibleSubTypes(item) | orderBy: 'toString()' \"></select></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-lg btn-primary btn-square pull-left\" type=button ng-click=vm.ok()></button></div>"
   );
 
 
@@ -1596,6 +1616,7 @@ angular.module("EavServices")
                     ContentTypeId: svc.contentType.Id,
                     Id: 0,
                     Type: "String",
+                    InputType: "default",
                     StaticName: "",
                     IsTitle: svc.liveList().length === 0,
                     SortOrder: svc.liveList().length + svc.newItemCount++

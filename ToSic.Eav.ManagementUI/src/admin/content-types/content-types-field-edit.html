@@ -6,17 +6,28 @@
     <table class="table table-hover table-manage-eav">
         <thead>
         <tr>
-            <th translate="Fields.Table.Name" style="width: 280px"></th>
-            <th translate="Fields.Table.DataType" style="width: 150px">Data Type</th>
-            <th></th>
-            <!-- <th translate="Fields.Table.InputType">Input Type</th> -->
+            <th translate="Fields.Table.Name" style="width: 270px"></th>
+            <th translate="Fields.Table.DataType" style="width: 220px">Data Type</th>
+            <th translate="Fields.Table.InputType" style="width: 220px">Input Type</th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="item in vm.items">
-            <td><input ng-model="item.StaticName" ng-required="true" class="input-lg" style="width: 250px"/></td>
-            <td><select class="input-lg" ng-model="item.Type" ng-options="o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' "></select></td>
-             <td></td> 
+            <td>
+                <input ng-model="item.StaticName" ng-required="true" class="input-lg" style="width: 250px" />
+            </td>
+            <td>
+                <select class="input-lg" ng-model="item.Type" style="width: 200px"
+                        ng-options="o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' " 
+                        ng-change="vm.resetSubTypes(item)">
+                    <option>-- select --</option>
+                </select>
+            </td>
+            <td>
+                <select class="input-lg" ng-model="item.InputType" style="width: 200px"
+                        ng-options="key as value for (key, value) in vm.possibleSubTypes(item) | orderBy: 'toString()' ">
+                </select>
+            </td> 
         </tr>
         </tbody>
     </table>

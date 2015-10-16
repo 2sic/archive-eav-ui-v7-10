@@ -133,6 +133,10 @@
     <Content Include="src\admin\services\debugState.js" />
     <Content Include="src\edit\eav-edit.css" />
     <Content Include="src\edit\fields\boolean\boolean-default.css" />
+    <Content Include="src\edit\fields\custom-gps\custom-gps.html" />
+    <Content Include="src\edit\fields\custom-gps\custom-gps.js" />
+    <Content Include="src\edit\fields\custom\custom-default.html" />
+    <Content Include="src\edit\fields\custom\custom-default.js" />
     <Content Include="src\edit\fields\empty\empty-default.js" />
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
