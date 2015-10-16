@@ -25,7 +25,7 @@
             </td>
             <td>
                 <select class="input-lg" ng-model="item.InputType" style="width: 200px"
-                        ng-options="key as value for (key, value) in vm.possibleSubTypes(item) | orderBy: 'toString()' ">
+                        ng-options="o.inputType as o.label for o in vm.allInputTypes | filter: {dataType: item.Type.toLowerCase() } ">   
                 </select>
             </td> 
         </tr>

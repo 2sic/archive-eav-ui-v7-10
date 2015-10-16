@@ -107,31 +107,31 @@ namespace ToSic.Eav.WebApi
 	        return CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
 	    }
 
-	    [HttpGet]
-	    public Dictionary<string, string> InputTypes(int appId)
-	    {
-	        var types = new Dictionary<string, string>
-	        {
-                {"boolean-default", "default" },
+	    //[HttpGet]
+	    //public Dictionary<string, string> InputTypes(int appId)
+	    //{
+	    //    var types = new Dictionary<string, string>
+	    //    {
+     //           {"boolean-default", "default" },
 
-                {"custom-gps", "GPS Picker" },
+     //           {"custom-gps", "GPS Picker" },
 
-                {"datetime-default", "default (date / time picker)" },
+     //           {"datetime-default", "default (date / time picker)" },
 
-                {"empty-title", "default (title/field group)" },
+     //           {"empty-title", "default (title/field group)" },
 
-                {"entity-default", "default (entity picker)" },
+     //           {"entity-default", "default (entity picker)" },
 
-                {"number-default", "default (number input)" },
+     //           {"number-default", "default (number input)" },
 
 
-	            {"string-default", "default (single or more lines)"},
-	            {"string-dropdown", "drop-down"},
-	            {"string-wysiwyg", "light WYSIWYG editor (recommended)"},
-                {"string-wysiwyg-adv", "WYSIWYG full (not recommended)" }
-	        };
-	        return types;
-	    }
+	    //        {"string-default", "default (single or more lines)"},
+	    //        {"string-dropdown", "drop-down"},
+	    //        {"string-wysiwyg", "light WYSIWYG editor (recommended)"},
+     //           {"string-wysiwyg-adv", "WYSIWYG full (not recommended)" }
+	    //    };
+	    //    return types;
+	    //}
             
         [HttpGet]
 	    public int AddField(int appId, int contentTypeId, string staticName, string type, int sortOrder)

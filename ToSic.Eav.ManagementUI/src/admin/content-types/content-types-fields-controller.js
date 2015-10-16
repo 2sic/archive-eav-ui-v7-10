@@ -2,7 +2,7 @@
 (function () {
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
-        .controller("FieldsAdd", contentTypeFieldAddController)
+        //.controller("FieldsAdd", contentTypeFieldAddController)
     ;
 
     /// The controller to manage the fields-list
@@ -75,41 +75,41 @@
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function contentTypeFieldAddController(svc, $modalInstance) {
-        var vm = this;
+    //function contentTypeFieldAddController(svc, contentItemsSvc, $modalInstance) {
+    //    var vm = this;
 
-        // prepare empty array of up to 10 new items to be added
-        var nw = svc.newItem;
-        vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
+    //    // prepare empty array of up to 10 new items to be added
+    //    var nw = svc.newItem;
+    //    vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
 
-        vm.item = svc.newItem();
-        vm.types = svc.types.liveList();
+    //    vm.item = svc.newItem();
+    //    vm.types = svc.types.liveList();
 
-        vm.possibleSubTypes = function possibleSubTypes(item) {
-            if (item.Type === "Custom") {
-                return {
-                    "gps": "GPS Picker" 
-                };
-            }
-            return {
-                "default": "default"
-            };
-        };
+    //    vm.possibleSubTypes = function possibleSubTypes(item) {
+    //        if (item.Type === "Custom") {
+    //            return {
+    //                "gps": "GPS Picker" 
+    //            };
+    //        }
+    //        return {
+    //            "default": "default"
+    //        };
+    //    };
 
-        vm.resetSubTypes = function resetSubTypes(item) {
-            item.InputType = Object.keys(vm.possibleSubTypes(item))[0];
-        };
+    //    vm.resetSubTypes = function resetSubTypes(item) {
+    //        item.InputType = Object.keys(vm.possibleSubTypes(item))[0];
+    //    };
 
-        vm.ok = function () {
-            var items = vm.items;
-            var newList = [];
-            for (var c = 0; c < items.length; c++)
-                if (items[c].StaticName)
-                    newList.push(items[c]);
-            svc.addMany(newList, 0);
-            $modalInstance.close();
-        };
+    //    vm.ok = function () {
+    //        var items = vm.items;
+    //        var newList = [];
+    //        for (var c = 0; c < items.length; c++)
+    //            if (items[c].StaticName)
+    //                newList.push(items[c]);
+    //        svc.addMany(newList, 0);
+    //        $modalInstance.close();
+    //    };
 
-        vm.close = function() { $modalInstance.dismiss("cancel"); };
-    }
+    //    vm.close = function() { $modalInstance.dismiss("cancel"); };
+    //}
 }());
