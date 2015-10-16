@@ -58,16 +58,19 @@ namespace ToSic.Eav.Data
 		/// <returns><see cref="Attribute{ValueType}"/></returns>
         public static IAttributeManagement GetAttributeManagementModel(IAttributeBase definition)
         {
-            switch (definition.Type)
+            switch (definition.ControlledType)
             {
-                case "Boolean": // todo: replace with AttributeTypeEnum.Boolean.ToString() and test
+                case AttributeTypeEnum.Boolean:  
                     return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "DateTime": // todo: replace with AttributeTypeEnum...
+                case AttributeTypeEnum.DateTime:
                     return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "Number":// todo: replace with AttributeTypeEnum...
+                case AttributeTypeEnum.Number:
                     return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
-                case "Entity":// todo: replace with AttributeTypeEnum...
+                case AttributeTypeEnum.Entity: 
                     return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { EntityRelationshipDefaultValue } };
+                case AttributeTypeEnum.String:
+                case AttributeTypeEnum.Hyperlink:
+                case AttributeTypeEnum.Custom:
                 default:
                     return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
             }

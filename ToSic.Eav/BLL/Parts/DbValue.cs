@@ -123,13 +123,22 @@ namespace ToSic.Eav.BLL.Parts
         internal object GetTypedValue(IValueImportModel value, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
         {
             object typedValue;
-            if (value is ValueImportModel<bool?> && (attributeType == null || attributeType == "Boolean")) // todo replace with AttributeTypeEnum.Boolean.ToString() and then test
+
+            // make sure we have the right type...
+            var type = AttributeTypeEnum.Undefined;
+            if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
+                type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
+
+            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<bool?>) 
                 typedValue = ((ValueImportModel<bool?>)value).Value;
-            else if (value is ValueImportModel<DateTime?> && (attributeType == null || attributeType == "DateTime")) // todo: replace with AttributeTypeEnum...
+            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<DateTime?>)
                 typedValue = ((ValueImportModel<DateTime?>)value).Value;
-            else if (value is ValueImportModel<decimal?> && (attributeType == null || attributeType == "Number")) // todo: replace with AttributeTypeEnum...
+            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<decimal?>)
                 typedValue = ((ValueImportModel<decimal?>)value).Value;
-            else if (value is ValueImportModel<string> && (attributeType == null || attributeType == "String" || attributeType == "Hyperlink")) // todo: replace with AttributeTypeEnum...
+            else if ((type == AttributeTypeEnum.String
+                || type == AttributeTypeEnum.Hyperlink
+                || type == AttributeTypeEnum.Custom
+                || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<string>) 
                 typedValue = ((ValueImportModel<string>)value).Value;
             else if (value is ValueImportModel<List<Guid>> && multiValuesSeparator != null)
             {

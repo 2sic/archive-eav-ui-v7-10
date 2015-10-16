@@ -126,10 +126,6 @@ namespace ToSic.Eav.BLL
                                          KeyNumber = e.KeyNumber,
                                          KeyString = e.KeyString
                                      },
-                                     //e.KeyGuid,
-                                     //e.KeyNumber,
-                                     //e.KeyString,
-                                     //e.AssignmentObjectTypeID,
                                      e.IsPublished,
                                      e.PublishedEntityId,
                                      Modified = e.ChangeLogModified.Timestamp,

@@ -10,6 +10,23 @@ namespace ToSic.Eav.Data
     {
         public string Name { get; set; }
         public string Type { get; set; }
+
+        private AttributeTypeEnum _controlledType = AttributeTypeEnum.Undefined;
+
+        public AttributeTypeEnum ControlledType
+        {
+            get
+            {
+                // if the type has not been set yet, try to look it up...
+                if (_controlledType == AttributeTypeEnum.Undefined
+                    && Type != null
+                    && Enum.IsDefined(typeof (AttributeTypeEnum), Type))
+                    _controlledType = (AttributeTypeEnum) Enum.Parse(typeof (AttributeTypeEnum), Type);
+                return _controlledType;
+            }
+            internal set { _controlledType = value; }
+        }
+
         public bool IsTitle { get; set; }
 
         // additional info for the persistence layer

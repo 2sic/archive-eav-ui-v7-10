@@ -108,9 +108,14 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         {
             IValueImportModel valueModel;
             var valueConverter = Factory.Container.Resolve<IEavValueConverter>();
-            switch (valueType)
+
+            var type = AttributeTypeEnum.Undefined;
+            if (valueType != null && Enum.IsDefined(typeof(AttributeTypeEnum), valueType))
+                type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), valueType);
+
+            switch (type)
             {
-                case "Boolean":
+                case AttributeTypeEnum.Boolean:// "Boolean":
                     {
                         valueModel = new ValueImportModel<bool?>(importEntity)
                         {
@@ -119,7 +124,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case "Number":
+                case AttributeTypeEnum.Number:// "Number":
                     {
                         valueModel = new ValueImportModel<decimal?>(importEntity)
                         {
@@ -128,7 +133,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case "DateTime":
+                case AttributeTypeEnum.DateTime:// "DateTime":
                     {
                         valueModel = new ValueImportModel<DateTime?>(importEntity)
                         {
@@ -137,7 +142,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case "Hyperlink":
+                case AttributeTypeEnum.Hyperlink:// "Hyperlink":
                     {
                         string valueReference;
                         if (string.IsNullOrEmpty(valueString) || !resolveHyperlink)
@@ -150,7 +155,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case "Entity":
+                case AttributeTypeEnum.Entity:// "Entity":
                     {   // TODO2tk: GUID comes like [\r\n "xxxx-xxxx-xxxxx-xxx" \r\n]
                         valueModel = new ValueImportModel<List<Guid>>(importEntity) 
                         { 
@@ -159,6 +164,8 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
+                case AttributeTypeEnum.String:
+                case AttributeTypeEnum.Custom:
                 default:
                     {   // String
                         valueModel = new ValueImportModel<string>(importEntity) { Value = HttpUtility.HtmlDecode(valueString) };

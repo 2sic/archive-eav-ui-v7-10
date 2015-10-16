@@ -351,6 +351,8 @@ namespace ToSic.Eav.BLL.Parts
             // So goal: every same-attribute-ID as the updated, with the same non-language-settings, is a left-over
             var reallyDelete = valuesToDeleteNew.Where(e => updatedAttributeIds.Contains(e.AttributeID));
 
+            // todo: urgent 2dm - probably a bug here see https://github.com/2sic/2sxc/issues/329#issuecomment-148220874
+            // i'm guessing that it should say var valuesToKeep = reallyDelete.Where...
             if (preserveUndefinedValues)
             {
                 var valuesToKeep = valuesToDeleteNew.Where(v => updatedAttributeIds.Contains(v.AttributeID));

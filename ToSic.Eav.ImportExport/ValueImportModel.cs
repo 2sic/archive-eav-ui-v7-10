@@ -54,17 +54,21 @@ namespace ToSic.Eav.Import
 
     public static class ValueImportModel
     {   
-        public static IValueImportModel GetModel(string value, string type, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
+        public static IValueImportModel GetModel(string value, string attributeType, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
         {
             IValueImportModel valueModel;
+            var type = AttributeTypeEnum.Undefined;
+            if (attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
+                type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
 
             switch (type)
             {
-                case "String": // todo: replace with AttributeTypeEnum...
-                case "Hyperlink":// todo: replace with AttributeTypeEnum...
+                case AttributeTypeEnum.String: 
+                case AttributeTypeEnum.Hyperlink: 
+                case AttributeTypeEnum.Custom: 
                     valueModel = new ValueImportModel<string>(importEntity) { Value = value };
                     break;
-                case "Number":// todo: replace with AttributeTypeEnum...
+                case AttributeTypeEnum.Number:
                     decimal typedDecimal;
                     var isDecimal = Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
                     decimal? typedDecimalNullable = null;
@@ -75,7 +79,7 @@ namespace ToSic.Eav.Import
                         Value = typedDecimalNullable
                     };
                     break;
-                case "Entity":
+                case AttributeTypeEnum.Entity:// "Entity":
                     var entityGuids = !String.IsNullOrEmpty(value) ? value.Split(',').Select(v =>
                     {
                         var guid = Guid.Parse(v);
@@ -83,14 +87,14 @@ namespace ToSic.Eav.Import
                     }).ToList() : new List<Guid?>(0);
                     valueModel = new ValueImportModel<List<Guid?>>(importEntity) { Value = entityGuids };
                     break;
-                case "DateTime":
+                case AttributeTypeEnum.DateTime: // "DateTime":
                     DateTime typedDateTime;
                     valueModel = new ValueImportModel<DateTime?>(importEntity)
                     {
                         Value = DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime) ? typedDateTime : new DateTime?()
                     };
                     break;
-                case "Boolean":
+                case AttributeTypeEnum.Boolean: // "Boolean":
                     bool typedBoolean;
                     valueModel = new ValueImportModel<bool?>(importEntity)
                     {
@@ -98,7 +102,7 @@ namespace ToSic.Eav.Import
                     };
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(type, value, "Unknown type argument found in import XML.");
+                    throw new ArgumentOutOfRangeException(attributeType, value, "Unknown type argument found in import XML.");
             }
 
             valueModel.ValueDimensions = dimensions;

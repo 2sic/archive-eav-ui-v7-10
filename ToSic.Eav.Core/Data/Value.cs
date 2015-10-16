@@ -48,21 +48,26 @@ namespace ToSic.Eav.Data
             var stringValue = value as string;
             try
             {
-                switch (attributeType)
+                var type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
+                switch (type)
                 {
-                    case "Boolean": // todo: replace with AttributeTypeEnum.Boolean.ToString() and test
+                    case AttributeTypeEnum.Boolean: 
                         typedModel = new Value<bool?>(string.IsNullOrEmpty(stringValue) ? (bool?)null : bool.Parse(stringValue));
                         break;
-                    case "DateTime": // todo: replace with AttributeTypeEnum...
+                    case AttributeTypeEnum.DateTime: 
                         typedModel = new Value<DateTime?>(string.IsNullOrEmpty(stringValue) ? (DateTime?)null : DateTime.Parse(stringValue));
                         break;
-                    case "Number": // todo: replace with AttributeTypeEnum...
+                    case AttributeTypeEnum.Number:
                         typedModel = new Value<decimal?>(string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture));
                         break;
-                    case "Entity": // todo: replace with AttributeTypeEnum...
+                    case AttributeTypeEnum.Entity: 
                         var entityIds = value as IEnumerable<int?>;
                         typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
                         break;
+                    case AttributeTypeEnum.String:  // most common case
+                    case AttributeTypeEnum.Empty:   // empty - should actually not contain anything!
+                    case AttributeTypeEnum.Custom:  // custom value, currently just parsed as string for manual processing as needed
+                    case AttributeTypeEnum.Hyperlink:// special case, handled as string
                     default:
                         typedModel = new Value<string>(stringValue);
                         break;

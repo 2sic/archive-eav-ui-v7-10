@@ -44,18 +44,19 @@ namespace ToSic.Eav.ValueProvider
 
             if (!propertyNotFound && valueObject != null)
             {
-                switch (valueObject.GetType().Name)
+                switch (Type.GetTypeCode(valueObject.GetType()))// (valueObject.GetType().Name)
                 {
-                    case "String": // todo: replace with AttributeTypeEnum...
+                    case TypeCode.String: // "String": 
                         return FormatString((string)valueObject, format);
-                    case "Boolean": // todo: replace with AttributeTypeEnum...
+                    case TypeCode.Boolean:// "Boolean": 
                         return ((bool)valueObject).ToString(formatProvider).ToLower();
-                    case "DateTime": // todo: replace with AttributeTypeEnum...
-                    case "Double":
-                    case "Single":
-                    case "Int32":
-                    case "Int64":
-                    case "Decimal":
+                    case TypeCode.DateTime:// "DateTime": 
+                    case TypeCode.Double: // "Double":
+                    case TypeCode.Single: // "Single":
+                    case TypeCode.Int16:  //
+                    case TypeCode.Int32: // "Int32":
+                    case TypeCode.Int64: // "Int64":
+                    case TypeCode.Decimal: // "Decimal":
                         return (((IFormattable)valueObject).ToString(outputFormat, formatProvider));
                     default:
                         return FormatString(valueObject.ToString(), format);

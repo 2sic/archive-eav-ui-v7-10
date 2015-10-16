@@ -16,6 +16,8 @@ namespace ToSic.Eav
 		/// </summary>
 		string Type { get; }
 
+        AttributeTypeEnum ControlledType { get; }
+
         bool IsTitle { get; }
 
         // additional info for the persistence layer
