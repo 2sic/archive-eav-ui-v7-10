@@ -66,12 +66,15 @@
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
             // assemble an array of 2 items for editing
-            var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
+            var items = [vm.createItemDefinition(item, "All"),
+                vm.createItemDefinition(item, metadataType),
+                vm.createItemDefinition(item, item.InputType),
+            ];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
-            var title = metadataType == "All" ? "General" : metadataType;
+            var title = metadataType == "All" ? "General" : metadataType; // todo: i18n
             return item.Metadata[metadataType] !== undefined
                 ? { EntityId: item.Metadata[metadataType].Id, Title: title }  // if defined, return the entity-number to edit
                 : {

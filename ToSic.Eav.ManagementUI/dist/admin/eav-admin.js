@@ -486,7 +486,6 @@
 
     angular.module("ContentTypesApp")
         .controller("List", contentTypeListController);
-        //.controller("Edit", contentTypeEditController);
 
 
     /// Manage the list of content-types
@@ -559,28 +558,6 @@
     }
     contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "debugState", "$translate"];
 
-    /// Edit or add a content-type
-    /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    //function contentTypeEditController(appId, item, contentTypeSvc, contentItemsSvc, debugState, $translate, $modalInstance) {
-    //    var vm = this;
-    //    var svc = contentTypeSvc(appId);
-
-    //    vm.debug = debugState;
-
-    //    vm.item = item;
-    //    vm.item.ChangeStaticName = false;
-    //    vm.item.NewStaticName = vm.item.StaticName; // in case you really, really want to change it
-
-    //    vm.ok = function () {
-    //        svc.save(item).then(function() {
-    //            $modalInstance.close(vm.item);              
-    //        });
-    //    };
-
-    //    vm.close = function () {
-    //        $modalInstance.dismiss("cancel");
-    //    };
-    //}
 
 }());
 (function() {
@@ -764,12 +741,15 @@
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
             // assemble an array of 2 items for editing
-            var items = [vm.createItemDefinition(item, "All"), vm.createItemDefinition(item, metadataType)];
+            var items = [vm.createItemDefinition(item, "All"),
+                vm.createItemDefinition(item, metadataType),
+                vm.createItemDefinition(item, item.InputType),
+            ];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
-            var title = metadataType == "All" ? "General" : metadataType;
+            var title = metadataType == "All" ? "General" : metadataType; // todo: i18n
             return item.Metadata[metadataType] !== undefined
                 ? { EntityId: item.Metadata[metadataType].Id, Title: title }  // if defined, return the entity-number to edit
                 : {
@@ -1680,7 +1660,7 @@ angular.module("EavServices")
 
                         angular.forEach(result.data, addToList);
 
-                        svc._inputTypesList = $filter("orderBy")(vm.allInputTypes, ["dataType", "inputType"]);
+                        svc._inputTypesList = $filter("orderBy")(svc._inputTypesList, ["dataType", "inputType"]);
                     });
                 return svc._inputTypesList;
             };
@@ -1921,7 +1901,7 @@ angular.module("EavAdminUi", ["ng",
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
                 var resolve = svc.CreateResolve({ contentType: item });
-                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
+                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
             };
             //#endregion
         

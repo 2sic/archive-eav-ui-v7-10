@@ -29,7 +29,7 @@ angular.module("EavServices")
 
                         angular.forEach(result.data, addToList);
 
-                        svc._inputTypesList = $filter("orderBy")(vm.allInputTypes, ["dataType", "inputType"]);
+                        svc._inputTypesList = $filter("orderBy")(svc._inputTypesList, ["dataType", "inputType"]);
                     });
                 return svc._inputTypesList;
             };

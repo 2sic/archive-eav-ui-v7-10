@@ -71,7 +71,7 @@ angular.module("EavAdminUi", ["ng",
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
                 var resolve = svc.CreateResolve({ contentType: item });
-                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "lg", resolve, closeCallback);
+                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
             };
             //#endregion
         
