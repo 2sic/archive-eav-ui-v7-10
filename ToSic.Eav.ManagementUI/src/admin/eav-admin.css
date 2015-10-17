@@ -97,8 +97,8 @@ a { cursor: pointer; }
 }
 
 .clickable { cursor:pointer; }
-/*.clickable:hover { text-decoration: underline }*/
-.clickable-row:hover .clickable { text-decoration: underline }
+.clickable:hover { text-decoration: underline }
+.clickable-row:hover td.clickable { text-decoration: underline }
 
 .low-priority .glyphicon, .low-priority.glyphicon {
     color: lightgray;

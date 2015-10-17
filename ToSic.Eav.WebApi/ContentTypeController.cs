@@ -64,8 +64,10 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 	        var changeStaticName = false;
             bool.TryParse(item["ChangeStaticName"], out changeStaticName);
-            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], 
-                item["InputType"],
+            CurrentContext.ContentType.AddOrUpdate(
+                item["StaticName"], 
+                item["Scope"], 
+                item["Name"], 
                 item["Description"],
                 null, false, 
                 changeStaticName, 
@@ -104,12 +106,12 @@ namespace ToSic.Eav.WebApi
 	    private string findInputType(Dictionary<string, IEntity> definitions)
 	    {
 	        if (!definitions.ContainsKey("All"))
-	            return "default";
+	            return "unknown";
 
 	        var inputType = definitions["All"]?.GetBestValue("InputType");
 
 	        if (inputType == null)
-	            return "default";
+	            return "unknown";
 	        return inputType.ToString();
 
 
@@ -148,31 +150,7 @@ namespace ToSic.Eav.WebApi
 
 	    }
 
-            //[HttpGet]
-	    //public Dictionary<string, string> InputTypes(int appId)
-	    //{
-	    //    var types = new Dictionary<string, string>
-	    //    {
-     //           {"boolean-default", "default" },
-
-     //           {"custom-gps", "GPS Picker" },
-
-     //           {"datetime-default", "default (date / time picker)" },
-
-     //           {"empty-title", "default (title/field group)" },
-
-     //           {"entity-default", "default (entity picker)" },
-
-     //           {"number-default", "default (number input)" },
-
-
-	    //        {"string-default", "default (single or more lines)"},
-	    //        {"string-dropdown", "drop-down"},
-	    //        {"string-wysiwyg", "light WYSIWYG editor (recommended)"},
-     //           {"string-wysiwyg-adv", "WYSIWYG full (not recommended)" }
-	    //    };
-	    //    return types;
-	    //}
+           
             
         [HttpGet]
 	    public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
@@ -181,6 +159,13 @@ namespace ToSic.Eav.WebApi
 	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true).AttributeID;
 	        throw new HttpUnhandledException();
 	    }
+
+        [HttpGet]
+        public bool UpdateInputType(int appId, int attributeId, string inputType)
+        {
+            SetAppIdAndUser(appId);
+            return CurrentContext.Attributes.UpdateInputType(attributeId, inputType);
+        }
 
         [HttpDelete]
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)

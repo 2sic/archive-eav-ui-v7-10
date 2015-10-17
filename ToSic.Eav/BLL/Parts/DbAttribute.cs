@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -206,6 +207,16 @@ namespace ToSic.Eav.BLL.Parts
             #endregion
 
             return newAttribute;
+        }
+
+        public bool UpdateInputType(int attributeId, string inputType)
+        {
+            var newValues = new Dictionary<string, object> {
+                { "InputType", inputType }
+            };
+
+            UpdateAttributeAdditionalProperties(attributeId, true, newValues);
+            return true;
         }
 
         /// <summary>

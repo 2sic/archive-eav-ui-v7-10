@@ -20,7 +20,7 @@ namespace ToSic.Eav.BLL.Parts
                 );
         }
 
-        public void AddOrUpdate(string staticName, string scope, string name, string inputType, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
+        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
         {
             var ct = GetAttributeSetByStaticName(staticName);
 

@@ -1,6 +1,6 @@
 
 angular.module("EavServices")
-    .factory("contentTypeFieldSvc", function($http, eavConfig, svcCreator) {
+    .factory("contentTypeFieldSvc", function($http, eavConfig, svcCreator, $filter) {
         return function createFieldsSvc(appId, contentType) {
             // start with a basic service which implement the live-list functionality
             var svc = {};
@@ -11,8 +11,27 @@ angular.module("EavServices")
                 return $http.get("eav/contenttype/datatypes/", { params: { "appid": svc.appId } });
             };
 
-            svc.getInputTypes = function getInputTpes() {
-                return $http.get("eav/contenttype/inputtypes/", { params: { "appid": svc.appId } });
+            svc._inputTypesList = [];
+            svc.getInputTypesList = function getInputTpes() {
+                if (svc._inputTypesList.length > 0)
+                    return svc._inputTypesList;
+                $http.get("eav/contenttype/inputtypes/", { params: { "appid": svc.appId } })
+                    .then(function(result) {
+                        function addToList(value, key) {
+                            var item = {
+                                dataType: value.Type.substring(0, value.Type.indexOf("-")),
+                                inputType: value.Type,
+                                label: value.Label,
+                                description: value.Description
+                            };
+                            svc._inputTypesList.push(item);
+                        }
+
+                        angular.forEach(result.data, addToList);
+
+                        svc._inputTypesList = $filter("orderBy")(vm.allInputTypes, ["dataType", "inputType"]);
+                    });
+                return svc._inputTypesList;
             };
 
 	        svc.getFields = function getFields() {
@@ -74,6 +93,12 @@ angular.module("EavServices")
                 return $http.delete("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
+
+            svc.updateInputType = function updateInputType(item) {
+                return $http.get("eav/contenttype/updateinputtype", { params: { appid: svc.appId, attributeId: item.Id, field: item.StaticName, inputType: item.InputType } })
+                    .then(svc.liveListReload);
+            };
+
 
             svc.setTitle = function setTitle(item) {
                 return $http.get("eav/contenttype/setTitle", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })

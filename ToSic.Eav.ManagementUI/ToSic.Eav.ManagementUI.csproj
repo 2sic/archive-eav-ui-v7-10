@@ -124,7 +124,9 @@
     <Content Include="src\admin\content-import-export\content-import.html" />
     <Content Include="src\admin\content-types\content-types-app.js" />
     <Content Include="src\admin\content-types\content-types-edit-controller.js" />
-    <Content Include="src\admin\content-types\content-types-fields-edit-controller.js" />
+    <Content Include="src\admin\content-types\content-types-field-edit-controller.js" />
+    <Content Include="src\admin\content-types\content-types-fields-add.html" />
+    <Content Include="src\admin\content-types\content-types-fields-add-controller.js" />
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />

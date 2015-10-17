@@ -11,7 +11,10 @@
         {{ "ContentTypeEdit.Description" | translate }}: <br />
         <input ng-model="vm.item.Description" class="input-lg"/><br/>
 
-        <div ng-if="vm.debug.on" class="alert alert-danger">Warning - the following settings should almost never be changed:</div>
+        <div ng-if="vm.debug.on">
+            <h3>Warning!</h3>
+            <div class="alert alert-danger">the following settings should almost never be changed:</div>
+        </div>
         {{ "ContentTypeEdit.Scope" | translate }}: <br />
         <input ng-disabled="!vm.debug.on" ng-model="vm.item.Scope" class="input-lg"/>
 

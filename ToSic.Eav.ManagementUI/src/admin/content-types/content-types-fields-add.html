@@ -14,10 +14,15 @@
         <tbody>
         <tr ng-repeat="item in vm.items">
             <td>
-                <input ng-model="item.StaticName" ng-required="true" class="input-lg" style="width: 100%" disabled="disabled"/>
+                <input ng-model="item.StaticName" ng-required="true" class="input-lg" style="width: 100%"/>
             </td>
             <td>
-                <input ng-model="item.Type" disabled="disabled" class="input-lg" style="width: 100%"/>
+                <select class="input-lg" ng-model="item.Type" style="width: 100%"
+                        tooltip="{{ 'DataType.' + item.Type + '.Explanation' | translate }}"
+                        ng-options="o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' "
+                        ng-change="vm.resetSubTypes(item)">
+                    <option>-- select --</option>
+                </select>
             </td>
             <td>
                 <select class="input-lg" ng-model="item.InputType" style="width: 100%"

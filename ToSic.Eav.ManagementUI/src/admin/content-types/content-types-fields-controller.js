@@ -20,7 +20,7 @@
         vm.add = function add() {
             $modal.open({
                 animation: true,
-                templateUrl: "content-types/content-types-field-edit.html",
+                templateUrl: "content-types/content-types-fields-add.html",
                 controller: "FieldsAdd",
                 controllerAs: "vm",
                 size: "lg",
@@ -28,6 +28,21 @@
                     svc: function() { return svc; }
                 }
             });
+        };
+
+        vm.edit = function edit(item) {
+            $modal.open({
+                animation: true,
+                templateUrl: "content-types/content-types-field-edit.html",
+                controller: "FieldEdit",
+                controllerAs: "vm",
+                size: "lg",
+                resolve: {
+                    svc: function() { return svc; },
+                    item: function() { return item; }
+                }
+            });
+
         };
 
 
