@@ -617,7 +617,6 @@
 (function () {
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
-        //.controller("FieldsAdd", contentTypeFieldAddController)
     ;
 
     /// The controller to manage the fields-list
@@ -689,45 +688,6 @@
     }
     contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$translate", "eavConfig"];
 
-    /// This is the main controller for adding a field
-    /// Add is a standalone dialog, showing 10 lines for new field names / types
-    //function contentTypeFieldAddController(svc, contentItemsSvc, $modalInstance) {
-    //    var vm = this;
-
-    //    // prepare empty array of up to 10 new items to be added
-    //    var nw = svc.newItem;
-    //    vm.items = [nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw(), nw()];
-
-    //    vm.item = svc.newItem();
-    //    vm.types = svc.types.liveList();
-
-    //    vm.possibleSubTypes = function possibleSubTypes(item) {
-    //        if (item.Type === "Custom") {
-    //            return {
-    //                "gps": "GPS Picker" 
-    //            };
-    //        }
-    //        return {
-    //            "default": "default"
-    //        };
-    //    };
-
-    //    vm.resetSubTypes = function resetSubTypes(item) {
-    //        item.InputType = Object.keys(vm.possibleSubTypes(item))[0];
-    //    };
-
-    //    vm.ok = function () {
-    //        var items = vm.items;
-    //        var newList = [];
-    //        for (var c = 0; c < items.length; c++)
-    //            if (items[c].StaticName)
-    //                newList.push(items[c]);
-    //        svc.addMany(newList, 0);
-    //        $modalInstance.close();
-    //    };
-
-    //    vm.close = function() { $modalInstance.dismiss("cancel"); };
-    //}
 }());
 /*jshint laxbreak:true */
 (function () {
@@ -748,11 +708,13 @@
         vm.types = svc.types.liveList();
 
         vm.allInputTypes = [];
-        contentItemsSvc(appId, "ContentType-InputType").liveListReload().then(function (result) {
+        svc.getInputTypes()
+        //contentItemsSvc(appId, "ContentType-InputType").liveListReload()
+            .then(function (result) {
             function addToList(value, key) {
                 var item = {
                     dataType: value.Type.substring(0, value.Type.indexOf("-")),
-                    inputType: value.Type.substring(value.Type.indexOf("-") + 1, 1000),
+                    inputType: value.Type, //.substring(value.Type.indexOf("-") + 1, 1000),
                     label: value.Label,
                     description: value.Description
                 };
@@ -765,7 +727,7 @@
         });
 
         vm.resetSubTypes = function resetSubTypes(item) {
-            item.InputType = "default";//Object.keys(vm.possibleSubTypes(item))[0];
+            item.InputType = item.Type.toLowerCase() + "-default";//Object.keys(vm.possibleSubTypes(item))[0];
         };
 
         vm.ok = function () {
@@ -851,12 +813,12 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-field-edit.html',
-    "<div class=modal-header><button icon=remove class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 270px\"></th><th translate=Fields.Table.DataType style=\"width: 220px\">Data Type</th><th translate=Fields.Table.InputType style=\"width: 220px\">Input Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=true class=input-lg style=\"width: 250px\"></td><td><select class=input-lg ng-model=item.Type style=\"width: 200px\" ng-options=\"o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' \" ng-change=vm.resetSubTypes(item)><option>-- select --</option></select></td><td><select class=input-lg ng-model=item.InputType style=\"width: 200px\" ng-options=\"o.inputType as o.label for o in vm.allInputTypes | filter: {dataType: item.Type.toLowerCase() } \"></select></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-lg btn-primary btn-square pull-left\" type=button ng-click=vm.ok()></button></div>"
+    "<div class=modal-header><button icon=remove class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()></button><h3 class=modal-title translate=Fields.TitleEdit></h3></div><div class=modal-body><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Name style=\"width: 33%\"></th><th translate=Fields.Table.DataType style=\"width: 33%\">Data Type</th><th translate=Fields.Table.InputType style=\"width: 33%\">Input Type</th></tr></thead><tbody><tr ng-repeat=\"item in vm.items\"><td><input ng-model=item.StaticName ng-required=true class=input-lg style=\"width: 100%\"></td><td><select class=input-lg ng-model=item.Type style=\"width: 100%\" tooltip=\"{{ 'DataType.' + item.Type + '.Explanation' | translate }}\" ng-options=\"o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' \" ng-change=vm.resetSubTypes(item)><option>-- select --</option></select></td><td><select class=input-lg ng-model=item.InputType style=\"width: 100%\" tooltip=\"{{ (vm.allInputTypes | filter: { inputType: item.InputType})[0].description }}\" ng-options=\"o.inputType as o.label for o in vm.allInputTypes | filter: {dataType: item.Type.toLowerCase() } \"></select></td></tr></tbody></table></div><div class=modal-footer><button icon=ok class=\"btn btn-lg btn-primary btn-square pull-left\" type=button ng-click=vm.ok()></button></div>"
   );
 
 
   $templateCache.put('content-types/content-types-fields.html',
-    "<div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-primary btn-square\"></button><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Title class=mini-btn-1></th><th translate=Fields.Table.Name style=\"width: 200px\"></th><th translate=Fields.Table.DataType style=\"width: 100px\"></th><th translate=Fields.Table.Label style=\"width: 150px\"></th><th translate=Fields.Table.Notes style=\"width: 250px\"></th><th translate=Fields.Table.Sort class=mini-btn-2></th><th translate=Fields.Table.Action class=mini-btn-1></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\" class=clickable-row ng-click=\"vm.createOrEditMetadata(item, item.Type)\"><td stop-event=click><button type=button class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)><i icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\"></i></button></td><td class=clickable><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=\"text-nowrap clickable\">{{item.Type}}</td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Name}}</td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Notes}}</td><td class=text-nowrap stop-event=click><button icon=arrow-up type=button class=\"btn btn-xs btn-square\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs btn-square\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td stop-event=click><button icon=remove type=button class=\"btn btn-xs btn-square\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div>"
+    "<div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-primary btn-square\"></button><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Title class=mini-btn-1></th><th translate=Fields.Table.Name style=\"width: 200px\"></th><th translate=Fields.Table.DataType style=\"width: 100px\"></th><th translate=Fields.Table.InputType></th><th translate=Fields.Table.Label style=\"width: 150px\"></th><th translate=Fields.Table.Notes style=\"width: 250px\"></th><th translate=Fields.Table.Sort class=mini-btn-2></th><th translate=Fields.Table.Action class=mini-btn-1></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\" class=clickable-row ng-click=\"vm.createOrEditMetadata(item, item.Type)\"><td stop-event=click><button type=button class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)><i icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\"></i></button></td><td class=clickable><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=\"text-nowrap clickable\">{{item.Type}}</td><td class=InputType>{{item.InputType}}</td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Name}}</td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Notes}}</td><td class=text-nowrap stop-event=click><button icon=arrow-up type=button class=\"btn btn-xs btn-square\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs btn-square\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td stop-event=click><button icon=remove type=button class=\"btn btn-xs btn-square\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div>"
   );
 
 
@@ -1652,6 +1614,10 @@ angular.module("EavServices")
                 return $http.get("eav/contenttype/datatypes/", { params: { "appid": svc.appId } });
             };
 
+            svc.getInputTypes = function getInputTpes() {
+                return $http.get("eav/contenttype/inputtypes/", { params: { "appid": svc.appId } });
+            };
+
 	        svc.getFields = function getFields() {
 		        return $http.get("eav/contenttype/getfields", { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
 	        };
@@ -1697,7 +1663,7 @@ angular.module("EavServices")
                     ContentTypeId: svc.contentType.Id,
                     Id: 0,
                     Type: "String",
-                    InputType: "default",
+                    InputType: "string-default",
                     StaticName: "",
                     IsTitle: svc.liveList().length === 0,
                     SortOrder: svc.liveList().length + svc.newItemCount++

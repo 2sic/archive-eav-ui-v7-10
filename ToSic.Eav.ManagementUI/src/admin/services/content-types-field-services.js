@@ -11,6 +11,10 @@ angular.module("EavServices")
                 return $http.get("eav/contenttype/datatypes/", { params: { "appid": svc.appId } });
             };
 
+            svc.getInputTypes = function getInputTpes() {
+                return $http.get("eav/contenttype/inputtypes/", { params: { "appid": svc.appId } });
+            };
+
 	        svc.getFields = function getFields() {
 		        return $http.get("eav/contenttype/getfields", { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
 	        };
@@ -56,7 +60,7 @@ angular.module("EavServices")
                     ContentTypeId: svc.contentType.Id,
                     Id: 0,
                     Type: "String",
-                    InputType: "default",
+                    InputType: "string-default",
                     StaticName: "",
                     IsTitle: svc.liveList().length === 0,
                     SortOrder: svc.liveList().length + svc.newItemCount++

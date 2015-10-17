@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Api01\SimpleDataController.cs" />
+    <Compile Include="Api\BetaFullApi.cs" />
     <Compile Include="BLL\BllCommandBase.cs" />
     <Compile Include="BLL\EavDataController.cs" />
     <Compile Include="BLL\Parts\DbContentType.cs" />

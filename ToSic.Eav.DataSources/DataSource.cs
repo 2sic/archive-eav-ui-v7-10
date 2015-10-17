@@ -126,7 +126,7 @@ namespace ToSic.Eav
 		/// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
 		/// </summary>
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-		private static Tuple<int, int> GetZoneAppId(int? zoneId, int? appId)
+		internal static Tuple<int, int> GetZoneAppId(int? zoneId, int? appId)
 		{
 			if (zoneId == null || appId == null)
 			{

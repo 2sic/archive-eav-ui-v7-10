@@ -6,6 +6,8 @@ namespace ToSic.Eav.Import
     {
         public string StaticName { get; set; }
         public string Type { get; set; }
+
+        public string InputType { get; set; }
         public List<ImportEntity> AttributeMetaData { get; set; }
 
         /// <summary>

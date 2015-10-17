@@ -114,21 +114,21 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public Attribute AppendAttribute(AttributeSet attributeSet, string staticName, string type, bool isTitle = false, bool autoSave = true)
+        public Attribute AppendAttribute(AttributeSet attributeSet, string staticName, string type, string inputType, bool isTitle = false, bool autoSave = true)
         {
-            return AppendAttribute(attributeSet, 0, staticName, type, isTitle, autoSave);
+            return AppendAttribute(attributeSet, 0, staticName, type, inputType, isTitle, autoSave);
         }
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public Attribute AppendAttribute(int attributeSetId, string staticName, string type, bool isTitle = false)
+        public Attribute AppendAttribute(int attributeSetId, string staticName, string type, string inputType, bool isTitle = false)
         {
-            return AppendAttribute(null, attributeSetId, staticName, type, isTitle, true);
+            return AppendAttribute(null, attributeSetId, staticName, type, inputType, isTitle, true);
         }
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, bool isTitle, bool autoSave)
+        private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, string inputType, bool isTitle, bool autoSave)
         {
             var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
             if (!sortOrder.HasValue)
@@ -136,21 +136,21 @@ namespace ToSic.Eav.BLL.Parts
             else
                 sortOrder++;
 
-            return AddAttribute(attributeSet, attributeSetId, staticName, type, sortOrder.Value, 1, isTitle, autoSave);
+            return AddAttribute(attributeSet, attributeSetId, staticName, type, inputType, sortOrder.Value, 1, isTitle, autoSave);
         }
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public Attribute AddAttribute(int attributeSetId, string staticName, string type, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
+        public Attribute AddAttribute(int attributeSetId, string staticName, string type, string inputType, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
         {
-            return AddAttribute(null, attributeSetId, staticName, type, sortOrder, attributeGroupId, isTitle, autoSave);
+            return AddAttribute(null, attributeSetId, staticName, type, inputType, sortOrder, attributeGroupId, isTitle, autoSave);
         }
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
+        private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, string inputType, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
         {
             if (attributeSet == null)
                 attributeSet = Context.SqlDb.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
@@ -195,6 +195,16 @@ namespace ToSic.Eav.BLL.Parts
 
             if (autoSave)
                 Context.SqlDb.SaveChanges();
+
+            #region set the input type
+            // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
+            var newValues = new Dictionary<string, object> {
+                { "InputType", inputType }
+            };
+
+            UpdateAttributeAdditionalProperties(newAttribute.AttributeID, true, newValues);
+            #endregion
+
             return newAttribute;
         }
 

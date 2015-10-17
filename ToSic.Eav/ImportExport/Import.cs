@@ -180,7 +180,7 @@ namespace ToSic.Eav.Import
                 try	// try to add new Attribute
                 {
                     var isTitle = importAttribute == importAttributeSet.TitleAttribute;
-                    destinationAttribute = Context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, isTitle, false);
+                    destinationAttribute = Context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle, false);
                     isNewAttribute = true;
                 }
 				catch (ArgumentException ex)	// Attribute already exists

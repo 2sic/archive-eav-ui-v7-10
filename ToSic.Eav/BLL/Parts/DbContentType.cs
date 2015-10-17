@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Api;
 using ToSic.Eav.Data;
+using ToSic.Eav.Import;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -18,7 +20,7 @@ namespace ToSic.Eav.BLL.Parts
                 );
         }
 
-        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
+        public void AddOrUpdate(string staticName, string scope, string name, string inputType, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
         {
             var ct = GetAttributeSetByStaticName(staticName);
 
@@ -42,7 +44,12 @@ namespace ToSic.Eav.BLL.Parts
                 ct.StaticName = newStaticName;
             ct.ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName);
 
+            // save first, to ensure it has an Id
             Context.SqlDb.SaveChanges();
+
+            //var fullApi = new BetaFullApi(Context.ZoneId, Context.AppId, Context);
+            //fullApi.Metadata_AddOrUpdate(Constants.AssignmentObjectTypeIdFieldProperties, ct.AttributeSetID, "@All", newValues);
+
         }
 
 

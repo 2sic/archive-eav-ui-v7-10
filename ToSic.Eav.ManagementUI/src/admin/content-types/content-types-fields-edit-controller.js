@@ -17,11 +17,13 @@
         vm.types = svc.types.liveList();
 
         vm.allInputTypes = [];
-        contentItemsSvc(appId, "ContentType-InputType").liveListReload().then(function (result) {
+        svc.getInputTypes()
+        //contentItemsSvc(appId, "ContentType-InputType").liveListReload()
+            .then(function (result) {
             function addToList(value, key) {
                 var item = {
                     dataType: value.Type.substring(0, value.Type.indexOf("-")),
-                    inputType: value.Type.substring(value.Type.indexOf("-") + 1, 1000),
+                    inputType: value.Type, //.substring(value.Type.indexOf("-") + 1, 1000),
                     label: value.Label,
                     description: value.Description
                 };
@@ -34,7 +36,7 @@
         });
 
         vm.resetSubTypes = function resetSubTypes(item) {
-            item.InputType = "default";//Object.keys(vm.possibleSubTypes(item))[0];
+            item.InputType = item.Type.toLowerCase() + "-default";//Object.keys(vm.possibleSubTypes(item))[0];
         };
 
         vm.ok = function () {

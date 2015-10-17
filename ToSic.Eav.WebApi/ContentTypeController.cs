@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Http;
+using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
@@ -63,7 +64,10 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 	        var changeStaticName = false;
             bool.TryParse(item["ChangeStaticName"], out changeStaticName);
-            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], item["Description"], null, false, 
+            CurrentContext.ContentType.AddOrUpdate(item["StaticName"], item["Scope"], item["Name"], 
+                item["InputType"],
+                item["Description"],
+                null, false, 
                 changeStaticName, 
                 changeStaticName ? item["NewStaticName"] : item["StaticName"]);
 	        return true;
@@ -79,18 +83,37 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            return CurrentContext.ContentType.GetContentTypeConfiguration(staticName).OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder).Select(a =>
+            var fields =
+                CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
+                    .OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder);
+
+            return fields.Select(a =>
 		        new
 		        {
 			        Id = a.Item1.AttributeId,
 			        (a.Item1 as AttributeBase).SortOrder,
 					a.Item1.Type,
+                    InputType = findInputType(a.Item2),
 					StaticName = a.Item1.Name,
 					a.Item1.IsTitle,
 					a.Item1.AttributeId,
 					Metadata = a.Item2.ToDictionary(e => e.Key, e => new Serializer().Prepare(e.Value))
 		        });
         }
+
+	    private string findInputType(Dictionary<string, IEntity> definitions)
+	    {
+	        if (!definitions.ContainsKey("All"))
+	            return "default";
+
+	        var inputType = definitions["All"]?.GetBestValue("InputType");
+
+	        if (inputType == null)
+	            return "default";
+	        return inputType.ToString();
+
+
+	    }
 
         [HttpGet]
         public bool Reorder(int appId, int contentTypeId, int attributeId, string direction)
@@ -107,7 +130,25 @@ namespace ToSic.Eav.WebApi
 	        return CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
 	    }
 
-	    //[HttpGet]
+	    [HttpGet]
+	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
+	    {
+	        var entC = new ToSic.Eav.WebApi.EntitiesController();
+	        var coreInputTypes = entC.GetAllOfTypeForAdmin(Constants.MetaDataAppId, "ContentType-InputType");
+
+            // now add app-specific items if possible
+	        if (Constants.MetaDataAppId != appId)
+	        {
+	            var coreTypesList = coreInputTypes.First();
+	            var appSpecificInputType = entC.GetAllOfTypeForAdmin(appId, "ContentType-InputType").FirstOrDefault();
+	            if (appSpecificInputType != null)
+                    coreTypesList.ForEach(i => coreTypesList.Add(i.Key, i.Value));
+	        }
+	        return coreInputTypes;
+
+	    }
+
+            //[HttpGet]
 	    //public Dictionary<string, string> InputTypes(int appId)
 	    //{
 	    //    var types = new Dictionary<string, string>
@@ -134,10 +175,10 @@ namespace ToSic.Eav.WebApi
 	    //}
             
         [HttpGet]
-	    public int AddField(int appId, int contentTypeId, string staticName, string type, int sortOrder)
+	    public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, sortOrder, 1, false, true).AttributeID;
+	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true).AttributeID;
 	        throw new HttpUnhandledException();
 	    }
 

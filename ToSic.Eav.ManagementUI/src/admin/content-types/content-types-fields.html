@@ -12,8 +12,8 @@
 					<th translate="Fields.Table.Title" class="mini-btn-1"></th>
 					<th translate="Fields.Table.Name" style="width: 200px"></th> 
 					<th translate="Fields.Table.DataType" style="width: 100px"></th>
+                    <th translate="Fields.Table.InputType"></th>
 					<th translate="Fields.Table.Label" style="width: 150px" ></th>
-					<!--<th translate="Fields.Table.InputType"></th>-->
 					<th translate="Fields.Table.Notes" style="width: 250px"></th>
 					<th translate="Fields.Table.Sort" class="mini-btn-2"></th>
 					<th translate="Fields.Table.Action" class="mini-btn-1"></th>
@@ -29,6 +29,9 @@
 					<td class="clickable" ><span tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
 				    <td class="text-nowrap clickable">
 				        {{item.Type}}
+				    </td>
+				    <td class="InputType">
+				        {{item.InputType}}
 				    </td>
                     <td class="text-nowrap clickable">
                         {{item.Metadata.All.Name}}

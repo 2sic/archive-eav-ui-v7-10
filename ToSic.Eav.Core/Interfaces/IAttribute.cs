@@ -15,7 +15,6 @@ namespace ToSic.Eav
 		/// Type of the Attribute
 		/// </summary>
 		string Type { get; }
-
         AttributeTypeEnum ControlledType { get; }
 
         bool IsTitle { get; }
