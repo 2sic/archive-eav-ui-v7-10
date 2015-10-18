@@ -32,8 +32,8 @@ namespace ToSic.Eav.WebApi
                 t.StaticName,
                 t.Scope,
                 t.Description,
-                DefinitionSet = t.UsesConfigurationOfAttributeSet,
-                Ghost = t.UsesConfigurationOfAttributeSet == null,
+                UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
+                SharedDefId = t.UsesConfigurationOfAttributeSet,
                 Items = cache.LightList.Count(i => i.Type == t),
                 Fields = (t as ContentType).AttributeDefinitions.Count 
             });

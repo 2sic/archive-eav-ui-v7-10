@@ -34,8 +34,11 @@
                         <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
                     </td>
                     <td stop-event="click">
-                        <button type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
+                        <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
                             <span icon="list">&nbsp;{{item.Fields}}</span>
+                        </button>
+                        <button ng-if="item.UsesSharedDef" tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-xs" style="width: 60px">
+                            <span icon="adjust">&nbsp;{{item.Fields}}</span>
                         </button>
                     </td>
 

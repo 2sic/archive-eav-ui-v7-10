@@ -684,7 +684,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('fields/custom-gps/custom-gps.html',
-    "<div class=\"alert alert-danger\">GPS-Picker 2 - not implemented yet <input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value><div xxng-if=debug.on><h4>debug info</h4><div>lat field name: '{{ latField}}' long-field name: '{{longField}}'</div></div></div>"
+    "<div><div class=\"alert alert-danger\">GPS-Picker 2 - not implemented yet <input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value></div><div ng-if=debug.on><h4>debug info</h4><div>lat field name: '{{ latField}}' long-field name: '{{longField}}'</div></div></div>"
   );
 
 
