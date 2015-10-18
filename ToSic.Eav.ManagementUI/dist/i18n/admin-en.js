@@ -27,6 +27,9 @@
     }
   },
   "DataType": {
+    "All": {
+      "Title": "General Settings"
+    },
     "Boolean": {
       "Short": "yes/no",
       "ShortTech": "Boolean",

@@ -57,13 +57,26 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function(formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "custom-gps",
-            templateUrl: "fields/custom/custom-gps.html",
-            wrapper: defaultFieldWrappers
+            templateUrl: "fields/custom-gps/custom-gps.html",
+            wrapper: defaultFieldWrappers,
+            controller: "FieldTemplate-CustomGpsController"
         });
+    }])
+    .controller("FieldTemplate-CustomGpsController", ["$scope", "$filter", "$modal", "appId", "debugState", "eavAdminDialogs", function ($scope, $filter, $modal, appId, debugState, eavAdminDialogs) {
+        $scope.debug = debugState;
+        // try to find the settings, where to copy the field to...
+        $scope.latField = "";
+        $scope.LongField = "";
+
+        var controlSettings = $scope.to.settings["custom-gps"];
+        if (controlSettings) {
+            $scope.latField = controlSettings.LatField || null;
+        }
+        // alert('gps' + $scope.latField);
 
     }]);
 /* 
@@ -283,7 +296,7 @@ angular.module("eavFieldTemplates")
             defaultOptions: function defaultOptions(options) {
 
                 // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
-                if (!options.templateOptions.options && options.templateOptions.settings.String.DropdownValues) {
+                if (!options.templateOptions.settings && options.templateOptions.settings.String && options.templateOptions.settings.String.DropdownValues) {
                     var o = options.templateOptions.settings.String.DropdownValues;
                     o = o.replace(/\r/g, "").split("\n");
                     o = o.map(function (e, i) {
@@ -454,6 +467,7 @@ angular.module("eavFieldTemplates")
 })();
 
 (function () {
+    /* jshint laxbreak:true */
 	"use strict";
 
 	var app = angular.module("eavEditEntity"); 
@@ -560,19 +574,30 @@ angular.module("eavFieldTemplates")
 		var getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String ? e.Metadata.String.InputType : null;
+		    var inputType = "";
+		    // new: the All can - and should - have an input-type which doesn't change
+			if (e.Metadata.All && e.Metadata.All.InputType) {
+			    inputType = e.Metadata.All.InputType;
+			} else {
+		        var subType = e.Metadata.String
+		            ? e.Metadata.String.InputType
+		            : null;
 
-			subType = subType ? subType.toLowerCase() : null;
+			    subType = subType ? subType.toLowerCase() : null;
 
-			// Special case: override subtype for string-textarea
-			if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
-				subType = "textarea";
+			    // Special case: override subtype for string-textarea
+                // todo: probably shouldn't do this any more...
+			    if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
+			        subType = "textarea";
+
+			    inputType = type + "-" + subType;
+			}
 
 			// Use subtype 'default' if none is specified - or type does not exist
-			if (!subType || !formlyConfig.getType(type + "-" + subType))
-				subType = "default";
+		    if (!inputType || !formlyConfig.getType(inputType))
+		        inputType = type + "-default";
 
-			return (type + "-" + subType);
+			return (inputType);
 		};
 	}]);
     
@@ -659,7 +684,7 @@ angular.module('eavEditTemplates',[]).run(['$templateCache', function($templateC
 
 
   $templateCache.put('fields/custom-gps/custom-gps.html',
-    "<div class=\"alert alert-danger\">GPS-Picker - not implemented yet</div><input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value>"
+    "<div class=\"alert alert-danger\">GPS-Picker 2 - not implemented yet <input class=\"form-control input-lg\" ng-pattern=vm.regexPattern ng-model=value.Value><div xxng-if=debug.on><h4>debug info</h4><div>lat field name: '{{ latField}}' long-field name: '{{longField}}'</div></div></div>"
   );
 
 

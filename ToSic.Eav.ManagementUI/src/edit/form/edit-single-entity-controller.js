@@ -1,5 +1,6 @@
 ﻿
 (function () {
+    /* jshint laxbreak:true */
 	"use strict";
 
 	var app = angular.module("eavEditEntity"); 
@@ -106,19 +107,30 @@
 		var getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-			var subType = e.Metadata.String ? e.Metadata.String.InputType : null;
+		    var inputType = "";
+		    // new: the All can - and should - have an input-type which doesn't change
+			if (e.Metadata.All && e.Metadata.All.InputType) {
+			    inputType = e.Metadata.All.InputType;
+			} else {
+		        var subType = e.Metadata.String
+		            ? e.Metadata.String.InputType
+		            : null;
 
-			subType = subType ? subType.toLowerCase() : null;
+			    subType = subType ? subType.toLowerCase() : null;
 
-			// Special case: override subtype for string-textarea
-			if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
-				subType = "textarea";
+			    // Special case: override subtype for string-textarea
+                // todo: probably shouldn't do this any more...
+			    if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
+			        subType = "textarea";
+
+			    inputType = type + "-" + subType;
+			}
 
 			// Use subtype 'default' if none is specified - or type does not exist
-			if (!subType || !formlyConfig.getType(type + "-" + subType))
-				subType = "default";
+		    if (!inputType || !formlyConfig.getType(inputType))
+		        inputType = type + "-default";
 
-			return (type + "-" + subType);
+			return (inputType);
 		};
 	});
     
