@@ -34,11 +34,10 @@
 			template: "",
 			link: function (scope, element, attrs) {
 			},
-			controller: function ($scope, $filter, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
+			controller: function ($scope, $filter, translate, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
 
 				var scope = $scope;
 				var langConf = languages;
-			    var translate = $filter("translate");
 
 				var initCurrentValue = function() {
 
@@ -133,9 +132,8 @@
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
 			controllerAs: "vm",
-			controller: function ($scope, languages, $filter) {
+			controller: function ($scope, languages, translate) {
 			    var vm = this;
-			    var translate = $filter("translate");
 			    var lblDefault = translate("LangMenu.UseDefault");
 			    var lblIn = translate("LangMenu.In");
 

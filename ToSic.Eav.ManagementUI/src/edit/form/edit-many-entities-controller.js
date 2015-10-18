@@ -6,12 +6,11 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, $filter, debugState) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, translate, debugState) {
 
         var vm = this;
         vm.debug = debugState;
         vm.isWorking = 0; // isWorking is > 0 when any $http request runs
-        var translate = $filter("translate");
 
         vm.registeredControls = [];
         vm.registerEditControl = function (control) {

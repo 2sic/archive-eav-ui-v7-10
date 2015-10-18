@@ -14,8 +14,7 @@
  */
 
 angular.module("EavServices")
-    .factory("debugState", function ($filter, toastr) {
-        var translate = $filter("translate");
+    .factory("debugState", function (translate, toastr) {
         var svc = {
             on: false
         };

@@ -28,6 +28,8 @@
         });
     })
 
-    //.factory("")
+    .factory("translate", function($filter) {
+                return $filter("translate");
+            })
     ;
 })();
