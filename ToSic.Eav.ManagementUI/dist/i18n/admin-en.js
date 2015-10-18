@@ -96,7 +96,9 @@
       "ChangeScopeQuestion": "This is an advanced feature to show content-types of another scope. Don't use this if you don't know what you're doing, as content-types of other scopes are usually hidden for a good reason."
     },
     "Messages": {
-      "SharedDefinition": "this content-type shares the definition of {{SharedDefId}} read 2sxc.org/help?tag=shared-types"
+      "SharedDefinition": "this content-type shares the definition of #{{SharedDefId}} so you can't edit it here - read 2sxc.org/help?tag=shared-types",
+      "TypeOwn": "this is an own content-type, it does not use the definition of another content-type - read 2sxc.org/help?tag=shared-types",
+      "TypeShared": "this content-type inherits the definition of #{{SharedDefId}} - read 2sxc.org/help?tag=shared-types"
     }
   },
   "ContentTypeEdit": {

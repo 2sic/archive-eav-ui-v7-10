@@ -11,16 +11,24 @@
         {{ "ContentTypeEdit.Description" | translate }}: <br />
         <input ng-model="vm.item.Description" class="input-lg"/><br/>
 
-        <div ng-if="vm.debug.on">
-            <h3>Warning!</h3>
-            <div class="alert alert-danger">the following settings should almost never be changed:</div>
+        <div>
+            {{ "ContentTypeEdit.Scope" | translate }}: <br />
+            <span ng-if="vm.debug.on">
+                <div class="alert alert-danger">the scope should almost never be changed - <a href="http://2sxc.org/help?tag=scope" _target="_blank">see help</a></div>
+            </span>
+            <input ng-disabled="!vm.debug.on" ng-model="vm.item.Scope" class="input-lg" />
         </div>
-        {{ "ContentTypeEdit.Scope" | translate }}: <br />
-        <input ng-disabled="!vm.debug.on" ng-model="vm.item.Scope" class="input-lg"/>
 
         <div ng-if="vm.debug.on" class="alert-danger">
-            <input type="checkbox" class="input-lg" ng-model="vm.item.ChangeStaticName"/> Really edit StaticName???
+            <h3>Static Name</h3>
+            <input type="checkbox" class="input-lg" ng-model="vm.item.ChangeStaticName"/> Really edit StaticName??? - this is usually a very bad idea
+            <br/>
             <input ng-model="vm.item.NewStaticName" ng-disabled="!vm.item.ChangeStaticName" class="input-lg"/>
+        </div>
+        <div ng-if="vm.debug.on" class="alert-danger">
+            <h3>Shared Content Type</h3>
+            <div>Note: this can't be edited in the UI, for now if you really know what you're doing, do it in the DB</div>
+            <div>Uses Type Definition of: {{vm.item.SharedDefId}}</div> 
         </div>
     </div>
     <div class="modal-footer">

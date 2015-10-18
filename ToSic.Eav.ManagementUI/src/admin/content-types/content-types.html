@@ -20,8 +20,8 @@
                     <th translate="ContentTypes.TypesTable.Name" style="width: 50%"></th>
                     <th translate="ContentTypes.TypesTable.Description" style="width: 50%"></th>
                     <th translate="ContentTypes.TypesTable.Fields" class="mini-btn-2"></th>
-                    <th translate="ContentTypes.TypesTable.Actions" class="mini-btn-3"></th>
-                    <th style="width: 40px"> </th>
+                    <th translate="ContentTypes.TypesTable.Actions" class="mini-btn-5"></th>
+                    <th class="mini-btn-1"> </th>
                 </tr>
             </thead>
             <tbody>
@@ -43,7 +43,9 @@
                     </td>
 
                     <td class="text-nowrap" stop-event="click">
-                        <button tooltip="{{ 'General.Buttons.Rename' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)"><i icon="info-sign"></i></button>
+                        <button tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
+                            <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
+                        </button>
                         <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)"><i icon="export"></i></button>
                         <button tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)"><i icon="import"></i></button>
                         <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"><i icon="user"></i></button>
