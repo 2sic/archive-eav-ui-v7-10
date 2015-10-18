@@ -261,6 +261,20 @@ angular.module("eavFieldTemplates")
         // ToDo: Implement Google Map
     });
 /* 
+ * Field: String - Disabled
+ */
+
+angular.module("eavFieldTemplates")
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
+
+        formlyConfigProvider.setType({
+            name: "string-disabled",
+            template: "<div>disb<input class=\"form-control input-lg\" ng-model=\"value.Value\" ng-disabled='true'> {{value.Value}} </div>",
+            wrapper: defaultFieldWrappers
+        });
+
+    }]);
+/* 
  * Field: String - Default
  */
 
@@ -535,7 +549,6 @@ angular.module("eavFieldTemplates")
 			            expressionProperties: {
 			                // Needed for dynamic update of the disabled property
 			                'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
-                            //'templateOptions.disabled': 'options.templateOptions.disabled'
 			            },
 			            watcher: [
 			                {

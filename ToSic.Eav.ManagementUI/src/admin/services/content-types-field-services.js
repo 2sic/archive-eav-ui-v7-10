@@ -35,7 +35,23 @@ angular.module("EavServices")
             };
 
 	        svc.getFields = function getFields() {
-		        return $http.get("eav/contenttype/getfields", { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } });
+	            return $http.get("eav/contenttype/getfields", { params: { "appid": svc.appId, "staticName": svc.contentType.StaticName } })
+	            .then(function(result) {
+	                // merge the settings into one, with correct priority sequence
+	                if (result.data ) {
+	                    for (var i = 0; i < result.data.length; i++) {
+	                        var fld = result.data[i];
+	                        if(!fld.Metadata)
+                                continue;
+	                        var md = fld.Metadata;
+	                        var allMd = md.All;
+	                        var typeMd = md[fld.Type];
+	                        var inputMd = md[fld.InputType];
+	                        md.merged = angular.merge({}, allMd, typeMd, inputMd);
+	                    }
+	                }
+	                    return result;
+	                });
 	        };
 
             svc = angular.extend(svc, svcCreator.implementLiveList(svc.getFields));
