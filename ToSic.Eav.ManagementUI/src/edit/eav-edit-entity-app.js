@@ -2,7 +2,7 @@
 (function () {
 	"use strict";
 
-	angular.module("eavEditEntity", [
+    angular.module("eavEditEntity", [
         "formly",
         "ui.bootstrap",
         "eavFieldTemplates",
@@ -11,10 +11,8 @@
         "uiSwitch",
         "toastr",
         "ngAnimate"
+    ]);
 
-	])
-
-    ;
 
 
 })();

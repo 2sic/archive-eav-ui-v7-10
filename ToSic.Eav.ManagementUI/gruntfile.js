@@ -25,9 +25,34 @@ module.exports = function(grunt) {
         concatCss: "dist/edit/edit.css",
         concatCssMin: "dist/edit/edit.min.css"
     };
+    var editExt = {
+        cwd: "src/edit-extended/",
+        cwdJs: "src/edit-extended/**/*.js",
+        tmp: "tmp/edit-extended/",
+        templates: "tmp/edit-extended/html-templates.js",
+        dist: "dist/edit-extended/",
+        concatFile: "dist/edit/eav-edit-extended.js",
+        uglifyFile: "dist/edit/eav-edit-extended.min.js",
+        concatCss: "dist/edit/eav-edit-extended.css",
+        concatCssMin: "dist/edit/eav-edit-extended.min.css"
+    };
+
     var i18n = {
         cwd: "src/i18n/",
         dist: "dist/i18n/"
+    };
+
+    var configConstants = {
+        ngTemplatesHtmlMin: {
+            collapseBooleanAttributes: true,
+            collapseWhitespace: true,
+            removeAttributeQuotes: true,
+            removeComments: true,
+            removeEmptyAttributes: true,
+            removeRedundantAttributes: false,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true
+        }
     };
 
     var concatPipelineCss = "pipeline-designer.css";
@@ -45,13 +70,11 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            //ngUi: [admin.cwdJs],
-            //edit: [editUi.cwdJs],
-            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]//, js.eav.specs, js.eav.src]
+            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs, editExt.cwdJs]
         },
 
         clean: {
-            tmp: tmpRoot + "**/*", // '.tmp/**/*',
+            tmp: tmpRoot + "**/*", 
             dist: "dist/**/*"
         },
 
@@ -69,6 +92,12 @@ module.exports = function(grunt) {
                         cwd: editUi.cwd,
                         src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: editUi.tmp
+                    },
+                    {
+                        expand: true,
+                        cwd: editExt.cwd,
+                        src: ["**", "!**/*spec.js", "!**/tests/**"],
+                        dest: editExt.tmp
                     }
                 ]
             },
@@ -76,9 +105,9 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: "src/i18n/", //i18n.cwd,
+                        cwd: "src/i18n/", 
                         src: ["**/*.json"],
-                        dest: "dist/i18n/", //  i18n.dist
+                        dest: "dist/i18n/", 
                         rename: function(dest, src) {
                             return dest + src.replace(".json",".js");
                         }
@@ -92,21 +121,12 @@ module.exports = function(grunt) {
                 options: {
                     module: "eavTemplates",
                     append: true,
-                    htmlmin: {
-                        collapseBooleanAttributes: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeComments: true,
-                        removeEmptyAttributes: true,
-                        removeRedundantAttributes: false,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true
-                    }
+                    htmlmin: configConstants.ngTemplatesHtmlMin
                 },
                 files: [
                     {
-                        cwd: admin.tmp,// + "/",
-                        src: ["**/*.html"], //, 'wrappers/**/*.html', 'other/**/*.html'],
+                        cwd: admin.tmp,
+                        src: ["**/*.html"],
                         dest: admin.templates
                     }
                 ]
@@ -115,22 +135,28 @@ module.exports = function(grunt) {
                 options: {
                     module: "eavEditTemplates",
                     append: true,
-                    htmlmin: {
-                        collapseBooleanAttributes: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeComments: true,
-                        removeEmptyAttributes: true,
-                        removeRedundantAttributes: false,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true
-                    }
+                    htmlmin: configConstants.ngTemplatesHtmlMin
                 },
                 files: [
                      {
-                         cwd: editUi.tmp,// + "/",
-                         src: ["**/*.html"], //, 'wrappers/**/*.html', 'other/**/*.html'],
+                         cwd: editUi.tmp,
+                         src: ["**/*.html"], 
                          dest: editUi.templates
+                     }
+                ]
+            },
+            editExt: {
+                options: {
+                    module: "eavEditExtended",
+                    standalone: false,
+                    append: true,
+                    htmlmin: configConstants.ngTemplatesHtmlMin
+                },
+                files: [
+                     {
+                         cwd: editExt.tmp,
+                         src: ["**/*.html"], 
+                         dest: editExt.templates
                      }
                 ]
             }
@@ -147,6 +173,10 @@ module.exports = function(grunt) {
             editUi: {
                 src: editUi.tmp + "**/*.js",
                 dest: editUi.concatFile
+            },
+            editExt: {
+                src: editExt.tmp + "**/*.js",
+                dest: editExt.concatFile
             },
             pipelineCss: {
                 src: [admin.tmp + "pipelines/pipeline-designer.css"],
@@ -168,6 +198,11 @@ module.exports = function(grunt) {
                 expand: true,
                 src: editUi.concatFile,
                 extDot: "last"          // Extensions in filenames begin after the last dot 
+            },
+            editExt: {
+                expand: true,
+                src: editExt.concatFile,
+                extDot: "last"          // Extensions in filenames begin after the last dot 
             }
 
         },
@@ -186,6 +221,10 @@ module.exports = function(grunt) {
             editUi: {
                 src: editUi.concatFile,
                 dest: editUi.uglifyFile
+            },
+            editExt: {
+                src: editExt.concatFile,
+                dest: editExt.uglifyFile
             }
         },
         
@@ -234,7 +273,7 @@ module.exports = function(grunt) {
 
         watch: {
             ngUi: {
-                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**"],
+                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**", editExt.cwd + "**"],
                 tasks: ["build"]
             },
             devEavMlJson: {
@@ -243,19 +282,6 @@ module.exports = function(grunt) {
             }
         }
     });
-
-    function loadConfig(path) {
-        var glob = require('glob');
-        var object = {};
-        var key;
-
-        glob.sync('*', { cwd: path }).forEach(function (option) {
-            key = option.replace(/\.js$/, '');
-            object[key] = require(path + option);
-        });
-
-        return object;
-    }
 
     // Load all grunt-plugins mentioned in the package.json
     require("load-grunt-tasks")(grunt);
