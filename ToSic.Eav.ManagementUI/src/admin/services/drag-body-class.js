@@ -2,11 +2,11 @@
 angular.module("EavServices")
     .factory("dragClass", function () {
 
-        document.addEventListener('dragover', function() {
+        document.addEventListener("dragover", function() {
             if(this === document)
                 document.body.classList.add("eav-dragging");
         });
-        document.addEventListener('dragleave', function() {
+        document.addEventListener("dragleave", function() {
             if(this === document)
                 document.body.classList.remove("eav-dragging");
         });

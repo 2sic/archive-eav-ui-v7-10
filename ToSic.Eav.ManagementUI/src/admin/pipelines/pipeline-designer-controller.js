@@ -1,16 +1,17 @@
 // AngularJS Controller for the >>>> Pipeline Designer
-// todo: refactor the pipeline designer to use the new eavAdminUi service
 
-/*jshint laxbreak:true */
 (function () {
+    /*jshint laxbreak:true */
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, uiNotification, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
 
                 // Init
-                uiNotification.wait();
+                var toastr = toastrWithHttpErrorHandling;
+                var waitMsg = toastr.info("This shouldn't take long", "Please wait...");
+
                 $scope.readOnly = true;
                 $scope.dataSourcesCount = 0;
                 $scope.dataSourceIdPrefix = "dataSource_";
@@ -40,10 +41,12 @@
                         } else {
                             // if read only, show message
                             $scope.readOnly = !success.Pipeline.AllowEdit;
-                            uiNotification.note("Ready", $scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.", true);
+                            toastr.clear(waitMsg);
+                            toastr.info($scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.",
+                                "Ready", { autoDismiss: true });
                         }
                     }, function(reason) {
-                        uiNotification.error("Loading Pipeline failed", reason);
+                        toastr.error(reason, "Loading Pipeline failed");
                     });
 
                 // init new jsPlumb Instance
@@ -68,11 +71,11 @@
 
                     // If connection on Out-DataSource was removed, remove custom Endpoint
                     $scope.jsPlumbInstance.bind("connectionDetached", function(info) {
-                        if (info.targetId == $scope.dataSourceIdPrefix + "Out") {
+                        if (info.targetId === $scope.dataSourceIdPrefix + "Out") {
                             var element = angular.element(info.target);
                             var fixedEndpoints = $scope.findDataSourceOfElement(element) /* element.scope() */.dataSource.Definition().In;
                             var label = info.targetEndpoint.getOverlay("endpointLabel").label;
-                            if (fixedEndpoints.indexOf(label) == -1) {
+                            if (fixedEndpoints.indexOf(label) === -1) {
                                 $timeout(function() {
                                     $scope.jsPlumbInstance.deleteEndpoint(info.targetEndpoint);
                                 });
@@ -408,8 +411,8 @@
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                $scope.savePipeline = function(successHandler) {
-                    uiNotification.wait("Saving...");
+                $scope.savePipeline = function (successHandler) {
+                    var waitMsg = toastr.info("This shouldn't take long", "Saving...");
                     $scope.readOnly = true;
 
                     syncPipelineData();
@@ -420,7 +423,7 @@
                         successHandler = pipelineSaved;
 
                     pipelineService.savePipeline($scope.pipelineData.Pipeline, $scope.pipelineData.DataSources).then(successHandler, function(reason) {
-                        uiNotification.error("Save Pipeline failed", reason);
+                        toastr.error(reason, "Save Pipeline failed");
                         $scope.readOnly = false;
                         deferred.reject();
                     }).then(function() {
@@ -440,7 +443,8 @@
                     $scope.pipelineData.DataSources = success.DataSources;
                     pipelineService.postProcessDataSources($scope.pipelineData);
 
-                    uiNotification.success("Saved", "Pipeline " + success.Pipeline.EntityId /*EntityId*/ + " saved and loaded", true);
+                    toastr.clear();
+                    toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded", "Saved", { autoDismiss: true });
 
                     // Reset jsPlumb, re-Init Connections
                     $scope.jsPlumbInstance.reset();
@@ -462,11 +466,11 @@
                 $scope.queryPipeline = function() {
                     var query = function() {
                         // Query pipelineService for the result...
-                        uiNotification.wait("Running Query ...");
+                        toastr.info("Running Query ...");
 
                         pipelineService.queryPipeline($scope.PipelineEntityId).then(function(success) {
                             // Show Result in a UI-Dialog
-                            uiNotification.clear();
+                            toastr.clear();
 
                             var resolve = eavAdminDialogs.CreateResolve({ testParams: $scope.pipelineData.Pipeline.TestParameters, result: success });
                             eavAdminDialogs.OpenModal("pipelines/query-stats.html", "QueryStats as vm", "lg", resolve);
@@ -476,7 +480,7 @@
                             });
                             $log.debug(success);
                         }, function(reason) {
-                            uiNotification.error("Query failed", reason);
+                            toastr.error(reason, "Query failed");
                         });
                     };
 

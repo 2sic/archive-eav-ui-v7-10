@@ -23,9 +23,6 @@ module.exports = function (grunt) {
             "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
             "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
 
-            // old toaster - todo: must remove in pipeline designer so I can remove here
-            "bower_components/angularjs-toaster/toaster.min.js",
-
 			// i18n files
 			"bower_components/angular-translate/angular-translate.min.js",
 			"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
@@ -51,7 +48,6 @@ module.exports = function (grunt) {
             "bower_components/bootstrap/dist/css/bootstrap.min.css",
             // "bower_components/bootstrap/dist/css/bootstrap-theme.min.css",
             "bower_components/Bootflat/bootflat/css/bootflat.min.css",
-            "bower_components/angularjs-toaster/toaster.min.css",
             "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
             "bower_components/angular-ui-switch/angular-ui-switch.min.css",
 
