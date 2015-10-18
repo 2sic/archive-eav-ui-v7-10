@@ -15,58 +15,57 @@
         <!-- Table of content types for editing -->
         <table class="table table-hover" style="table-layout: fixed; width: 100%">
             <thead>
-                <tr>
-                    <th translate="ContentTypes.TypesTable.Items" class="col-id"></th>
-                    <th translate="ContentTypes.TypesTable.Name" style="width: 50%"></th>
-                    <th translate="ContentTypes.TypesTable.Description" style="width: 50%"></th>
-                    <th translate="ContentTypes.TypesTable.Fields" class="mini-btn-2"></th>
-                    <th translate="ContentTypes.TypesTable.Actions" class="mini-btn-5"></th>
-                    <th class="mini-btn-1"> </th>
-                </tr>
+            <tr>
+                <th translate="ContentTypes.TypesTable.Items" class="col-id"></th>
+                <th translate="ContentTypes.TypesTable.Name" style="width: 50%"></th>
+                <th translate="ContentTypes.TypesTable.Description" style="width: 50%"></th>
+                <th translate="ContentTypes.TypesTable.Fields" class="mini-btn-2"></th>
+                <th translate="ContentTypes.TypesTable.Actions" class="mini-btn-5"></th>
+                <th class="mini-btn-1"> </th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'" class="clickable-row" ng-click="vm.editItems(item)">
-                    <td style="text-align: center" class="clickable" > {{item.Items}} </td>
-                    <td class="clickable">
-                        <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Name}}">{{item.Name}}</span>
-                    </td>
-                    <td class="clickable">
-                        <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
-                    </td>
-                    <td stop-event="click">
-                        <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
-                            <span icon="list">&nbsp;{{item.Fields}}</span>
-                        </button>
-                        <button ng-if="item.UsesSharedDef" tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-xs" style="width: 60px">
-                            <span icon="adjust">&nbsp;{{item.Fields}}</span>
-                        </button>
-                    </td>
+            <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'" class="clickable-row" ng-click="vm.editItems(item)">
+                <td style="text-align: center" class="clickable"> {{item.Items}} </td>
+                <td class="clickable">
+                    <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Name}}">{{item.Name}}</span>
+                </td>
+                <td class="clickable">
+                    <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
+                </td>
+                <td stop-event="click">
+                    <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
+                        <span icon="list">&nbsp;{{item.Fields}}</span>
+                    </button>
+                    <button ng-if="item.UsesSharedDef" tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-xs" style="width: 60px">
+                        <span icon="adjust">&nbsp;{{item.Fields}}</span>
+                    </button>
+                </td>
 
-                    <td class="text-nowrap" stop-event="click">
-                        <button tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
-                            <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
-                        </button>
-                        <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)"><i icon="export"></i></button>
-                        <button tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)"><i icon="import"></i></button>
-                        <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"><i icon="user"></i></button>
-                    </td>
-                    <td stop-event="click">
-                        <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"></button>
-                    </td>
-                </tr>
-                <tr ng-if="!vm.items.length">
-                    <td colspan="100">{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td>
-                </tr>
+                <td class="text-nowrap" stop-event="click">
+                    <button tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
+                        <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
+                    </button>
+                    <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)"><i icon="export"></i></button>
+                    <button tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)"><i icon="import"></i></button>
+                    <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)"><i icon="user"></i></button>
+                </td>
+                <td stop-event="click">
+                    <button icon="remove" type="button" class="btn btn-xs" ng-click="vm.tryToDelete(item)"></button>
+                </td>
+            </tr>
+            <tr ng-if="!vm.items.length">
+                <td colspan="100">{{ 'General.Messages.Loading' | translate }} / {{ 'General.Messages.NothingFound' | translate }}</td>
+            </tr>
             </tbody>
         </table>
-
+        <show-debug-availability class="pull-right"></show-debug-availability>
     </div>
     <div ng-if="vm.debug.on">
 
         <h3>Notes / Debug / ToDo</h3>
         <ol>
             <li>get validators to work on all dialogs</li>
-            <li>this dialog doesn't refresh properly when I add/change stuff</li>
         </ol>
     </div>
 </div>

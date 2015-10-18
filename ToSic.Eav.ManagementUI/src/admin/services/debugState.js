@@ -22,7 +22,8 @@ angular.module("EavServices")
 
         svc.toggle = function toggle() {
             svc.on = !svc.on;
-            var toast = toastr.info(translate("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
+            toastr.clear(svc.toast);
+            svc.toast = toastr.info(translate("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
         };
 
         svc.autoEnableAsNeeded = function (evt) {

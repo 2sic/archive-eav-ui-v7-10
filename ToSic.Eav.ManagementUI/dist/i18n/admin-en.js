@@ -308,6 +308,7 @@
   },
   "AdvancedMode": {
     "Info": {
+      "Available": "this dialog has an advanced / debug mode for power-users - read more 2sxc.org/help?tag=debug-mode",
       "TurnOn": "advanced / debug mode on",
       "TurnOff": "advanced / debug mode off"
     }

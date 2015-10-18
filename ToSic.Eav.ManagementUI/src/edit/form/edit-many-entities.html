@@ -36,7 +36,7 @@
         <span ng-if="vm.debug.on">
             <button tooltip="debug" icon="zoom-in" class="btn" ng-click="vm.showDebugItems = !vm.showDebugItems"></button>
         </span>
-
+        <show-debug-availability class="pull-right" style="margin-top: 20px;"></show-debug-availability>
     </div>
     <div ng-if="vm.debug.on && vm.showDebugItems">
         <pre>{{ vm.items | json }}</pre>

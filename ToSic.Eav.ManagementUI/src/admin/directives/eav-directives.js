@@ -1,4 +1,7 @@
 
+(function () {
+    /* jshint laxbreak:true*/
+
 angular.module("EavDirectives", [])
     .directive("icon", function() {
         return {
@@ -21,4 +24,17 @@ angular.module("EavDirectives", [])
                     });
             }
         };
-    });
+    })
+    .directive('showDebugAvailability', function() {
+        return {
+            restrict: 'E',
+            template: "<span class=\"low-priority\" tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }}\">"
+                + "&pi;" // "<i icon=\"sunglasses\"></i>"
+                + "</span><br/>"
+        };
+    })
+
+    ;
+
+
+})();
