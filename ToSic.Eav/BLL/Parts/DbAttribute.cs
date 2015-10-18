@@ -199,8 +199,10 @@ namespace ToSic.Eav.BLL.Parts
 
             #region set the input type
             // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
-            var newValues = new Dictionary<string, object> {
-                { "InputType", inputType }
+            var newValues = new Dictionary<string, object>
+            {
+                {"Name", staticName},
+                {"InputType", inputType}
             };
 
             UpdateAttributeAdditionalProperties(newAttribute.AttributeID, true, newValues);
