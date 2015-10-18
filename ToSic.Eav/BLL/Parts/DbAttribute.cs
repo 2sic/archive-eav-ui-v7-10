@@ -201,6 +201,7 @@ namespace ToSic.Eav.BLL.Parts
             // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
             var newValues = new Dictionary<string, object>
             {
+                {"VisibleInEditUI", true },
                 {"Name", staticName},
                 {"InputType", inputType}
             };

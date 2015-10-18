@@ -68,7 +68,6 @@
 			            expressionProperties: {
 			                // Needed for dynamic update of the disabled property
 			                'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
-                            //'templateOptions.disabled': 'options.templateOptions.disabled'
 			            },
 			            watcher: [
 			                {
