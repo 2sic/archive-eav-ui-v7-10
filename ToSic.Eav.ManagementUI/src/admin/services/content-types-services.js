@@ -31,7 +31,7 @@ angular.module("EavServices")
             };
 
             svc.delete = function del(item) {
-                return $http.delete("eav/contenttype/delete", { params: { appid: svc.appId, staticName: item.StaticName } })
+                return $http.get("eav/contenttype/delete", { params: { appid: svc.appId, staticName: item.StaticName } })
                     .then(svc.liveListReload);
             };
 

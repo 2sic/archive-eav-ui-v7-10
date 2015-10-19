@@ -50,6 +50,7 @@ namespace ToSic.Eav.WebApi
             return cache.GetContentType(contentTypeStaticName);
         }
 
+        [HttpGet]
 	    [HttpDelete]
 	    public bool Delete(int appId, string staticName)
 	    {
@@ -143,8 +144,14 @@ namespace ToSic.Eav.WebApi
 	        {
 	            var coreTypesList = coreInputTypes.First();
 	            var appSpecificInputType = entC.GetAllOfTypeForAdmin(appId, "ContentType-InputType").FirstOrDefault();
-	            if (appSpecificInputType != null)
-                    coreTypesList.ForEach(i => coreTypesList.Add(i.Key, i.Value));
+	            if (appSpecificInputType != null) // note: "local" definition takes precendence...
+                    appSpecificInputType.ForEach(i =>
+                    {
+                        if (coreTypesList.ContainsKey(i.Key))
+                            coreTypesList[i.Key] = i.Value;
+                        else
+                            coreTypesList.Add(i.Key, i.Value);
+                    });
 	        }
 	        return coreInputTypes;
 
@@ -167,6 +174,7 @@ namespace ToSic.Eav.WebApi
             return CurrentContext.Attributes.UpdateInputType(attributeId, inputType);
         }
 
+        [HttpGet]
         [HttpDelete]
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
