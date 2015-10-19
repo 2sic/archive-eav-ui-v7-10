@@ -61,7 +61,8 @@
 			                settings: e.Metadata,
 			                header: $scope.header,
                             canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
-			                fieldGroup: vm.formFields[lastGroupHeadingId],
+                            fieldGroup: vm.formFields[lastGroupHeadingId],
+                            disabled: e.Metadata.All.Disabled,
 			                langReadOnly: false // Will be set by the language directive to override the disabled state
 			            },
 			            hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
@@ -73,7 +74,9 @@
 			                {
                                 // changes when a entity becomes enabled / disabled
 			                    expression: function(field, scope, stop) {
-			                        return (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) || field.templateOptions.langReadOnly;
+			                        return e.Metadata.All.Disabled ||
+                                        (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) ||
+                                        field.templateOptions.langReadOnly;
 			                    },
 			                    listener: function(field, newValue, oldValue, scope, stopWatching) {
 			                        field.templateOptions.disabled = newValue;

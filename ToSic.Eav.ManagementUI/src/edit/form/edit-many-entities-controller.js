@@ -6,7 +6,7 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, translate, debugState) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, $translate, debugState) {
 
         var vm = this;
         vm.debug = debugState;
@@ -45,11 +45,11 @@
 
         vm.save = function (close) {
             vm.isWorking++;
-            var saving = toastr.info(translate("Message.Saving"));
+            var saving = toastr.info($translate.instant("Message.Saving"));
             entitiesSvc.saveMany(appId, vm.items).then(function (result) {
                 toastr.clear(saving);
                 $scope.state.setPristine();
-                toastr.success(translate("Message.Saved"), { timeOut: 3000 });
+                toastr.success($translate.instant("Message.Saved"), { timeOut: 3000 });
                 if(close)
                     vm.afterSaveEvent(result);
                 vm.isWorking--;

@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $modalInstance, $window, translate) {
+	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $modalInstance, $window, $translate) {
 
 	    var vm = this;
 	    vm.itemList = items;
@@ -15,13 +15,13 @@
 	        if (result.status === 200)
 	            vm.close(result);
 	        else {
-	            alert(translate("Errors.UnclearError"));
+	            alert($translate.instant("Errors.UnclearError"));
 	        }
 	    };
 
 	    vm.state = {
 	        isDirty: function() {
-	            throw translate("Errors.InnerControlMustOverride");
+	            throw $translate.instant("Errors.InnerControlMustOverride");
 	        }
 	    };
 
@@ -29,10 +29,10 @@
 		    $modalInstance.close(result);
 		};
 
-	    var unsavedChangesText = translate("Errors.UnsavedChanges");
+	    var unsavedChangesText = $translate.instant("Errors.UnsavedChanges");
 
 	    vm.maybeLeave = function maybeLeave(e) {
-	        if (vm.state.isDirty() && !confirm(unsavedChangesText + " " + translate("Message.ExitOk")))
+	        if (vm.state.isDirty() && !confirm(unsavedChangesText + " " + $translate.instant("Message.ExitOk")))
 	            e.preventDefault();
 	    };
 

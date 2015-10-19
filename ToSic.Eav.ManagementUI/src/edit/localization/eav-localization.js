@@ -34,7 +34,7 @@
 			template: "",
 			link: function (scope, element, attrs) {
 			},
-			controller: function ($scope, $filter, translate, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
+			controller: function ($scope, $filter, $translate, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
 
 				var scope = $scope;
 				var langConf = languages;
@@ -58,8 +58,6 @@
 					    }
 					}
 
-
-                    // todo: discuss w/2rm 2dm changed this 2015-10-05 - I think the false was wrong
 				    // Assign default language if no dimension is set - new: if multiple languages are in use!!!
 					if (Object.keys(fieldModel.Values[0].Dimensions).length === 0)
                         if(langConf.languages.length > 0)
@@ -82,7 +80,7 @@
 					// 3. Use the first value if there is only one
 					if (valueToEdit === undefined) {
 						if (fieldModel.Values.length > 1)
-						    throw translate("Errors.DefLangNotFound") + " " + $scope.options.key;
+						    throw $translate.instant("Errors.DefLangNotFound") + " " + $scope.options.key;
 						// Use the first value
 						valueToEdit = fieldModel.Values[0];
 					}
@@ -132,10 +130,10 @@
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
 			controllerAs: "vm",
-			controller: function ($scope, languages, translate) {
+			controller: function ($scope, languages, $translate) {
 			    var vm = this;
-			    var lblDefault = translate("LangMenu.UseDefault");
-			    var lblIn = translate("LangMenu.In");
+			    var lblDefault = $translate.instant("LangMenu.UseDefault");
+			    var lblIn = $translate.instant("LangMenu.In");
 
 				vm.fieldModel = $scope.fieldModel;
 				vm.languages = languages;
@@ -151,7 +149,7 @@
 				        return lblDefault;
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.currentLanguage] === false)
 				        return "";
-				    return translate("LangMenu.In", { languages: Object.keys($scope.value.Dimensions).join(", ") });
+				    return $translate.instant("LangMenu.In", { languages: Object.keys($scope.value.Dimensions).join(", ") });
 				    // "in " + Object.keys($scope.value.Dimensions).join(", ");
 				};
 
@@ -161,9 +159,9 @@
 				    angular.forEach($scope.value.Dimensions, function (value, key) {
 				        (value ? usedIn : editableIn).push(key);
 				    });
-				    var tooltip = translate("LangMenu.EditableIn", { languages: editableIn.join(", ") }); // "editable in " + editableIn.join(", ");
+				    var tooltip = $translate.instant("LangMenu.EditableIn", { languages: editableIn.join(", ") }); // "editable in " + editableIn.join(", ");
 				    if (usedIn.length > 0)
-				        tooltip += translate("LangMenu.AlsoUsedIn", { languages: usedIn.join(", ") });// ", also used in " + usedIn.join(", ");
+				        tooltip += $translate.instant("LangMenu.AlsoUsedIn", { languages: usedIn.join(", ") });// ", also used in " + usedIn.join(", ");
 				    return tooltip;
 				};
 
