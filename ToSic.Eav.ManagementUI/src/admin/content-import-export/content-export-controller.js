@@ -3,7 +3,7 @@
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
-    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter, translate) {
+    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter, $translate) {
 
         var vm = this;
 
@@ -31,7 +31,7 @@
                 "templateOptions.label": "'Content.Export.Fields.Language.Label' | translate",
                 "templateOptions.options": function () {
                     var options = [{
-                        "name": translate("Content.Export.Fields.Language.Options.All"),
+                        "name": $translate.instant("Content.Export.Fields.Language.Options.All"),
                         "value": ""
                     }];
                     angular.forEach(languages.languages, function (lang) {
@@ -49,10 +49,10 @@
                 "templateOptions.label": "'Content.Export.Fields.RecordExport.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.RecordExport.Options.Blank"),
+                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Blank"),
                         "value": "Blank"
                     }, {
-                        "name": translate("Content.Export.Fields.RecordExport.Options.All"),
+                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.All"),
                         "value": "All"
                     }];
                 }
@@ -69,10 +69,10 @@
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.LanguageReferences.Options.Link"),
+                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Link"),
                         "value": "Link"
                     }, {
-                        "name": translate("Content.Export.Fields.LanguageReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -89,10 +89,10 @@
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.ResourcesReferences.Options.Link"),
+                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Link"),
                         "value": "Link"
                     }, {
-                        "name": translate("Content.Export.Fields.ResourcesReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }

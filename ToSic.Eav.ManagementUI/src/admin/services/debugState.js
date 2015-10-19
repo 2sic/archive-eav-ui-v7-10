@@ -14,7 +14,7 @@
  */
 
 angular.module("EavServices")
-    .factory("debugState", function (translate, toastr) {
+    .factory("debugState", function ($translate, toastr) {
         var svc = {
             on: false
         };
@@ -22,14 +22,16 @@ angular.module("EavServices")
         svc.toggle = function toggle() {
             svc.on = !svc.on;
             toastr.clear(svc.toast);
-            svc.toast = toastr.info(translate("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
+            svc.toast = toastr.info($translate.instant("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
         };
 
         svc.autoEnableAsNeeded = function (evt) {
             evt = window.event || evt;
             var ctrlAndShiftPressed = evt.ctrlKey;
-            if (ctrlAndShiftPressed)
+            if (ctrlAndShiftPressed && !evt.alreadySwitchedDebugState) {
                 svc.toggle();
+                evt.alreadySwitchedDebugState = true;
+            }
         };
 
         return svc;
