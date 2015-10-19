@@ -382,8 +382,9 @@ namespace ToSic.Eav.BLL.Parts
             var newValuesTyped = DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
-                var attribute = attributes.Single(a => a.StaticName == newValue.Key);
-                Context.Values.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
+                var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
+                if(attribute != null)
+                    Context.Values.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues

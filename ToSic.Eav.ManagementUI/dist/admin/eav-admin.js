@@ -677,7 +677,7 @@
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, translate, eavConfig) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
@@ -746,7 +746,7 @@
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
-            var title = metadataType === "All" ? translate("DataType.All.Title") : metadataType; 
+            var title = metadataType === "All" ? $translate.instant("DataType.All.Title") : metadataType; 
             return item.Metadata[metadataType] !== undefined
                 ? { EntityId: item.Metadata[metadataType].Id, Title: title }  // if defined, return the entity-number to edit
                 : {
@@ -761,7 +761,7 @@
                 };      
         };
     }
-    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$filter", "$translate", "translate", "eavConfig"];
+    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$filter", "$translate", "eavConfig"];
 
 }());
 
