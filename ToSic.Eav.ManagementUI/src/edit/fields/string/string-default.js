@@ -7,7 +7,8 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-default",
-            template: "<input class=\"form-control input-lg\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">",
+            template: "<div><input class=\"form-control input-lg\" ng-if=\"!(options.templateOptions.settings.String.RowCount > 1)\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">" +
+                "<textarea ng-if=\"options.templateOptions.settings.String.RowCount > 1\" rows=\"{{options.templateOptions.settings.String.RowCount}}\" class=\"form-control input-lg\" ng-model=\"value.Value\"></textarea></div>",
             wrapper: defaultFieldWrappers, 
             controller: "FieldTemplate-StringCtrl as vm"
         });
@@ -19,4 +20,6 @@ angular.module("eavFieldTemplates")
         if (stringSettings && stringSettings.ValidationRegExJavaScript)
             validationRegexString = stringSettings.ValidationRegExJavaScript;
         vm.regexPattern = new RegExp(validationRegexString, 'i');
+
+        console.log($scope.options.templateOptions);
     });

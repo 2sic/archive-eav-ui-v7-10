@@ -252,7 +252,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-default",
-            template: "<input class=\"form-control input-lg\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">",
+            template: "<input class=\"form-control input-lg\" ng-if=\"!(to.Metadata.String.RowCount > 1)\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\"><textarea ng-if=\"to.Metadata.String.RowCount > 1\"  class=\"form-control input-lg\" ng-model=\"value.Value\"></textarea>",
             wrapper: defaultFieldWrappers, 
             controller: "FieldTemplate-StringCtrl as vm"
         });
@@ -566,10 +566,10 @@ angular.module("eavFieldTemplates")
 
 			    subType = subType ? subType.toLowerCase() : null;
 
-			    // Special case: override subtype for string-textarea
-                // todo: probably shouldn't do this any more...
-			    if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
-			        subType = "textarea";
+			    //// Special case: override subtype for string-textarea
+                //// todo: probably shouldn't do this any more...
+			    //if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
+			    //    subType = "textarea";
 
 			    inputType = type + "-" + subType;
 			}
