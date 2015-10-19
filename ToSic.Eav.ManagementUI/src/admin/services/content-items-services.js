@@ -13,7 +13,7 @@ angular.module("EavServices")
 
                 // delete, then reload
                 svc.delete = function del(id) {
-                    return entitiesSvc.delete(svc.contentType, id)
+                    return entitiesSvc.delete(svc.contentType, id) // for now must work with get :( - delete doesn't work well in dnn
                         .then(svc.liveListReload);
                 };
 

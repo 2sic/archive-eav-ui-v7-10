@@ -31,10 +31,10 @@ module.exports = function(grunt) {
         tmp: "tmp/edit-extended/",
         templates: "tmp/edit-extended/html-templates.js",
         dist: "dist/edit-extended/",
-        concatFile: "dist/edit/eav-edit-extended.js",
-        uglifyFile: "dist/edit/eav-edit-extended.min.js",
-        concatCss: "dist/edit/eav-edit-extended.css",
-        concatCssMin: "dist/edit/eav-edit-extended.min.css"
+        concatFile: "dist/edit/extensions/field-custom-gps/custom-gps.js",
+        uglifyFile: "dist/edit/extensions/field-custom-gps/custom-gps.min.js",
+        concatCss: "dist/edit/extensions/field-custom-gps/custom-gps.css",
+        concatCssMin: "dist/edit/extensions/field-custom-gps/custom-gps.min.css"
     };
 
     var i18n = {

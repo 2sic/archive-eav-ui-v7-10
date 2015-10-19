@@ -13,7 +13,7 @@
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
-    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter, translate) {
+    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter, $translate) {
 
         var vm = this;
 
@@ -41,7 +41,7 @@
                 "templateOptions.label": "'Content.Export.Fields.Language.Label' | translate",
                 "templateOptions.options": function () {
                     var options = [{
-                        "name": translate("Content.Export.Fields.Language.Options.All"),
+                        "name": $translate.instant("Content.Export.Fields.Language.Options.All"),
                         "value": ""
                     }];
                     angular.forEach(languages.languages, function (lang) {
@@ -59,10 +59,10 @@
                 "templateOptions.label": "'Content.Export.Fields.RecordExport.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.RecordExport.Options.Blank"),
+                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Blank"),
                         "value": "Blank"
                     }, {
-                        "name": translate("Content.Export.Fields.RecordExport.Options.All"),
+                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.All"),
                         "value": "All"
                     }];
                 }
@@ -79,10 +79,10 @@
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.LanguageReferences.Options.Link"),
+                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Link"),
                         "value": "Link"
                     }, {
-                        "name": translate("Content.Export.Fields.LanguageReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -99,10 +99,10 @@
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Export.Fields.ResourcesReferences.Options.Link"),
+                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Link"),
                         "value": "Link"
                     }, {
-                        "name": translate("Content.Export.Fields.ResourcesReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -119,7 +119,7 @@
             $modalInstance.dismiss("cancel");
         };
     }
-    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter", "translate"];
+    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter", "$translate"];
 }());
 (function () {
 
@@ -193,7 +193,7 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, translate) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, $translate) {
 
         var vm = this;
         vm.debug = debugState;
@@ -233,10 +233,10 @@
                 "templateOptions.label": "'Content.Import.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Keep"),
+                        "name": $translate.instant("Content.Import.Fields.ResourcesReferences.Options.Keep"),
                         "value": "Keep"
                     }, {
-                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Import.Fields.ResourcesReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -250,10 +250,10 @@
                 "templateOptions.label": "'Content.Import.Fields.ClearEntities.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Fields.ClearEntities.Options.None"),
+                        "name": $translate.instant("Content.Import.Fields.ClearEntities.Options.None"),
                         "value": "None"
                     }, {
-                        "name": translate("Content.Import.Fields.ClearEntities.Options.All"),
+                        "name": $translate.instant("Content.Import.Fields.ClearEntities.Options.All"),
                         "value": "All"
                     }];
                 }
@@ -307,7 +307,7 @@
             $modalInstance.dismiss("cancel");
         };
     }
-    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$modalInstance", "$filter", "translate"];
+    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$modalInstance", "$filter", "$translate"];
 }());
 (function () {
 
@@ -859,7 +859,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-types/content-types-fields.html',
-    "<div><div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-primary btn-square\"></button><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Title class=mini-btn-1></th><th translate=Fields.Table.Name style=\"width: 40%\"></th><th translate=Fields.Table.DataType style=\"width: 20%\"></th><th translate=Fields.Table.InputType style=\"width: 20%\"></th><th translate=Fields.Table.Label style=\"width: 30%\"></th><th translate=Fields.Table.Notes style=\"width: 50%\"></th><th translate=Fields.Table.Sort class=mini-btn-2></th><th translate=Fields.Table.Action class=mini-btn-1></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\" class=clickable-row ng-click=\"vm.createOrEditMetadata(item, item.Type)\"><td stop-event=click><button type=button class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)><i icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\"></i></button></td><td class=clickable><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=\"text-nowrap clickable\">{{item.Type}}</td><td class=InputType stop-event=click><span class=clickable tooltip={{item.InputType}} ng-click=vm.edit(item)>{{item.InputType.substring(item.InputType.indexOf('-') + 1, 100)}}</span></td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Name}}</td><td class=\"text-nowrap clickable\"><div class=hide-overflow-text>{{item.Metadata.All.Notes}}</div></td><td class=text-nowrap stop-event=click><button icon=arrow-up type=button class=\"btn btn-xs btn-square\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs btn-square\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td stop-event=click><button icon=remove type=button class=\"btn btn-xs btn-square\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div></div>"
+    "<div><div class=modal-header><button class=\"btn btn-default btn-square pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Fields.Title></h3></div><div class=modal-body><button icon=plus ng-click=vm.add() class=\"btn btn-primary btn-square\"></button><table class=\"table table-hover table-manage-eav\"><thead><tr><th translate=Fields.Table.Title class=mini-btn-1></th><th translate=Fields.Table.Name style=\"width: 40%\"></th><th translate=Fields.Table.DataType style=\"width: 20%\"></th><th translate=Fields.Table.InputType style=\"width: 20%\"></th><th translate=Fields.Table.Label style=\"width: 30%\"></th><th translate=Fields.Table.Notes style=\"width: 50%\"></th><th translate=Fields.Table.Sort class=mini-btn-2></th><th translate=Fields.Table.Action class=mini-btn-1></th></tr></thead><tbody><tr ng-repeat=\"item in vm.items | orderBy: 'SortOrder'\" class=clickable-row ng-click=\"vm.createOrEditMetadata(item, item.Type)\"><td stop-event=click><button type=button class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? '' : 'color: transparent !important')\" ng-click=vm.setTitle(item)><i icon=\"{{item.IsTitle ? 'star' : 'star-empty'}}\"></i></button></td><td class=clickable><span tooltip=\"{{ 'Id: ' + item.Id}}\">{{item.StaticName}}</span></td><td class=\"text-nowrap clickable\">{{item.Type}}</td><td class=\"text-nowrap InputType\" stop-event=click><span class=clickable tooltip={{item.InputType}} ng-click=vm.edit(item)><i icon=pencil></i> {{item.InputType.substring(item.InputType.indexOf('-') + 1, 100)}}</span></td><td class=\"text-nowrap clickable\">{{item.Metadata.All.Name}}</td><td class=\"text-nowrap clickable\"><div class=hide-overflow-text>{{item.Metadata.All.Notes}}</div></td><td class=text-nowrap stop-event=click><button icon=arrow-up type=button class=\"btn btn-xs btn-square\" ng-disabled=$first ng-click=vm.moveUp(item)></button> <button icon=arrow-down type=button class=\"btn btn-xs btn-square\" ng-disabled=$last ng-click=vm.moveDown(item)></button></td><td stop-event=click><button icon=remove type=button class=\"btn btn-xs btn-square\" ng-click=vm.tryToDelete(item)></button></td></tr><tr ng-if=!vm.items.length><td colspan=100 translate=General.Messages.NothingFound></td></tr></tbody></table></div></div>"
   );
 
 
@@ -1635,7 +1635,7 @@ angular.module("EavServices")
 
                 // delete, then reload
                 svc.delete = function del(id) {
-                    return entitiesSvc.delete(svc.contentType, id)
+                    return entitiesSvc.delete(svc.contentType, id) // for now must work with get :( - delete doesn't work well in dnn
                         .then(svc.liveListReload);
                 };
 
@@ -1719,7 +1719,7 @@ angular.module("EavServices")
             };
 
             svc.delete = function del(item) {
-                return $http.delete("eav/contenttype/delete", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.get("eav/contenttype/delete", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
@@ -1756,7 +1756,7 @@ angular.module("EavServices")
             svc.delete = function del(item) {
                 if (item.IsTitle)
                     throw "Can't delete Title";
-                return $http.delete("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.get("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
@@ -1808,7 +1808,7 @@ angular.module("EavServices")
             };
 
             svc.delete = function del(item) {
-                return $http.delete("eav/contenttype/delete", { params: { appid: svc.appId, staticName: item.StaticName } })
+                return $http.get("eav/contenttype/delete", { params: { appid: svc.appId, staticName: item.StaticName } })
                     .then(svc.liveListReload);
             };
 
@@ -1836,7 +1836,7 @@ angular.module("EavServices")
  */
 
 angular.module("EavServices")
-    .factory("debugState", ["translate", "toastr", function (translate, toastr) {
+    .factory("debugState", ["$translate", "toastr", function ($translate, toastr) {
         var svc = {
             on: false
         };
@@ -1844,14 +1844,16 @@ angular.module("EavServices")
         svc.toggle = function toggle() {
             svc.on = !svc.on;
             toastr.clear(svc.toast);
-            svc.toast = toastr.info(translate("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
+            svc.toast = toastr.info($translate.instant("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
         };
 
         svc.autoEnableAsNeeded = function (evt) {
             evt = window.event || evt;
             var ctrlAndShiftPressed = evt.ctrlKey;
-            if (ctrlAndShiftPressed)
+            if (ctrlAndShiftPressed && !evt.alreadySwitchedDebugState) {
                 svc.toggle();
+                evt.alreadySwitchedDebugState = true;
+            }
         };
 
         return svc;
@@ -2118,33 +2120,26 @@ angular.module("EavServices")
 
 (function () {
     angular.module("EavServices")
-
-    .config(["$translateProvider", "languages", "$translatePartialLoaderProvider", function ($translateProvider, languages, $translatePartialLoaderProvider) {
+        .config(["$translateProvider", "languages", "$translatePartialLoaderProvider", function($translateProvider, languages, $translatePartialLoaderProvider) {
             $translateProvider
                 .preferredLanguage(languages.currentLanguage.split("-")[0])
-                .useSanitizeValueStrategy("escapeParameters")   // this is very important to allow html in the JSON files
+                .useSanitizeValueStrategy("escapeParameters") // this is very important to allow html in the JSON files
                 .fallbackLanguage(languages.defaultLanguage.split("-")[0])
-
                 .useLoader("$translatePartialLoader", {
-                    urlTemplate: languages.i18nRoot + "{part}-{lang}.js" 
+                    urlTemplate: languages.i18nRoot + "{part}-{lang}.js"
                 })
-                .useLoaderCache(true);              // should cache json
-            $translatePartialLoaderProvider         // these parts are always required
+                .useLoaderCache(true); // should cache json
+            $translatePartialLoaderProvider // these parts are always required
                 .addPart("admin")
-                .addPart("edit");   
-    }])
+                .addPart("edit");
+        }])
 
-    // ensure that adding parts will load the missing files
-    .run(["$rootScope", "$translate", function ($rootScope, $translate) {
-        $rootScope.$on("$translatePartialLoaderStructureChanged", function () {
-            $translate.refresh();
-        });
-    }])
-
-    .factory("translate", ["$filter", function($filter) {
-                return $filter("translate");
-            }])
-    ;
+        // ensure that adding parts will load the missing files
+        .run(["$rootScope", "$translate", function($rootScope, $translate) {
+            $rootScope.$on("$translatePartialLoaderStructureChanged", function() {
+                $translate.refresh();
+            });
+        }]);
 })();
 // By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
 // but the "root" component must get it from the url

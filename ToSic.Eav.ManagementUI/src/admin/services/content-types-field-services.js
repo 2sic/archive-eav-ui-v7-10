@@ -69,7 +69,7 @@ angular.module("EavServices")
             };
 
             svc.delete = function del(item) {
-                return $http.delete("eav/contenttype/delete", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.get("eav/contenttype/delete", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
@@ -106,7 +106,7 @@ angular.module("EavServices")
             svc.delete = function del(item) {
                 if (item.IsTitle)
                     throw "Can't delete Title";
-                return $http.delete("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
+                return $http.get("eav/contenttype/deletefield", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id } })
                     .then(svc.liveListReload);
             };
 
