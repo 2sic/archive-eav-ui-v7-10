@@ -32,8 +32,9 @@
                     <td class="text-nowrap clickable">
                         {{item.Type}}
                     </td>
-                    <td class="InputType" stop-event="click">
+                    <td class="text-nowrap InputType" stop-event="click">
                         <span class="clickable" tooltip="{{item.InputType}}" ng-click="vm.edit(item)">
+                            <i icon="pencil"></i>
                             {{item.InputType.substring(item.InputType.indexOf('-') + 1, 100)}}
                         </span>
                     </td>

@@ -5,7 +5,7 @@
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, translate, eavConfig) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
