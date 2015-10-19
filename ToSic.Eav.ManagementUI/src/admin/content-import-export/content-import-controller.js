@@ -3,7 +3,7 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, translate) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, $translate) {
 
         var vm = this;
         vm.debug = debugState;
@@ -43,10 +43,10 @@
                 "templateOptions.label": "'Content.Import.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Keep"),
+                        "name": $translate.instant("Content.Import.Fields.ResourcesReferences.Options.Keep"),
                         "value": "Keep"
                     }, {
-                        "name": translate("Content.Import.Fields.ResourcesReferences.Options.Resolve"),
+                        "name": $translate.instant("Content.Import.Fields.ResourcesReferences.Options.Resolve"),
                         "value": "Resolve"
                     }];
                 }
@@ -60,10 +60,10 @@
                 "templateOptions.label": "'Content.Import.Fields.ClearEntities.Label' | translate",
                 "templateOptions.options": function () {
                     return [{
-                        "name": translate("Content.Import.Fields.ClearEntities.Options.None"),
+                        "name": $translate.instant("Content.Import.Fields.ClearEntities.Options.None"),
                         "value": "None"
                     }, {
-                        "name": translate("Content.Import.Fields.ClearEntities.Options.All"),
+                        "name": $translate.instant("Content.Import.Fields.ClearEntities.Options.All"),
                         "value": "All"
                     }];
                 }
