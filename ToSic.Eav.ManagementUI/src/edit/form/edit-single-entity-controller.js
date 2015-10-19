@@ -117,10 +117,10 @@
 
 			    subType = subType ? subType.toLowerCase() : null;
 
-			    // Special case: override subtype for string-textarea
-                // todo: probably shouldn't do this any more...
-			    if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
-			        subType = "textarea";
+			    //// Special case: override subtype for string-textarea
+                //// todo: probably shouldn't do this any more...
+			    //if (type === "string" && e.Metadata.String && e.Metadata.String.RowCount > 1)
+			    //    subType = "textarea";
 
 			    inputType = type + "-" + subType;
 			}
