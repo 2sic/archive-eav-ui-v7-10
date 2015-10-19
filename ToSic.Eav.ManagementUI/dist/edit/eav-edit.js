@@ -238,7 +238,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-disabled",
-            template: "<div>disb<input class=\"form-control input-lg\" ng-model=\"value.Value\" ng-disabled='true'> {{value.Value}} </div>",
+            template: "<input class=\"form-control input-lg\" ng-model=\"value.Value\" ng-disabled='true'>",
             wrapper: defaultFieldWrappers
         });
 
