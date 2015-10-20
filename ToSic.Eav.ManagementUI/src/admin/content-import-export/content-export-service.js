@@ -4,7 +4,7 @@
          .factory("contentExportService", contentExportService);
 
 
-    function contentExportService($http, apiRoot, sxc) {
+    function contentExportService($http, sxc) {
         var srvc = {
             exportContent: exportContent,
         };
