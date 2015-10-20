@@ -194,7 +194,8 @@ namespace ToSic.Eav.BLL.Parts
                     titleField.IsTitle = false;
             }
 
-            if (autoSave)
+            // If attribute has not been saved, we must save now to get the id (and assign entities)
+            if (autoSave || newAttribute.AttributeID == 0)
                 Context.SqlDb.SaveChanges();
 
             #region set the input type

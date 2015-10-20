@@ -141,7 +141,7 @@ namespace ToSic.Eav.Import
             catch (Exception ex)
             {
                 transaction.Rollback();
-                throw ex;
+                throw;
             }
         }
 
@@ -189,7 +189,6 @@ namespace ToSic.Eav.Import
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
-                // var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
                 var mds = DataSource.GetMetaDataSource(Context.ZoneId, Context.AppId);
                 // Insert AttributeMetaData
                 if (/* isNewAttribute && */ importAttribute.AttributeMetaData != null)
