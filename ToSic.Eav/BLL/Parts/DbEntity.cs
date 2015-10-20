@@ -127,44 +127,62 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true, int? publishedEntityId = null)
         {
+            // var skipCreate = false;
+            var existingEntityId = 0;
             // Prevent duplicate add of FieldProperties
             if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
             {
-                if (GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value).Any(e => e.AttributeSetID == attributeSetId))
-                    throw new Exception(string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}", Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
+                var foundThisMetadata =
+                    GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value)
+                        .FirstOrDefault(e => e.AttributeSetID == attributeSetId);
+                if (foundThisMetadata != null)
+                {
+                    existingEntityId = foundThisMetadata.EntityID;
+                    //skipCreate = true;
+
+                    //throw new Exception(
+                    //    string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}",
+                    //        Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
+                }
+
             }
 
             var changeId = Context.Versioning.GetChangeLogId();
 
-            var newEntity = new Entity
+            if (existingEntityId == 0)
             {
-                ConfigurationSet = configurationSet,
-                AssignmentObjectTypeID = assignmentObjectTypeId,
-                KeyNumber = keyNumber,
-                KeyGuid = keyGuid,
-                KeyString = keyString,
-                SortOrder = sortOrder,
-                ChangeLogIDCreated = changeId,
-                ChangeLogIDModified = changeId,
-                EntityGUID = (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
-                IsPublished = isPublished,
-                PublishedEntityId = isPublished ? null : publishedEntityId
-            };
+                var newEntity = new Entity
+                {
+                    ConfigurationSet = configurationSet,
+                    AssignmentObjectTypeID = assignmentObjectTypeId,
+                    KeyNumber = keyNumber,
+                    KeyGuid = keyGuid,
+                    KeyString = keyString,
+                    SortOrder = sortOrder,
+                    ChangeLogIDCreated = changeId,
+                    ChangeLogIDModified = changeId,
+                    EntityGUID =
+                        (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
+                    IsPublished = isPublished,
+                    PublishedEntityId = isPublished ? null : publishedEntityId
+                };
 
-            if (attributeSet != null)
-                newEntity.Set = attributeSet;
-            else
-                newEntity.AttributeSetID = attributeSetId;
+                if (attributeSet != null)
+                    newEntity.Set = attributeSet;
+                else
+                    newEntity.AttributeSetID = attributeSetId;
 
-            Context.SqlDb.AddToEntities(newEntity);
+                Context.SqlDb.AddToEntities(newEntity);
+
+                Context.SqlDb.SaveChanges();
+                existingEntityId = newEntity.EntityID;
+            }
+
+            var updatedEntity = UpdateEntity(existingEntityId, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
             Context.SqlDb.SaveChanges();
 
-            UpdateEntity(newEntity.EntityID, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
-
-            Context.SqlDb.SaveChanges();
-
-            return newEntity;
+            return updatedEntity;
         }
 
         #endregion

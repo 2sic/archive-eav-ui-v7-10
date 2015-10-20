@@ -194,7 +194,7 @@ namespace ToSic.Eav.BLL.Parts
                     titleField.IsTitle = false;
             }
 
-            if (autoSave)
+            if (autoSave || newAttribute.AttributeID == 0)
                 Context.SqlDb.SaveChanges();
 
             #region set the input type
