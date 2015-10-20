@@ -189,8 +189,10 @@ namespace ToSic.Eav.Import
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
+                // var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+                var mds = DataSource.GetMetaDataSource(Context.ZoneId, Context.AppId);
                 // Insert AttributeMetaData
-                if (isNewAttribute && importAttribute.AttributeMetaData != null)
+                if (/* isNewAttribute && */ importAttribute.AttributeMetaData != null)
                 {
                     foreach (var entity in importAttribute.AttributeMetaData)
                     {
@@ -201,6 +203,12 @@ namespace ToSic.Eav.Import
                         if (destinationAttribute.AttributeID == 0)
                             Context.SqlDb.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeID;
+
+                        var existingEntity = mds.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties,
+                            destinationAttribute.AttributeID, entity.AttributeSetStaticName).FirstOrDefault();
+
+                        if (existingEntity != null)
+                            entity.EntityGuid = existingEntity.EntityGuid;
 
                         PersistOneImportEntity(entity);
                     }
