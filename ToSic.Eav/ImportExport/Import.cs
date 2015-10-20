@@ -15,8 +15,8 @@ namespace ToSic.Eav.Import
     {
         #region Private Fields
         private readonly EavDataController Context;
-        private readonly bool _leaveExistingValuesUntouched;
-        private readonly bool _preserveUndefinedValues;
+        private readonly bool _dontUpdateExistingAttributeValues;
+        private readonly bool _keepAttributesMissingInImport;
         private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
         private readonly bool LargeImport;
         #endregion
@@ -36,13 +36,13 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int? appId, string userName, bool leaveExistingValuesUntouched = true, bool preserveUndefinedValues = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
+        public Import(int? zoneId, int? appId, string userName, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
             Context = EavDataController.Instance(zoneId, appId);
 
             Context.UserName = userName;
-            _leaveExistingValuesUntouched = leaveExistingValuesUntouched;
-            _preserveUndefinedValues = preserveUndefinedValues;
+            _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
+            _keepAttributesMissingInImport = keepAttributesMissingInImport;
             PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
             LargeImport = largeImport;
         }
@@ -297,12 +297,12 @@ namespace ToSic.Eav.Import
             #endregion
 
             var newValues = importEntity.Values;
-            if (_leaveExistingValuesUntouched) // Skip values that are already present in existing Entity
+            if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
                 newValues = newValues.Where(v => editableVersionOfTheEntity.Attributes.All(ev => ev.Value.Name != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             Context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
-                preserveUndefinedValues: _preserveUndefinedValues, isPublished: importEntity.IsPublished);
+                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: importEntity.IsPublished);
 
             #endregion
         }

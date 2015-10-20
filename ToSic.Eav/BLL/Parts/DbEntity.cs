@@ -289,7 +289,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool preserveUndefinedValues)
+        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -343,30 +343,23 @@ namespace ToSic.Eav.BLL.Parts
             // remove all existing values that were not updated
             // Logic should be:
             // Of all values - skip the ones we just modified and those which are deleted
-            var valuesToDeleteNew = currentEntity.Values.Where(
+            var untouchedValues = currentEntity.Values.Where(
                 v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null);
 
-            // Clean up - sometimes the default language doesn't clean properly - so even if it's good now...
-            // ...there is old data which sometimes still is duplicate and causes issues, so this clean-up is important
-            // So goal: every same-attribute-ID as the updated, with the same non-language-settings, is a left-over
-            var reallyDelete = valuesToDeleteNew.Where(e => updatedAttributeIds.Contains(e.AttributeID));
-
-            // todo: urgent 2dm - probably a bug here see https://github.com/2sic/2sxc/issues/329#issuecomment-148220874
-            // i'm guessing that it should say var valuesToKeep = reallyDelete.Where...
-            if (preserveUndefinedValues)
+            if (!keepAttributesMissingInImport)
             {
-                var valuesToKeep = valuesToDeleteNew.Where(v => updatedAttributeIds.Contains(v.AttributeID));
-                if (valuesToKeep.Count() > updatedAttributeIds.Count) // in this case something is bad
-                    throw new Exception("have too many to keep, don't know what to do, abort...");
-                valuesToDeleteNew = valuesToDeleteNew.Where(v => !updatedAttributeIds.Contains(v.AttributeID));
+                untouchedValues.ToList().ForEach(v => v.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId());
+            }
+            else
+            {
+                // Note 2015-10-20 2dm & 2rm
+                // We changed this section a lot, and believe it now does what we expect. 
+                // We believe that since the importmodel contains all language/value combinations...
+                // ...so any "untouched" values should be removed, since all others were updated/touched.
+                var untouchedValuesOfChangedAttributes = untouchedValues.Where(v => updatedAttributeIds.Contains(v.AttributeID));
+                untouchedValuesOfChangedAttributes.ToList().ForEach(v => v.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId());
             }
 
-            // && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
-            var valuesToDelete = valuesToDeleteNew.ToList();
-            //var valuesToDelete = currentEntity.Values.Where(
-            //    v => !updatedValueIds.Contains(v.ValueID) && v.ChangeLogIDDeleted == null 
-            //        && (preserveUndefinedValues == false || updatedAttributeIds.Contains(v.AttributeID))).ToList();
-            valuesToDelete.ForEach(v => v.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId());
         }
 
 

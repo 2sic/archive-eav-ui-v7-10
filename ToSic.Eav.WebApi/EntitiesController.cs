@@ -186,8 +186,8 @@ namespace ToSic.Eav.WebApi
 
             // Create Import-controller & run import
             var importController = new Import.Import(null, appId, User.Identity.Name, 
-                leaveExistingValuesUntouched: false, 
-                preserveUndefinedValues: false,
+                dontUpdateExistingAttributeValues: false, 
+                keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
                 largeImport: false);
             importController.RunImport(null, entitiesToImport.ToArray());

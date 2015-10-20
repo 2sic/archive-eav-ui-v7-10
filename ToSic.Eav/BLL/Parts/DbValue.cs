@@ -195,7 +195,7 @@ namespace ToSic.Eav.BLL.Parts
             #region Update DimensionIds on this and other values
 
             // Update Dimensions as specified by Import
-            if (valueDimensions != null)
+            if (valueDimensions != null && valueDimensions.Any())
             {
                 var valueDimensionsToDelete = value.ValuesDimensions.ToList();
                 // loop all specified Dimensions, add or update it for this value
@@ -269,7 +269,7 @@ namespace ToSic.Eav.BLL.Parts
         {
             EavValue value = null;
             // if Import-Dimension(s) are Specified
-            if (valueDimensions != null)
+            if (valueDimensions != null && valueDimensions.Any())
             {
                 // Get first value having first Dimension or add new value
                 value = currentValues.FirstOrDefault(v => v.ChangeLogIDDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
