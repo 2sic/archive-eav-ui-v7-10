@@ -61,7 +61,8 @@ $eav4ng.autoRunBootstrap();
 
 angular.module('eav4ng', ['ng'])
     // Configure $http for DNN web services (security tokens etc.)
-    .config(function ($httpProvider) {
+    .constant("apiRoot", "/api/")
+    .config(function ($httpProvider, apiRoot) {
         angular.extend($httpProvider.defaults.headers.common, { 'eavMarker': 'if you see this, eav headers were added' });
         $httpProvider.interceptors.push(function ($q) {
             return {
@@ -69,7 +70,7 @@ angular.module('eav4ng', ['ng'])
                 'request': function (config) {
                     function resolveServiceUrl(virtualPath) {
                         var serviceScopes = ['app-api', 'app-query', 'app-content', 'eav']; // todo7: should probably deprecate "app"
-                        var serviceRoot = "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
+                        var serviceRoot = apiRoot;// "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
 
                         var scope = virtualPath.split('/')[0].toLowerCase();
                         // stop if it's not one of our special paths
