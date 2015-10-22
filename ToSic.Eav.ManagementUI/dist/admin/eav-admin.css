@@ -98,6 +98,9 @@ a { cursor: pointer; }
 .btn-xs.btn-square i {
     padding-top: 2px;
 }
+.btn.btn-default.btn-subtle {
+    border: none;
+}
 
 .clickable { cursor:pointer; }
 .clickable:hover { text-decoration: underline }
@@ -109,10 +112,12 @@ a { cursor: pointer; }
 
 h3:hover .low-priority.glyphicon, h4:hover .low-priority.glyphicon {
     color: #3bafda;
+    text-decoration: none;
 }
 
 h3.clickable:hover, h4.clickable:hover {
-      color: #3bafda;
+    color: #3bafda;
+    text-decoration: none;
 }
 
 
