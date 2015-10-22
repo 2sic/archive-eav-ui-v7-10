@@ -2,7 +2,7 @@
     <div class="modal-header">
         <h3 class="modal-title" translate="ContentTypes.Title"></h3>
     </div>
-    <span class="modal-body">
+    <div class="modal-body">
         <!-- Buttons on top -->
         <button title="{{ 'General.Buttons.Add' | translate }}" type="button" class="btn btn-primary btn-square" ng-click="vm.edit()"><i icon="plus"></i></button>
 
@@ -31,7 +31,7 @@
                 <td class="clickable">
                     <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Name}}">{{item.Name}}</span>
                 </td>
-                <td style="text-align: right"><div class="badge pull-right badge-primary">{{item.Items}}</div></td>
+                <td class="clickable" style="text-align: right"><div class="badge pull-right badge-primary">{{item.Items}}</div></td>
                 <td class="clickable">
                     <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
                 </td>

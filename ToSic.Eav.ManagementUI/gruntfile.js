@@ -285,6 +285,7 @@ module.exports = function(grunt) {
 
     // Load all grunt-plugins mentioned in the package.json
     require("load-grunt-tasks")(grunt);
+    require("time-grunt")(grunt);
 
 
     // Default task.
