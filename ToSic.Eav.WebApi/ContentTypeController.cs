@@ -5,6 +5,7 @@ using System.Net;
 using System.Web;
 using System.Web.Http;
 using Microsoft.Practices.ObjectBuilder2;
+using ToSic.Eav.Api;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
@@ -90,18 +91,28 @@ namespace ToSic.Eav.WebApi
                 CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
                     .OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder);
 
+            var appDef = new BetaFullApi(null, appId, CurrentContext);
+            var appInputTypes = appDef.GetInputTypes(true).ToList();
+            var inputTypesDic = appInputTypes.ToDictionary(a => a.GetBestValue("EntityTitle"), a => a);
+
+            var ser = new Serializer();
+            
             return fields.Select(a =>
-		        new
-		        {
-			        Id = a.Item1.AttributeId,
-			        (a.Item1 as AttributeBase).SortOrder,
-					a.Item1.Type,
-                    InputType = findInputType(a.Item2),
-					StaticName = a.Item1.Name,
-					a.Item1.IsTitle,
-					a.Item1.AttributeId,
-					Metadata = a.Item2.ToDictionary(e => e.Key, e => new Serializer().Prepare(e.Value))
-		        });
+            {
+                var inputtype = findInputType(a.Item2);
+                return new
+                {
+                    Id = a.Item1.AttributeId,
+                    (a.Item1 as AttributeBase).SortOrder,
+                    a.Item1.Type,
+                    InputType = inputtype,
+                    StaticName = a.Item1.Name,
+                    a.Item1.IsTitle,
+                    a.Item1.AttributeId,
+                    Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
+                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
+                };
+            });
         }
 
 	    private string findInputType(Dictionary<string, IEntity> definitions)
@@ -134,26 +145,21 @@ namespace ToSic.Eav.WebApi
 	    }
 
 	    [HttpGet]
+	    // public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    {
-	        var entC = new ToSic.Eav.WebApi.EntitiesController();
-	        var coreInputTypes = entC.GetAllOfTypeForAdmin(Constants.MetaDataAppId, "ContentType-InputType");
+            var appDef = new BetaFullApi(null, appId, CurrentContext);
+	        var appInputTypes = appDef.GetInputTypes(true).ToList();
 
-            // now add app-specific items if possible
-	        if (Constants.MetaDataAppId != appId)
-	        {
-	            var coreTypesList = coreInputTypes.First();
-	            var appSpecificInputType = entC.GetAllOfTypeForAdmin(appId, "ContentType-InputType").FirstOrDefault();
-	            if (appSpecificInputType != null) // note: "local" definition takes precendence...
-                    appSpecificInputType.ForEach(i =>
-                    {
-                        if (coreTypesList.ContainsKey(i.Key))
-                            coreTypesList[i.Key] = i.Value;
-                        else
-                            coreTypesList.Add(i.Key, i.Value);
-                    });
-	        }
-	        return coreInputTypes;
+            //var systemDef = new BetaFullApi(null, Constants.MetaDataAppId, CurrentContext);
+            //var systemInputTypes = systemDef.GetInputTypes().ToList();
+
+            //systemInputTypes.ForEach(sit => {
+            //    if(appInputTypes.FirstOrDefault(ait => ait.Title == sit.Title) == null)
+            //        appInputTypes.Add(sit);
+            //});
+            
+	        return Serializer.Prepare(appInputTypes);
 
 	    }
 

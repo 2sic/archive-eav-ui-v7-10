@@ -19,6 +19,17 @@ namespace ToSic.Eav.Serializers
         public bool IncludeMetadata { get; set; }
 
         public bool IncludeAllEditingInfos { get; set; }
+
+        /// <summary>
+        /// ensure all settings are so it includes guids etc.
+        /// </summary>
+        public void ConfigureForAdminUse()
+        {
+            IncludeGuid = true;
+            IncludePublishingInfo = true;
+            IncludeMetadata = true;
+        }
+
         #endregion
 
         public Serializer()

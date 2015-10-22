@@ -117,6 +117,10 @@
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
+      <Project>{2A81F269-8CCA-4AFD-A85F-82B1C2343965}</Project>
+      <Name>ToSic.Eav.TokenEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

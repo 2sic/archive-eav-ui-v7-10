@@ -20,13 +20,15 @@ namespace ToSic.Eav.Api
     /// It doesn't have a clear concept yet, so it's called Beta... to ensure people know it's still work in progress
     /// Note that it should itself NEVER access the DB but always go through the BLL layer
     /// </summary>
-    internal class BetaFullApi
+    public class BetaFullApi
     {
         #region Simple Properties
         public int AppId { get; internal set; }
         public int ZoneId { get; internal set; }
 
         public ICache Cache { get; internal set; }
+
+        public IDataSource AppData { get; internal set; }
 
         private IMetaDataSource _metadata;
         public IMetaDataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
@@ -52,7 +54,8 @@ namespace ToSic.Eav.Api
         public BetaFullApi(int? zoneId, int? appId, EavDataController cntxt = null)
         {
             // get cache, and automatically use this to look up the non-null appid / zoneid
-            Cache = DataSource.GetCache(zoneId, AppId);
+            AppData = DataSource.GetInitialDataSource(zoneId, appId);
+            Cache = AppData.Cache;// DataSource.GetCache(zoneId, appId);
             AppId = Cache.AppId;
             ZoneId = Cache.ZoneId;
             Context = cntxt;
@@ -79,5 +82,31 @@ namespace ToSic.Eav.Api
             //}
 
         }
+
+
+        public IEnumerable<IEntity> GetEntitiesOfType(string contentTypeName)
+        {
+            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: AppId, upstream: Cache, valueCollectionProvider: AppData.ConfigurationProvider); // need to go to cache, to include published & unpublished
+            typeFilter.TypeName = contentTypeName;
+            return typeFilter.LightList;
+        }
+
+        public IEnumerable<IEntity> GetInputTypes(bool includeGlobalDefinitions)
+        {
+            var inputsOfThisApp = GetEntitiesOfType(Constants.TypeForInputTypeDefinition).ToList();
+
+            if (includeGlobalDefinitions)
+            {
+                var systemDef = new BetaFullApi(null, Constants.MetaDataAppId, Context);
+                var systemInputTypes = systemDef.GetInputTypes(false).ToList();
+
+                systemInputTypes.ForEach(sit => {
+                    if (inputsOfThisApp.FirstOrDefault(ait => ait.Title == sit.Title) == null)
+                        inputsOfThisApp.Add(sit);
+                });
+
+            }
+            return inputsOfThisApp;
+        } 
     }
 }

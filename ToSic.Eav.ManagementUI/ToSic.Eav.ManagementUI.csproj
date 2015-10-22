@@ -152,6 +152,7 @@
     <Content Include="src\edit\fields\empty\empty-default.html" />
     <Content Include="src\edit\fields\boolean\boolean-default.html" />
     <Content Include="src\edit\fields\_eav-field-templates.js" />
+    <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\wrappers\collapsible.html" />
     <Content Include="src\edit\wrappers\collapsible.js" />
     <Content Include="src\edit\wrappers\field-group.html" />

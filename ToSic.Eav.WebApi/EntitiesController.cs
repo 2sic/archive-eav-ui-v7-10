@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.UI;
+using ToSic.Eav.Api;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
@@ -56,16 +57,10 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<Dictionary<string, object>> GetAllOfTypeForAdmin(int appId, string contentType)
 	    {
 	        SetAppIdAndUser(appId);
-	        var ds = InitialDS;
+            Serializer.ConfigureForAdminUse();
 
-            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: ds.Cache, valueCollectionProvider: ds.ConfigurationProvider); // need to go to cache, to include published & unpublished
-            typeFilter.TypeName = contentType;
-
-            Serializer.IncludeGuid = true;
-	        Serializer.IncludePublishingInfo = true;
-	        Serializer.IncludeMetadata = true;
-
-            return Serializer.Prepare(typeFilter.LightList);
+	        var api = new BetaFullApi(null, appId, CurrentContext);
+	        return Serializer.Prepare(api.GetEntitiesOfType(contentType));
         }
 
         //2015-08-29 2dm: these commands are kind of ready, but not in use yet
