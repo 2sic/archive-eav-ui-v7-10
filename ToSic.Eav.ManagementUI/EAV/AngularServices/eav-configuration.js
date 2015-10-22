@@ -18,16 +18,6 @@ var $eavUIConfig = {
         .constant("languages", $eavUIConfig.languages)
         .factory("eavConfig", function ($location) {
 
-            // todo: this shouldn't be in use any more
-            var getItemFormUrl = function(mode, params, preventRedirect) {
-                params.ManagementMode = mode + "Item";
-                if (!params.ReturnUrl)
-                    params.ReturnUrl = $location.url();
-                if (preventRedirect)
-                    params.PreventRedirect = true;
-                return "/Pages/EAVManagement.aspx?" + $.param(params);
-            };
-
             return {
                 api: {
                     baseUrl: "/api",
@@ -39,6 +29,20 @@ var $eavUIConfig = {
                     pipelineDesigner: function (appId, pipelineId) {
                         return "/Pages/ngwrapper.cshtml?ng=pipeline-designer&AppId=" + appId + "&pipelineId=" + pipelineId;
                     }
+                },
+                getUrlPrefix: function(area) {
+                    if (area === "system")
+                        return "";
+                    if (area === "zone")
+                        return "/zone-not-defined-yet-in-eav";
+                    if (area === "app")
+                        return "/app-not-defined-yet-in-eav";
+                    if (area === "api")
+                        return "/api";
+                    if (area === "dialog")
+                        return "/Pages";
+                    if (area === "dialog-page")
+                        return "/Pages/ngwrapper.cshtml";
                 },
                 languages: $eavUIConfig.languages,
 
@@ -71,7 +75,7 @@ var $eavUIConfig = {
                 metadataOfAttribute: 2,
 
                 contentType: {
-                    defaultScope: null 
+                    defaultScope: "2SexyContent" // null 
                 }
             }
         });
