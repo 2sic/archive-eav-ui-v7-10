@@ -30,31 +30,4 @@ angular.module("EavServices")
         };
         return toastr;
     })
-
-    // this is an old service - used only in the pipeline designer. Don't reuse! just call the toastr directly
-    //.factory("uiNotification", function (toastr) {
-    //        "use strict";
-
-    //        var toaster = toastr;
-
-    //        return {
-    //            clear: function () {
-    //                toaster.clear();
-    //            },
-    //            error: function (title, bodyOrError) {
-    //                var message;
-    //                // test whether bodyOrError is an Error from Web API
-    //                if (bodyOrError && bodyOrError.data && bodyOrError.data.Message) {
-    //                    message = bodyOrError.data.Message;
-    //                    if (bodyOrError.data.ExceptionMessage)
-    //                        message += "\n" + bodyOrError.data.ExceptionMessage;
-    //                } else
-    //                    message = bodyOrError;
-
-    //                toastr.error(title, body, { autoDismiss: false });
-    //            }
-
-    //        };
-    //    }
-    //)
 ;

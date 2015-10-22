@@ -2450,13 +2450,13 @@ angular.module("EavServices")
 angular.module("EavServices")
     // This is a helper-factory to create services which manage one live list
     // check examples with the permissions-service or the content-type-service how we use it
-    .factory("svcCreator", function() {
+    .factory("svcCreator", ["toastr", "$translate", function (toastr, $translate) {
         var creator = {};
 
         // construct a object which has liveListCache, liveListReload(), liveListReset(),  
-        creator.implementLiveList = function(getLiveList) {
+        creator.implementLiveList = function (getLiveList, disableToastr) {
             var t = {};
-
+            t.disableToastr = !!disableToastr;
             t.liveListCache = [];                   // this is the cached list
             t.liveListCache.isLoaded = false;
 
@@ -2468,6 +2468,7 @@ angular.module("EavServices")
 
             // use a promise-result to re-fill the live list of all items, return the promise again
             t._liveListUpdateWithResult = function updateLiveAll(result) {
+                toastr.clear(t.msg);
                 t.liveListCache.length = 0; // clear
                 for (var i = 0; i < result.data.length; i++)
                     t.liveListCache.push(result.data[i]);
@@ -2478,6 +2479,7 @@ angular.module("EavServices")
             t.liveListSourceRead = getLiveList;
 
             t.liveListReload = function getAll() {
+                t.msg = toastr.info($translate.instant("General.Messages.Loading"));
                 return t.liveListSourceRead()
                     .then(t._liveListUpdateWithResult);
             };
@@ -2490,7 +2492,7 @@ angular.module("EavServices")
         };
         return creator;
 
-    })
+    }])
 
 ;
 
@@ -2525,31 +2527,4 @@ angular.module("EavServices")
         };
         return toastr;
     }])
-
-    // this is an old service - used only in the pipeline designer. Don't reuse! just call the toastr directly
-    //.factory("uiNotification", function (toastr) {
-    //        "use strict";
-
-    //        var toaster = toastr;
-
-    //        return {
-    //            clear: function () {
-    //                toaster.clear();
-    //            },
-    //            error: function (title, bodyOrError) {
-    //                var message;
-    //                // test whether bodyOrError is an Error from Web API
-    //                if (bodyOrError && bodyOrError.data && bodyOrError.data.Message) {
-    //                    message = bodyOrError.data.Message;
-    //                    if (bodyOrError.data.ExceptionMessage)
-    //                        message += "\n" + bodyOrError.data.ExceptionMessage;
-    //                } else
-    //                    message = bodyOrError;
-
-    //                toastr.error(title, body, { autoDismiss: false });
-    //            }
-
-    //        };
-    //    }
-    //)
 ;
