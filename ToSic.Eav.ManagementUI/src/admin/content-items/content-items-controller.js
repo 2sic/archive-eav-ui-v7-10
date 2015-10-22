@@ -14,6 +14,9 @@
 
         var svc = contentItemsSvc(appId, contentType); 
 
+        // config
+        vm.maxDynamicColumns = 10;
+
         vm.add = function add() {
             eavAdminDialogs.openItemNew(contentType, svc.liveListReload);
         };
@@ -29,7 +32,7 @@
         vm.dynamicColumns = [];
         svc.getColumns().then(function (result) {
             var cols = result.data;
-            for (var c = 0; c < cols.length; c++) {
+            for (var c = 0; c < cols.length && c < vm.maxDynamicColumns; c++) {
                 if (!cols[c].IsTitle)
                     vm.dynamicColumns.push(cols[c]);
             }

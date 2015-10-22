@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Metadata.Edm;
 using System.Linq;
 using System.Web.Http;
 using System.Web.UI;
+using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Api;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
@@ -57,11 +59,26 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<Dictionary<string, object>> GetAllOfTypeForAdmin(int appId, string contentType)
 	    {
 	        SetAppIdAndUser(appId);
-            Serializer.ConfigureForAdminUse();
+	        Serializer.ConfigureForAdminUse();
 
 	        var api = new BetaFullApi(null, appId, CurrentContext);
-	        return Serializer.Prepare(api.GetEntitiesOfType(contentType));
-        }
+	        var list = Serializer.Prepare(api.GetEntitiesOfType(contentType));
+
+	        var newList = list.Select(li => li.ToDictionary(x1 => x1.Key, x2 => TruncateIfString(x2.Value, 50))).ToList();
+
+	        return newList;
+	    }
+
+	    public object TruncateIfString(object value, int length)
+	    {
+	            var asTxt = value as string;
+                if (asTxt == null)
+                    return value;
+
+                if (asTxt.Length > length)
+                    asTxt = asTxt.Substring(0, length);
+                return asTxt;
+	    }
 
         //2015-08-29 2dm: these commands are kind of ready, but not in use yet
         /// <summary>
