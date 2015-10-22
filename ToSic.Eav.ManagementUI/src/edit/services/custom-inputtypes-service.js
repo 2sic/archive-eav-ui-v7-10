@@ -27,7 +27,7 @@
 	                return;
 
 	            // todo: split by new-line
-	            var list = config.Assets.split("\n");//.replace(/\n/g, "~").split("~");
+	            var list = config.Assets.split("\n");
 
 	            // todo: add to document
                 for(var a = 0; a < list.length; a++)

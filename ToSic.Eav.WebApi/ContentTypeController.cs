@@ -148,6 +148,7 @@ namespace ToSic.Eav.WebApi
 	    // public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    {
+            SetAppIdAndUser(appId);
             var appDef = new BetaFullApi(null, appId, CurrentContext);
 	        var appInputTypes = appDef.GetInputTypes(true).ToList();
 
