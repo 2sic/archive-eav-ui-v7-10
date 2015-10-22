@@ -2479,7 +2479,10 @@ angular.module("EavServices")
             t.liveListSourceRead = getLiveList;
 
             t.liveListReload = function getAll() {
-                t.msg = toastr.info($translate.instant("General.Messages.Loading"));
+                // show loading - must use the promise-mode because this may be used early before the language has arrived
+                $translate("General.Messages.Loading").then(function(msg) {
+                    t.msg = toastr.info(msg);
+                });
                 return t.liveListSourceRead()
                     .then(t._liveListUpdateWithResult);
             };
