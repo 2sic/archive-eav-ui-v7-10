@@ -116,20 +116,27 @@
 			var type = e.Type.toLowerCase();
 		    var inputType = "";
 		    // new: the All can - and should - have an input-type which doesn't change
-			if (e.Metadata.All && e.Metadata.All.InputType) {
-			    inputType = e.Metadata.All.InputType;
-			} else {
-		        var subType = e.Metadata.String
-		            ? e.Metadata.String.InputType
-		            : null;
-
-			    subType = subType ? subType.toLowerCase() : null;
-
-			    inputType = type + "-" + subType;
+			if (e.Metadata.merged && e.Metadata.merged.InputType) {
+			    inputType = e.Metadata.merged.InputType;
 			}
+			//else {
+		    //    var subType = e.Metadata.String
+		    //        ? e.Metadata.String.InputType
+		    //        : null;
+
+			//    subType = subType ? subType.toLowerCase() : null;
+
+			//    inputType = type + "-" + subType;
+		    //}
+			if (inputType && inputType.indexOf("-") === -1) // has input-type, but missing main type, this happens with old types like string wysiyg
+		        inputType = type + inputType;
+
+		    // this type may have assets, so the definition may be late-loaded
+		    var typeAlreadyRegistered = formlyConfig.getType(inputType);
+		    var typeWillLoadAssetsInAMoment = !!e.Metadata.merged.Assets;
 
 			// Use subtype 'default' if none is specified - or type does not exist
-		    if (!inputType || !formlyConfig.getType(inputType))
+		    if (!inputType || (!typeAlreadyRegistered && !typeWillLoadAssetsInAMoment))
 		        inputType = type + "-default";
 
 			return (inputType);
