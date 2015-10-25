@@ -291,7 +291,6 @@ namespace ToSic.Eav.WebApi
 
 
         #region Delete calls
-
         /// <summary>
         /// Delete the entity specified by ID.
         /// </summary>
@@ -299,6 +298,7 @@ namespace ToSic.Eav.WebApi
         /// <param name="id">Entity ID</param>
         /// <param name="appId"></param>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
+        [HttpGet]
         public void Delete(string contentType, int id, int? appId = null)
 	    {
 	        if (appId.HasValue)
@@ -312,15 +312,16 @@ namespace ToSic.Eav.WebApi
             CurrentContext.Entities.DeleteEntity(id);
         }
 
-	    /// <summary>
-	    /// Delete the entity specified by GUID.
-	    /// </summary>
-	    /// <param name="contentType"></param>
-	    /// <param name="entityGuid">Entity GUID</param>
-	    /// <param name="appId"></param>
-	    /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-	    /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-	    public void Delete(string contentType, Guid entityGuid, int? appId = null)
+        /// <summary>
+        /// Delete the entity specified by GUID.
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <param name="entityGuid">Entity GUID</param>
+        /// <param name="appId"></param>
+        /// <exception cref="ArgumentNullException">Entity does not exist</exception>
+        /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
+        [HttpGet]
+        public void Delete(string contentType, Guid entityGuid, int? appId = null)
         {
             if (appId.HasValue)
                 AppId = appId.Value;

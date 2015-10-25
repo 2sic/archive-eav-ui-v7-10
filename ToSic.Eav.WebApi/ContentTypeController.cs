@@ -93,7 +93,7 @@ namespace ToSic.Eav.WebApi
 
             var appDef = new BetaFullApi(null, appId, CurrentContext);
             var appInputTypes = appDef.GetInputTypes(true).ToList();
-            var inputTypesDic = appInputTypes.ToDictionary(a => a.GetBestValue("EntityTitle"), a => a);
+            var inputTypesDic = appInputTypes.ToDictionary(a => a.GetBestValue("EntityTitle")??"error-no-title", a => a);
 
             var ser = new Serializer();
             
