@@ -2,13 +2,54 @@
 // eavConfig providers default global values for the EAV angular system
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
 
+// temp helper object
+var $eavOnlyHelpers = {};
+$eavOnlyHelpers.urlParams = {
+    get: function getParameterByName(name) {
+        // warning: this method is duplicated in 3 places - keep them in sync. 
+        // locations are eav, 2sxc4ng and ui.html
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var searchRx = new RegExp("[\\?&]" + name + "=([^&#]*)", "i");
+        var results = searchRx.exec(location.search);
+
+        if (results === null) {
+            var hashRx = new RegExp("[#&]" + name + "=([^&#]*)", "i");
+            results = hashRx.exec(location.hash);
+        }
+
+        // if nothing found, try normal URL because DNN places parameters in /key/value notation
+        if (results === null) {
+            // Otherwise try parts of the URL
+            var matches = window.location.pathname.match(new RegExp("/" + name + "/([^/]+)", "i"));
+
+            // Check if we found anything, if we do find it, we must reverse the results so we get the "last" one in case there are multiple hits
+            if (matches !== null && matches.length > 1)
+                results = matches.reverse()[0];
+        } else
+            results = results[1];
+
+        return results === null ? "" : decodeURIComponent(results.replace(/\+/g, " "));
+    },
+
+    require: function getRequiredParameter(name) {
+        var found = $eavOnlyHelpers.urlParams.get(name);
+        if (found === "") {
+            var message = "Required parameter (" + name + ") missing from url - cannot continue";
+            alert(message);
+            throw message;
+        }
+        return found;
+    }
+};
+
 // the following config-stuff is not in angular, because some settings are needed in dialogs which are not built with angularJS yet.
 // they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
 var $eavUIConfig = {
+
 	languages: {
-		languages: [{ key: "en-us", name: "English (United States)" }, { key: "de-de", name: "Deutsch (Deutschland)" }],
-		defaultLanguage: "en-us",
-		currentLanguage: "en-us",
+	    languages: JSON.parse($eavOnlyHelpers.urlParams.require("langs")), //[{ key: "en-us", name: "English (United States)" }, { key: "de-de", name: "Deutsch (Deutschland)" }],
+	    defaultLanguage: $eavOnlyHelpers.urlParams.require("langpri"), // "en-us",
+	    currentLanguage: $eavOnlyHelpers.urlParams.require("lang"), // "en-us",
 		i18nRoot: "/dist/i18n/"
 	}
 };
