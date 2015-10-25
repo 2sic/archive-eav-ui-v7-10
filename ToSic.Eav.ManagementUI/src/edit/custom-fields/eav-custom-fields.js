@@ -26,7 +26,12 @@
 
                 //    // added by 2dm
                 //module.config = $provide.config;
-            });
+            })
+    .config(function ($ocLazyLoadProvider) {
+        $ocLazyLoadProvider.config({
+            debug: true
+        });
+    });
 
     module.run(function(formlyConfig) {
         module.formlyConfig = formlyConfig;

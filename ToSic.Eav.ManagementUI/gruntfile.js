@@ -144,22 +144,23 @@ module.exports = function(grunt) {
                          dest: editUi.templates
                      }
                 ]
-            },
-            editExt: {
-                options: {
-                    module: "eavCustomFields",
-                    standalone: false,
-                    append: true,
-                    htmlmin: configConstants.ngTemplatesHtmlMin
-                },
-                files: [
-                     {
-                         cwd: editExt.tmp,
-                         src: ["**/*.html"], 
-                         dest: editExt.templates
-                     }
-                ]
             }
+//            ,
+//            editExt: {
+//                options: {
+//                    module: "tempCustomGpsTmplates",//"eavCustomFields",
+////                    standalone: false,
+//                    append: true,
+//                    htmlmin: configConstants.ngTemplatesHtmlMin
+//                },
+//                files: [
+//                     {
+//                         cwd: editExt.tmp,
+//                         src: ["**/*.html"], 
+//                         dest: editExt.templates
+//                     }
+//                ]
+//            }
         },
         concat: {
             default: {

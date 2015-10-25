@@ -16,9 +16,10 @@
 	            if (config === undefined || config === null)
 	                return;
 
-                // only add one if it has not been added yet
-	            if (svc.inputTypesOnPage[config.Type] !== undefined)
-	                return;
+	            // only add one if it has not been added yet
+                // commented out - believe this won't work when using ocLazyLoad
+	            //if (svc.inputTypesOnPage[config.Type] !== undefined)
+	            //    return;
 
 	            svc.inputTypesOnPage[config.Type] = config;
 
@@ -100,20 +101,20 @@
 	            return url;
 	        };
 
-	        svc.addHeadJsOrCssTag = function (url) {
-	            url = url.trim();
-	            if (url.indexOf(".js") > 0) {
-	                var oHead = document.getElementsByTagName("HEAD").item(0);
-	                var oScript = document.createElement("script");
-	                oScript.type = "text/javascript";
-	                oScript.src = url;
-	                oHead.appendChild(oScript);
-	                return true;
-	            } else if (url.indexOf(".css") > 0) {
-	                alert("css include not implemented yet");
-	                return false;
-	            }
-	        };
+	        //svc.addHeadJsOrCssTag = function (url) {
+	        //    url = url.trim();
+	        //    if (url.indexOf(".js") > 0) {
+	        //        var oHead = document.getElementsByTagName("HEAD").item(0);
+	        //        var oScript = document.createElement("script");
+	        //        oScript.type = "text/javascript";
+	        //        oScript.src = url;
+	        //        oHead.appendChild(oScript);
+	        //        return true;
+	        //    } else if (url.indexOf(".css") > 0) {
+	        //        alert("css include not implemented yet");
+	        //        return false;
+	        //    }
+	        //};
 
 	        svc.checkDependencyArrival = function cda(typeName) {
 	            return !!formlyConfig.getType(typeName);

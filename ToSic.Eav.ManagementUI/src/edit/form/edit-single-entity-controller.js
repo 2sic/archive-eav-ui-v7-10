@@ -45,8 +45,9 @@
 		                    customInputTypes.addInputType(e);
 		            });
 
-                    // load all assets before continuing with formly-binding
-		            customInputTypes.loadWithPromise().then(function() {
+		            // load all assets before continuing with formly-binding
+		            var promiseToLoad = customInputTypes.loadWithPromise();
+		            promiseToLoad.then(function(dependencyResult) {
 		                vm.registerAllFieldsFromReturnedDefinition(result);
 		            });
 

@@ -26,7 +26,12 @@
 
                 //    // added by 2dm
                 //module.config = $provide.config;
-            }]);
+            }])
+    .config(["$ocLazyLoadProvider", function ($ocLazyLoadProvider) {
+        $ocLazyLoadProvider.config({
+            debug: true
+        });
+    }]);
 
     module.run(["formlyConfig", function(formlyConfig) {
         module.formlyConfig = formlyConfig;
@@ -500,8 +505,9 @@ angular.module("eavFieldTemplates")
 		                    customInputTypes.addInputType(e);
 		            });
 
-                    // load all assets before continuing with formly-binding
-		            customInputTypes.loadWithPromise().then(function() {
+		            // load all assets before continuing with formly-binding
+		            var promiseToLoad = customInputTypes.loadWithPromise();
+		            promiseToLoad.then(function(dependencyResult) {
 		                vm.registerAllFieldsFromReturnedDefinition(result);
 		            });
 
@@ -1106,9 +1112,10 @@ function enhanceEntity(entity) {
 	            if (config === undefined || config === null)
 	                return;
 
-                // only add one if it has not been added yet
-	            if (svc.inputTypesOnPage[config.Type] !== undefined)
-	                return;
+	            // only add one if it has not been added yet
+                // commented out - believe this won't work when using ocLazyLoad
+	            //if (svc.inputTypesOnPage[config.Type] !== undefined)
+	            //    return;
 
 	            svc.inputTypesOnPage[config.Type] = config;
 
@@ -1190,20 +1197,20 @@ function enhanceEntity(entity) {
 	            return url;
 	        };
 
-	        svc.addHeadJsOrCssTag = function (url) {
-	            url = url.trim();
-	            if (url.indexOf(".js") > 0) {
-	                var oHead = document.getElementsByTagName("HEAD").item(0);
-	                var oScript = document.createElement("script");
-	                oScript.type = "text/javascript";
-	                oScript.src = url;
-	                oHead.appendChild(oScript);
-	                return true;
-	            } else if (url.indexOf(".css") > 0) {
-	                alert("css include not implemented yet");
-	                return false;
-	            }
-	        };
+	        //svc.addHeadJsOrCssTag = function (url) {
+	        //    url = url.trim();
+	        //    if (url.indexOf(".js") > 0) {
+	        //        var oHead = document.getElementsByTagName("HEAD").item(0);
+	        //        var oScript = document.createElement("script");
+	        //        oScript.type = "text/javascript";
+	        //        oScript.src = url;
+	        //        oHead.appendChild(oScript);
+	        //        return true;
+	        //    } else if (url.indexOf(".css") > 0) {
+	        //        alert("css include not implemented yet");
+	        //        return false;
+	        //    }
+	        //};
 
 	        svc.checkDependencyArrival = function cda(typeName) {
 	            return !!formlyConfig.getType(typeName);
