@@ -62,15 +62,15 @@ $eav4ng.autoRunBootstrap();
 angular.module('eav4ng', ['ng'])
     // Configure $http for DNN web services (security tokens etc.)
     .constant("apiRoot", "/api/")
-    .config(function ($httpProvider, apiRoot) {
+    .config(function($httpProvider, apiRoot) {
         angular.extend($httpProvider.defaults.headers.common, { 'eavMarker': 'if you see this, eav headers were added' });
-        $httpProvider.interceptors.push(function ($q) {
+        $httpProvider.interceptors.push(function($q) {
             return {
                 // Rewrite 2sxc-urls if necessary
-                'request': function (config) {
+                'request': function(config) {
                     function resolveServiceUrl(virtualPath) {
                         var serviceScopes = ['app-api', 'app-query', 'app-content', 'eav']; // todo7: should probably deprecate "app"
-                        var serviceRoot = apiRoot;// "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
+                        var serviceRoot = apiRoot; // "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
 
                         var scope = virtualPath.split('/')[0].toLowerCase();
                         // stop if it's not one of our special paths
@@ -78,19 +78,21 @@ angular.module('eav4ng', ['ng'])
                             return virtualPath;
 
                         // if (scope.indexOf('app-api') > -1 /* && scope.indexOf('app-content')!=0 */)  scope += "/auto-detect-app";
-                        return serviceRoot + virtualPath;// '/' + virtualPath.substring(virtualPath.indexOf('/') + 1);
+                        return serviceRoot + virtualPath; // '/' + virtualPath.substring(virtualPath.indexOf('/') + 1);
                     }
-                            
+
                     config.url = resolveServiceUrl(config.url);
                     return config;
                 },
 
                 // Show very nice error if necessary
-                'responseError': function (rejection) {
+                'responseError': function(rejection) {
                     alert('Error: ' + rejection);
                     return $q.reject(rejection);
                 }
             };
         });
 
-    })
+    });
+
+

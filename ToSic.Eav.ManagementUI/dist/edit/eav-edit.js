@@ -1,3 +1,37 @@
+/* 
+ * Custom Fields skelleton to allow later, lazy loaded fields
+ */
+(function() {
+    "use strict";
+    var module = angular.module("eavCustomFields", ["oc.lazyLoad"])
+
+        // here's a special trick from http://slides.com/gruizdevilla/late-registering-and-lazy-load-in-angularjs-en#/5
+        .config(
+            ["formlyConfigProvider", "defaultFieldWrappers", "$controllerProvider", "$compileProvider", "$filterProvider", "$provide", function(formlyConfigProvider, defaultFieldWrappers,
+                $controllerProvider,
+                $compileProvider,
+                $filterProvider,
+                $provide
+            ) {
+                module.IsLazyLoader = true;
+                module.formlyConfigProvide = formlyConfigProvider;
+                module.defaultFieldWrappers = defaultFieldWrappers;
+                 
+                 
+                //module.controller = $controllerProvider.register;
+                //module.directive = $compileProvider.directive;
+                //module.filter = $filterProvider.register;
+                //module.factory = $provide.factory;
+                //module.service = $provide.service;
+
+                //    // added by 2dm
+                //module.config = $provide.config;
+            }]);
+
+    module.run(["formlyConfig", function(formlyConfig) {
+        module.formlyConfig = formlyConfig;
+    }]);
+})();
 /* Main object with dependencies, used in wrappers and other places */
 (function () {
 	"use strict";
@@ -5,12 +39,16 @@
     angular.module("eavEditEntity", [
         "formly",
         "ui.bootstrap",
-        "eavFieldTemplates",
-        "EavServices",
-        "eavEditTemplates",
         "uiSwitch",
         "toastr",
-        "ngAnimate"
+        "ngAnimate",
+        "EavServices",
+        "eavEditTemplates",
+        "eavFieldTemplates",
+        "eavCustomFields",
+
+        // new...
+        "oc.lazyLoad"
     ]);
 
 
@@ -455,72 +493,85 @@ angular.module("eavFieldTemplates")
 		            vm.debug = result;
 
 		            // Transform EAV content type configuration to formFields (formly configuration)
-		            var lastGroupHeadingId = 0;
+
+                    // first: add all custom types to re-load these scripts and styles
 		            angular.forEach(result.data, function(e, i) {
-
-		                if (e.Metadata.All === undefined)
-		                    e.Metadata.All = {};
-
-		                var fieldType = getType(e);
-
-		                // always remember the last heading so all the following fields know to look there for collapse-setting
-		                var isFieldHeading = (fieldType === "empty-default");
-		                if (isFieldHeading)
-		                    lastGroupHeadingId = i;
-
-		                var nextField = {
-		                    key: e.StaticName,
-		                    type: fieldType,
-		                    templateOptions: {
-		                        required: !!e.Metadata.All.Required,
-		                        label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
-		                        description: $sce.trustAsHtml(e.Metadata.All.Notes),
-		                        settings: e.Metadata,
-		                        header: $scope.header,
-		                        canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
-		                        fieldGroup: vm.formFields[lastGroupHeadingId],
-		                        disabled: e.Metadata.All.Disabled,
-		                        langReadOnly: false // Will be set by the language directive to override the disabled state
-		                    },
-		                    hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
-		                    expressionProperties: {
-		                        // Needed for dynamic update of the disabled property
-		                        'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
-		                    },
-		                    watcher: [
-		                        {
-		                            // changes when a entity becomes enabled / disabled
-		                            expression: function(field, scope, stop) {
-		                                return e.Metadata.All.Disabled ||
-		                                    (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) ||
-		                                    field.templateOptions.langReadOnly;
-		                            },
-		                            listener: function(field, newValue, oldValue, scope, stopWatching) {
-		                                field.templateOptions.disabled = newValue;
-		                            }
-		                        },
-		                        {
-                                    // handle collapse / open
-		                            expression: function(field, scope, stop) {
-		                                // only change values if it can collapse...
-		                                return (field.templateOptions.canCollapse) ? field.templateOptions.fieldGroup.templateOptions.collapseGroup : null;
-		                            },
-		                            listener: function(field, newValue, oldValue, scope, stopWatching) {
-		                                if (field.templateOptions.canCollapse)
-		                                    field.templateOptions.collapse = newValue;
-		                            }
-		                        }
-		                    ]
-		                };
-
 		                if (e.InputTypeConfig)
-		                    customInputTypes.addInputType(e.InputTypeConfig);
-
-		                vm.formFields.push(nextField);
+		                    customInputTypes.addInputType(e);
 		            });
+
+                    // load all assets before continuing with formly-binding
+		            customInputTypes.loadWithPromise().then(function() {
+		                vm.registerAllFieldsFromReturnedDefinition(result);
+		            });
+
 
 		        });
 		};
+
+	    vm.registerAllFieldsFromReturnedDefinition = function raffrd(result) {
+	        var lastGroupHeadingId = 0;
+	        angular.forEach(result.data, function (e, i) {
+
+	            if (e.Metadata.All === undefined)
+	                e.Metadata.All = {};
+
+	            var fieldType = vm.getType(e);
+
+	            // always remember the last heading so all the following fields know to look there for collapse-setting
+	            var isFieldHeading = (fieldType === "empty-default");
+	            if (isFieldHeading)
+	                lastGroupHeadingId = i;
+
+	            var nextField = {
+	                key: e.StaticName,
+	                type: fieldType,
+	                templateOptions: {
+	                    required: !!e.Metadata.All.Required,
+	                    label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
+	                    description: $sce.trustAsHtml(e.Metadata.All.Notes),
+	                    settings: e.Metadata,
+	                    header: $scope.header,
+	                    canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
+	                    fieldGroup: vm.formFields[lastGroupHeadingId],
+	                    disabled: e.Metadata.All.Disabled,
+	                    langReadOnly: false // Will be set by the language directive to override the disabled state
+	                },
+	                hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
+	                expressionProperties: {
+	                    // Needed for dynamic update of the disabled property
+	                    'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
+	                },
+	                watcher: [
+                        {
+                            // changes when a entity becomes enabled / disabled
+                            expression: function (field, scope, stop) {
+                                return e.Metadata.All.Disabled ||
+                                    (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) ||
+                                    field.templateOptions.langReadOnly;
+                            },
+                            listener: function (field, newValue, oldValue, scope, stopWatching) {
+                                field.templateOptions.disabled = newValue;
+                            }
+                        },
+                        {
+                            // handle collapse / open
+                            expression: function (field, scope, stop) {
+                                // only change values if it can collapse...
+                                return (field.templateOptions.canCollapse) ? field.templateOptions.fieldGroup.templateOptions.collapseGroup : null;
+                            },
+                            listener: function (field, newValue, oldValue, scope, stopWatching) {
+                                if (field.templateOptions.canCollapse)
+                                    field.templateOptions.collapse = newValue;
+                            }
+                        }
+	                ]
+	            };
+
+	            vm.formFields.push(nextField);
+	        });
+	    };
+
 
 	    // Load existing entity if defined
 		if (vm.entity !== null)
@@ -528,29 +579,22 @@ angular.module("eavFieldTemplates")
 
 
 		// Returns the field type for an attribute configuration
-		var getType = function(attributeConfiguration) {
+		vm.getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-		    var inputType = "";
+			var inputType = "";
+
 		    // new: the All can - and should - have an input-type which doesn't change
 			if (e.Metadata.merged && e.Metadata.merged.InputType) {
 			    inputType = e.Metadata.merged.InputType;
 			}
-			//else {
-		    //    var subType = e.Metadata.String
-		    //        ? e.Metadata.String.InputType
-		    //        : null;
 
-			//    subType = subType ? subType.toLowerCase() : null;
-
-			//    inputType = type + "-" + subType;
-		    //}
 			if (inputType && inputType.indexOf("-") === -1) // has input-type, but missing main type, this happens with old types like string wysiyg
 		        inputType = type + inputType;
 
 		    // this type may have assets, so the definition may be late-loaded
 		    var typeAlreadyRegistered = formlyConfig.getType(inputType);
-		    var typeWillLoadAssetsInAMoment = !!e.Metadata.merged.Assets;
+		    var typeWillLoadAssetsInAMoment = (e.InputTypeConfig ? !!e.InputTypeConfig.Assets : false);
 
 			// Use subtype 'default' if none is specified - or type does not exist
 		    if (!inputType || (!typeAlreadyRegistered && !typeWillLoadAssetsInAMoment))
@@ -1049,35 +1093,94 @@ function enhanceEntity(entity) {
 	"use strict";
 
 	angular.module("eavEditEntity")
-        .service("customInputTypes", ["eavConfig", function (eavConfig) {
+        .service("customInputTypes", ["eavConfig", "toastr", "formlyConfig", "$q", "$interval", "$ocLazyLoad", function (eavConfig, toastr, formlyConfig, $q, $interval, $ocLazyLoad) {
             // Returns a typed default value from the string representation
             var svc = {};
-	        var inputTypesOnPage = {};
+            svc.inputTypesOnPage = {};
+            svc.allLoaded = true;
+            svc.assetsToLoad = [];
 
-	        svc.addInputType = function addInputType(config) {
+	        svc.addInputType = function addInputType(field) {
+	            var config = field.InputTypeConfig;
                 // check if anything defined - older configurations don't have anything and will default to string-default anyhow
 	            if (config === undefined || config === null)
 	                return;
 
                 // only add one if it has not been added yet
-	            if (inputTypesOnPage[config.Type] !== undefined)
+	            if (svc.inputTypesOnPage[config.Type] !== undefined)
 	                return;
 
-	            inputTypesOnPage[config.Type] = config;
+	            svc.inputTypesOnPage[config.Type] = config;
 
-	            svc.loadNewAssets(config);
+	            svc.addToLoadQueue(config);
 	        };
 
-	        svc.loadNewAssets = function loadNewAssets(config) {
-	            if (config.Assets === undefined || config.Assets === null || !config.Assets)
+	        svc.addToLoadQueue = function loadNewAssets(config) {
+	            if (config.Assets === undefined || config.Assets === null || !config.Assets) {
+	                config.assetsLoaded = true;
 	                return;
+	            }
 
-	            // todo: split by new-line
+	            // split by new-line, ensuring nothing blank
 	            var list = config.Assets.split("\n");
 
-	            // todo: add to document
-                for(var a = 0; a < list.length; a++)
-                    svc.addHeadJsOrCssTag(svc.resolveSpecialPaths(list[a]));
+	            for (var a = 0; a < list.length; a++) {
+	                var asset = list[a].trim();
+	                if (asset.length > 5) { // ensure we skip empty lines etc.
+	                    svc.assetsToLoad.push(svc.resolveSpecialPaths(asset));
+	                    // add to document
+	                    //if (svc.addHeadJsOrCssTag(svc.resolveSpecialPaths(asset))) {
+	                    //    // note: returns true if it has JS, in which case we monitor for success before binding the form
+	                    //    // config.hasJsAssets = true;
+	                    //    config.assetsLoaded = false;
+	                    //}
+	                }
+	            }
+	        };
+
+	        // now create promise and wait for everything to load
+	        svc.loadWithPromise = function loadWithPromise() {
+	            return $ocLazyLoad.load(svc.assetsToLoad);
+	            //var cycleDuration = 100;
+	            //return $q(function(resolve, reject) {
+	            //    var msg = toastr.info("todo translate: loading custom input types");
+
+	            //    return $ocLazyLoad.load(svc.assetsToLoad);
+
+	                //var totalTime = 0;
+	                //var maxTime = 2000;
+	                //var finishNow = false;
+	                //svc.checkloop = $interval(function() {
+	                //    var allLoaded = true;
+	                //    angular.forEach(svc.inputTypesOnPage, function(config, type) { 
+	                //        if (!config.assetsLoaded) {
+	                //            if (svc.checkDependencyArrival(config.Type)) {
+	                //                config.assetsLoaded = true;
+	                //            } else
+	                //                allLoaded = false;
+	                //        }
+	                //    });
+
+	                //    if (allLoaded) {
+	                //        toastr.clear(msg);
+	                //        toastr.info("todo translate: all loadded");
+	                //        finishNow = true;
+	                //    } else {
+	                //        totalTime += cycleDuration;
+	                //        if (totalTime > maxTime) {
+	                //            toastr.clear(msg);
+	                //            toastr.warning("todo translate - not able to load all types within " + maxTime / 1000 + " seconds, will continue without. See 2sxc.org/help?tag=custom-input", "todo translate error");
+	                //            finishNow = true;
+	                //        }
+	                //    }
+
+                    //    if (finishNow) {
+                    //        $interval.cancel(svc.checkloop);
+	                //        resolve();
+                    //    }
+	                //}, cycleDuration);
+
+	            //});
 	        };
 
 	        svc.resolveSpecialPaths = function resolve(url) {
@@ -1087,16 +1190,23 @@ function enhanceEntity(entity) {
 	            return url;
 	        };
 
-	        svc.addHeadJsOrCssTag = function(url) {
+	        svc.addHeadJsOrCssTag = function (url) {
+	            url = url.trim();
 	            if (url.indexOf(".js") > 0) {
 	                var oHead = document.getElementsByTagName("HEAD").item(0);
 	                var oScript = document.createElement("script");
 	                oScript.type = "text/javascript";
 	                oScript.src = url;
 	                oHead.appendChild(oScript);
+	                return true;
 	            } else if (url.indexOf(".css") > 0) {
 	                alert("css include not implemented yet");
+	                return false;
 	            }
+	        };
+
+	        svc.checkDependencyArrival = function cda(typeName) {
+	            return !!formlyConfig.getType(typeName);
 	        };
 
 	        return svc;

@@ -147,7 +147,7 @@ module.exports = function(grunt) {
             },
             editExt: {
                 options: {
-                    module: "eavEditExtended",
+                    module: "eavCustomFields",
                     standalone: false,
                     append: true,
                     htmlmin: configConstants.ngTemplatesHtmlMin

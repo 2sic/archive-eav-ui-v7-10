@@ -38,72 +38,85 @@
 		            vm.debug = result;
 
 		            // Transform EAV content type configuration to formFields (formly configuration)
-		            var lastGroupHeadingId = 0;
+
+                    // first: add all custom types to re-load these scripts and styles
 		            angular.forEach(result.data, function(e, i) {
-
-		                if (e.Metadata.All === undefined)
-		                    e.Metadata.All = {};
-
-		                var fieldType = getType(e);
-
-		                // always remember the last heading so all the following fields know to look there for collapse-setting
-		                var isFieldHeading = (fieldType === "empty-default");
-		                if (isFieldHeading)
-		                    lastGroupHeadingId = i;
-
-		                var nextField = {
-		                    key: e.StaticName,
-		                    type: fieldType,
-		                    templateOptions: {
-		                        required: !!e.Metadata.All.Required,
-		                        label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
-		                        description: $sce.trustAsHtml(e.Metadata.All.Notes),
-		                        settings: e.Metadata,
-		                        header: $scope.header,
-		                        canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
-		                        fieldGroup: vm.formFields[lastGroupHeadingId],
-		                        disabled: e.Metadata.All.Disabled,
-		                        langReadOnly: false // Will be set by the language directive to override the disabled state
-		                    },
-		                    hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
-		                    expressionProperties: {
-		                        // Needed for dynamic update of the disabled property
-		                        'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
-		                    },
-		                    watcher: [
-		                        {
-		                            // changes when a entity becomes enabled / disabled
-		                            expression: function(field, scope, stop) {
-		                                return e.Metadata.All.Disabled ||
-		                                    (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) ||
-		                                    field.templateOptions.langReadOnly;
-		                            },
-		                            listener: function(field, newValue, oldValue, scope, stopWatching) {
-		                                field.templateOptions.disabled = newValue;
-		                            }
-		                        },
-		                        {
-                                    // handle collapse / open
-		                            expression: function(field, scope, stop) {
-		                                // only change values if it can collapse...
-		                                return (field.templateOptions.canCollapse) ? field.templateOptions.fieldGroup.templateOptions.collapseGroup : null;
-		                            },
-		                            listener: function(field, newValue, oldValue, scope, stopWatching) {
-		                                if (field.templateOptions.canCollapse)
-		                                    field.templateOptions.collapse = newValue;
-		                            }
-		                        }
-		                    ]
-		                };
-
 		                if (e.InputTypeConfig)
-		                    customInputTypes.addInputType(e.InputTypeConfig);
-
-		                vm.formFields.push(nextField);
+		                    customInputTypes.addInputType(e);
 		            });
+
+                    // load all assets before continuing with formly-binding
+		            customInputTypes.loadWithPromise().then(function() {
+		                vm.registerAllFieldsFromReturnedDefinition(result);
+		            });
+
 
 		        });
 		};
+
+	    vm.registerAllFieldsFromReturnedDefinition = function raffrd(result) {
+	        var lastGroupHeadingId = 0;
+	        angular.forEach(result.data, function (e, i) {
+
+	            if (e.Metadata.All === undefined)
+	                e.Metadata.All = {};
+
+	            var fieldType = vm.getType(e);
+
+	            // always remember the last heading so all the following fields know to look there for collapse-setting
+	            var isFieldHeading = (fieldType === "empty-default");
+	            if (isFieldHeading)
+	                lastGroupHeadingId = i;
+
+	            var nextField = {
+	                key: e.StaticName,
+	                type: fieldType,
+	                templateOptions: {
+	                    required: !!e.Metadata.All.Required,
+	                    label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
+	                    description: $sce.trustAsHtml(e.Metadata.All.Notes),
+	                    settings: e.Metadata,
+	                    header: $scope.header,
+	                    canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
+	                    fieldGroup: vm.formFields[lastGroupHeadingId],
+	                    disabled: e.Metadata.All.Disabled,
+	                    langReadOnly: false // Will be set by the language directive to override the disabled state
+	                },
+	                hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
+	                expressionProperties: {
+	                    // Needed for dynamic update of the disabled property
+	                    'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
+	                },
+	                watcher: [
+                        {
+                            // changes when a entity becomes enabled / disabled
+                            expression: function (field, scope, stop) {
+                                return e.Metadata.All.Disabled ||
+                                    (field.templateOptions.header.Group && field.templateOptions.header.Group.SlotIsEmpty) ||
+                                    field.templateOptions.langReadOnly;
+                            },
+                            listener: function (field, newValue, oldValue, scope, stopWatching) {
+                                field.templateOptions.disabled = newValue;
+                            }
+                        },
+                        {
+                            // handle collapse / open
+                            expression: function (field, scope, stop) {
+                                // only change values if it can collapse...
+                                return (field.templateOptions.canCollapse) ? field.templateOptions.fieldGroup.templateOptions.collapseGroup : null;
+                            },
+                            listener: function (field, newValue, oldValue, scope, stopWatching) {
+                                if (field.templateOptions.canCollapse)
+                                    field.templateOptions.collapse = newValue;
+                            }
+                        }
+	                ]
+	            };
+
+	            vm.formFields.push(nextField);
+	        });
+	    };
+
 
 	    // Load existing entity if defined
 		if (vm.entity !== null)
@@ -111,29 +124,22 @@
 
 
 		// Returns the field type for an attribute configuration
-		var getType = function(attributeConfiguration) {
+		vm.getType = function(attributeConfiguration) {
 			var e = attributeConfiguration;
 			var type = e.Type.toLowerCase();
-		    var inputType = "";
+			var inputType = "";
+
 		    // new: the All can - and should - have an input-type which doesn't change
 			if (e.Metadata.merged && e.Metadata.merged.InputType) {
 			    inputType = e.Metadata.merged.InputType;
 			}
-			//else {
-		    //    var subType = e.Metadata.String
-		    //        ? e.Metadata.String.InputType
-		    //        : null;
 
-			//    subType = subType ? subType.toLowerCase() : null;
-
-			//    inputType = type + "-" + subType;
-		    //}
 			if (inputType && inputType.indexOf("-") === -1) // has input-type, but missing main type, this happens with old types like string wysiyg
 		        inputType = type + inputType;
 
 		    // this type may have assets, so the definition may be late-loaded
 		    var typeAlreadyRegistered = formlyConfig.getType(inputType);
-		    var typeWillLoadAssetsInAMoment = !!e.Metadata.merged.Assets;
+		    var typeWillLoadAssetsInAMoment = (e.InputTypeConfig ? !!e.InputTypeConfig.Assets : false);
 
 			// Use subtype 'default' if none is specified - or type does not exist
 		    if (!inputType || (!typeAlreadyRegistered && !typeWillLoadAssetsInAMoment))

@@ -5,12 +5,16 @@
     angular.module("eavEditEntity", [
         "formly",
         "ui.bootstrap",
-        "eavFieldTemplates",
-        "EavServices",
-        "eavEditTemplates",
         "uiSwitch",
         "toastr",
-        "ngAnimate"
+        "ngAnimate",
+        "EavServices",
+        "eavEditTemplates",
+        "eavFieldTemplates",
+        "eavCustomFields",
+
+        // new...
+        "oc.lazyLoad"
     ]);
 
 

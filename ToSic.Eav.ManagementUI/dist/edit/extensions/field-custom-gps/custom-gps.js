@@ -1,18 +1,21 @@
 /* 
  * Field: Custom - Default (basically something you should never see)
  */
+(function() {
+    "use strict";
 
-angular.module("eavFieldTemplates")
-    .config(["formlyConfigProvider", "defaultFieldWrappers", function(formlyConfigProvider, defaultFieldWrappers) {
+    var mod = angular.module("eavCustomFields");
 
-        formlyConfigProvider.setType({
-            name: "custom-gps",
-            templateUrl: "fields/custom-gps/custom-gps.html",
-            wrapper: defaultFieldWrappers,
+    // registration is a bit special - because we're lazy-loading
+    mod.formlyConfig.setType({
+        name: "custom-gps",
+        template: "<span>hello</span>",
+            //templateUrl: "fields/custom-gps/custom-gps.html",
+            wrapper: mod.defaultFieldWrappers,
             controller: "FieldTemplate-CustomGpsController"
-        });
-    }])
-    .controller("FieldTemplate-CustomGpsController", ["$scope", "$filter", "$modal", "appId", "debugState", "eavAdminDialogs", function ($scope, $filter, $modal, appId, debugState, eavAdminDialogs) {
+        }); 
+
+    mod.controller("FieldTemplate-CustomGpsController", ["$scope", "$filter", "$modal", "appId", "debugState", "eavAdminDialogs", function ($scope, $filter, $modal, appId, debugState, eavAdminDialogs) {
         $scope.debug = debugState;
         // try to find the settings, where to copy the field to...
         $scope.latField = "";
@@ -25,7 +28,8 @@ angular.module("eavFieldTemplates")
         // alert('gps' + $scope.latField);
 
     }]);
-angular.module('eavEditExtended',[]).run(['$templateCache', function($templateCache) {
+})();
+angular.module('eavCustomFields',[]).run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('fields/custom-gps/custom-gps.html',
