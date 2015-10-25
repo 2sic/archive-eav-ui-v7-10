@@ -6,7 +6,7 @@
     "angular-animate": "1.4.5",
     "angular-resource": "1.4.5",
     "angular-bootstrap": "0.13.3",
-    "ocLazyLoad": "1.0.4",
+    "ocLazyLoad": "1.0.6",
     "angular-translate": "2.7.2",
     "angular-translate-loader-partial": "2.7.2",
     "angular-formly": "7.1.2",
