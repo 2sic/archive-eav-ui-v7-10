@@ -1,6 +1,10 @@
-﻿/* global angular */
+﻿/* service to manage input types */
 (function () {
 	"use strict";
+
+    // notes: this has not been tested extensively
+    // I'm guessing that it's not optimal yet, and I'm guessing that if the dialog is opened multiple times, that the list of dependencies just
+    // keeps on growing and the UI might just get heavier with time ... must test once we have a few custom input types
 
 	angular.module("eavEditEntity")
         .service("customInputTypes", function (eavConfig, toastr, formlyConfig, $q, $interval, $ocLazyLoad) {

@@ -6,36 +6,36 @@
     var module = angular.module("eavCustomFields", ["oc.lazyLoad"])
 
         // here's a special trick from http://slides.com/gruizdevilla/late-registering-and-lazy-load-in-angularjs-en#/5
-        .config(
-            ["formlyConfigProvider", "defaultFieldWrappers", "$controllerProvider", "$compileProvider", "$filterProvider", "$provide", function(formlyConfigProvider, defaultFieldWrappers,
-                $controllerProvider,
-                $compileProvider,
-                $filterProvider,
-                $provide
-            ) {
-                module.IsLazyLoader = true;
-                module.formlyConfigProvide = formlyConfigProvider;
-                module.defaultFieldWrappers = defaultFieldWrappers;
+        //.config(
+        //    function(formlyConfigProvider, defaultFieldWrappers,
+        //        $controllerProvider,
+        //        $compileProvider,
+        //        $filterProvider,
+        //        $provide
+        //    ) {
+        //        module.IsLazyLoader = true;
+        //        module.formlyConfigProvide = formlyConfigProvider;
+        //        module.defaultFieldWrappers = defaultFieldWrappers;
                  
                  
-                //module.controller = $controllerProvider.register;
-                //module.directive = $compileProvider.directive;
-                //module.filter = $filterProvider.register;
-                //module.factory = $provide.factory;
-                //module.service = $provide.service;
+        //        //module.controller = $controllerProvider.register;
+        //        //module.directive = $compileProvider.directive;
+        //        //module.filter = $filterProvider.register;
+        //        //module.factory = $provide.factory;
+        //        //module.service = $provide.service;
 
-                //    // added by 2dm
-                //module.config = $provide.config;
-            }])
+        //        //    // added by 2dm
+        //        //module.config = $provide.config;
+        //    })
     .config(["$ocLazyLoadProvider", function ($ocLazyLoadProvider) {
         $ocLazyLoadProvider.config({
             debug: true
         });
     }]);
 
-    module.run(["formlyConfig", function(formlyConfig) {
-        module.formlyConfig = formlyConfig;
-    }]);
+    //module.run(function(formlyConfig) {
+    //    module.formlyConfig = formlyConfig;
+    //});
 })();
 /* Main object with dependencies, used in wrappers and other places */
 (function () {
@@ -1094,9 +1094,13 @@ function enhanceEntity(entity) {
 
     return enhancer.enhanceEntity(entity);
 }
-/* global angular */
+/* service to manage input types */
 (function () {
 	"use strict";
+
+    // notes: this has not been tested extensively
+    // I'm guessing that it's not optimal yet, and I'm guessing that if the dialog is opened multiple times, that the list of dependencies just
+    // keeps on growing and the UI might just get heavier with time ... must test once we have a few custom input types
 
 	angular.module("eavEditEntity")
         .service("customInputTypes", ["eavConfig", "toastr", "formlyConfig", "$q", "$interval", "$ocLazyLoad", function (eavConfig, toastr, formlyConfig, $q, $interval, $ocLazyLoad) {
