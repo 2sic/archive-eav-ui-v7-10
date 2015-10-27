@@ -86,8 +86,14 @@ angular.module('eav4ng', ['ng'])
                 },
 
                 // Show very nice error if necessary
-                'responseError': function(rejection) {
-                    alert('Error: ' + rejection);
+                'responseError': function (rejection) {
+                    // check if it's just an i18n resource - then don't make a fuss...
+                    if (rejection.status === 404 && rejection.config && rejection.config.url.indexOf("/dist/i18n/") > -1) {
+                        if (window.console)
+                            console.log("just fyi: failed to load language resource; will have to use default");
+                        return rejection;
+                    }
+                    alert("Error in xhr ($http) request: " + rejection);
                     return $q.reject(rejection);
                 }
             };

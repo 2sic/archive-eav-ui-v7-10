@@ -45,10 +45,10 @@ $eavOnlyHelpers.urlParams = {
 // the following config-stuff is not in angular, because some settings are needed in dialogs which are not built with angularJS yet.
 // they are included in the same file for conveniance and to motivate the remaining dialogs to get migrated to AngularJS
 var $eavUIConfig = {
-
-	languages: {
-	    languages: JSON.parse($eavOnlyHelpers.urlParams.require("langs")), //[{ key: "en-us", name: "English (United States)" }, { key: "de-de", name: "Deutsch (Deutschland)" }],
-	    defaultLanguage: $eavOnlyHelpers.urlParams.require("langpri"), // "en-us",
+    languages: {
+        languages: JSON.parse($eavOnlyHelpers.urlParams.require("langs")), //[{ key: "en-us", name: "English (United States)" }, { key: "de-de", name: "Deutsch (Deutschland)" }],
+        defaultLanguage: $eavOnlyHelpers.urlParams.require("langpri"), // "en-us",
+        fallbackLanguage: "en", 
 	    currentLanguage: $eavOnlyHelpers.urlParams.require("lang"), // "en-us",
 		i18nRoot: "/dist/i18n/"
 	}
