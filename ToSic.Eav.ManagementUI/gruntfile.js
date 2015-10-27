@@ -275,6 +275,6 @@ module.exports = function(grunt) {
     //grunt.task.loadTasks("grunt-tasks/i18n");
 
     // rarely used, custom field
-    grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");
+    //grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");
 
 };
