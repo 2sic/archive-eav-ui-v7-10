@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.0 2015-09-06
+/*! angular-google-maps 2.2.1 2015-09-11
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -203,16 +203,16 @@ return Yn})):Mn&&qn?Vn?(qn.exports=Yn)._=Yn:Mn._=Yn:Zn._=Yn}).call(this);
     app.controller("FieldTemplate-CustomGpsController", ["$scope", "$filter", "$modal", "appId", "debugState", "eavAdminDialogs", "addtemplatestocache", "uiGmapGoogleMapApi", function ($scope, $filter, $modal, appId, debugState, eavAdminDialogs, addtemplatestocache, uiGmapGoogleMapApi) {
 
         var latField, lngField;
-
+        
         var controlSettings = $scope.to.settings["custom-gps"];
         if (controlSettings) {
             latField = controlSettings.LatField || null;
             lngField = controlSettings.LongField || null;
         }
 
-        var hasAddressMask = $scope.hasAddressMask = controlSettings && controlSettings["Address Mask"] && controlSettings["Address Mask"] !== "";
+        var hasAddressMask = $scope.hasAddressMask = controlSettings && controlSettings.AddressMask && controlSettings.AddressMask !== "";
         console.log(controlSettings);
-        var defaultCoordinates = { latitude: 47, longitude: 9 };
+        var defaultCoordinates = { latitude: 47.17465989999999, longitude: 9.469142499999975 };
 
         $scope.position = angular.extend({}, defaultCoordinates);
         $scope.showMap = false;
@@ -260,7 +260,7 @@ return Yn})):Mn&&qn?Vn?(qn.exports=Yn)._=Yn:Mn._=Yn:Zn._=Yn}).call(this);
         };
 
         $scope.formattedAddress = function () {
-            var address = controlSettings["Address Mask"];
+            var address = controlSettings.AddressMask;
             var tokenRe = /\[.*?\]/ig;
             var matches = address.match(tokenRe);
             angular.forEach(matches, function (e, i) {
@@ -280,6 +280,7 @@ return Yn})):Mn&&qn?Vn?(qn.exports=Yn)._=Yn:Mn._=Yn:Zn._=Yn}).call(this);
                     var result = results[0].geometry.location;
                     updatePosition({ latitude: result.lat(), longitude: result.lng() });
                     $scope.showMap = true;
+                    $scope.$apply();
                 }
                 else {
                     alert("Could not locate address: " + address);
