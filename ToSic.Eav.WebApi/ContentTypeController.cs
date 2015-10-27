@@ -151,14 +151,6 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
             var appDef = new BetaFullApi(null, appId, CurrentContext);
 	        var appInputTypes = appDef.GetInputTypes(true).ToList();
-
-            //var systemDef = new BetaFullApi(null, Constants.MetaDataAppId, CurrentContext);
-            //var systemInputTypes = systemDef.GetInputTypes().ToList();
-
-            //systemInputTypes.ForEach(sit => {
-            //    if(appInputTypes.FirstOrDefault(ait => ait.Title == sit.Title) == null)
-            //        appInputTypes.Add(sit);
-            //});
             
 	        return Serializer.Prepare(appInputTypes);
 
