@@ -176,6 +176,10 @@ namespace ToSic.Eav.WebApi
                 i.Header.Guid = (i.Entity != null && i.Entity.Guid != Guid.Empty) 
                     ? i.Entity.Guid 
                     : Guid.NewGuid();
+
+            foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null)) 
+                itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
+            
             return list;
         }
 
