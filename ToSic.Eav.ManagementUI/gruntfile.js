@@ -25,17 +25,6 @@ module.exports = function(grunt) {
         concatCss: "dist/edit/edit.css",
         concatCssMin: "dist/edit/edit.min.css"
     };
-    var editExt = {
-        cwd: "src/edit-extended/",
-        cwdJs: "src/edit-extended/**/*.js",
-        tmp: "tmp/edit-extended/",
-        templates: "tmp/edit-extended/html-templates.js",
-        dist: "dist/edit-extended/",
-        concatFile: "dist/edit/extensions/field-custom-gps/custom-gps.js",
-        uglifyFile: "dist/edit/extensions/field-custom-gps/custom-gps.min.js",
-        concatCss: "dist/edit/extensions/field-custom-gps/custom-gps.css",
-        concatCssMin: "dist/edit/extensions/field-custom-gps/custom-gps.min.css"
-    };
 
     var i18n = {
         cwd: "src/i18n/",
@@ -70,7 +59,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs, editExt.cwdJs]
+            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
         },
 
         clean: {
@@ -92,12 +81,6 @@ module.exports = function(grunt) {
                         cwd: editUi.cwd,
                         src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: editUi.tmp
-                    },
-                    {
-                        expand: true,
-                        cwd: editExt.cwd,
-                        src: ["**", "!**/*spec.js", "!**/tests/**"],
-                        dest: editExt.tmp
                     }
                 ]
             },
@@ -144,21 +127,7 @@ module.exports = function(grunt) {
                          dest: editUi.templates
                      }
                 ]
-//            },
-//            editExt: {
-//                options: {
-//                    module: "tempCustomGpsTmplates",//"eavCustomFields",
-////                    standalone: false,
-//                    append: true,
-//                    htmlmin: configConstants.ngTemplatesHtmlMin
-//                },
-//                files: [
-//                     {
-//                         cwd: editExt.tmp,
-//                         src: ["**/*.html"], 
-//                         dest: editExt.templates
-//                     }
-//                ]
+
             }
         },
         concat: {
@@ -173,10 +142,6 @@ module.exports = function(grunt) {
             editUi: {
                 src: editUi.tmp + "**/*.js",
                 dest: editUi.concatFile
-            },
-            editExt: {
-                src: editExt.tmp + "**/*.js",
-                dest: editExt.concatFile
             },
             pipelineCss: {
                 src: [admin.tmp + "pipelines/pipeline-designer.css"],
@@ -198,11 +163,6 @@ module.exports = function(grunt) {
                 expand: true,
                 src: editUi.concatFile,
                 extDot: "last"          // Extensions in filenames begin after the last dot 
-            },
-            editExt: {
-                expand: true,
-                src: editExt.concatFile,
-                extDot: "last"          // Extensions in filenames begin after the last dot 
             }
 
         },
@@ -221,10 +181,6 @@ module.exports = function(grunt) {
             editUi: {
                 src: editUi.concatFile,
                 dest: editUi.uglifyFile
-            },
-            editExt: {
-                src: editExt.concatFile,
-                dest: editExt.uglifyFile
             }
         },
         
@@ -273,7 +229,7 @@ module.exports = function(grunt) {
 
         watch: {
             ngUi: {
-                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**", editExt.cwd + "**"],
+                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**"],
                 tasks: ["build"]
             },
             devEavMlJson: {
@@ -317,5 +273,8 @@ module.exports = function(grunt) {
     //grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
     //grunt.task.loadTasks("grunt-tasks/jsplumb-clean");
     //grunt.task.loadTasks("grunt-tasks/i18n");
+
+    // rarely used, custom field
+    //grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");
 
 };
