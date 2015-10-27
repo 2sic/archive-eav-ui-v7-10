@@ -71,12 +71,14 @@
             });
 
         $scope.formattedAddress = function() {
-            
+            if (!hasAddressMask)
+                return "";
+            return controlSettings.AddressMask;
         };
 
         $scope.autoSelect = function() {
-            if (controlSettings && controlSettings.AddressMask) {
-                // Query google for the address...
+            if (hasAddressMask) {
+                alert(controlSettings.AddressMask);
             }
         };
 
