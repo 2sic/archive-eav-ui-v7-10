@@ -1,30 +1,25 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.BLL;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.ImportExport
 {
 	/// <summary>
 	/// Export EAV Data in XML Format
 	/// </summary>
-	public class XmlExport
+	public class XmlExport: BllCommandBase
 	{
-		private readonly EavContext _ctx;
-
-		/// <summary>
-		/// Initializes a new instance of the XmlExport class.
-		/// </summary>
-		public XmlExport(EavContext ctx)
-		{
-			_ctx = ctx;
-		}
+        public XmlExport(EavDataController c) : base(c) { }
 
 		/// <summary>
 		/// Returns an Entity XElement
 		/// </summary>
 		public XElement GetEntityXElement(int entityId)
 		{
-			var iEntity = _ctx.GetEntityModel(entityId);
+			var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
 			return GetEntityXElement(iEntity);
 		}
 
@@ -33,7 +28,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		public XElement GetEntityXElement(IEntity entity)
 		{
-			var eavEntity = _ctx.GetEntity(entity.EntityId);
+			var eavEntity = Context.Entities.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
 
 			// Prepare Values
@@ -67,7 +62,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		private XElement GetValueXElement(string attributeStaticname, IValue value, string attributeType)
 		{
-			var valueSerialized = _ctx.SerializeValue(value);
+            var valueSerialized = value.Serialized;// SerializeValue(value);
 			// create Value-Child-Element with Dimensions as Children
 			var valueXElement = new XElement("Value",
 				new XAttribute("Key", attributeStaticname),
@@ -81,5 +76,38 @@ namespace ToSic.Eav.ImportExport
 
 			return valueXElement;
 		}
+
+        //2015-08-18 2dm removed this, as I moved the functionality to the IValue interface
+        ///// <summary>
+        ///// Serialize Value to a String for SQL Server or XML Export
+        ///// </summary>
+        //internal string SerializeValue(IValue value)
+        //{
+        //    var stringValue = value as Value<string>;
+        //    if (stringValue != null)
+        //        return stringValue.TypedContents;
+
+        //    var relationshipValue = value as Value<Data.EntityRelationship>;
+        //    if (relationshipValue != null)
+        //    {
+        //        var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+
+        //        return string.Join(",", entityGuids);
+        //    }
+
+        //    var boolValue = value as Value<bool?>;
+        //    if (boolValue != null)
+        //        return boolValue.TypedContents.ToString();
+
+        //    var dateTimeValue = value as Value<DateTime?>;
+        //    if (dateTimeValue != null)
+        //        return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
+
+        //    var decimalValue = value as Value<decimal?>;
+        //    if (decimalValue != null)
+        //        return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
+
+        //    throw new NotSupportedException("Can't serialize Value");
+        //}
 	}
 }

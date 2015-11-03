@@ -1,0 +1,32 @@
+{
+  "name": "ToSic.Eav.ManagementUI",
+  "version": "3.1.0.0",
+  "dependencies": {
+    "angular": "1.4.4",
+    "angular-animate": "1.4.5",
+    "angular-resource": "1.4.5",
+    "angular-bootstrap": "0.13.3",
+    "ocLazyLoad": "1.0.6",
+    "angular-translate": "2.7.2",
+    "angular-translate-loader-partial": "2.7.2",
+    "angular-formly": "7.1.2",
+    "angular-formly-templates-bootstrap": "6.0.0",
+    "angular-bootstrap-file-field": "~0.1.3",
+    "angular-base64-upload": "~0.1.12",
+    "api-check": "~7.5.0",
+    "promise-window": "1.0.0",
+    "jsPlumb": "1.7.2",
+    "angular-google-maps": "~2.2.0",
+    "jquery": "2.1.4",
+    "jquery-ui": "1.11.4",
+    "angular-ui-tree": "~2.9.0",
+    "dropzone": "4.0.1",
+    "angular-ui-switch": "0.1.1",
+    "angular-toastr": "1.5.0",
+    "Bootflat": "git@github.com:2sic/bootflat-for-2sic.git"
+  },
+  "private": true,
+  "resolutions": {
+    "angular": ">=1.2.16 1.4.x"
+  }
+}

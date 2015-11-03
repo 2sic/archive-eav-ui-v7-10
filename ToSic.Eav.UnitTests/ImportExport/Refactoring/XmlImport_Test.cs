@@ -5,11 +5,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {
@@ -255,8 +258,8 @@ On all your devices.</PreviewContent>
             // 3. Ensure the import was correct
             // 4. Re-export and compare with import file
 
-            var db = EavContext.Instance(ZoneId, AppId);
-            var dbEntity = db.GetEntitiesByGuid(SingleItemGuid).First();
+            var db = EavDataController.Instance(ZoneId, AppId);
+            var dbEntity = db.Entities.GetEntitiesByGuid(SingleItemGuid).First();
 
             // Assert.AreEqual(5, dbEntity.Values.Count);
 

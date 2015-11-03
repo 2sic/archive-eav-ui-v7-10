@@ -156,8 +156,14 @@ $RECYCLE.BIN/
 .DS_Store
 
 # Exclusions for ToSic EAV
-Testing/Bin/ToSic.Eav.dll
-Testing/Bin/ToSic.Eav.pdb
+/Testing/Bin
+testing/bin
+Testing/Bin
+#/Testing/Bin/ToSic.Eav.pdb
 **/ToSic.Eav.dll
 **/ToSic.Eav.pdb
 /packages
+ToSic.Eav.ManagementUI/node_modules/
+ToSic.Eav.ManagementUI/.grunt/
+ToSic.Eav.ManagementUI/bower_components/
+ToSic.Eav.ManagementUI/tmp/

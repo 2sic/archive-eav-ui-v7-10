@@ -8,7 +8,7 @@ namespace ToSic.Eav.UnitTests.DataSources
     public class EntityTypeFilter_Test
     {
         [TestMethod]
-        public void ValueFilter_FindAllIfAllApply()
+        public void EntityTypeFilter_FindAllIfAllApply()
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Person";
@@ -16,7 +16,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         }
 
         [TestMethod]
-        public void ValueFilter_FindNoneIfNoneApply()
+        public void EntityTypeFilter_FindNoneIfNoneApply()
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Category";
@@ -29,7 +29,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
             var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = DataSource.GetDataSource<EntityTypeFilter>(1, 1, ds);
+            var filtered = DataSource.GetDataSource<EntityTypeFilter>(0, 0, ds);
             return filtered;
         }
     }

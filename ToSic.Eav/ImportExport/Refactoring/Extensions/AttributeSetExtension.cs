@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav;
-using Attribute = ToSic.Eav.Attribute;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
-    internal static class AttributeSetExtension
+    public static class AttributeSetExtension
     {
         public static IEnumerable<string> GetEntitiesAttributeNames(this AttributeSet attributeSet)
         {
@@ -16,6 +14,11 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         public static IEnumerable<Attribute> GetAttributes(this AttributeSet attributeSet)
         {
             return attributeSet.AttributesInSets.Select(item => item.Attribute).ToList();
+        }
+
+        public static Attribute GetAttributeByName(this AttributeSet attributeSet, string attributeName)
+        {
+            return attributeSet.GetAttributes().FirstOrDefault(a => a.StaticName == attributeName);
         }
 
         public static Eav.Entity GetEntity(this AttributeSet attributeSet, Guid entityGuid)

@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using AttributeSet = ToSic.Eav.AttributeSet;
 
 namespace ToSic.Eav.ImportExport.Refactoring
 {
@@ -47,7 +47,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// </summary>
         public IEnumerable<XElement> DocumentElements { get; private set; }
 
-        private readonly string documentLanguageFallback;
+        private readonly string _documentLanguageFallback;
 
         private IEnumerable<string> _languages;
 
@@ -104,9 +104,9 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             _appId = applicationId;
             _zoneId = zoneId;
-            _contentType = EavContext.Instance(zoneId, applicationId).GetAttributeSet(contentTypeId);
+            _contentType = EavDataController.Instance(zoneId, applicationId).AttribSet.GetAttributeSet(contentTypeId);
             _languages = languages;
-            this.documentLanguageFallback = documentLanguageFallback;
+            _documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;
             _resourceReference = resourceReference;
 
@@ -200,7 +200,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         continue;
                     }
 
-                    var entityGuid = entityGuidManager.GetGuid(documentElement, documentLanguageFallback);
+                    var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
                     var entity = GetEntity(entityGuid);
                     if (entity == null)
                     {
@@ -269,7 +269,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.   IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -298,15 +298,15 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 foreach(var entityGuid in entityDeleteGuids)
                 {
                     var entityId = _contentType.GetEntity(entityGuid).EntityID;
-                    var context = EavContext.Instance(_zoneId, _appId);
-                    if (context.CanDeleteEntity(entityId).Item1)
-                        context.DeleteEntity(entityId);
+                    var context = EavDataController.Instance(_zoneId, _appId);
+                    if (context.Entities.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+                        context.Entities.DeleteEntity(entityId);
                 }
             }
 
-            var import = new Import.Import(_zoneId, _appId, userId, leaveExistingValuesUntouched: false, preserveUndefinedValues: true);
+            var import = new Import.Import(_zoneId, _appId, userId, dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
             Timer.Start();
-            import.RunImport(null, Entities, true, true);
+            import.RunImport(null, Entities);
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
             return true;

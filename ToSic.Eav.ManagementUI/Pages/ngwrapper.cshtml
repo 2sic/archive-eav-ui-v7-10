@@ -1,0 +1,68 @@
+﻿@using System.IO
+@{
+    Layout = null;
+
+    var ng = Request.QueryString["ng"];
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EAV Management</title>
+
+    @*Only load jQuery & jsPlumb for the pipeline designer, others don't need it and it's much faster!*@
+    @if (ng == "pipeline-designer")
+    {
+        <script src="/dist/lib/pipeline/jq.min.js"></script>
+        <script src="/dist/lib/pipeline/set.min.js"></script>
+        <link rel="stylesheet" href="/dist/admin/pipeline-designer.min.css">
+    }
+
+
+    <!--default set needed for all UIs like angular, animate, translate-->
+    <script src="/dist/lib/angular/set.min.js"></script>
+
+    @* Default Set / re-used components *@
+    <script src="/eav/angularservices/eav-configuration.js"></script>
+    <script src="/eav/angularservices/eav4Ng.js"></script>
+
+    <!-- style sheets -->
+    <link rel="stylesheet" type="text/css" href="/dist/lib/angular/set.min.css" />
+    <link rel="stylesheet" type="text/css" href="/dist/admin/eav-admin.min.css" />
+    <link rel="stylesheet" type="text/css" href="/dist/edit/edit.min.css" />
+
+
+    <!--Main parts like eav-admin, sxc-admin and eav-edit-->
+    <script src="/dist/admin/eav-admin.js"></script>
+    <script src="/dist/edit/eav-edit.js"></script>
+
+</head>
+<body>
+
+
+    @if (ng == "content")
+    {
+        <div eav-app="eavEditEntity" ng-include="'form/main-form.html'" ng-controller="EditEntityWrapperCtrl as vm" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+    }
+    @if (ng == "content-types")
+    {
+        <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
+    }
+    @if (ng == "pipelines")
+    {
+        <div eav-app="PipelineManagement" ng-controller="PipelineManagement as vm" ng-include="'pipelines/pipelines.html'" ng-dependencies="InitParametersFromUrl,PipelineManagement"></div>
+    }
+    @if (ng == "pipeline-designer")
+    {
+        <div eav-app="PipelineDesigner" ng-include="'pipelines/pipeline-designer.html'" ng-dependencies="InitParametersFromUrl,PipelineDesigner"></div>
+    }
+
+    <!-- 2dm - not sure if I need this - just found it in the pipeline designer -->
+    <!-- <toaster-container></toaster-container>-->
+
+
+</body>
+
+</html>

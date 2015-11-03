@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <h1>EAV</h1>
+        <ul>
+            <li><a href="Pages/ContentTypes.aspx">Content Types (without EavManagement-Wrapper)</a></li>
+            <li><a href="Pages/EavManagement.aspx">EAV Management for the Blog-app in default (AppId 78)</a> - <a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=78&lang=en-us&langpri=en-us&langs=%5B%5D"> App 78 (blog) with en-en </a></li>
+            <li><a href="Pages/EavManagement.aspx">EAV Management the system</a> - <a href="/Pages/ngwrapper.cshtml?ng=content-types&zoneid=1&appid=1&lang=en-us&langpri=en-us&langs=%5B%5D"> App 78 (blog) with en-en </a></li>
+
+            <li><a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=3"> app 3</a></li>
+            <li><a href="/Pages/ngwrapper.cshtml?ng=content-types&appid=4"> app 4</a></li>
+        </ul>
+        <h1>Pipelines</h1>
+        <ul>
+            <li><a href="/Pages/ngwrapper.cshtml?ng=pipelines&appid=1">Pipeline Management</a></li>
+            <li><a href="Pages/PipelineDesigner.aspx?AppId=1&PipelineId=347">Pipeline Designer</a></li>
+        </ul>
+        <h1>webservice</h1>
+        <ul>
+            <li><a href="Pages/WebApiQuickTests.html">Test web api</a></li>
+        </ul>
+    </form>
+</body>
+</html>

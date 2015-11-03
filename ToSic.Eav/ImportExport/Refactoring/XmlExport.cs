@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav;
+using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
@@ -122,8 +122,8 @@ namespace ToSic.Eav.ImportExport.Refactoring
         private static AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
         {
             // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-            var contentContext = EavContext.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
-            return contentContext.GetAttributeSet(contentTypeId);
+            var contentContext = EavDataController.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
+            return contentContext.AttribSet.GetAttributeSet(contentTypeId);
         }
 
         private static XDocument GetDocument(params object[] content)

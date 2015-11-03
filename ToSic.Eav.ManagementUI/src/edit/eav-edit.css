@@ -1,0 +1,60 @@
+﻿
+/* field grouping */
+
+/*.group-entity {
+    border-right-color: lightgray;
+    border-right-style: solid;
+    border-right-width: 2px;
+}*/
+
+.group-field-set {
+    /*border-right-color: blue;
+    border-right-style: solid;
+    border-right-width: 2px;*/
+}
+
+/* must correct checkbox labels */
+
+.checkbox label, .radio label {
+    padding-left: 15px;
+}
+
+
+.checkbox {
+    height: 34px;
+}
+
+.switch.checked.tosic-green {
+    background: #96d500;
+    background-color: #96D500;
+    border-color: #96d500;
+}
+
+.switch.checked.tosic-blue {
+    background: #0087F4;
+    background-color: #0087F4;
+    border-color: #0087F4;
+}
+
+.save-published-icon {
+    font-size: 24px; 
+}
+.save-published-icon i {
+    position: relative;
+    top: 9px;
+}
+
+.collapse-entity-button {
+    position: relative;
+    /*left: 13px;*/
+    top: 0;
+    padding-top: 8px;
+    background-color: white;
+}
+
+.collapse-fieldgroup-button {
+    position: relative;
+    left: 5px;
+}
+
+.angular-google-map-container { height: 400px; }

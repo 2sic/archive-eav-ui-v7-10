@@ -10,6 +10,7 @@
 $eav4ng = {
     appAttribute: 'eav-app',
     ngAttrPrefixes: ['ng-', 'data-ng-', 'ng:', 'x-ng-'],
+    ngAttrDependencies: 'dependencies', // new 2015-09-25
 
     // bootstrap: an App-Start-Help; normally you won't call this manually as it will be auto-bootstrapped. 
     // All params optional except for 'element'
@@ -28,7 +29,11 @@ $eav4ng = {
         angular.forEach(allAppTags, function (appTag) {
             var ngModName = appTag.getAttribute($eav4ng.appAttribute);
             var configDependencyInjection = { strictDi: $eav4ng.getNgAttribute(appTag, "strict-di") !== null };
-            $eav4ng.bootstrap(appTag, ngModName, null, null, configDependencyInjection);
+
+            // new 2015-09-05
+            var dependencies = $eav4ng.getNgAttribute(appTag, $eav4ng.ngAttrDependencies);
+            if(dependencies) dependencies = dependencies.split(',');
+            $eav4ng.bootstrap(appTag, ngModName, null, dependencies, configDependencyInjection);
         });
     },
 
@@ -56,15 +61,16 @@ $eav4ng.autoRunBootstrap();
 
 angular.module('eav4ng', ['ng'])
     // Configure $http for DNN web services (security tokens etc.)
-    .config(function ($httpProvider) {
-        // angular.extend($httpProvider.defaults.headers.common, HttpHeaders);
-        $httpProvider.interceptors.push(function ($q) {
+    .constant("apiRoot", "/api/")
+    .config(function($httpProvider, apiRoot) {
+        angular.extend($httpProvider.defaults.headers.common, { 'eavMarker': 'if you see this, eav headers were added' });
+        $httpProvider.interceptors.push(function($q) {
             return {
                 // Rewrite 2sxc-urls if necessary
-                'request': function (config) {
+                'request': function(config) {
                     function resolveServiceUrl(virtualPath) {
                         var serviceScopes = ['app-api', 'app-query', 'app-content', 'eav']; // todo7: should probably deprecate "app"
-                        var serviceRoot = "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
+                        var serviceRoot = apiRoot; // "/api/";// $.ServicesFramework(id).getServiceRoot('2sxc'),
 
                         var scope = virtualPath.split('/')[0].toLowerCase();
                         // stop if it's not one of our special paths
@@ -72,19 +78,27 @@ angular.module('eav4ng', ['ng'])
                             return virtualPath;
 
                         // if (scope.indexOf('app-api') > -1 /* && scope.indexOf('app-content')!=0 */)  scope += "/auto-detect-app";
-                        return serviceRoot + virtualPath;// '/' + virtualPath.substring(virtualPath.indexOf('/') + 1);
+                        return serviceRoot + virtualPath; // '/' + virtualPath.substring(virtualPath.indexOf('/') + 1);
                     }
-                            
+
                     config.url = resolveServiceUrl(config.url);
                     return config;
                 },
 
                 // Show very nice error if necessary
                 'responseError': function (rejection) {
-                    alert('Error: ' + rejection);
+                    // check if it's just an i18n resource - then don't make a fuss...
+                    if (rejection.status === 404 && rejection.config && rejection.config.url.indexOf("/dist/i18n/") > -1) {
+                        if (window.console)
+                            console.log("just fyi: failed to load language resource; will have to use default");
+                        return rejection;
+                    }
+                    alert("Error in xhr ($http) request: " + rejection);
                     return $q.reject(rejection);
                 }
             };
         });
 
-    })
+    });
+
+

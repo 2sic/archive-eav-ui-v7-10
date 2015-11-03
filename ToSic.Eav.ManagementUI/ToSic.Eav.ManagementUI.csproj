@@ -32,6 +32,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,112 +106,126 @@
   <ItemGroup>
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
-    <Content Include="Default.aspx" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
-    <Content Include="EAV\PipelineDesigner\assets\jquery.jsPlumb-1.7.2-min.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineManagement.ascx" />
-    <Content Include="EAV\PipelineDesigner\PipelineManagement.js" />
-    <Content Include="EAV\AngularServices\eavNgSvcs.js" />
-    <Content Include="EAV\Security\Permissions.ascx" />
-    <Content Include="EAV\Security\PermissionsController.js" />
-    <Content Include="EAV\Security\PermissionsServices.js" />
-    <Content Include="Pages\ContentTypes.aspx" />
-    <Content Include="CSS\bootstrap-theme.min.css" />
-    <Content Include="CSS\bootstrap.min.css" />
-    <Content Include="Pages\EavManagementApp2.aspx" />
-    <Content Include="Pages\EavManagement.aspx" />
-    <Content Include="EAV\Controls\ContentTypeEdit.ascx" />
-    <Content Include="EAV\Controls\ContentTypeFields.ascx" />
-    <Content Include="EAV\Controls\ContentTypesList.ascx" />
-    <Content Include="EAV\Controls\CultureSelector.ascx" />
-    <Content Include="EAV\Controls\DimensionMenu.ascx" />
-    <Content Include="EAV\Controls\EavManagement.ascx" />
-    <Content Include="EAV\Controls\ItemFormEntityModelCreator.js" />
-    <Content Include="EAV\Controls\ItemForm.ascx" />
-    <Content Include="EAV\Controls\ItemForm.css" />
-    <Content Include="EAV\Controls\Images\Locked.png" />
-    <Content Include="EAV\Controls\Images\Unlocked.png" />
-    <Content Include="EAV\Controls\ItemHistory.ascx" />
-    <Content Include="EAV\Controls\Items.ascx" />
-    <Content Include="EAV\Controls\ItemForm.js" />
-    <Content Include="EAV\Controls\ItemVersionDetails.ascx" />
-    <Content Include="EAV\Dialogs\ContentTypeEdit.aspx" />
-    <Content Include="EAV\Dialogs\ContentTypeFields.aspx" />
-    <Content Include="EAV\Dialogs\EditItem.aspx" />
-    <Content Include="EAV\Dialogs\Items.aspx" />
-    <Content Include="EAV\Dialogs\NewItem.aspx" />
-    <Content Include="EAV\API\WebAPI-ClassDiagram.cd" />
-    <None Include="EAV\FieldTemplates\Boolean_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\DateTime_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\Date_Edit.ascx" />
-    <None Include="EAV\FieldTemplates\String_Edit.ascx" />
-    <Content Include="EAV\AngularServices\EavApiService.js" />
-    <Content Include="EAV\AngularServices\EavDialogService.js" />
-    <Content Include="EAV\AngularServices\EavGlobalConfigurationProvider.js" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.ascx" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.css" />
-    <Content Include="EAV\FieldTemplates\Entity_Edit.js" />
-    <Content Include="EAV\AngularServices\NotificationService.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesignerController.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.css" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.ascx" />
-    <Content Include="EAV\PipelineDesigner\PipelineDesigner.js" />
-    <Content Include="EAV\PipelineDesigner\PipelineService.js" />
+    <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
+    <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
+    <Content Include="grunt-tasks\i18n\gruntfile.js" />
+    <Content Include="index.html" />
+    <Content Include="src\admin\content-import-export\content-export-app.js" />
+    <Content Include="src\admin\content-import-export\content-export-controller.js" />
+    <Content Include="src\admin\content-import-export\content-export-service.js" />
+    <Content Include="src\admin\content-import-export\content-export.html" />
+    <Content Include="src\admin\content-import-export\content-formly-types-config.js" />
+    <Content Include="src\admin\content-import-export\content-helper-filters.js" />
+    <Content Include="src\admin\content-import-export\content-import-app.js" />
+    <Content Include="src\admin\content-import-export\content-import-controller.js" />
+    <Content Include="src\admin\content-import-export\content-formly-types-app.js" />
+    <Content Include="src\admin\content-import-export\content-import-service.js" />
+    <Content Include="src\admin\content-import-export\content-import.html" />
+    <Content Include="src\admin\content-types\content-types-app.js" />
+    <Content Include="src\admin\content-types\content-types-edit-controller.js" />
+    <Content Include="src\admin\content-types\content-types-field-edit-controller.js" />
+    <Content Include="src\admin\content-types\content-types-fields-add.html" />
+    <Content Include="src\admin\content-types\content-types-fields-add-controller.js" />
+    <Content Include="src\admin\content-types\content-types-fields-controller.js" />
+    <Content Include="src\admin\directives\eav-directives.js" />
+    <Content Include="src\admin\eav-admin.css" />
+    <Content Include="src\admin\pipelines\query-stats-controller.js" />
+    <Content Include="src\admin\pipelines\query-stats.html" />
+    <Content Include="src\admin\services\drag-body-class.js" />
+    <Content Include="src\admin\services\metadata.js" />
+    <Content Include="src\admin\services\debugState.js" />
+    <Content Include="src\edit-extended\fields\custom-gps\custom-gps.css" />
+    <Content Include="grunt-tasks\edit-extended-custom-gps\gruntfile.js" />
+    <Content Include="src\edit\custom-fields\eav-custom-fields.js" />
+    <Content Include="src\edit\eav-edit.css" />
+    <Content Include="src\edit\fields\boolean\boolean-default.css" />
+    <Content Include="src\edit-extended\fields\custom-gps\custom-gps.html" />
+    <Content Include="src\edit-extended\fields\custom-gps\custom-gps.js" />
+    <Content Include="src\edit\fields\custom\custom-default.html" />
+    <Content Include="src\edit\fields\custom\custom-default.js" />
+    <Content Include="src\edit\fields\empty\empty-default.js" />
+    <Content Include="src\edit\fields\datetime\datetime-default.js" />
+    <Content Include="src\edit\fields\number\number-default.js" />
+    <Content Include="src\edit\fields\entity\entity-default.js" />
+    <Content Include="src\edit\fields\string\string-dropdown.js" />
+    <Content Include="src\edit\fields\string\string-default.js" />
+    <Content Include="src\edit\fields\datetime\date-reconfigure-json.js" />
+    <Content Include="src\edit\fields\boolean\boolean-default.js" />
+    <Content Include="src\edit\fields\empty\empty-default.html" />
+    <Content Include="src\edit\fields\boolean\boolean-default.html" />
+    <Content Include="src\edit\fields\_eav-field-templates.js" />
+    <Content Include="src\edit\services\custom-inputtypes-service.js" />
+    <Content Include="src\edit\wrappers\collapsible.html" />
+    <Content Include="src\edit\wrappers\collapsible.js" />
+    <Content Include="src\edit\wrappers\field-group.html" />
+    <Content Include="src\edit\wrappers\field-group.js" />
+    <Content Include="src\edit\wrappers\eav-label.js" />
+    <Content Include="src\edit\wrappers\eav-label.css" />
+    <Content Include="src\edit\wrappers\eav-label.html" />
+    <Content Include="src\edit\ml-entities\entity-enhancer.js" />
+    <Content Include="src\admin\services\svc-creator.js" />
+    <Content Include="src\admin\services\toaster.js" />
+    <Content Include="src\admin\services\_eav-services.js" />
+    <Content Include="src\edit\eav-edit-entity-app.js" />
+    <Content Include="src\edit\form\edit-many-entities-directive.js" />
+    <Content Include="src\edit\form\edit-many-entities.html" />
+    <Content Include="src\edit\form\edit-many-entities-controller.js" />
+    <Content Include="src\edit\form\edit-single-entity-directive.js" />
+    <Content Include="src\edit\localization\language-switcher.html" />
+    <Content Include="src\edit\localization\multilevel-dropdown-menu.css" />
+    <Content Include="src\edit\services\entitiesSvc.js" />
+    <Content Include="src\edit\form\main-form.html" />
+    <Content Include="src\edit\form\main-form.js" />
+    <Content Include="src\edit\form\edit-single-entity.html" />
+    <Content Include="src\edit\form\edit-single-entity-controller.js" />
+    <Content Include="src\edit\fields\entity\entity-default.css" />
+    <Content Include="src\edit\fields\entity\entity-default.html" />
+    <Content Include="src\edit\localization\formly-localization-wrapper.html" />
+    <Content Include="src\edit\localization\localization-menu.css" />
+    <Content Include="src\edit\localization\eav-localization.js" />
+    <Content Include="src\edit\localization\localization-menu.html" />
+    <Content Include="src\edit\services\defaultvalue-service.js" />
+    <Content Include="src\edit\ml-entities\specs\eav-content-ml.spec.js" />
+    <Content Include="src\edit\ml-entities\tests\SpecRunner.html" />
+    <Content Include="gruntfile.js" />
+    <Content Include="bower.json" />
+    <Content Include="EAV\AngularServices\eav-configuration.js" />
     <Content Include="Global.asax" />
-    <Content Include="Pages\PipelineDesigner.aspx" />
-    <Content Include="Pages\Permissions.aspx" />
-    <Content Include="Pages\PipelineManagement.aspx" />
-    <Content Include="Scripts\angular-animate.min.js" />
-    <Content Include="Scripts\angular-resource.min.js" />
-    <Content Include="Scripts\angular-ui-tree.min.css" />
-    <Content Include="Scripts\angular-ui-tree.min.js" />
-    <Content Include="Scripts\angular.min.js" />
+    <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Scripts\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Scripts\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="Scripts\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="Scripts\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="Scripts\images\ui-icons_222222_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_454545_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_888888_256x240.png" />
-    <Content Include="Scripts\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="Scripts\jquery-1.9.1.min.js" />
-    <Content Include="Scripts\fancybox\blank.gif" />
-    <Content Include="Scripts\fancybox\fancybox-x.png" />
-    <Content Include="Scripts\fancybox\fancybox-y.png" />
-    <Content Include="Scripts\fancybox\fancybox.png" />
-    <Content Include="Scripts\fancybox\fancy_close.png" />
-    <Content Include="Scripts\fancybox\fancy_loading.png" />
-    <Content Include="Scripts\fancybox\fancy_nav_left.png" />
-    <Content Include="Scripts\fancybox\fancy_nav_right.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_e.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_n.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_ne.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_nw.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_s.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_se.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_sw.png" />
-    <Content Include="Scripts\fancybox\fancy_shadow_w.png" />
-    <Content Include="Scripts\fancybox\fancy_title_left.png" />
-    <Content Include="Scripts\fancybox\fancy_title_main.png" />
-    <Content Include="Scripts\fancybox\fancy_title_over.png" />
-    <Content Include="Scripts\fancybox\fancy_title_right.png" />
-    <Content Include="Scripts\fancybox\jquery.easing-1.3.pack.js" />
-    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.css" />
-    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.js" />
-    <Content Include="Scripts\fancybox\jquery.fancybox-1.3.4.pack.js" />
-    <Content Include="Scripts\fancybox\jquery.mousewheel-3.0.4.pack.js" />
-    <Content Include="Scripts\jquery-ui-1.10.3.css" />
-    <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
-    <Content Include="Scripts\toaster.css" />
-    <Content Include="Scripts\toaster.js" />
+    <Content Include="src\admin\content-items\content-edit-controller.js" />
+    <Content Include="src\admin\content-items\content-edit.html" />
+    <Content Include="src\admin\content-items\content-items-controller.js" />
+    <Content Include="src\admin\content-items\content-items.html" />
+    <Content Include="src\admin\content-items\history-controller.js" />
+    <Content Include="src\admin\content-items\history-details.html" />
+    <Content Include="src\admin\content-items\history.html" />
+    <Content Include="src\admin\content-types\content-types-controller.js" />
+    <Content Include="src\admin\content-types\content-types-edit.html" />
+    <Content Include="src\admin\content-types\content-types-field-edit.html" />
+    <Content Include="src\admin\content-types\content-types-fields.html" />
+    <Content Include="src\admin\content-types\content-types.html" />
+    <Content Include="src\admin\permissions\permissions-controller.js" />
+    <Content Include="src\admin\permissions\permissions.html" />
+    <Content Include="src\admin\pipelines\pipeline-designer-app.js" />
+    <Content Include="src\admin\pipelines\pipeline-designer-controller.js" />
+    <Content Include="src\admin\pipelines\pipeline-designer.css" />
+    <Content Include="src\admin\pipelines\pipeline-designer.html" />
+    <Content Include="src\admin\pipelines\pipelines-controller.js" />
+    <Content Include="src\admin\pipelines\pipelines.html" />
+    <Content Include="src\admin\services\content-items-services.js" />
+    <Content Include="src\admin\services\content-types-field-services.js" />
+    <Content Include="src\admin\services\content-types-services.js" />
+    <Content Include="src\admin\services\eav-admin-ui-service.js" />
+    <Content Include="src\admin\services\eavNgSvcs-todo-refactor.js" />
+    <Content Include="src\admin\services\history-services.js" />
+    <Content Include="src\admin\services\i18n.js" />
+    <Content Include="src\admin\services\init-parameters-from-url.js" />
+    <Content Include="src\admin\services\permissions-services.js" />
+    <Content Include="src\admin\services\pipeline-services.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -220,234 +235,42 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="package.json" />
+    <Content Include="Pages\ngwrapper.cshtml" />
+    <Content Include="src\i18n\admin-en.json" />
+    <Content Include="src\i18n\edit-en.json" />
+    <Content Include="grunt-tasks\angular-set\gruntfile.js" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\FieldTemplateUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Common\Forms.cs" />
-    <Compile Include="Common\Serialization.cs" />
-    <Compile Include="Common\EventHandlers.cs" />
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\API\EntitiesController.cs" />
-    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.cs">
-      <DependentUpon>PipelineManagement.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineManagement.ascx.designer.cs">
-      <DependentUpon>PipelineManagement.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ContentTypes.aspx.cs">
-      <DependentUpon>ContentTypes.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ContentTypes.aspx.designer.cs">
-      <DependentUpon>ContentTypes.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EavManagement.aspx.designer.cs">
-      <DependentUpon>EavManagement.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EavManagementApp2.aspx.cs">
-      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EavManagement.aspx.cs">
-      <DependentUpon>EavManagement.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EavManagementApp2.aspx.designer.cs">
-      <DependentUpon>EavManagementApp2.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\API\PipelineDesignerController.cs" />
-    <Compile Include="EAV\API\EntityPickerController.cs" />
-    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.cs">
-      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeEdit.ascx.designer.cs">
-      <DependentUpon>ContentTypeEdit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeFields.ascx.cs">
-      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypeFields.ascx.designer.cs">
-      <DependentUpon>ContentTypeFields.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypesList.ascx.cs">
-      <DependentUpon>ContentTypesList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ContentTypesList.ascx.designer.cs">
-      <DependentUpon>ContentTypesList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\CultureSelector.ascx.cs">
-      <DependentUpon>CultureSelector.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\CultureSelector.ascx.designer.cs">
-      <DependentUpon>CultureSelector.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\DimensionMenu.ascx.cs">
-      <DependentUpon>DimensionMenu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\DimensionMenu.ascx.designer.cs">
-      <DependentUpon>DimensionMenu.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\EavManagement.ascx.cs">
-      <DependentUpon>EavManagement.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\EavManagement.ascx.designer.cs">
-      <DependentUpon>EavManagement.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemForm.ascx.cs">
-      <DependentUpon>ItemForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemForm.ascx.designer.cs">
-      <DependentUpon>ItemForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemHistory.ascx.cs">
-      <DependentUpon>ItemHistory.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemHistory.ascx.designer.cs">
-      <DependentUpon>ItemHistory.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\Items.ascx.cs">
-      <DependentUpon>Items.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\Items.ascx.designer.cs">
-      <DependentUpon>Items.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.cs">
-      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Controls\ItemVersionDetails.ascx.designer.cs">
-      <DependentUpon>ItemVersionDetails.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.cs">
-      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeEdit.aspx.designer.cs">
-      <DependentUpon>ContentTypeEdit.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.cs">
-      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\ContentTypeFields.aspx.designer.cs">
-      <DependentUpon>ContentTypeFields.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\EditItem.aspx.cs">
-      <DependentUpon>EditItem.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\EditItem.aspx.designer.cs">
-      <DependentUpon>EditItem.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\Items.aspx.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\Items.aspx.designer.cs">
-      <DependentUpon>Items.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\Dialogs\NewItem.aspx.cs">
-      <DependentUpon>NewItem.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\Dialogs\NewItem.aspx.designer.cs">
-      <DependentUpon>NewItem.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.cs">
-      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Boolean_Edit.ascx.designer.cs">
-      <DependentUpon>Boolean_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.cs">
-      <DependentUpon>Entity_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Entity_Edit.ascx.designer.cs">
-      <DependentUpon>Entity_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.cs">
-      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\DateTime_Edit.ascx.designer.cs">
-      <DependentUpon>DateTime_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.cs">
-      <DependentUpon>Date_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\Date_Edit.ascx.designer.cs">
-      <DependentUpon>Date_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.cs">
-      <DependentUpon>String_Edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\FieldTemplates\String_Edit.ascx.designer.cs">
-      <DependentUpon>String_Edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.cs">
-      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EAV\PipelineDesigner\PipelineDesigner.ascx.designer.cs">
-      <DependentUpon>PipelineDesigner.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PipelineDesigner.aspx.cs">
-      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PipelineDesigner.aspx.designer.cs">
-      <DependentUpon>PipelineDesigner.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\PipelineManagement.aspx.cs">
-      <DependentUpon>PipelineManagement.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PipelineManagement.aspx.designer.cs">
-      <DependentUpon>PipelineManagement.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Site.master.cs">
-      <DependentUpon>Site.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.master.designer.cs">
-      <DependentUpon>Site.master</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Site.master" />
+    <Folder Include="src\edit\ml-entities\specs\helpers\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ClassDiagrams\" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
+      <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
+      <Name>ToSic.Eav.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
+      <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
+      <Name>ToSic.Eav.ImportExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
+      <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
+      <Name>ToSic.Eav.Persistence.EF4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj">
+      <Project>{f93f5fb1-95a6-4c4b-bdcf-b001e82f766f}</Project>
+      <Name>ToSic.Eav.WebApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}</Project>
       <Name>ToSic.Eav</Name>
@@ -479,7 +302,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"
+xcopy /E /Y "$(SolutionDir)ToSic.Eav.ManagementUI\dist" "$(SolutionDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

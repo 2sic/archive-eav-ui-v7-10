@@ -1,0 +1,48 @@
+{
+  "name": "tosic.eav",
+  "description": "ToSic EAV - the Entity Attribute Value system with amazing capabilities powering 2sxc",
+  "version": "3.0.0",
+  "keywords": [
+    "eav",
+    "2sxc"
+  ],
+  "homepage": "http://github.com/2sic/eav",
+  "license": "MIT",
+  "author": {
+    "name": "Daniel Mettler",
+    "email": "info@2sxc.org",
+    "url": "http://2sxc.org"
+  },
+  "scripts": {
+    "test": "grunt jasmine"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2sic/eav/"
+  },
+  "bugs": {
+    "url": "https://github.com/2sic/eav/issues"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-ng-annotate": "1.0.1",
+    "grunt-contrib-jasmine": "^0.9.1",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-uglify": "0.9.2",
+    "grunt-angular-templates": "0.5.7",
+    "grunt-contrib-concat": "0.5.1",
+    "grunt-contrib-copy": "0.8.1",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-ng-templates": "1.0.0",
+    "grunt-contrib-compress": "0.13.0",
+    "grunt-contrib-cssmin": "0.13.0",
+    "load-grunt-configs": "0.4.3",
+    "load-grunt-tasks": "3.2.0",
+    "time-grunt": "1.2.2"
+  }
+}

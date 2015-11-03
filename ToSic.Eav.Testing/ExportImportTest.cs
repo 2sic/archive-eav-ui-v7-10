@@ -14,7 +14,7 @@ namespace ToSic.Eav.Testing
 		public void EntityExportTest()
 		{
 			var dsrc = DataSource.GetInitialDataSource(_ctx.AppId);
-			var entityModel = dsrc[DataSource.DefaultStreamName].List[317];
+			var entityModel = dsrc[Constants.DefaultStreamName].List[317];
 
 			var export = new XmlExport(_ctx);
 			var entityXElement = export.GetEntityXElement(entityModel);
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Testing
 		{
 			// Export an Entity as XML
 			var dsrc = DataSource.GetInitialDataSource(_ctx.AppId);
-			var entityModel = dsrc[DataSource.DefaultStreamName].List[317];
+			var entityModel = dsrc[Constants.DefaultStreamName].List[317];
 			var export = new XmlExport(_ctx);
 			var entityXElement = export.GetEntityXElement(entityModel);
 

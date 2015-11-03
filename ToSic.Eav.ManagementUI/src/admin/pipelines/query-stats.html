@@ -1,0 +1,60 @@
+﻿<div class="modal-header">
+    <button icon="remove" class="btn pull-right" type="button" ng-click="vm.close()"></button>
+    <h3 class="modal-title" translate="Pipeline.Stats.Title"></h3>
+</div>
+
+<div class="modal-body">
+    <div translate="Pipeline.Stats.Intro"></div>
+
+    <div>
+        <h3 translate="Pipeline.Stats.ParamTitle"></h3>
+        <div translate="Pipeline.Stats.ExecutedIn" translate-values="{ ms: vm.timeUsed, ticks: vm.ticksUsed }"></div>
+        <div>
+            <ul>
+                <li ng-repeat="param in vm.testParameters">{{param}}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <h3 translate="Pipeline.Stats.QueryTitle"></h3>
+        <pre>{{vm.result | json}}</pre>
+    </div>
+    <div>
+        <h3 translate="Pipeline.Stats.SourcesAndStreamsTitle"></h3>
+        <h4 translate="Pipeline.Stats.Sources.Title"></h4>
+        <table>
+            <tr>
+                <th translate="Pipeline.Stats.Sources.Guid"></th>
+                <th translate="Pipeline.Stats.Sources.Type"></th>
+                <th translate="Pipeline.Stats.Sources.Config"></th>
+            </tr>
+            <tr ng-repeat="s in vm.sources">
+                <td tooltip="{{s}}"><pre>{{s.Guid.substring(0, 13)}}...</pre></td>
+                <td>{{s.Type}}</td>
+                <td tooltip="{{s.Configuration}}">
+                    <ol>
+                        <li ng-repeat="(key, value) in s.Configuration"><b>{{key}}</b>=<em>{{value}}</em></li>
+                    </ol>
+                </td>
+            </tr>
+        </table>
+
+        <h4 translate="Pipeline.Stats.Streams.Title"></h4>
+        <table>
+            <tr>
+                <th translate="Pipeline.Stats.Streams.Source"></th>
+                <th translate="Pipeline.Stats.Streams.Target"></th>
+                <th translate="Pipeline.Stats.Streams.Items"></th>
+                <th translate="Pipeline.Stats.Streams.Error"></th>
+            </tr>
+            <tr ng-repeat="sr in vm.streams">
+                <td><pre>{{sr.Source.substring(0, 13) + ":" + sr.SourceOut}}</pre></td>
+                <td><pre>{{sr.Target.substring(0, 13) + ":" + sr.TargetIn}}</pre></td>
+                <td><span>{{sr.Count}}</span></td>
+                <td><span>{{sr.Error}}</span></td>
+            </tr>
+        </table>
+
+    </div>
+</div>

@@ -12,6 +12,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
     [TestClass]
     public class QuickCaches_Test
     {
+
         [TestMethod]
         public void QuickCache_AddListAndCheckIfIn()
         {
@@ -24,11 +25,11 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
 
             // manually add to cache
             // listCache.ListSet(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
-            listCache.ListSet(ds[DataSource.DefaultStreamName]);
+            listCache.ListSet(ds[Constants.DefaultStreamName]);
             Assert.IsTrue(listCache.ListHas(ds.CacheFullKey + "|Default"), "Should have it in cache now");
-            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName]), "Should also have the DS default");
+            Assert.IsTrue(listCache.ListHas(ds[Constants.DefaultStreamName]), "Should also have the DS default");
             
-            Assert.IsTrue(listCache.ListHas(ds[DataSource.DefaultStreamName]), "should have it by stream as well");
+            Assert.IsTrue(listCache.ListHas(ds[Constants.DefaultStreamName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
@@ -36,16 +37,16 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.ListGet(ds[DataSource.DefaultStreamName]).LightList;
+            cached = listCache.ListGet(ds[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
             var lci = listCache.ListGet(ds.CacheFullKey);
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-            lci = listCache.ListGet(ds[DataSource.DefaultStreamName]);
+            lci = listCache.ListGet(ds[Constants.DefaultStreamName]);
             Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
 
-            cached = listCache.ListGet(ds[DataSource.DefaultStreamName]).LightList;
+            cached = listCache.ListGet(ds[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
         }
