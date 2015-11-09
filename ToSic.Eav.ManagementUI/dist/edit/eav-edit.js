@@ -105,7 +105,7 @@ angular.module("eavFieldTemplates")
                         "<i class=\"glyphicon glyphicon-calendar\"></i>" +
                     "</div>" +
                     "<input class=\"form-control input-lg\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup />" +
-				    "<timepicker ng-show=\"to.settings.DateTime.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
+				    "<timepicker ng-show=\"to.settings.merged.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
                 "</div>",
             defaultOptions: {
                 templateOptions: {
