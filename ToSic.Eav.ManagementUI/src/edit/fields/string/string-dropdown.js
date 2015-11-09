@@ -12,7 +12,7 @@ angular.module("eavFieldTemplates")
             defaultOptions: function defaultOptions(options) {
 
                 // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
-                if (!options.templateOptions.settings && options.templateOptions.settings.String && options.templateOptions.settings.String.DropdownValues) {
+                if (options.templateOptions.settings && options.templateOptions.settings.String && options.templateOptions.settings.String.DropdownValues) {
                     var o = options.templateOptions.settings.String.DropdownValues;
                     o = o.replace(/\r/g, "").split("\n");
                     o = o.map(function (e, i) {
