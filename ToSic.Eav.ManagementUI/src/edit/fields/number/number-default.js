@@ -10,14 +10,13 @@ angular.module("eavFieldTemplates")
             wrapper: defaultFieldWrappers,
             defaultOptions: {
                 ngModelAttrs: {
-                    '{{to.settings.Number.Min}}': { value: "min" },
-                    '{{to.settings.Number.Max}}': { value: "max" },
-                    '{{to.settings.Number.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.Number.Decimals + "})?$" : null}}': { value: "pattern" }
+                    '{{to.settings.merged.Min}}': { value: "min" },
+                    '{{to.settings.merged.Max}}': { value: "max" },
+                    '{{to.settings.merged.Decimals ? "^[0-9]+(\.[0-9]{1," + to.settings.merged.Decimals + "})?$" : null}}': { value: "pattern" }
                 }
             },
             controller: "FieldTemplate-NumberCtrl as vm"
         });
     }).controller("FieldTemplate-NumberCtrl", function () {
         var vm = this;
-        // ToDo: Implement Google Map
     });

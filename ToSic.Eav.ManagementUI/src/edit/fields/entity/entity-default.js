@@ -16,8 +16,8 @@ angular.module("eavFieldTemplates")
 
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs) {
-        if (!$scope.to.settings.Entity)
-            $scope.to.settings.Entity = {};
+        if (!$scope.to.settings.merged)
+            $scope.to.settings.merged = {};
 
         $scope.availableEntities = [];
 
@@ -35,7 +35,7 @@ angular.module("eavFieldTemplates")
         };
 
         $scope.createEntityAllowed = function() {
-            return $scope.to.settings.Entity.EntityType !== null && $scope.to.settings.Entity.EntityType !== "";
+            return $scope.to.settings.merged.EntityType !== null && $scope.to.settings.merged.EntityType !== "";
         };
 
         $scope.openNewEntityDialog = function() {
@@ -48,7 +48,7 @@ angular.module("eavFieldTemplates")
                 });
             }
 
-            eavAdminDialogs.openItemNew($scope.to.settings.Entity.EntityType, reload);
+            eavAdminDialogs.openItemNew($scope.to.settings.merged.EntityType, reload);
 
         };
 
@@ -57,7 +57,7 @@ angular.module("eavFieldTemplates")
                 method: "GET",
                 url: "eav/EntityPicker/getavailableentities",
                 params: {
-                    contentTypeName: $scope.to.settings.Entity.EntityType,
+                    contentTypeName: $scope.to.settings.merged.EntityType,
                     appId: appId
                     // ToDo: dimensionId: $scope.configuration.DimensionId
                 }
