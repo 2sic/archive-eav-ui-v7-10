@@ -98,7 +98,7 @@ namespace ToSic.Eav.BLL.Parts
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newValue is ValueImportModel<List<Guid>> || newValue is ValueImportModel<List<Guid?>>)
+                    if (newValue is ValueImportModel<List<Guid>>)
                         Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
                     if (newValue is ValueImportModel<List<Guid?>>)
                         Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
