@@ -53,6 +53,10 @@
                 if(close)
                     vm.afterSaveEvent(result);
                 vm.isWorking--;
+            }, function errorWhileSaving(response) {
+                toastr.clear(saving);
+                toastr.error($translate.instant("Message.ErrorWhileSaving"));
+                vm.isWorking--;
             });
         };
 

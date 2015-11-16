@@ -19,6 +19,7 @@
                     angular.forEach(itmCopy[ei].Entity.Attributes, removeTempValue);
 
                 return $http.post("eav/entities/savemany", itmCopy, { params: { appId: appId } }).then(function (serverKeys) {
+                    alert('success function called');
                     var syncUpdatedKeys = function(value, key) {
                         // first ensure we don't break something
                         var ent = value.Entity;
