@@ -27,7 +27,7 @@
         <!-- note: published status will apply to all - so the first is taken for identification if published -->
         <switch ng-model="vm.willPublish" class="tosic-blue" style="top: 13px;"></switch>
         &nbsp;
-        <span ng-click="vm.togglePublish()" class="save-published-icon">
+        <span ng-click="vm.willPublish = !vm.willPublish;" class="save-published-icon">
             <i ng-if="vm.willPublish" icon="eye-open" tooltip="{{ 'Status.Published' | translate }} - {{ 'Message.WillPublish' | translate }}"></i>
             <i ng-if="!vm.willPublish" icon="eye-close" tooltip="{{ 'Status.Unpublished' | translate }} - {{ 'Message.WontPublish' | translate }}"></i>
         </span>

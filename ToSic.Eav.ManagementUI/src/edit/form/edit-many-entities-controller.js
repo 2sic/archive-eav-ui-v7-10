@@ -83,12 +83,11 @@
 
         vm.willPublish = false;
 
-        vm.togglePublish = function() {
-            vm.willPublish = !vm.willPublish;
-            angular.forEach(vm.items, function(v, i) {
+        $scope.$watch('vm.willPublish', function (newValue, oldValue) {
+            angular.forEach(vm.items, function (v, i) {
                 vm.items[i].Entity.IsPublished = vm.willPublish;
             });
-        };
+        });
 
         vm.toggleSlotIsEmpty = function (item) {
             if (!item.Header.Group)
