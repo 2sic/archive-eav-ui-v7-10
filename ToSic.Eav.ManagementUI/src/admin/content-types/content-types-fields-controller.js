@@ -45,6 +45,12 @@
 
         };
 
+        vm.inputTypeTooltip = function(inputType) {
+            if (inputType !== "unknown")
+                return inputType;
+
+            return "unknown means it's using an old definition for input-types - edit it to use the new definition";
+        };
 
         // Actions like moveUp, Down, Delete, Title
         vm.moveUp = svc.moveUp;
