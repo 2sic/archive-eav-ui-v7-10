@@ -172,7 +172,7 @@ namespace ToSic.Eav.Data
 		/// <param name="attributeName">Name of the attribute or virtual attribute</param>
 		/// <param name="dimensions">List of languages</param>
 		/// <param name="resolveHyperlinks"></param>
-		/// <returns></returns>
+		/// <returns>An object OR a null - for example when retrieving the title and no title exists</returns>
 		public object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false) 
         {
             object result = null;
