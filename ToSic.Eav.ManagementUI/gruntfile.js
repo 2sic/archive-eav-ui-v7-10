@@ -269,7 +269,7 @@ module.exports = function(grunt) {
     // the options in each file override the other ones
     // so I have to uncomment only the file I want to execute
     // since library-preparation is not a common action, this is sufficient for now
-    grunt.task.loadTasks("grunt-tasks/angular-set");
+    //grunt.task.loadTasks("grunt-tasks/angular-set");
     //grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
     //grunt.task.loadTasks("grunt-tasks/jsplumb-clean");
     //grunt.task.loadTasks("grunt-tasks/i18n");
