@@ -23,7 +23,7 @@
     "dropzone": "4.0.1",
     "angular-ui-switch": "https://github.com/2sic/angular-ui-switch.git",
     "angular-toastr": "1.5.0",
-    "Bootflat": "https://github.com/2sic/bootflat-for-2sic.git"
+    "bootflat-for-2sic": "https://github.com/2sic/bootflat-for-2sic.git"
   },
   "private": true,
   "resolutions": {
