@@ -17,9 +17,10 @@
 
 
     <div>
-        <button ng-disabled="!vm.isValid() || vm.isWorking" ng-click="vm.save(true)" type="button" class="btn btn-primary btn-lg btn-square submit-button">
-            <span icon="ok" tooltip="{{ 'Button.Save' | translate }}"></span>
+        <button ng-disabled="!vm.isValid() || vm.isWorking" ng-click="vm.save(true)" type="button" class="btn btn-primary btn-lg submit-button" >
+            <span icon="ok" tooltip="{{ 'Button.Save' | translate }}"></span> &nbsp;<span translate="Button.Save"></span>
         </button>
+        &nbsp;
         <button ng-disabled="!vm.isValid() || vm.isWorking" class="btn btn-default btn-lg btn-square" type="button" ng-click="vm.save(false)">
             <span icon="check" tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
         </button>

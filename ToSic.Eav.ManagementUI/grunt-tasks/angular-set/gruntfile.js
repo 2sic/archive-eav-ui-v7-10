@@ -51,8 +51,7 @@ module.exports = function (grunt) {
 		],
 		cssFiles: [
             "bower_components/bootstrap/dist/css/bootstrap.min.css",
-            // "bower_components/bootstrap/dist/css/bootstrap-theme.min.css",
-            "bower_components/Bootflat/bootflat/css/bootflat.min.css",
+            "bower_components/bootflat-for-2sic/bootflat/css/bootflat.min.css",
             "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
             "bower_components/angular-ui-switch/angular-ui-switch.min.css",
 

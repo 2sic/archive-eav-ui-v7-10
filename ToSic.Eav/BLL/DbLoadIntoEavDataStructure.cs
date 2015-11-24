@@ -102,7 +102,7 @@ namespace ToSic.Eav.BLL
 
             #region Get Entities with Attribute-Values from Database
 
-            var entitiesValues = from e in Context.SqlDb.Entities
+            var entitiesWithAandVfromDb = from e in Context.SqlDb.Entities
                                  where
                                      !e.ChangeLogIDDeleted.HasValue &&
                                      e.Set.AppID == appId &&
@@ -167,28 +167,31 @@ namespace ToSic.Eav.BLL
             var entities = new Dictionary<int, IEntity>();
             var entList = new List<IEntity>();
 
-            foreach (var e in entitiesValues)
+            foreach (var e in entitiesWithAandVfromDb)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetID];
-                var entityModel = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified);
+                var newEntity = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified);
 
-                var entityAttributes = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
+                var allAttribsOfThisType = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
+                IAttributeManagement titleAttrib = null;
 
                 // Add all Attributes from that Content-Type
                 foreach (var definition in contentType.AttributeDefinitions.Values)
                 {
-                    var attributeModel = Data.AttributeHelperTools.GetAttributeManagementModel(definition);
-                    entityModel.Attributes.Add(((IAttributeBase)attributeModel).Name, attributeModel);
-                    entityAttributes.Add(definition.AttributeId, attributeModel);
+                    var newAttribute = AttributeHelperTools.GetAttributeManagementModel(definition);
+                    newEntity.Attributes.Add(((IAttributeBase)newAttribute).Name, newAttribute);
+                    allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
+                    if (newAttribute.IsTitle)
+                        titleAttrib = newAttribute;
                 }
 
                 // If entity is a draft, add references to Published Entity
                 if (!e.IsPublished && e.PublishedEntityId.HasValue)
                 {
                     // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-                    entityModel.PublishedEntity = entities[e.PublishedEntityId.Value];
-                    ((Data.Entity)entityModel.PublishedEntity).DraftEntity = entityModel;
-                    entityModel.EntityId = e.PublishedEntityId.Value;
+                    newEntity.PublishedEntity = entities[e.PublishedEntityId.Value];
+                    ((Data.Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
+                    newEntity.EntityId = e.PublishedEntityId.Value;
                 }
 
                 #region Add metadata-lists based on AssignmentObjectTypes
@@ -208,7 +211,7 @@ namespace ToSic.Eav.BLL
                             metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value] = new List<IEntity>();
 
                         // Now all containers must exist, add this item
-                        ((List<IEntity>)metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value]).Add(entityModel);
+                        ((List<IEntity>)metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value]).Add(newEntity);
                     }
                     if (e.Metadata.KeyNumber.HasValue)
                     {
@@ -218,7 +221,7 @@ namespace ToSic.Eav.BLL
                         if (!metadataForNumber[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyNumber.Value)) // ensure Guid
                             metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value] = new List<IEntity>();
 
-                        ((List<IEntity>)metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value]).Add(entityModel);
+                        ((List<IEntity>)metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value]).Add(newEntity);
                     }
                     if (!string.IsNullOrEmpty(e.Metadata.KeyString))
                     {
@@ -228,7 +231,7 @@ namespace ToSic.Eav.BLL
                         if (!metadataForString[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyString)) // ensure Guid
                             metadataForString[e.Metadata.TargetType][e.Metadata.KeyString] = new List<IEntity>();
 
-                        ((List<IEntity>)metadataForString[e.Metadata.TargetType][e.Metadata.KeyString]).Add(entityModel);
+                        ((List<IEntity>)metadataForString[e.Metadata.TargetType][e.Metadata.KeyString]).Add(newEntity);
                     }
                 }
 
@@ -237,7 +240,7 @@ namespace ToSic.Eav.BLL
                 #region add Related-Entities Attributes
                 foreach (var r in e.RelatedEntities)
                 {
-                    var attributeModel = entityAttributes[r.AttributeID];
+                    var attributeModel = allAttribsOfThisType[r.AttributeID];
                     var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
@@ -251,14 +254,14 @@ namespace ToSic.Eav.BLL
                     IAttributeManagement attributeModel;
                     try
                     {
-                        attributeModel = entityAttributes[a.AttributeID];
+                        attributeModel = allAttribsOfThisType[a.AttributeID];
                     }
                     catch (KeyNotFoundException)
                     {
                         continue;
                     }
                     if (attributeModel.IsTitle)
-                        entityModel.Title = attributeModel;
+                        newEntity.Title = attributeModel;
                     var valuesModelList = new List<IValue>();
 
                     #region Add all Values
@@ -272,10 +275,14 @@ namespace ToSic.Eav.BLL
                     attributeModel.Values = valuesModelList;
                     attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
                 }
+
+                // Special treatment in case there is no title - sometimes happens if the title-field is re-defined and ol data might no have this
+                //if(newEntity.Title == null)
+                //    newEntity.Title = titleAttrib;
                 #endregion
 
-                entities.Add(e.EntityID, entityModel);
-                entList.Add(entityModel);
+                entities.Add(e.EntityID, newEntity);
+                entList.Add(newEntity);
             }
             #endregion
 
