@@ -33,6 +33,8 @@ namespace ToSic.Eav.Data
         /// todo
         /// </summary>
         public int? UsesConfigurationOfAttributeSet { get; private set; }
+        public int ConfigurationAppId { get; private set; }
+        public int ConfigurationZoneId { get; private set; }
 
         /// <summary>
 		/// Dictionary with all Attribute Definitions
@@ -52,7 +54,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet)
+        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId)
         {
             Name = name;
             StaticName = staticName;
@@ -60,6 +62,8 @@ namespace ToSic.Eav.Data
             Description = description;
             Scope = scope;
             UsesConfigurationOfAttributeSet = usesConfigurationOfAttributeSet;
+            ConfigurationZoneId = configZoneId;
+            ConfigurationAppId = configAppId;
         }
 
         /// <summary>

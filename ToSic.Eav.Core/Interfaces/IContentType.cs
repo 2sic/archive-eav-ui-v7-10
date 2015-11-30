@@ -44,10 +44,13 @@ namespace ToSic.Eav
         /// </summary>
         int? UsesConfigurationOfAttributeSet { get; }
 
+        int ConfigurationAppId { get; }
+        int ConfigurationZoneId { get; }
+
         ///// <summary>
         ///// Dictionary with all AttributeHelperTools Definitions
         ///// </summary>
         //IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
 
-	}
+    }
 }

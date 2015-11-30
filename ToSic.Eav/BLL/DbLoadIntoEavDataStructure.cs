@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
@@ -30,37 +31,45 @@ namespace ToSic.Eav.BLL
             {
                 // Load from DB
                 var contentTypes = from set in Context.SqlDb.AttributeSets
-                                   where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
-                                   select new
-                                   {
-                                       set.AttributeSetID,
-                                       set.Name,
-                                       set.StaticName,
-                                       set.Scope,
-                                       set.Description,
-                                       Attributes = (from a in set.AttributesInSets
-                                                     select new
-                                                     {
-                                                         a.AttributeID,
-                                                         a.Attribute.StaticName,
-                                                         a.Attribute.Type,
-                                                         a.IsTitle, 
-                                                         a.SortOrder
-                                                     }),
-                                       set.UsesConfigurationOfAttributeSet,
-                                       SharedAttributes = (from a in Context.SqlDb.AttributesInSets
-                                                           where a.AttributeSetID == set.UsesConfigurationOfAttributeSet
-                                                           select new
-                                                           {
-                                                               a.AttributeID,
-                                                               a.Attribute.StaticName,
-                                                               a.Attribute.Type,
-                                                               a.IsTitle,
-                                                               a.SortOrder
-                                                           })
-                                   };
+                    where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
+                    select new
+                    {
+                        set.AttributeSetID,
+                        set.Name,
+                        set.StaticName,
+                        set.Scope,
+                        set.Description,
+                        Attributes = (from a in set.AttributesInSets
+                            select new
+                            {
+                                a.AttributeID,
+                                a.Attribute.StaticName,
+                                a.Attribute.Type,
+                                a.IsTitle,
+                                a.SortOrder
+                            }),
+                        set.UsesConfigurationOfAttributeSet,
+                        SharedAttributes = (from a in Context.SqlDb.AttributesInSets
+                            where a.AttributeSetID == set.UsesConfigurationOfAttributeSet
+                            select new
+                            {
+                                a.AttributeID,
+                                a.Attribute.StaticName,
+                                a.Attribute.Type,
+                                a.IsTitle,
+                                a.SortOrder
+                            }),
+                        SharedAppDef = (from master in Context.SqlDb.AttributeSets
+                                        where master.AttributeSetID == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetID)
+                                              && master.UsesConfigurationOfAttributeSet == null
+                            select new
+                            {
+                                AppId = master.AppID,
+                                ZoneId = master.App.ZoneID
+                            }).FirstOrDefault()
+                    };
                 // Convert to ContentType-Model
-                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.UsesConfigurationOfAttributeSet)
+                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.UsesConfigurationOfAttributeSet, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId)
                 {
                     AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
                             ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID, a.SortOrder) as IAttributeBase)

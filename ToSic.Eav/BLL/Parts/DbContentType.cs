@@ -74,8 +74,12 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("Content type " + contentTypeStaticName + " not found.");
 
             // Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-            var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Context.AppId;
-            var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Context.ZoneId;
+            //var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Context.AppId;
+            //var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Context.ZoneId;
+
+            // new mechanism because of https://github.com/2sic/2sxc/issues/476
+            var metaDataAppId = result.ConfigurationAppId;
+            var metaDataZoneId = result.ConfigurationZoneId;
 
             var metaDataSource = DataSource.GetMetaDataSource(metaDataZoneId, metaDataAppId);
 
