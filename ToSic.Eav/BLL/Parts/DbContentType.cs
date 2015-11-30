@@ -74,45 +74,17 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("Content type " + contentTypeStaticName + " not found.");
 
             // Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-            //var metaDataAppId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.MetaDataAppId : Context.AppId;
-            //var metaDataZoneId = result.UsesConfigurationOfAttributeSet.HasValue ? Constants.DefaultZoneId : Context.ZoneId;
-
-            // new mechanism because of https://github.com/2sic/2sxc/issues/476
             var metaDataAppId = result.ConfigurationAppId;
             var metaDataZoneId = result.ConfigurationZoneId;
 
             var metaDataSource = DataSource.GetMetaDataSource(metaDataZoneId, metaDataAppId);
 
-            var config = (result as ContentType).AttributeDefinitions.Select(a => new
+            var config = result.AttributeDefinitions.Select(a => new
             {
-				Attribute = a.Value,
-				//Id = a.Value.AttributeId,
-				//(a.Value as AttributeBase).SortOrder,
-				//a.Value.Type,
-				//StaticName = a.Value.Name,
-				//a.Value.IsTitle,
-				//a.Value.AttributeId,
-
-                Metadata = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
-                    .ToDictionary(e => e.Type.StaticName.TrimStart(new [] {'@'}),
-                        e => e 
-						//new {
-						//	e.EntityId,
-						//	e.EntityGuid,
-						//	TypeName = e.Type.StaticName,
-						//	e.AssignmentObjectTypeId,
-						//	Attributes = e.Attributes.ToDictionary(ax => ax.Key, ax => ax.Value
-						// )
-						// }
-					)
-
-
-                //MetaData = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
-                //    .SelectMany(e => e.Attributes)
-                //    .ToDictionary(ax => ax.Key, ax => ax.Value)
-
-
-                // GetAttributeMetaData(a.Value.AttributeId, metaDataZoneId, metaDataAppId).ToDictionary(v => v.Key, e => e.Value[0])
+                Attribute = a.Value,
+                Metadata = metaDataSource
+                    .GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
+                    .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => e)
             });
 
             return config.Select(a => new Tuple<IAttributeBase, Dictionary<string, IEntity>>(a.Attribute, a.Metadata));
