@@ -166,7 +166,27 @@ namespace ToSic.Eav.Import
             }
 
 	        destinationSet.AlwaysShareConfiguration = importAttributeSet.AlwaysShareConfiguration;
-	        if (destinationSet.AlwaysShareConfiguration)
+
+            // If a "Ghost"-content type is specified, try to assign that
+            if (!string.IsNullOrEmpty(importAttributeSet.UsesConfigurationOfAttributeSet))
+            {
+                // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
+                var ghostAttributeSets = Context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).ToList();
+
+                if (ghostAttributeSets.Count == 0)
+                {
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + importAttributeSet.UsesConfigurationOfAttributeSet) { ImportAttributeSet = importAttributeSet });
+                    return;
+                }
+
+                // If multiple masters are found, use first and add a warning message
+                if (ghostAttributeSets.Count > 1)
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + importAttributeSet.UsesConfigurationOfAttributeSet) { ImportAttributeSet = importAttributeSet });
+                destinationSet.UsesConfigurationOfAttributeSet = ghostAttributeSets.First().AttributeSetID;
+            }
+            
+
+            if (destinationSet.AlwaysShareConfiguration)
 	        {
 		        Context.AttribSet.EnsureSharedAttributeSets();
 	        }
