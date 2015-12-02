@@ -17,7 +17,7 @@
 				case "boolean":
 					return d !== undefined && d !== null ? d.toLowerCase() == "true" : false;
 				case "datetime":
-					return d !== undefined && d !== null ? new Date(d) : null;
+					return d !== undefined && d !== null && d !== "" ? new Date(d) : null;
 				case "entity":
 					return []; 
 				case "number":
