@@ -171,7 +171,8 @@ namespace ToSic.Eav.Import
             if (!string.IsNullOrEmpty(importAttributeSet.UsesConfigurationOfAttributeSet))
             {
                 // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-                var ghostAttributeSets = Context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).ToList();
+                var ghostAttributeSets = Context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
+                    OrderBy(a => a.AttributeSetID).ToList();
 
                 if (ghostAttributeSets.Count == 0)
                 {
