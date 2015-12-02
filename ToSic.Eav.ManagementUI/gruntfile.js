@@ -255,8 +255,9 @@ module.exports = function(grunt) {
         "uglify",
         "cssmin",
         //"clean:tmp",
-        "watch:ngUi"
+        
     ]);
+    grunt.registerTask("build-auto", ["build", "watch:ngUi"]);
     grunt.registerTask("lint", "jshint");
     grunt.registerTask("default", "jasmine");
     grunt.registerTask("manualDebug", "jasmine:default:build");
