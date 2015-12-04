@@ -48,7 +48,7 @@ namespace ToSic.Eav.BLL
                                 a.IsTitle,
                                 a.SortOrder
                             }),
-                        set.UsesConfigurationOfAttributeSet,
+                        IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedAttributes = (from a in Context.SqlDb.AttributesInSets
                             where a.AttributeSetID == set.UsesConfigurationOfAttributeSet
                             select new
@@ -65,15 +65,16 @@ namespace ToSic.Eav.BLL
                             select new
                             {
                                 AppId = master.AppID,
-                                ZoneId = master.App.ZoneID
+                                ZoneId = master.App.ZoneID,
+                                ConfigIsOmnipresent = master.AlwaysShareConfiguration
                             }).FirstOrDefault()
                     };
+
                 // Convert to ContentType-Model
-                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.UsesConfigurationOfAttributeSet, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId)
+                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.IsGhost, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId, set.SharedAppDef.ConfigIsOmnipresent)
                 {
-                    AttributeDefinitions = set.UsesConfigurationOfAttributeSet.HasValue
-                            ? set.SharedAttributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID, a.SortOrder) as IAttributeBase)
-                            : set.Attributes.ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID, a.SortOrder) as IAttributeBase)
+                    AttributeDefinitions = (set.IsGhost.HasValue ? set.SharedAttributes : set.Attributes)
+                            .ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID, a.SortOrder) as IAttributeBase)
                 });
             }
 

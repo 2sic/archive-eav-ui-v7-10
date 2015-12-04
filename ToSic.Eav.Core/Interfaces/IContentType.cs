@@ -47,6 +47,8 @@ namespace ToSic.Eav
         int ConfigurationAppId { get; }
         int ConfigurationZoneId { get; }
 
+        bool ConfigurationIsOmnipresent { get; }
+
         ///// <summary>
         ///// Dictionary with all AttributeHelperTools Definitions
         ///// </summary>

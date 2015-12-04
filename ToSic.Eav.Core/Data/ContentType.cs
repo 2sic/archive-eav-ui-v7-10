@@ -36,6 +36,8 @@ namespace ToSic.Eav.Data
         public int ConfigurationAppId { get; private set; }
         public int ConfigurationZoneId { get; private set; }
 
+        public bool ConfigurationIsOmnipresent { get; private set; }
+
         /// <summary>
 		/// Dictionary with all Attribute Definitions
         /// </summary>
@@ -54,7 +56,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId)
+        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent)
         {
             Name = name;
             StaticName = staticName;
@@ -64,6 +66,7 @@ namespace ToSic.Eav.Data
             UsesConfigurationOfAttributeSet = usesConfigurationOfAttributeSet;
             ConfigurationZoneId = configZoneId;
             ConfigurationAppId = configAppId;
+            ConfigurationIsOmnipresent = configurationIsOmnipresent;
         }
 
         /// <summary>
