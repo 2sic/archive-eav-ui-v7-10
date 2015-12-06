@@ -66,11 +66,6 @@ var $eavUIConfig = {
                     defaultParams: {}
                 },
                 dialogClass: "eavDialog",
-                adminUrls: { 
-                    pipelineDesigner: function (appId, pipelineId) {
-                        return "/Pages/ngwrapper.cshtml?ng=pipeline-designer&AppId=" + appId + "&pipelineId=" + pipelineId;
-                    }
-                },
                 getUrlPrefix: function(area) {
                     if (area === "system")
                         return "";
