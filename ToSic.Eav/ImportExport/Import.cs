@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Import
 {
@@ -85,33 +86,16 @@ namespace ToSic.Eav.Import
 
                 if (newAttributeSets != null)
                 {
-                    foreach (var attributeSet in newAttributeSets)
-                        ImportAttributeSet(attributeSet);
+                    // first: import the attribute sets in the system scope, as they may be needed by others...
+                    // ...and would need a cache-refresh before 
+                    var sysAttributeSets = newAttributeSets.Where(a => a.Scope == Constants.ScopeSystem);
+                    if(sysAttributeSets.Any())
+                        transaction = ImportSomeAttributeSets(sysAttributeSets, transaction);
 
-                    Context.Relationships.ImportEntityRelationshipsQueue();
-
-                    Context.AttribSet.EnsureSharedAttributeSets();
-
-                    Context.SqlDb.SaveChanges();
-
-                    // Commit DB Transaction and refresh cache
-                    //if (commitTransaction)
-                    //{
-                    transaction.Commit();
-
-                    // refresh the cache
-                    y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-                    cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
-                    cache.PurgeCache(Context.ZoneId, Context.AppId);
-                    x = cache.LightList.Any(); // re-read something
-
-                    // re-start transaction
-                    transaction = Context.SqlDb.Connection.BeginTransaction();
-
-
-
-
-                    //}
+                    // now the remaining attributeSets
+                    var nonSysAttribSets = newAttributeSets.Where(a => !sysAttributeSets.Contains(a));
+                    if(nonSysAttribSets.Any())
+                        transaction = ImportSomeAttributeSets(nonSysAttribSets, transaction);
                 }
 
                 #endregion
@@ -143,6 +127,32 @@ namespace ToSic.Eav.Import
                 transaction.Rollback();
                 throw;
             }
+        }
+
+        private DbTransaction ImportSomeAttributeSets(IEnumerable<ImportAttributeSet> newAttributeSets, DbTransaction transaction)
+        {
+            bool y;
+            ICache cache;
+            bool x;
+            foreach (var attributeSet in newAttributeSets)
+                ImportAttributeSet(attributeSet);
+
+            Context.Relationships.ImportEntityRelationshipsQueue();
+
+            Context.AttribSet.EnsureSharedAttributeSets();
+
+            Context.SqlDb.SaveChanges();
+
+            // Commit DB Transaction and refresh cache
+            transaction.Commit();
+            y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+            cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            cache.PurgeCache(Context.ZoneId, Context.AppId);
+            x = cache.LightList.Any(); // re-read something
+
+            // re-start transaction
+            transaction = Context.SqlDb.Connection.BeginTransaction();
+            return transaction;
         }
 
         /// <summary>

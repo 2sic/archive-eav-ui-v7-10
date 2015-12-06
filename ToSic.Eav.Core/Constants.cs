@@ -88,5 +88,11 @@ namespace ToSic.Eav
         public const string V3To4DataSourceDllOld = ", ToSic.Eav";
         public const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
         #endregion
+
+        #region Scopes
+
+        public const string ScopeSystem = "System";
+
+        #endregion
     }
 }
