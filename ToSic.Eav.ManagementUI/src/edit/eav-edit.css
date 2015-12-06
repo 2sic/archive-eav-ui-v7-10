@@ -60,9 +60,10 @@
 
 /* shrink space a bit in input boxes as it's too large by default '*/
 .input-lg { padding-left: 8px; padding-right: 8px }
+
+/* This should make sure the entity-edit dialog is always 100% screen width on small screens, but not lager than 1000px */
 .modal-ent-edit { 
     max-width: 1000px;
-    min-width: 320px;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
