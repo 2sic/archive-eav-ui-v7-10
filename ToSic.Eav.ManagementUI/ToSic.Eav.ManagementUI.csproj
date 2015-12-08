@@ -165,6 +165,8 @@
     <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\wrappers\collapsible.html" />
     <Content Include="src\edit\wrappers\collapsible.js" />
+    <Content Include="src\edit\wrappers\disablevisually.html" />
+    <Content Include="src\edit\wrappers\disablevisually.js" />
     <Content Include="src\edit\wrappers\field-group.html" />
     <Content Include="src\edit\wrappers\field-group.js" />
     <Content Include="src\edit\wrappers\eav-label.js" />
@@ -309,8 +311,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"
-xcopy /E /Y "$(SolutionDir)ToSic.Eav.ManagementUI\dist" "$(SolutionDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)ToSic.Eav.ManagementUI\dist" "$(SolutionDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"
+copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

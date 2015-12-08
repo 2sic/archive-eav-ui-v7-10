@@ -20,8 +20,22 @@ namespace ToSic.Eav.ImportExport
         public XElement GetEntityXElement(int entityId)
         {
             var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
-            //var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
             var iEntity = cache.List[entityId];
+            //var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
+
+            return GetEntityXElement(iEntity);
+        }
+
+        /// <summary>
+        /// Returns an Entity XElement
+        /// Works, but does not export the entity relationships
+        /// </summary>
+        public XElement GetEntityXElementUncached(int entityId)
+        {
+            //var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            //var iEntity = cache.List[entityId];
+            var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
+
             return GetEntityXElement(iEntity);
         }
 

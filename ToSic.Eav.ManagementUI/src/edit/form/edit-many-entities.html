@@ -1,5 +1,5 @@
 ﻿<div ng-if="vm.items != null" ng-click="vm.debug.autoEnableAsNeeded($event)">
-    <eav-language-switcher></eav-language-switcher>
+    <eav-language-switcher is-disabled="!vm.isValid()"></eav-language-switcher>
 
     <div ng-repeat="p in vm.items" class="group-entity">
         <h3 class="clickable" ng-click="p.collapse = !p.collapse">

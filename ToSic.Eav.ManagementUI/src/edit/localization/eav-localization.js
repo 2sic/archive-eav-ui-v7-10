@@ -23,6 +23,9 @@
 			templateUrl: "localization/language-switcher.html",
 			controller: function($scope, languages) {
 				$scope.languages = languages;
+			},
+			scope: {
+			    isDisabled: "=isDisabled"
 			}
 		};
 	});

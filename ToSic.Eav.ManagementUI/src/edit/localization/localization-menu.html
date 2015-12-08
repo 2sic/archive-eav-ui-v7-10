@@ -1,4 +1,4 @@
-﻿<div dropdown is-open="status.isopen" class="eav-localization">
+﻿<div dropdown is-open="status.isopen" class="eav-localization" style="z-index:{{index+1}};">
 	<a class="eav-localization-lock" ng-if="vm.isDefaultLanguage()" title="{{vm.tooltip()}}" ng-class="{ 'eav-localization-lock-open': !options.templateOptions.disabled }" dropdown-toggle href="javascript:void(0)">
         {{vm.infoMessage()}} <i class="glyphicon glyphicon-globe"></i>
 	</a>

@@ -68,3 +68,6 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+[visually-disabled='true'] { opacity: 0.3; -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+.ng-touched.ng-invalid { border-color:red; }
