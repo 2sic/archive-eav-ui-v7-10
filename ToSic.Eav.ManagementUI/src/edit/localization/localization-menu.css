@@ -1,5 +1,5 @@
 ﻿.eav-localization { }
 .eav-localization-lock { float: right; display: inline-block; }
 .eav-localization-lock-open { color: #228b22; }
-.eav-localization-dropdown { margin-top: 20px; }
-.eav-localization:hover .eav-localization-dropdown { display: block; }
+.eav-localization-dropdown { margin-top: 20px; display:none!important; }
+.eav-localization:hover .eav-localization-dropdown { display: block!important; }

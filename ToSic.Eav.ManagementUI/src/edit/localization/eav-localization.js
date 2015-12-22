@@ -146,7 +146,7 @@
 				};
 
 				vm.isDefaultLanguage = function () { return languages.currentLanguage != languages.defaultLanguage; };
-				vm.enableTranslate = function () { return true; };
+				vm.enableTranslate = function () { return vm.fieldModel.getVsWithLanguage(languages.currentLanguage) === null; };
 
 				vm.infoMessage = function () {
 				    if (Object.keys($scope.value.Dimensions).length === 1 && $scope.value.Dimensions[languages.defaultLanguage] === false)
@@ -170,9 +170,17 @@
 				};
 
 				vm.actions = {
+				    toggleTranslate: function toggleTranslate() {
+				        if (vm.enableTranslate())
+				            vm.actions.translate();
+				        else
+				            vm.actions.linkDefault();
+				    },
 				    translate: function trnslt() {
-				        vm.fieldModel.removeLanguage(languages.currentLanguage);
-				        vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				        if (vm.enableTranslate()) {
+				            vm.fieldModel.removeLanguage(languages.currentLanguage);
+				            vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
+				        }
 				    },
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);

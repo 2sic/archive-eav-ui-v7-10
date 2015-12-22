@@ -178,6 +178,7 @@ describe("EAV Multilanguage Content", function () {
                     intro.addVs("Broznsk", "ru-ru");
                     var vsRu = intro.getVsWithLanguage("ru-ru");
                     expect(vsRu).toBeDefined();
+                    expect(vsRu.Dimensions["ru-ru"]).toBe(false);
                     expect(vsRu.Value).toBe('Broznsk');
                 });
             });
@@ -193,6 +194,7 @@ describe("EAV Multilanguage Content", function () {
                     expect(intro.getVsWithLanguage("ru-ru")).toBeNull();
                 });
             });
+
         });
     });
 });
