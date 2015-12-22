@@ -31,7 +31,7 @@ angular.module("EavAdminUi", ["ng",
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
-    "ContentItemsApp",      // Content-items dialog - not working atm?
+    "ContentItemsAppAgnostic",      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
     "ContentExportApp",
@@ -46,7 +46,7 @@ angular.module("EavAdminUi", ["ng",
             //#region List of Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
                 var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
-                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
+                return svc.OpenModal("content-items/content-items-agnostic.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
             //#endregion
 

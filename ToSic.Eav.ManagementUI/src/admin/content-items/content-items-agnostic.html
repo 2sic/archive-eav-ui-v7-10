@@ -1,0 +1,60 @@
+﻿<div ng-click="vm.debug.autoEnableAsNeeded($event)">
+    <div class="modal-header">
+        <button class="btn btn-default btn-square btn-subtle pull-right" type="button" ng-click="vm.close()"><i icon="remove"></i></button>
+        <h3 class="modal-title" translate="Content.Manage.Title"></h3>
+    </div>
+    <div class="modal-body">
+        <button type="button" class="btn btn-primary btn-square" ng-click="vm.add()"><i icon="plus"></i></button>
+        <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
+
+	    <div style="overflow: auto">
+
+			<div ag-grid="vm.gridOptions" class="ag-fresh" style="height: 400px;"></div>
+
+
+		    <!--<table class="table table-hover table-manage-eav">
+			    <thead>
+			    <tr>
+				    <th translate="Content.Manage.Table.Id" class="col-id"></th>
+				    <th translate="Content.Manage.Table.Status" style="width: 60px"></th>
+				    <th translate="Content.Manage.Table.Title" style="width: 200px"></th>
+				    <th translate="Content.Manage.Table.Actions" class="mini-btn-2"></th>
+				    <th ng-repeat="col in vm.dynamicColumns" style="width: 10%">{{col.StaticName}}</th>
+			    </tr>
+			    </thead>
+			    <tbody>
+			    <tr ng-repeat="item in vm.items | orderBy: ['Id','-IsPublished'] " class="clickable-row" ng-click="vm.edit(item)">
+				    <td class="text-nowrap clickable" style="text-align: right">
+					    <span tooltip="Id: {{item.Id}}
+RepoId: {{item.RepositoryId}}
+Guid: {{item.Guid}}">{{item.Id}}</span>
+				    </td>
+				    <td class="text-nowrap">
+					    <span class="glyphicon" ng-class="{'glyphicon-eye-open': item.IsPublished, 'glyphicon-eye-close' : !item.IsPublished}" tooltip="{{ 'Content.Publish.' + (item.IsPublished ? 'PnV': item.Published ? 'DoP' : 'D') | translate }}"></span>
+					    <span icon="{{ item.Draft ? 'link' : item.Published ? 'link' : '' }}" tooltip="{{ (item.Draft ? 'Content.Publish.HD' :'') | translate:'{ id: item.Draft.RepositoryId}' }}
+{{ (item.Published ? 'Content.Publish.HP' :'') | translate }} #{{ item.Published.RepositoryId }}"></span>
+					    <span ng-if="item.Metadata" tooltip="Metadata for type {{ item.Metadata.TargetType}}, id {{ item.Metadata.KeyNumber }}{{ item.Metadata.KeyString }}{{ item.Metadata.KeyGuid }}" icon="tag"></span>
+				    </td>
+				    <td class="text-nowrap clickable">
+					    <div class="hide-overflow-text" style="height: 20px; width: 200px" tooltip="{{item.Title}}">
+						    {{item.Title}}{{ (!item.Title ? 'Content.Manage.NoTitle':'') | translate }}
+					    </div>
+				    </td>
+				    <td class="text-nowrap" stop-event="click">
+					    <button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(item)" tooltip="{{ 'General.Buttons.Copy' | translate }}"><i icon="duplicate"></i></button>
+					    <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(item)" tooltip="{{ 'General.Buttons.Delete' | translate }}"><i icon="remove"></i> </button>
+				    </td>
+				    <td ng-repeat="col in vm.dynamicColumns" width="10%">
+					    <div style="height: 20px; max-width: 300px;" class="hide-overflow-text" tooltip="{{item[col.StaticName]}}">{{item[col.StaticName].toString().substring(0,25)}}</div>
+				    </td>
+
+			    </tr>
+			    <tr ng-if="!vm.items.length">
+				    <td colspan="100" translate="General.Messages.NothingFound"></td>
+			    </tr>
+			    </tbody>
+		    </table>-->
+	    </div>
+        <show-debug-availability class="pull-right" ></show-debug-availability>
+    </div>
+</div>

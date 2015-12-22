@@ -129,6 +129,8 @@
     <Content Include="src\admin\content-import-export\content-formly-types-app.js" />
     <Content Include="src\admin\content-import-export\content-import-service.js" />
     <Content Include="src\admin\content-import-export\content-import.html" />
+    <Content Include="src\admin\content-items\content-items-agnostic-controller.js" />
+    <Content Include="src\admin\content-items\content-items-agnostic.html" />
     <Content Include="src\admin\content-types\content-types-app.js" />
     <Content Include="src\admin\content-types\content-types-edit-controller.js" />
     <Content Include="src\admin\content-types\content-types-field-edit-controller.js" />
