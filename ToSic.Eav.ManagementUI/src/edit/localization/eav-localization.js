@@ -128,7 +128,8 @@
 			scope: {
 				fieldModel: "=fieldModel",
 				options: "=options",
-                value: "=value"
+				value: "=value",
+                index: "=index"
 			},
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
