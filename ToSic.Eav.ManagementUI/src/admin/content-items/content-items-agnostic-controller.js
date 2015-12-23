@@ -10,7 +10,7 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance, $q, $window) {
 		/* jshint validthis:true */
 		var vm = this;
 		vm.debug = debugState;
@@ -21,9 +21,10 @@
 				headerName: "ID",
 				field: "Id",
 				width: 50,
-				template: '<span tooltip-append-to-body="true" tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}">{{data.Id}}</span>',
+				template: '<span tooltip-append-to-body="true" tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}" ng-bind="data.Id"></span>',
 				cellClass: "clickable",
-				filter: 'number'
+				filter: 'number',
+				onCellClicked: openEditDialog
 			},
 			{
 				headerName: "Status",
@@ -31,14 +32,16 @@
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
-				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
+				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip-append-to-body="true" tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
 			},
 			{
 				headerName: "Title",
 				field: "Title",
 				width: 216,
 				cellClass: "clickable",
-				template: '<span tooltip-append-to-body="true" tooltip="{{data.Title}}">{{data.Title}}{{ (!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate }}</span>'
+				template: '<span tooltip-append-to-body="true" tooltip="{{data.Title}}" ng-bind="data.Title + \' \' + ((!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
+				filter: 'text',
+				onCellClicked: openEditDialog
 			},
 			{
 				headerName: "",
@@ -52,13 +55,11 @@
 
 
 		vm.gridOptions = {
-			columnDefs: staticColumns,
 			enableSorting: true,
 			enableFilter: true,
 			rowHeight: 39,
 			colWidth: 155,
 			headerHeight: 38,
-			onCellClicked: cellClicked,
 			angularCompileRows: true
 		};
 
@@ -67,24 +68,18 @@
 		function activate() {
 			svc = contentItemsSvc(appId, contentType);
 
-			svc.getColumns().then(function (success) {
-				var columnDefs = getColumnDefs(success.data);
-				vm.gridOptions.api.setColumnDefs(columnDefs);
-			});
-
-			setRowData();
+			$q.all([setRowData(), svc.getColumns()])
+				.then(function (success) {
+					var columnDefs = getColumnDefs(success[1].data);
+					vm.gridOptions.api.setColumnDefs(columnDefs);
+				});
 		}
 
 		vm.add = function add() {
 			eavAdminDialogs.openItemNew(contentType, setRowData);
 		};
 
-		vm.edit = function (item) {
-			eavAdminDialogs.openItemEditWithEntityId(item.Id, setRowData);
-		};
-
-		function cellClicked(params) {
-			console.log(params, params.eventSource.tagName);
+		function openEditDialog(params) {
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
 		}
 
@@ -92,7 +87,7 @@
 			if (vm.gridOptions.api)
 				vm.gridOptions.api.setRowData(null);
 
-			svc.liveListSourceRead().then(function (success) {
+			return svc.liveListSourceRead().then(function (success) {
 				vm.gridOptions.api.setRowData(success.data);
 			});
 		}
@@ -131,6 +126,7 @@
 						}
 
 						colDef.cellRenderer = allowMultiValue ? cellRendererEntityMulti : cellRendererDefault;
+						colDef.filterParams = { values: getUniqueEntityValues(eavAttribute.StaticName) };
 
 						break;
 						//case "DateTime":
@@ -140,8 +136,13 @@
 						//		return new Date(rawValue);
 						//	};
 						//	break;
+					case "Number":
+						colDef.cellRenderer = cellRendererDefault;
+						colDef.filter = 'number';
+						break;
 					default:
 						colDef.cellRenderer = cellRendererDefault;
+						colDef.filterParams = { cellRenderer: cellRendererDefault };
 						break;
 				}
 
@@ -149,6 +150,20 @@
 			});
 
 			return columnDefs;
+		}
+
+		function getUniqueEntityValues(property) {
+			// loop all rows and specified entity-field. Create an object with all EntityIds and Titles. This way no Array.Contains() is needed.
+			var distinct = {};
+			var rows = vm.gridOptions.rowData;
+			rows.forEach(function (row) {
+				row[property].forEach(function (entity) {
+					distinct[entity.Id] = entity.Title;
+				});
+			});
+
+			return $window.Object.keys(distinct).map(function (key) { return distinct[key]; });	// source: http://stackoverflow.com/a/26166303
+
 		}
 
 		function cellRendererDefault(params) {
