@@ -371,33 +371,56 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance, $timeout, $q) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance) {
 		/* jshint validthis:true */
 		var vm = this;
 		vm.debug = debugState;
 		var svc;
 
 		var staticColumns = [
-	{ headerName: "ID", field: "Id" },
-	{ headerName: "Status", field: "IsPublished" },
-	{ headerName: "Title", field: "Title" },
-	{ headerName: "Actions", field: "IsPublished" }
+			{
+				headerName: "ID",
+				field: "Id",
+				width: 50,
+				template: '<span tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}">{{data.Id}}</span>',
+				cellClass: "clickable",
+				filter: 'number'
+			},
+			{
+				headerName: "Status",
+				field: "IsPublished",
+				width: 70,
+				suppressSorting: true,
+				suppressMenu: true,
+				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
+			},
+			{
+				headerName: "Title",
+				field: "Title",
+				width: 216,
+				cellClass: "clickable",
+				template: '<span tooltip="{{data.Title}}">{{data.Title}}{{ (!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate }}</span>'
+			},
+			{
+				headerName: "",
+				field: "",
+				width: 70,
+				suppressSorting: true,
+				suppressMenu: true,
+				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip="{{ \'General.Buttons.Copy\' | translate }}"><i icon="duplicate"></i></button> <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data)" tooltip="{{ \'General.Buttons.Delete\' | translate }}"><i icon="remove"></i> </button>'
+			}
 		];
 
 
 		vm.gridOptions = {
 			columnDefs: staticColumns,
-			//rowData: createRowData(),
-			//rowData: staticRowData,
-			//rowSelection: 'multiple',
-			//enableColResize: true,
 			enableSorting: true,
 			enableFilter: true,
-			//groupHeaders: true,
-			rowHeight: 22,
-			//pinnedColumnCount: 3,
-			//onModelUpdated: onModelUpdated,
-			//suppressRowClickSelection: true,
+			rowHeight: 39,
+			colWidth: 155,
+			headerHeight: 38,
+			onCellClicked: cellClicked,
+			angularCompileRows: true
 		};
 
 		activate();
@@ -410,77 +433,134 @@
 				vm.gridOptions.api.setColumnDefs(columnDefs);
 			});
 
-			svc.liveListSourceRead().then(function (success) {
-				vm.gridOptions.api.setRowData(success.data);
-			});
-
+			setRowData();
 		}
 
 		vm.add = function add() {
-			eavAdminDialogs.openItemNew(contentType, svc.liveListReload);
+			eavAdminDialogs.openItemNew(contentType, setRowData);
 		};
 
 		vm.edit = function (item) {
-			eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
+			eavAdminDialogs.openItemEditWithEntityId(item.Id, setRowData);
 		};
 
+		function cellClicked(params) {
+			console.log(params, params.eventSource.tagName);
+			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
+		}
+
+		function setRowData() {
+			if (vm.gridOptions.api)
+				vm.gridOptions.api.setRowData(null);
+
+			svc.liveListSourceRead().then(function (success) {
+				vm.gridOptions.api.setRowData(success.data);
+			});
+		}
 
 		function getColumnDefs(eavAttributes) {
 			var columnDefs = staticColumns;
 
 			angular.forEach(eavAttributes, function (eavAttribute) {
-				if (eavAttribute.IsTitle) return;	// don't add Title-Field twice
+				if (eavAttribute.IsTitle) {
+					staticColumns[2].eavAttribute = eavAttribute;
+					return;	// don't add Title-Field twice
+				}
 
-				columnDefs.push({
+				var colDef = {
+					eavAttribute: eavAttribute,
 					headerName: eavAttribute.StaticName,
-					field: eavAttribute.StaticName,
-					cellRenderer: function (params) {
-						// htmlencode strings (source: http://stackoverflow.com/a/7124052)
-						if (typeof (params.value) == "string")
-							return params.value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-						return params.value;
-					}
-				});
+					field: eavAttribute.StaticName
+				};
+
+
+				switch (eavAttribute.Type) {
+					case "Entity":
+						var allowMultiValue;
+						try {
+							allowMultiValue = eavAttribute.Metadata.Entity.AllowMultiValue;
+						} catch (e) {
+							allowMultiValue = true;
+						}
+
+						if (!allowMultiValue) {
+							colDef.valueGetter = function (params) {
+								var rawValue = params.data[params.colDef.field];
+								if (typeof (rawValue) == "undefined") return null;
+								return rawValue[0].Title;
+							};
+						}
+
+						colDef.cellRenderer = allowMultiValue ? cellRendererEntityMulti : cellRendererDefault;
+
+						break;
+						//case "DateTime":
+						//	colDef.valueGetter = function (params) {
+						//		var rawValue = params.data[params.colDef.field];
+						//		if (typeof (rawValue) == "undefined") return null;
+						//		return new Date(rawValue);
+						//	};
+						//	break;
+					default:
+						colDef.cellRenderer = cellRendererDefault;
+						break;
+				}
+
+				columnDefs.push(colDef);
 			});
 
 			return columnDefs;
 		}
 
-		//vm.refresh = svc.liveListReload;
+		function cellRendererDefault(params) {
+			if (typeof (params.value) == "undefined")
+				return null;
 
-		//vm.items = svc.liveList();
+			// htmlencode strings (source: http://stackoverflow.com/a/7124052)
+			if (typeof (params.value) == "string")
+				return params.value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return params.value;
+		}
 
-		//vm.dynamicColumns = [];
-		//svc.getColumns().then(function (result) {
-		//    var cols = result.data;
-		//    for (var c = 0; c < cols.length && c < vm.maxDynamicColumns; c++) {
-		//        if (!cols[c].IsTitle)
-		//            vm.dynamicColumns.push(cols[c]);
-		//    }
-		//});
+		function cellRendererEntityMulti(params) {
+			if (typeof (params.value) == "undefined")
+				return null;
 
-		//vm.tryToDelete = function tryToDelete(item) {
-		//    if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.RepositoryId + ") ?"))
-		//        svc.delete(item.RepositoryId);
-		//};
+			var result = '<span class="badge badge-primary">' + params.value.length + '</span> ';
 
-		//vm.openDuplicate = function openDuplicate(item) {
-		//    var items = [
-		//        {
-		//            ContentTypeName: contentType,
-		//            DuplicateEntity: item.Id
-		//        }
-		//    ];
-		//    eavAdminDialogs.openEditItems(items, svc.liveListReload);
+			var showMax = 2;
+			var maxItems = Math.min(showMax, params.value.length);
+			for (var i = 0; i < maxItems; i++)
+				result += params.value[i].Title + (i < maxItems - 1 ? ", " : "");
+			if (params.value.length > showMax)
+				result += ", &hellip;";
 
-		//};
+			return result;
+		}
+
+		vm.refresh = setRowData;
+
+		vm.tryToDelete = function (item) {
+			if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.RepositoryId + ") ?"))
+				svc.delete(item.RepositoryId);
+		};
+
+		vm.openDuplicate = function (item) {
+			var items = [
+		        {
+		        	ContentTypeName: contentType,
+		        	DuplicateEntity: item.Id
+		        }
+			];
+			eavAdminDialogs.openEditItems(items, svc.liveListReload);
+		};
 
 		vm.close = function () {
 			$modalInstance.dismiss("cancel");
 		};
 
 	}
-	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance", "$timeout", "$q"];
+	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance"];
 
 }());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
@@ -958,7 +1038,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-items/content-items-agnostic.html',
-    "<div ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><button class=\"btn btn-default btn-square btn-subtle pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Content.Manage.Title></h3></div><div class=modal-body><button type=button class=\"btn btn-primary btn-square\" ng-click=vm.add()><i icon=plus></i></button> <button ng-if=vm.debug.on type=button class=\"btn btn-warning btn-square\" ng-click=vm.refresh()><i icon=repeat></i></button><div style=\"overflow: auto\"><div ag-grid=vm.gridOptions class=ag-fresh style=\"height: 400px\"></div></div><show-debug-availability class=pull-right></show-debug-availability></div></div>"
+    "<div ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><button class=\"btn btn-default btn-square btn-subtle pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Content.Manage.Title></h3></div><div class=modal-body><button type=button class=\"btn btn-primary btn-square\" ng-click=vm.add()><i icon=plus></i></button> <button ng-if=vm.debug.on type=button class=\"btn btn-warning btn-square\" ng-click=vm.refresh()><i icon=repeat></i></button><div style=\"overflow: auto\"><div ag-grid=vm.gridOptions class=content-items style=\"height: 400px\"></div></div><show-debug-availability class=pull-right></show-debug-availability></div></div>"
   );
 
 
@@ -2043,12 +2123,14 @@ angular.module("EavServices")
 // 1. Import / Export
 // 2. Pipeline Designer
 
+var contentItemsModule = $eavOnlyHelpers.urlParams.get("aggrid") ? "ContentItemsAppAgnostic" : "ContentItemsApp";
+
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
-    "ContentItemsAppAgnostic",      // Content-items dialog - not working atm?
+    contentItemsModule,      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
     "ContentExportApp",
@@ -2062,8 +2144,11 @@ angular.module("EavAdminUi", ["ng",
 
             //#region List of Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
-                return svc.OpenModal("content-items/content-items-agnostic.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
+            	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
+            	var templateName = "content-items";
+            	if ($eavOnlyHelpers.urlParams.get("aggrid"))
+            		templateName += "-agnostic";
+                return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
             };
             //#endregion
 

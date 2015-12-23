@@ -166,3 +166,49 @@ h3.clickable:hover, h4.clickable:hover {
 .modal-content {
     padding-bottom: 10px;
 }
+
+
+
+/* #region ag-Grid (Content Items) */
+.ag-cell, .ag-header-cell {
+	padding: 8px
+}
+.ag-cell {
+	border-bottom: 1px solid #ddd;
+}
+.ag-header-cell {
+	text-align: left
+}
+.ag-header-cell-text {
+	font-weight: bold
+}
+.ag-header-container {
+	border-bottom: 2px solid #DDD;
+}
+
+.ag-filter-checkbox {
+  position: relative;
+  top: 2px;
+  left: 2px;
+}
+.ag-filter-header-container {
+  border-bottom: 1px solid #d3d3d3;
+}
+.ag-filter-apply-panel {
+  border-top: 1px solid #d3d3d3;
+  padding: 2px;
+}
+.ag-filter {
+  border: 1px solid #000;
+  background-color: #f0f0f0;
+}
+.ag-filter label {
+	font-weight: normal;
+}
+.ag-filter-value {
+  margin-left: 4px;
+}
+.ag-row:hover .clickable {
+  text-decoration: underline
+}
+/* #endregion */
