@@ -49,9 +49,12 @@ angular.module("EavAdminUi", ["ng",
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
             	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
             	var templateName = "content-items";
-            	if ($eavOnlyHelpers.urlParams.get("aggrid"))
-            		templateName += "-agnostic";
-                return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
+	            var size = "xlg";
+	            if ($eavOnlyHelpers.urlParams.get("aggrid")) {
+	            	templateName += "-agnostic";
+	            	size = "fullscreen";
+	            }
+	            return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", size, resolve, closeCallback);
             };
             //#endregion
 

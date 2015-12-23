@@ -5,6 +5,22 @@
 .modal-max {
      width: 100%;
 }
+.modal-fullscreen {
+	width: 95%;
+	height: calc(100% - 30px);
+	margin-bottom: auto;
+}
+
+	.modal-fullscreen .modal-content {
+		height: 100%;
+		padding-bottom: 0;
+		border-radius: 0;
+	}
+
+	.modal-fullscreen .modal-body {
+	height: calc(100% - 130px);
+}
+
 
 
 /* this helps that tooltips can wrap as we want them to */
@@ -170,6 +186,12 @@ h3.clickable:hover, h4.clickable:hover {
 
 
 /* #region ag-Grid (Content Items) */
+.content-items-agnostic {
+	height: 100%;
+}
+.ag-grid-wrapper {
+	height: 100%;
+}
 .ag-cell, .ag-header-cell {
 	padding: 8px
 }
@@ -208,7 +230,7 @@ h3.clickable:hover, h4.clickable:hover {
 .ag-filter-value {
   margin-left: 4px;
 }
-.ag-row:hover .clickable {
-  text-decoration: underline
+.ag-row:hover {
+  background-color: #f5f5f5;
 }
 /* #endregion */

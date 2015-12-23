@@ -382,7 +382,7 @@
 				headerName: "ID",
 				field: "Id",
 				width: 50,
-				template: '<span tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}">{{data.Id}}</span>',
+				template: '<span tooltip-append-to-body="true" tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}">{{data.Id}}</span>',
 				cellClass: "clickable",
 				filter: 'number'
 			},
@@ -392,14 +392,14 @@
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
-				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
+				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
 			},
 			{
 				headerName: "Title",
 				field: "Title",
 				width: 216,
 				cellClass: "clickable",
-				template: '<span tooltip="{{data.Title}}">{{data.Title}}{{ (!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate }}</span>'
+				template: '<span tooltip-append-to-body="true" tooltip="{{data.Title}}">{{data.Title}}{{ (!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate }}</span>'
 			},
 			{
 				headerName: "",
@@ -407,7 +407,7 @@
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
-				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip="{{ \'General.Buttons.Copy\' | translate }}"><i icon="duplicate"></i></button> <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data)" tooltip="{{ \'General.Buttons.Delete\' | translate }}"><i icon="remove"></i> </button>'
+				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Copy\' | translate }}"><i icon="duplicate"></i></button> <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Delete\' | translate }}"><i icon="remove"></i> </button>'
 			}
 		];
 
@@ -528,12 +528,8 @@
 
 			var result = '<span class="badge badge-primary">' + params.value.length + '</span> ';
 
-			var showMax = 2;
-			var maxItems = Math.min(showMax, params.value.length);
-			for (var i = 0; i < maxItems; i++)
-				result += params.value[i].Title + (i < maxItems - 1 ? ", " : "");
-			if (params.value.length > showMax)
-				result += ", &hellip;";
+			for (var i = 0; i < params.value.length; i++)
+				result += params.value[i].Title + (i < params.value.length - 1 ? ", " : "");
 
 			return result;
 		}
@@ -1038,7 +1034,7 @@ angular.module('eavTemplates',[]).run(['$templateCache', function($templateCache
 
 
   $templateCache.put('content-items/content-items-agnostic.html',
-    "<div ng-click=vm.debug.autoEnableAsNeeded($event)><div class=modal-header><button class=\"btn btn-default btn-square btn-subtle pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Content.Manage.Title></h3></div><div class=modal-body><button type=button class=\"btn btn-primary btn-square\" ng-click=vm.add()><i icon=plus></i></button> <button ng-if=vm.debug.on type=button class=\"btn btn-warning btn-square\" ng-click=vm.refresh()><i icon=repeat></i></button><div style=\"overflow: auto\"><div ag-grid=vm.gridOptions class=content-items style=\"height: 400px\"></div></div><show-debug-availability class=pull-right></show-debug-availability></div></div>"
+    "<div ng-click=vm.debug.autoEnableAsNeeded($event) class=content-items-agnostic><div class=modal-header><button class=\"btn btn-default btn-square btn-subtle pull-right\" type=button ng-click=vm.close()><i icon=remove></i></button><h3 class=modal-title translate=Content.Manage.Title></h3></div><div class=modal-body><button type=button class=\"btn btn-primary btn-square\" ng-click=vm.add()><i icon=plus></i></button> <button ng-if=vm.debug.on type=button class=\"btn btn-warning btn-square\" ng-click=vm.refresh()><i icon=repeat></i></button><div ag-grid=vm.gridOptions class=ag-grid-wrapper></div><show-debug-availability class=pull-right></show-debug-availability></div></div>"
   );
 
 
@@ -2146,9 +2142,12 @@ angular.module("EavAdminUi", ["ng",
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
             	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
             	var templateName = "content-items";
-            	if ($eavOnlyHelpers.urlParams.get("aggrid"))
-            		templateName += "-agnostic";
-                return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
+	            var size = "xlg";
+	            if ($eavOnlyHelpers.urlParams.get("aggrid")) {
+	            	templateName += "-agnostic";
+	            	size = "fullscreen";
+	            }
+	            return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", size, resolve, closeCallback);
             };
             //#endregion
 
