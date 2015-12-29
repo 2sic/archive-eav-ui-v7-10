@@ -45,13 +45,13 @@
 			},
 			{
 				headerName: "",
-				field: "",
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
 				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Copy\' | translate }}"><i icon="duplicate"></i></button> <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Delete\' | translate }}"><i icon="remove"></i> </button>'
 			}
 		];
+		var emptyText = "(empty)";
 
 
 		vm.gridOptions = {
@@ -83,6 +83,7 @@
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
 		}
 
+		// Get/Update Grid Row-Data
 		function setRowData() {
 			if (vm.gridOptions.api)
 				vm.gridOptions.api.setRowData(null);
@@ -92,6 +93,7 @@
 			});
 		}
 
+		// get Grid Column-Definitions from an Array of EAV-Attributes
 		function getColumnDefs(eavAttributes) {
 			var columnDefs = staticColumns;
 
@@ -104,7 +106,9 @@
 				var colDef = {
 					eavAttribute: eavAttribute,
 					headerName: eavAttribute.StaticName,
-					field: eavAttribute.StaticName
+					field: eavAttribute.StaticName,
+					cellRenderer: cellRendererDefault,
+					filterParams: { cellRenderer: cellRendererDefault }
 				};
 
 
@@ -117,32 +121,17 @@
 							allowMultiValue = true;
 						}
 
-						if (!allowMultiValue) {
-							colDef.valueGetter = function (params) {
-								var rawValue = params.data[params.colDef.field];
-								if (typeof (rawValue) == "undefined") return null;
-								return rawValue[0].Title;
-							};
-						}
-
-						colDef.cellRenderer = allowMultiValue ? cellRendererEntityMulti : cellRendererDefault;
-						colDef.filterParams = { values: getUniqueEntityValues(eavAttribute.StaticName) };
-
+						colDef.cellRenderer = function (params) { return cellRendererEntityBase(params, allowMultiValue); };
+						colDef.valueGetter = valueGetterEntityField;
 						break;
-						//case "DateTime":
-						//	colDef.valueGetter = function (params) {
-						//		var rawValue = params.data[params.colDef.field];
-						//		if (typeof (rawValue) == "undefined") return null;
-						//		return new Date(rawValue);
-						//	};
-						//	break;
+					case "DateTime":
+						colDef.valueGetter = valueGetterDateTime;
+						break;
+					case "Boolean":
+						colDef.valueGetter = valueGetterBoolean;
+						break;
 					case "Number":
-						colDef.cellRenderer = cellRendererDefault;
 						colDef.filter = 'number';
-						break;
-					default:
-						colDef.cellRenderer = cellRendererDefault;
-						colDef.filterParams = { cellRenderer: cellRendererDefault };
 						break;
 				}
 
@@ -152,41 +141,58 @@
 			return columnDefs;
 		}
 
-		function getUniqueEntityValues(property) {
-			// loop all rows and specified entity-field. Create an object with all EntityIds and Titles. This way no Array.Contains() is needed.
-			var distinct = {};
-			var rows = vm.gridOptions.rowData;
-			rows.forEach(function (row) {
-				row[property].forEach(function (entity) {
-					distinct[entity.Id] = entity.Title;
-				});
+		//#region Column Value-Getter and Cell Renderer
+		function valueGetterEntityField(params) {
+			var rawValue = params.data[params.colDef.field];
+			if (rawValue.length === 0)
+				return emptyText;
+
+			return rawValue.map(function (item) {
+				return item.Title;
 			});
+		}
 
-			return $window.Object.keys(distinct).map(function (key) { return distinct[key]; });	// source: http://stackoverflow.com/a/26166303
+		function valueGetterDateTime(params) {
+			var rawValue = params.data[params.colDef.field];
+			if (!rawValue)
+				return emptyText;
+			return rawValue.substr(0, 19).replace('T', ' ');	// remove 'Z' and replace 'T'
+		}
 
+		function valueGetterBoolean(params) {
+			var rawValue = params.data[params.colDef.field];
+			if (typeof rawValue != "boolean")
+				return null;
+
+			return rawValue.toString();
 		}
 
 		function cellRendererDefault(params) {
-			if (typeof (params.value) == "undefined")
-				return null;
+			if (typeof (params.value) != "string")
+				return params.value;
 
-			// htmlencode strings (source: http://stackoverflow.com/a/7124052)
-			if (typeof (params.value) == "string")
-				return params.value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return params.value;
+			var encodedValue = htmlEncode(params.value);
+			return '<span title="' + encodedValue + '">' + encodedValue + '</span>';
 		}
 
-		function cellRendererEntityMulti(params) {
-			if (typeof (params.value) == "undefined")
+		// htmlencode strings (source: http://stackoverflow.com/a/7124052)
+		function htmlEncode(text) {
+			return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		}
+
+		function cellRendererEntityBase(params, showBadge) {
+			if (!Array.isArray(params.value))
 				return null;
 
-			var result = '<span class="badge badge-primary">' + params.value.length + '</span> ';
-
-			for (var i = 0; i < params.value.length; i++)
-				result += params.value[i].Title + (i < params.value.length - 1 ? ", " : "");
+			var encodedValue = htmlEncode(params.value.join(", "));
+			var result = '<span title="' + encodedValue + '">';
+			if (showBadge)
+				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
+			result += encodedValue + '</span>';
 
 			return result;
 		}
+		// #endregion
 
 		vm.refresh = setRowData;
 
