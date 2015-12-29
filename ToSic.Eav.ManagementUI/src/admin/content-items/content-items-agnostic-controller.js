@@ -12,8 +12,22 @@
 
 	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance, $q, $window) {
 		/* jshint validthis:true */
-		var vm = this;
-		vm.debug = debugState;
+		var vm = angular.extend(this, {
+			debug: debugState,
+			gridOptions: {
+				enableSorting: true,
+				enableFilter: true,
+				rowHeight: 39,
+				colWidth: 155,
+				headerHeight: 38,
+				angularCompileRows: true
+			},
+			add: add,
+			refresh: setRowData,
+			tryToDelete: tryToDelete,
+			openDuplicate: openDuplicate,
+			close: close
+		});
 		var svc;
 
 		var staticColumns = [
@@ -51,17 +65,6 @@
 				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Copy\' | translate }}"><i icon="duplicate"></i></button> <button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data)" tooltip-append-to-body="true" tooltip="{{ \'General.Buttons.Delete\' | translate }}"><i icon="remove"></i> </button>'
 			}
 		];
-		var emptyText = "(empty)";
-
-
-		vm.gridOptions = {
-			enableSorting: true,
-			enableFilter: true,
-			rowHeight: 39,
-			colWidth: 155,
-			headerHeight: 38,
-			angularCompileRows: true
-		};
 
 		activate();
 
@@ -75,9 +78,9 @@
 				});
 		}
 
-		vm.add = function add() {
+		function add() {
 			eavAdminDialogs.openItemNew(contentType, setRowData);
-		};
+		}
 
 		function openEditDialog(params) {
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
@@ -108,23 +111,27 @@
 					headerName: eavAttribute.StaticName,
 					field: eavAttribute.StaticName,
 					cellRenderer: cellRendererDefault,
-					filterParams: { cellRenderer: cellRendererDefault }
+					filterParams: { cellRenderer: cellRendererDefaultFilter }
 				};
 
 
 				switch (eavAttribute.Type) {
 					case "Entity":
-						var allowMultiValue;
 						try {
-							allowMultiValue = eavAttribute.Metadata.Entity.AllowMultiValue;
+							colDef.allowMultiValue = eavAttribute.Metadata.Entity.AllowMultiValue;
 						} catch (e) {
-							allowMultiValue = true;
+							colDef.allowMultiValue = true;
 						}
 
-						colDef.cellRenderer = function (params) { return cellRendererEntityBase(params, allowMultiValue); };
+						colDef.cellRenderer = cellRendererEntity;
 						colDef.valueGetter = valueGetterEntityField;
 						break;
 					case "DateTime":
+						try {
+							colDef.useTimePicker = eavAttribute.Metadata.DateTime.UseTimePicker;
+						} catch (e) {
+							colDef.useTimePicker = false;
+						}
 						colDef.valueGetter = valueGetterDateTime;
 						break;
 					case "Boolean":
@@ -145,7 +152,7 @@
 		function valueGetterEntityField(params) {
 			var rawValue = params.data[params.colDef.field];
 			if (rawValue.length === 0)
-				return emptyText;
+				return null;
 
 			return rawValue.map(function (item) {
 				return item.Title;
@@ -155,8 +162,10 @@
 		function valueGetterDateTime(params) {
 			var rawValue = params.data[params.colDef.field];
 			if (!rawValue)
-				return emptyText;
-			return rawValue.substr(0, 19).replace('T', ' ');	// remove 'Z' and replace 'T'
+				return null;
+
+			// remove 'Z' and replace 'T'
+			return params.colDef.useTimePicker ? rawValue.substr(0, 19).replace('T', ' ') : rawValue.substr(0, 10);
 		}
 
 		function valueGetterBoolean(params) {
@@ -168,11 +177,15 @@
 		}
 
 		function cellRendererDefault(params) {
-			if (typeof (params.value) != "string")
+			if (typeof (params.value) != "string" || params.value === null)
 				return params.value;
 
 			var encodedValue = htmlEncode(params.value);
 			return '<span title="' + encodedValue + '">' + encodedValue + '</span>';
+		}
+
+		function cellRendererDefaultFilter(params) {
+			return cellRendererDefault(params) || "(empty)";
 		}
 
 		// htmlencode strings (source: http://stackoverflow.com/a/7124052)
@@ -180,13 +193,13 @@
 			return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		}
 
-		function cellRendererEntityBase(params, showBadge) {
+		function cellRendererEntity(params) {
 			if (!Array.isArray(params.value))
 				return null;
 
 			var encodedValue = htmlEncode(params.value.join(", "));
 			var result = '<span title="' + encodedValue + '">';
-			if (showBadge)
+			if (params.colDef.allowMultiValue)
 				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
 			result += encodedValue + '</span>';
 
@@ -194,14 +207,12 @@
 		}
 		// #endregion
 
-		vm.refresh = setRowData;
-
-		vm.tryToDelete = function (item) {
-			if (confirm("Delete '" + "title-unknown-yet" + "' (" + item.RepositoryId + ") ?"))
+		function tryToDelete(item) {
+			if (confirm("Delete '" + item.Title + "' (" + item.RepositoryId + ") ?"))
 				svc.delete(item.RepositoryId);
-		};
+		}
 
-		vm.openDuplicate = function (item) {
+		function openDuplicate(item) {
 			var items = [
 		        {
 		        	ContentTypeName: contentType,
@@ -209,12 +220,11 @@
 		        }
 			];
 			eavAdminDialogs.openEditItems(items, svc.liveListReload);
-		};
+		}
 
-		vm.close = function () {
+		function close() {
 			$modalInstance.dismiss("cancel");
-		};
-
+		}
 	}
 
 }());
