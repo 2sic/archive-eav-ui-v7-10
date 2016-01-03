@@ -55,6 +55,8 @@ namespace ToSic.Eav
         /// </summary>
         public readonly static int AssignmentObjectTypeEntity = 4;
 
+        public static readonly int AssignmentObjectTypeCmsObject = 10; 
+
 
         /// <summary>
         /// StaticName of the DataPipeline AttributeSet

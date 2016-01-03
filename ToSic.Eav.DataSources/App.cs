@@ -133,6 +133,10 @@ namespace ToSic.Eav.DataSources
 		        }
 		    }
 		}
+
+	    private IMetaDataSource _metadata;
+
+	    public IMetaDataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
 	}
 
 }
