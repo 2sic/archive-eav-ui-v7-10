@@ -68,7 +68,7 @@ namespace ToSic.Eav.Persistence
         internal void SaveEntityToDataTimeline(Entity currentEntity)
         {
             var export = new XmlExport(Context);
-            var entityModelSerialized = export.GetEntityXElement(currentEntity.EntityID);
+            var entityModelSerialized = export.GetEntityXElementUncached(currentEntity.EntityID);
             var timelineItem = new DataTimelineItem
             {
                 SourceTable = "ToSIC_EAV_Entities",

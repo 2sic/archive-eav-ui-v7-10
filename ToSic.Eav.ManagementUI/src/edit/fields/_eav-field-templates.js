@@ -16,6 +16,7 @@ angular.module("eavFieldTemplates",
     .constant("defaultFieldWrappers", [
         "eavLabel",
         "bootstrapHasError",
+        "disablevisually",
         "eavLocalization",
         "collapsible"
     ])

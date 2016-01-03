@@ -14,23 +14,39 @@ namespace ToSic.Eav.ImportExport
 	{
         public XmlExport(EavDataController c) : base(c) { }
 
-		/// <summary>
-		/// Returns an Entity XElement
-		/// </summary>
-		public XElement GetEntityXElement(int entityId)
-		{
-			var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
-			return GetEntityXElement(iEntity);
-		}
+        /// <summary>
+        /// Returns an Entity XElement
+        /// </summary>
+        public XElement GetEntityXElement(int entityId)
+        {
+            var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            var iEntity = cache.List[entityId];
+            //var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
 
-		/// <summary>
-		/// Returns an Entity XElement
-		/// </summary>
-		public XElement GetEntityXElement(IEntity entity)
+            return GetEntityXElement(iEntity);
+        }
+
+        /// <summary>
+        /// Returns an Entity XElement
+        /// Works, but does not export the entity relationships
+        /// </summary>
+        public XElement GetEntityXElementUncached(int entityId)
+        {
+            //var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            //var iEntity = cache.List[entityId];
+            var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
+
+            return GetEntityXElement(iEntity);
+        }
+
+        /// <summary>
+        /// Returns an Entity XElement
+        /// </summary>
+        public XElement GetEntityXElement(IEntity entity)
 		{
 			var eavEntity = Context.Entities.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
-
+            
 			// Prepare Values
 			var values = (from e in entity.Attributes
 						  where e.Value.Values != null

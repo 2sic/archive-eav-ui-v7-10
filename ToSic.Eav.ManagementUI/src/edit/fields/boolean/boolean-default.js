@@ -7,6 +7,6 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "boolean-default",
             templateUrl: "fields/boolean/boolean-default.html",
-            wrapper: ["bootstrapHasError", "eavLocalization", "collapsible"]
+            wrapper: ["bootstrapHasError", "disablevisually", "eavLocalization", "collapsible"]
         });
     });
