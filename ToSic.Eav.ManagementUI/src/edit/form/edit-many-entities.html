@@ -9,7 +9,7 @@
             </span>
             <span class="pull-right clickable" style="font-size: smaller">
                 <span class="low-priority collapse-entity-button" ng-if="p.collapse" icon="plus-sign"></span>
-                <span class="low-priority collapse-entity-button" ng-if="!p.collapse" icon="minus-sign"></span>
+                <span class="collapse-entity-button" ng-if="!p.collapse" icon="minus-sign"></span>
             </span>
         </h3>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" ng-hide="p.collapse"></eav-edit-entity-form>
