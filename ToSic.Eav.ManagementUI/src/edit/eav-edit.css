@@ -65,7 +65,9 @@
 
 /* shrink space a bit in input boxes as it's too large by default '*/
 .input-lg {
-     padding-left: 8px; padding-right: 8px
+     padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 4px;
 }
 
 /*.input-lg {
