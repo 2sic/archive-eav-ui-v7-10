@@ -1,3 +1,4 @@
+/// <binding ProjectOpened='build-auto' />
 module.exports = function(grunt) {
     "use strict";
     var distRoot = "dist/";
