@@ -45,9 +45,9 @@ module.exports = function (grunt) {
             "bower_components/angular-ui-switch/angular-ui-switch.min.js",
 
             // Add angular-google-map (ToDo 2dm/2rm: move this to the custom gps control...)
-            "bower_components/lodash/lodash.min.js",
-            "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
-            "bower_components/angular-simple-logger/dist/index.js"
+            //"bower_components/lodash/lodash.min.js",
+            //"bower_components/angular-google-maps/dist/angular-google-maps.min.js",
+            //"bower_components/angular-simple-logger/dist/index.js"
 		],
 		cssFiles: [
             "bower_components/bootstrap/dist/css/bootstrap.min.css",
