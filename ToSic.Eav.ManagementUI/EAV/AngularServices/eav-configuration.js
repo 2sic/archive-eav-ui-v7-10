@@ -55,63 +55,72 @@ var $eavUIConfig = {
 };
 
 // if (angular) // always check if(angular) because this file is also included in older non-angulare dialogs
-    angular.module("EavConfiguration", [])
-        .constant("languages", $eavUIConfig.languages)
-        .factory("eavConfig", function ($location) {
+angular.module("EavConfiguration", [])
+    .constant("languages", $eavUIConfig.languages)
+    .factory("eavConfig", function($location) {
 
-            return {
-                api: {
-                    baseUrl: "/api",
-                    additionalHeaders: {},
-                    defaultParams: {}
-                },
-                dialogClass: "eavDialog",
-                getUrlPrefix: function(area) {
-                    if (area === "system")
-                        return "";
-                    if (area === "zone")
-                        return "/zone-not-defined-yet-in-eav";
-                    if (area === "app")
-                        return "/app-not-defined-yet-in-eav";
-                    if (area === "api")
-                        return "/api";
-                    if (area === "dialog")
-                        return "/Pages";
-                    if (area === "dialog-page")
-                        return "/Pages/ngwrapper.cshtml";
-                },
-                languages: $eavUIConfig.languages,
+        return {
+            api: {
+                baseUrl: "/api",
+                additionalHeaders: {},
+                defaultParams: {}
+            },
+            dialogClass: "eavDialog",
+            getUrlPrefix: function(area) {
+                if (area === "system")
+                    return "";
+                if (area === "zone")
+                    return "/zone-not-defined-yet-in-eav";
+                if (area === "app")
+                    return "/app-not-defined-yet-in-eav";
+                if (area === "api")
+                    return "/api";
+                if (area === "dialog")
+                    return "/Pages";
+                if (area === "dialog-page")
+                    return "/Pages/ngwrapper.cshtml";
+            },
+            languages: $eavUIConfig.languages,
 
-                pipelineDesigner: {
-                    outDataSource: {
-                        className: "SexyContentTemplate",
-                        in: ["Content", "Presentation", "ListContent", "ListPresentation"],
-                        name: "2SexyContent Module",
-                        description: "The module/template which will show this data",
-                        visualDesignerData: { Top: 40, Left: 400 }
-                    },
-                    defaultPipeline: {
-                        dataSources: [
-                            {
-                                entityGuid: "unsaved1",
-                                partAssemblyAndType: "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
-                                visualDesignerData: { Top: 300, Left: 440 }
-                            }
-                        ],
-                        streamWiring: [
-                            { From: "unsaved1", Out: "Default", To: "Out", In: "Content" },
-                            { From: "unsaved1", Out: "Default", To: "Out", In: "ListContent" },
-                            { From: "unsaved1", Out: "Default", To: "Out", In: "Presentation" },
-                            { From: "unsaved1", Out: "Default", To: "Out", In: "ListPresentation" }
-                        ]
-                    },
-                    testParameters: "[Demo:Demo]=true"
+            pipelineDesigner: {
+                outDataSource: {
+                    className: "SexyContentTemplate",
+                    in: ["Content", "Presentation", "ListContent", "ListPresentation"],
+                    name: "2SexyContent Module",
+                    description: "The module/template which will show this data",
+                    visualDesignerData: { Top: 40, Left: 400 }
                 },
-                metadataOfEntity: 4,
-                metadataOfAttribute: 2,
+                defaultPipeline: {
+                    dataSources: [
+                        {
+                            entityGuid: "unsaved1",
+                            partAssemblyAndType: "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+                            visualDesignerData: { Top: 300, Left: 440 }
+                        }
+                    ],
+                    streamWiring: [
+                        { From: "unsaved1", Out: "Default", To: "Out", In: "Content" },
+                        { From: "unsaved1", Out: "Default", To: "Out", In: "ListContent" },
+                        { From: "unsaved1", Out: "Default", To: "Out", In: "Presentation" },
+                        { From: "unsaved1", Out: "Default", To: "Out", In: "ListPresentation" }
+                    ]
+                },
+                testParameters: "[Demo:Demo]=true"
+            },
+            metadataOfEntity: 4,
+            metadataOfAttribute: 2,
 
-                contentType: {
-                    defaultScope: "2SexyContent" // null 
+            contentType: {
+                defaultScope: "2SexyContent" // null 
+            },
+
+            // use this to set defaults for field types OR to provide an alternat type if one is deprecated
+            formly: {
+                inputTypeReplacementMap: {
+                    //"string-wysiwyg": "string-dropdown"
+                    //"string-wysiwyg": "string-wysiwyg-dnn"
                 }
             }
-        });
+
+        }
+    });

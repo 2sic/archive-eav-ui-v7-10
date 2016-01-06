@@ -6,7 +6,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes) {
+	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -141,6 +141,10 @@
 
 			if (inputType && inputType.indexOf("-") === -1) // has input-type, but missing main type, this happens with old types like string wysiyg
 		        inputType = type + "-" + inputType;
+
+            // check in config input-type replacement map
+		    if (inputType && eavConfig.formly.inputTypeReplacementMap[inputType])
+		        inputType = eavConfig.formly.inputTypeReplacementMap[inputType];
 
 		    // this type may have assets, so the definition may be late-loaded
 		    var typeAlreadyRegistered = formlyConfig.getType(inputType);
