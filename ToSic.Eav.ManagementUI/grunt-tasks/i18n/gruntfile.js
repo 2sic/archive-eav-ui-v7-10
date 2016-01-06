@@ -26,13 +26,13 @@ module.exports = function (grunt) {
     };
 
     // Project configuration.
-    grunt.initConfig({
+    grunt.config.merge({
     	clean: {
-    		tmp: i18n.tmp + "**/*", 
-    		dist: i18n.dist + "/*"
+    		i18ntmp: i18n.tmp + "**/*", 
+    		i18ndist: i18n.dist + "/*"
     	},
         concat: {
-        	i18n: {
+        	i18nimport: {
         		nonull: true,
                 src: i18n.jsFiles,
                 dest: i18n.concatFile
@@ -42,8 +42,9 @@ module.exports = function (grunt) {
     });
 
     // Default task.
-    grunt.registerTask("buildI18nLib", [
-        "clean",
-        "concat"
+    grunt.registerTask("build-i18n-lib-standalone", [
+        "clean:i18ntmp",
+        "clean:i18ndist",
+        "concat:i18nimport"
     ]);
 };

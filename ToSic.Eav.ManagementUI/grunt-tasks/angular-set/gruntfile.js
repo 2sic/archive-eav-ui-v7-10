@@ -75,15 +75,15 @@ module.exports = function (grunt) {
     };
 
     // Project configuration.
-    grunt.initConfig({
+    grunt.config.merge({
     	clean: {
-    		tmp: angular.tmp + "**/*", 
-    		dist: angular.dist + "/*",
-            fonts: angular.fonts
+    		angSetTmp: angular.tmp + "**/*", 
+    		angSetDist: angular.dist + "/*",
+    		angSetFonts: angular.fonts
     	},
 
     	copy: {
-            angularFonts: {
+    	    angSetFonts: {
                 files: [
                     {
                         expand: true,
@@ -95,52 +95,27 @@ module.exports = function (grunt) {
             }
         },
         concat: {
-        	angular: {
+            angSetLib: {
         		nonull: true,
                 src: angular.jsFiles,
                 dest: angular.concatFile
         	},
-        	angularCss: {
+            angSetCss: {
         	    nonull: true,
         	    src: angular.cssFiles,
         	    dest: angular.concatCss
         	}
-        },
-
-
-        uglify: {
-            options: {
-                banner: angular.banner,
-                sourceMap: false
-            },
-
-            angular: {
-                src: angular.concatFile,
-                dest: angular.uglifyFile
-            }
-        },
-
-		// compress not used for now, because the iis seems to re-compress it causing strange side-effects
-        compress: {
-            main: {
-                options: {
-                    mode: "gzip"
-                },
-                expand: true,
-                cwd: angular.dist,
-                src: ["**/*.min.js"],
-                dest: angular.dist,
-                ext: ".gz.js"
-            }
         }
+
     });
 
     // Default task.
-    grunt.registerTask("buildAngularLib", [
-        "clean",
-        "copy",
-        "concat",
-        //"uglify",
-		//"compress"
+    grunt.registerTask("build-angular-lib", [
+        "clean:angSetTmp",
+        "clean:angSetDist",
+        "clean:angSetFonts",
+        "copy:angSetFonts",
+        "concat:angSetLib",
+        "concat:angSetCss"
     ]);
 };

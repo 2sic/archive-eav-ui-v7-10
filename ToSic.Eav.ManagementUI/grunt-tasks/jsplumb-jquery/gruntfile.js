@@ -32,32 +32,31 @@ module.exports = function (grunt) {
     };
 
     // Project configuration.
-    grunt.initConfig({
+    grunt.config.merge({
     	clean: {
-    		tmp: pipelineDesigner.tmp + "**/*", 
-    		dist: pipelineDesigner.dist + "/*"
+    		pdjtmp: pipelineDesigner.tmp + "**/*", 
+    		pdjdist: pipelineDesigner.dist + "/*"
     	},
 
         concat: {
-        	pipelineDesigner: {
+            pdj: {
         		nonull: true,
                 src: pipelineDesigner.jsFiles,
                 dest: pipelineDesigner.concatFile
             },
-        	jQuery: {
+            pdjQuery: {
         		nonull: true,
                 src: pipelineDesigner.jqFiles,
                 dest: pipelineDesigner.jqConcat
-        	},
-        },
-
+        	}
+        }
     });
 
     // Default task.
-    grunt.registerTask("buildLibrary", [
-        "clean",
-        "concat",
-        //"uglify",
-		//"compress"
+    grunt.registerTask("build-pd-jquery-lib", [
+        "clean:pdjtmp",
+        "clean:pdjdist",
+        "concat:pdj",
+        "concat:pdjQuery"
     ]);
 };

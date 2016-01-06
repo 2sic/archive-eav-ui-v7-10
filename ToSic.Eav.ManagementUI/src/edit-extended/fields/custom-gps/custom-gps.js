@@ -82,6 +82,7 @@
 
         $scope.formattedAddress = function () {
             var address = controlSettings.AddressMask;
+            if (address === undefined) return "";
             var tokenRe = /\[.*?\]/ig;
             var matches = address.match(tokenRe);
             angular.forEach(matches, function (e, i) {

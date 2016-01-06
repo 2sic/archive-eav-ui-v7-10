@@ -43,20 +43,17 @@ module.exports = function (grunt) {
     };
 
     // Project configuration.
-    grunt.initConfig({
-        // pkg: grunt.file.readJSON("package.json"),
-
+    grunt.config.merge({
         jshint: {
-            all: ["gruntfile.js", job.cwdJs]
+            fldGps: ["gruntfile.js", job.cwdJs]
         },
 
         clean: {
-            tmp: tmpRoot + "**/*", 
-            dist: "dist/**/*"
+            fldGps: tmpRoot + "**/*"
         },
 
         copy: {
-            build: {
+            fldGpsbuild: {
                 files: [
                     {
                         expand: true,
@@ -64,15 +61,14 @@ module.exports = function (grunt) {
                         src: ["**", "!**/*spec.js", "!**/tests/**"],
                         dest: job.tmp
                     },
-               
                     {
                         expand: true,
-                        src: job.lib, 
+                        src: job.lib,
                         dest: job.tmp
                     }
                 ]
             },
-            toMin: {
+            fldGpstoMin: {
                 src: job.concatFile,
                 dest: job.uglifyFile
             }
@@ -94,16 +90,16 @@ module.exports = function (grunt) {
 //                ]
 //        },
         concat: {
-            editExt: {
+            fldGps: {
                 src: job.tmp + "**/*.js",
                 dest: job.concatFile
             }
         },
         ngAnnotate: {
-            editExt: {
+            fldGps: {
                 expand: true,
                 src: job.concatFile,
-                extDot: "last"          // Extensions in filenames begin after the last dot 
+                extDot: "last" // Extensions in filenames begin after the last dot 
             }
         },
 
@@ -121,9 +117,23 @@ module.exports = function (grunt) {
         },
 
         watch: {
-            ngUi: {
+            options: {
+                atBegin: true
+            },
+            fldGps: {
                 files: [job.cwd + "**"],
-                tasks: ["buildGps"]
+                tasks: [
+                    "jshint:fldGps",
+                    "clean:fldGps",
+                    "copy:fldGpsbuild",
+                    "copy:fldGpstoMin",
+                    // "ngtemplates",
+                    "concat:fldGps",
+                    "ngAnnotate:fldGps",
+                    //,
+                    //"uglify"
+
+                ] 
             }
         }
     });
@@ -134,18 +144,20 @@ module.exports = function (grunt) {
 
 
     // Default task.
-    grunt.registerTask("buildGps", [
-        "jshint",
-        "clean:tmp",
-        "copy",
-        // "ngtemplates",
-        "concat",
-        "ngAnnotate",
-        //,
-        //"uglify"
-        //,
-        "watch:ngUi"
-    ]);
+    grunt.registerTask("build-field-gps-auto", ["watch:fldGps"]);
+    //[
+    //    "jshint:fldGps",
+    //    "clean:fldGps",
+    //    "copy:fldGpsbuild",
+    //    "copy:fldGpstoMin",
+    //    // "ngtemplates",
+    //    "concat:fldGps",
+    //    "ngAnnotate:fldGps",
+    //    //,
+    //    //"uglify"
+    //    //,
+    //    "watch:fldGps"
+    //]);
      
 
 };

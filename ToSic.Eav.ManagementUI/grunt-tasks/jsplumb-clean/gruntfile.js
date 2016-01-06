@@ -24,53 +24,25 @@ module.exports = function (grunt) {
     };
 
     // Project configuration.
-    grunt.initConfig({
+    grunt.config.merge({
     	clean: {
-    		tmp: pipelineDesigner.tmp + "**/*", 
-    		dist: pipelineDesigner.dist + "/*"
+    		pdtmp: pipelineDesigner.tmp + "**/*", 
+    		pddist: pipelineDesigner.dist + "/*"
     	},
 
         concat: {
-        	pipelineDesigner: {
+        	pdall: {
         		nonull: true,
                 src: pipelineDesigner.jsFiles,
                 dest: pipelineDesigner.concatFile
-            }
-        },
-
-
-        uglify: {
-            options: {
-                banner: pipelineDesigner.banner,
-                sourceMap: false
-            },
-
-            pipelineDesigner: {
-                src: pipelineDesigner.concatFile,
-                dest: pipelineDesigner.uglifyFile
-            }
-        },
-
-		// compress not used for now, because the iis seems to re-compress it causing strange side-effects
-        compress: {
-            main: {
-                options: {
-                    mode: "gzip"
-                },
-                expand: true,
-                cwd: pipelineDesigner.dist,
-                src: ["**/*.min.js"],
-                dest: pipelineDesigner.dist,
-                ext: ".gz.js"
             }
         }
     });
 
     // Default task.
-    grunt.registerTask("buildLibrary", [
-        "clean",
-        "concat",
-        //"uglify",
-		//"compress"
+    grunt.registerTask("build-pd-clean-lib", [
+        "clean:pdtmp", ,
+        "clean:pddist",
+        "concat:pdall"
     ]);
 };
