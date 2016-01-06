@@ -109,16 +109,36 @@ angular.module("EavConfiguration", [])
             },
             metadataOfEntity: 4,
             metadataOfAttribute: 2,
+            metadataOfCmsObject: 10,
 
             contentType: {
                 defaultScope: "2SexyContent" // null 
             },
 
             // use this to set defaults for field types OR to provide an alternat type if one is deprecated
+            // note that it's here for testing, it's really used in 2sxc for mapping the default wysiswyg
             formly: {
                 inputTypeReplacementMap: {
                     //"string-wysiwyg": "string-dropdown"
                     //"string-wysiwyg": "string-wysiwyg-dnn"
+                },
+
+                // used to inject additional / change config if necessary
+                inputTypeReconfig: function (field) {
+                    var config = field.InputTypeConfig || {}; // note: can be null
+                    var applyChanges = false;
+                    switch (field.InputType) {
+                    case "string-wysiwyg-demo":
+                        config.Assets = "hello.js";
+                        applyChanges = true;
+                        break;
+                    case "unknown": // server default if not defined
+                    default:        // default if not defined in this list
+                        break;
+
+                    }
+                    if (applyChanges && !field.InputTypeConfig)
+                        field.InputTypeConfig = config;
                 }
             }
 

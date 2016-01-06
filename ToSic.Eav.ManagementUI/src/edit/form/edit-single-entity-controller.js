@@ -40,7 +40,13 @@
 		            // Transform EAV content type configuration to formFields (formly configuration)
 
                     // first: add all custom types to re-load these scripts and styles
-		            angular.forEach(result.data, function(e, i) {
+		            angular.forEach(result.data, function (e, i) {
+		                // check in config input-type replacement map if the specified type should be replaced by another
+		                if (e.InputType && eavConfig.formly.inputTypeReplacementMap[e.InputType]) {
+		                    e.InputType = eavConfig.formly.inputTypeReplacementMap[e.InputType];
+		                }
+
+		                eavConfig.formly.inputTypeReconfig(e);  // provide custom overrides etc. if necessary
 		                if (e.InputTypeConfig)
 		                    customInputTypes.addInputType(e);
 		            });
@@ -133,8 +139,8 @@
 
 		    // new: the All can - and should - have an input-type which doesn't change
 		    // First look in Metadata.All if an InputType is defined (All should override the setting, which is not the case when using only merged)
-			if (e.Metadata.All && e.Metadata.All.InputType)
-			    inputType = e.Metadata.All.InputType;
+			if (e.InputType !== "unknown") // the input type of @All is here from the web service // Metadata.All && e.Metadata.All.InputType)
+			    inputType = e.InputType;
             // If not, look in merged
 			else if (e.Metadata.merged && e.Metadata.merged.InputType)
 			    inputType = e.Metadata.merged.InputType;
@@ -142,9 +148,9 @@
 			if (inputType && inputType.indexOf("-") === -1) // has input-type, but missing main type, this happens with old types like string wysiyg
 		        inputType = type + "-" + inputType;
 
-            // check in config input-type replacement map
-		    if (inputType && eavConfig.formly.inputTypeReplacementMap[inputType])
-		        inputType = eavConfig.formly.inputTypeReplacementMap[inputType];
+            //// check in config input-type replacement map if the specified type should be replaced by another
+		    //if (inputType && eavConfig.formly.inputTypeReplacementMap[inputType])
+		    //    inputType = eavConfig.formly.inputTypeReplacementMap[inputType];
 
 		    // this type may have assets, so the definition may be late-loaded
 		    var typeAlreadyRegistered = formlyConfig.getType(inputType);
