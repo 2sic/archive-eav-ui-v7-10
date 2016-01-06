@@ -42,9 +42,8 @@
                     // first: add all custom types to re-load these scripts and styles
 		            angular.forEach(result.data, function (e, i) {
 		                // check in config input-type replacement map if the specified type should be replaced by another
-		                if (e.InputType && eavConfig.formly.inputTypeReplacementMap[e.InputType]) {
+		                if (e.InputType && eavConfig.formly.inputTypeReplacementMap[e.InputType]) 
 		                    e.InputType = eavConfig.formly.inputTypeReplacementMap[e.InputType];
-		                }
 
 		                eavConfig.formly.inputTypeReconfig(e);  // provide custom overrides etc. if necessary
 		                if (e.InputTypeConfig)
