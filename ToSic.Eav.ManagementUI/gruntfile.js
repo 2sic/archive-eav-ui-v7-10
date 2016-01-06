@@ -62,16 +62,16 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            all: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
+            mainApp: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
         },
 
         clean: {
-            tmp: tmpRoot + "**/*", 
+            mainAppTmp: tmpRoot + "**/*",
             dist: "dist/**/*"
         },
 
         copy: {
-            build: {
+            mainApp: {
                 files: [
                     {
                         expand: true,
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            i18n: { 
+            mainAppi18n: {
                 files: [
                     {
                         expand: true,
@@ -103,10 +103,11 @@ module.exports = function(grunt) {
             }
         },
         ngtemplates: {
-            default: {
+            mainApp: {
                 options: {
                     module: "eavTemplates",
-                    append: true,
+                    // append: true,
+                    standalone: true,
                     htmlmin: configConstants.ngTemplatesHtmlMin
                 },
                 files: [
@@ -117,10 +118,11 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            editUi: {
+            mainAppEdit: {
                 options: {
                     module: "eavEditTemplates",
-                    append: true,
+                    // append: true,
+                    standalone: true,
                     htmlmin: configConstants.ngTemplatesHtmlMin
                 },
                 files: [
@@ -134,35 +136,35 @@ module.exports = function(grunt) {
             }
         },
         concat: {
-            default: {
+            mainApp: {
                 src: admin.tmp + "**/*.js",
                 dest: admin.concatFile
             },
-            adminCss: {
+            mainAppAdminCss: {
                 src: admin.tmp + "**.css",
                 dest: admin.concatCss
             },
-            editUi: {
+            mainAppEditUi: {
                 src: editUi.tmp + "**/*.js",
                 dest: editUi.concatFile
             },
-            pipelineCss: {
+            mainAppPipelineCss: {
                 src: [admin.tmp + "pipelines/pipeline-designer.css"],
                 dest: admin.dist + concatPipelineCss
             },
-            editUiCss: {
+            mainAppEditUiCss: {
                 src: [editUi.tmp + "**/*.css"],
                 dest: editUi.concatCss
             }
 
         },
         ngAnnotate: {
-            default: {
+            mainApp: {
                 expand: true,
                 src: admin.concatFile,
                 extDot: "last"          // Extensions in filenames begin after the last dot 
             },
-            editUi: {
+            mainAppEditUi: {
                 expand: true,
                 src: editUi.concatFile,
                 extDot: "last"          // Extensions in filenames begin after the last dot 
@@ -177,11 +179,11 @@ module.exports = function(grunt) {
                 sourceMap: true
             },
 
-            default: {
+            mainApp: {
                 src: admin.concatFile,
                 dest: admin.uglifyFile
             },
-            editUi: {
+            mainAppEditUi: {
                 src: editUi.concatFile,
                 dest: editUi.uglifyFile
             }
@@ -192,7 +194,7 @@ module.exports = function(grunt) {
                 shorthandCompacting: false,
                 roundingPrecision: -1
             },
-            target: {
+            mainApp: {
                 files: [{
                     expand: true,
                     cwd: distRoot,
@@ -204,18 +206,18 @@ module.exports = function(grunt) {
             }
         },
 
-        compress: {
-            main: {
-                options: {
-                    mode: "gzip"
-                },
-                expand: true,
-                cwd: distRoot,
-                src: ["**/*.min.js"],
-                dest: distRoot,
-                ext: ".gz.js"
-            }
-        },
+        //compress: {
+        //    mainApp: {
+        //        options: {
+        //            mode: "gzip"
+        //        },
+        //        expand: true,
+        //        cwd: distRoot,
+        //        src: ["**/*.min.js"],
+        //        dest: distRoot,
+        //        ext: ".gz.js"
+        //    }
+        //},
 
         jasmine: {
             default: {
@@ -245,18 +247,26 @@ module.exports = function(grunt) {
     // Load all grunt-plugins mentioned in the package.json
     require("load-grunt-tasks")(grunt);
     require("time-grunt")(grunt);
-
+    
 
     // Default task.
     grunt.registerTask("build", [
-        "jshint",
-        "clean:tmp",
-        "copy",
-        "ngtemplates",
-        "concat",
-        "ngAnnotate",
-        "uglify",
-        "cssmin",
+        "jshint:mainApp",
+        "clean:mainAppTmp",
+        "copy:mainApp",
+        "copy:mainAppi18n",
+        "ngtemplates:mainApp",
+        "ngtemplates:mainAppEdit",
+        "concat:mainApp",
+        "concat:mainAppAdminCss",
+        "concat:mainAppEditUi",
+        "concat:mainAppPipelineCss",
+        "concat:mainAppEditUiCss",
+        "ngAnnotate:mainApp",
+        "ngAnnotate:mainAppEditUi",
+        "uglify:mainApp",
+        "uglify:mainAppEditUi",
+        "cssmin:mainApp",
         //"clean:tmp",
         
     ]);
