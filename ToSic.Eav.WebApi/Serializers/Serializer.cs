@@ -127,8 +127,8 @@ namespace ToSic.Eav.Serializers
                 if (v.Type == "Entity" && value is Data.EntityRelationship)
                     return ((Data.EntityRelationship) value).Select(p => new
                     {
-                        Id = p.EntityId,
-                        Title = p.GetBestValue("EntityTitle")?.ToString()
+                        Id = p?.EntityId,
+                        Title = p?.GetBestValue("EntityTitle")?.ToString()
                     }).ToList();
 				return value;
 				

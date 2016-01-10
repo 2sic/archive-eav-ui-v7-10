@@ -56,7 +56,7 @@ namespace ToSic.Eav.Data
                 var maybeRelationshipList = typedObject as EntityRelationship;
                 if (maybeRelationshipList != null)
                 {
-                    var entityGuids = maybeRelationshipList.Select(e => e.EntityGuid);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+                    var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
                     return entityGuids.ToList();
                 }
 
