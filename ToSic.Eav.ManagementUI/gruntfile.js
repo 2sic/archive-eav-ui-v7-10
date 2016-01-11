@@ -270,6 +270,7 @@ module.exports = function(grunt) {
         //"clean:tmp",
         
     ]);
+
     grunt.registerTask("build-auto", ["build", "watch:ngUi"]);
     grunt.registerTask("lint", "jshint");
     grunt.registerTask("default", "jasmine");

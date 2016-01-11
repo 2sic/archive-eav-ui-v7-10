@@ -1,0 +1,14 @@
+﻿<div ng-click="vm.debug.autoEnableAsNeeded($event)" class="content-items-agnostic">
+    <div class="modal-header">
+        <button class="btn btn-default btn-square btn-subtle pull-right" type="button" ng-click="vm.close()"><i icon="remove"></i></button>
+        <h3 class="modal-title" translate="Content.Manage.Title"></h3>
+    </div>
+    <div class="modal-body">
+        <button type="button" class="btn btn-primary btn-square" ng-click="vm.add()"><i icon="plus"></i></button>
+	    <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
+
+		<div ag-grid="vm.gridOptions" class="ag-grid-wrapper"></div>
+	    
+        <show-debug-availability class="pull-right" ></show-debug-availability>
+    </div>
+</div>

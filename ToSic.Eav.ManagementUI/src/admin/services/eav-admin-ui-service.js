@@ -26,12 +26,14 @@
 // 1. Import / Export
 // 2. Pipeline Designer
 
+var contentItemsModule = $eavOnlyHelpers.urlParams.get("aggrid") ? "ContentItemsAppAgnostic" : "ContentItemsApp";
+
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
-    "ContentItemsApp",      // Content-items dialog - not working atm?
+    contentItemsModule,      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
     "ContentExportApp",
@@ -45,8 +47,14 @@ angular.module("EavAdminUi", ["ng",
 
             //#region List of Content Items dialogs
             svc.openContentItems = function oci(appId, staticName, itemId, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
-                return svc.OpenModal("content-items/content-items.html", "ContentItemsList as vm", "xlg", resolve, closeCallback);
+            	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
+            	var templateName = "content-items";
+	            var size = "xlg";
+	            if ($eavOnlyHelpers.urlParams.get("aggrid")) {
+	            	templateName += "-agnostic";
+	            	size = "fullscreen";
+	            }
+	            return svc.OpenModal("content-items/" + templateName + ".html", "ContentItemsList as vm", size, resolve, closeCallback);
             };
             //#endregion
 
