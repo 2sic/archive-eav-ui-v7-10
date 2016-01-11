@@ -61,6 +61,16 @@ module.exports = function(grunt) {
     grunt.config.merge({
         pkg: grunt.file.readJSON("package.json"),
 
+        paths: {
+            bower: "bower_components",
+            dist: "dist",
+            libs: "libs",
+            publish: "publish",
+            src: "src",
+            temp: "tmp",
+            tests: "tests"
+        },
+
         jshint: {
             mainApp: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
         },
@@ -284,6 +294,7 @@ module.exports = function(grunt) {
     grunt.task.loadTasks("grunt-tasks/jsplumb-jquery");
     grunt.task.loadTasks("grunt-tasks/jsplumb-clean");
     grunt.task.loadTasks("grunt-tasks/i18n");
+    grunt.task.loadTasks("grunt-tasks/ag-grid");
 
     // custom field
     grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");

@@ -2150,7 +2150,7 @@ angular.module("EavServices")
 // 1. Import / Export
 // 2. Pipeline Designer
 
-var contentItemsModule = $eavOnlyHelpers.urlParams.get("aggrid") ? "ContentItemsAppAgnostic" : "ContentItemsApp";
+var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
 
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
@@ -2174,7 +2174,7 @@ angular.module("EavAdminUi", ["ng",
             	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
             	var templateName = "content-items";
 	            var size = "xlg";
-	            if ($eavOnlyHelpers.urlParams.get("aggrid")) {
+	            if (!$eavOnlyHelpers.urlParams.get("oldgrid")) {
 	            	templateName += "-agnostic";
 	            	size = "fullscreen";
 	            }

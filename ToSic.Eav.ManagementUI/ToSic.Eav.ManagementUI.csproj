@@ -114,10 +114,12 @@
     <Content Include="App_Themes\Default\Site.css" />
     <Content Include="App_Themes\Dialog\Dialog.css" />
     <Content Include="EAV\AngularServices\eav4ng.js" />
+    <Content Include="grunt-tasks\ag-grid\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
+    <Content Include="src\admin\ag-grid.css" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export-service.js" />
