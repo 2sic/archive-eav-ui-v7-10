@@ -5,7 +5,7 @@
         "EavConfiguration",
         "EavAdminUi",
         "EavServices",
-		"agGrid"
+		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
         .controller("ContentItemsList", contentItemsListController)
 	;

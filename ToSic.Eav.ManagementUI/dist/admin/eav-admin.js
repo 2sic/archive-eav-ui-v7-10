@@ -366,7 +366,7 @@
         "EavConfiguration",
         "EavAdminUi",
         "EavServices",
-		"agGrid"
+		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
         .controller("ContentItemsList", contentItemsListController)
 	;
@@ -2150,14 +2150,14 @@ angular.module("EavServices")
 // 1. Import / Export
 // 2. Pipeline Designer
 
-var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
+// var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
 
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $modal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
-    contentItemsModule,      // Content-items dialog - not working atm?
+    "ContentItemsAppAgnostic", // contentItemsModule,      // Content-items dialog - not working atm?
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
     "ContentExportApp",
@@ -2174,7 +2174,7 @@ angular.module("EavAdminUi", ["ng",
             	var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, contentTypeId: itemId });
             	var templateName = "content-items";
 	            var size = "xlg";
-	            if (!$eavOnlyHelpers.urlParams.get("oldgrid")) {
+	            if (true) { //!$eavOnlyHelpers.urlParams.get("oldgrid")) {
 	            	templateName += "-agnostic";
 	            	size = "fullscreen";
 	            }

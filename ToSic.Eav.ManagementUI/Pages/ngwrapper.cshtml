@@ -22,9 +22,10 @@
 
 
     <!--default set needed for all UIs like angular, animate, translate-->
-	<script src="/dist/lib/angular/set.min.js"></script>
-	<script src="/dist/lib/ag-grid/ag-grid.min.js"></script>
-	<link rel="stylesheet" href="/dist/lib/ag-grid/ag-grid.min.css"/>
+    <script src="/dist/lib/angular/set.min.js"></script>
+    <script src="/eav/angularservices/lazy-load-ag-grid-for-angular.js"></script>
+	@*<script src="/dist/lib/ag-grid/ag-grid.min.js"></script>
+	<link rel="stylesheet" href="/dist/lib/ag-grid/ag-grid.min.css"/>*@
 
     @* Default Set / re-used components *@
     <script src="/eav/angularservices/eav-configuration.js"></script>
@@ -46,11 +47,11 @@
 
     @if (ng == "content")
     {
-        <div eav-app="eavEditEntity" ng-include="'form/main-form.html'" ng-controller="EditEntityWrapperCtrl as vm" ng-dependencies="InitParametersFromUrl,eavEditEntity"></div>
+        <div eav-app="eavEditEntity" ng-include="'form/main-form.html'" ng-controller="EditEntityWrapperCtrl as vm" ng-dependencies="LazyLoadAgGrid,InitParametersFromUrl,eavEditEntity"></div>
     }
     @if (ng == "content-types")
     {
-        <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="InitParametersFromUrl,ContentTypesApp"></div>
+        <div eav-app="ContentTypesApp" ng-include="'content-types/content-types.html'" ng-dependencies="LazyLoadAgGrid,InitParametersFromUrl,ContentTypesApp"></div>
     }
     @if (ng == "pipelines")
     {
