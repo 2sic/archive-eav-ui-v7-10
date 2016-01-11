@@ -48,7 +48,7 @@ var $eavUIConfig = {
     languages: {
         languages: JSON.parse($eavOnlyHelpers.urlParams.require("langs")), //[{ key: "en-us", name: "English (United States)" }, { key: "de-de", name: "Deutsch (Deutschland)" }],
         defaultLanguage: $eavOnlyHelpers.urlParams.require("langpri"), // "en-us",
-        fallbackLanguage: "en", 
+        // fallbackLanguage: "en", - I think not used any more...
 	    currentLanguage: $eavOnlyHelpers.urlParams.require("lang"), // "en-us",
 		i18nRoot: "/dist/i18n/"
 	}
