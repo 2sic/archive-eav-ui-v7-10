@@ -72,7 +72,8 @@ function enhanceEntity(entity) {
         // todo: when adding VS - ensure the events are added too...
         att.addVs = function(value, language, shareMode) {
             var dimensions = {};
-            dimensions[language] = ((shareMode === null || shareMode === undefined) ? false : shareMode);
+            if(language !== null)
+                dimensions[language] = ((shareMode === null || shareMode === undefined) ? false : shareMode);
             var newVs = { "Value": value, "Dimensions": dimensions };
             // ToDo: enhancer.enhanceWithCount(newVs.Dimensions);
             this.Values.push(enhancer.enhanceVs(newVs));

@@ -122,7 +122,7 @@ namespace ToSic.Eav.WebApi
 
 	        var inputType = definitions["All"]?.GetBestValue("InputType");
 
-	        if (inputType == null)
+	        if (!(inputType is string) || String.IsNullOrEmpty((string)inputType))
 	            return "unknown";
 	        return inputType.ToString();
 

@@ -54,7 +54,9 @@
 					if (fieldModel.Values.length === 0) {
 					    if (langConf.currentLanguage == langConf.defaultLanguage) {
 					        var defaultValue = eavDefaultValueService(scope.options);
-					        fieldModel.addVs(defaultValue, langConf.currentLanguage); // Assign default language dimension
+                            // Add default language if we are in a ml environment, else don't add any
+					        var languageToAdd = langConf.languages.length > 0 ? langConf.currentLanguage : null;
+					        fieldModel.addVs(defaultValue, languageToAdd);
 					    }
 					    else { // There are no values - value must be edited in default language first
 					        return;
