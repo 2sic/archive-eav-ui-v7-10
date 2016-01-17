@@ -209,7 +209,7 @@
 
 		function tryToDelete(item) {
 			if (confirm("Delete '" + item.Title + "' (" + item.RepositoryId + ") ?"))
-				svc.delete(item.RepositoryId);
+			    svc.delete(item.RepositoryId).then(setRowData);
 		}
 
 		function openDuplicate(item) {
