@@ -40,7 +40,11 @@ angular.module("EavAdminUi", ["ng",
     "HistoryApp",            // the item-history app
 	"eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", function ($modal, eavConfig, contentTypeSvc, $window) {
+    .factory("eavAdminDialogs", function ($modal, eavConfig, $window,
+        // these are needed just for simple access to some dialogs
+        entitiesSvc,
+        contentTypeSvc,
+        appId) {
             /*jshint laxbreak:true */
 
             var svc = {};
@@ -79,10 +83,23 @@ angular.module("EavAdminUi", ["ng",
             };
 
             svc.openContentTypeFields = function octf(item, closeCallback) {
-                var resolve = svc.CreateResolve({ contentType: item });
-                return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
+                    var resolve = svc.CreateResolve({ contentType: item });
+                    return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
             };
-            //#endregion
+
+            svc.openContentTypeFieldsOfItems = function octf(item, closeCallback) {
+                return entitiesSvc.getManyForEditing(appId, item)
+                    .then(function(result) {
+                        var ctName = result.data[0].Header.ContentTypeName;
+                        var svcForThis = contentTypeSvc(appId); // note: won't specify scope to fallback
+                        return svcForThis.getDetails(ctName).then(function(result2) {
+                            return svc.openContentTypeFields(result2.data, closeCallback);
+                        });
+                    });
+            };
+
+
+//#endregion
         
             //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
