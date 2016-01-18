@@ -85,6 +85,9 @@
 				});
 		}
 
+		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
+		// $modalStack.getTop() might get a wrong modal Instance
+		// setting the width with inline css in a controller should be avoided
 		function setModalWidth(width) {
 			var modalDomEl = $modalStack.getTop().value.modalDomEl;
 			var modalDialog = modalDomEl.children();
@@ -180,8 +183,8 @@
 
 		function valueGetterStatusField(params) {
 			return [
-				params.data.IsPublished ? "published" : "not published",
-				params.data.Metadata ? "metadata" : "no metadata"
+				params.data.IsPublished ? "is published" : "is not published",
+				params.data.Metadata ? "is metadata" : "is not metadata"
 			];
 		}
 
