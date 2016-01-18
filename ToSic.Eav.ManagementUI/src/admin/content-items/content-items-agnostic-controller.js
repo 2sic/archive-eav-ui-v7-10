@@ -101,11 +101,17 @@
 
 		// Get/Update Grid Row-Data
 		function setRowData() {
-			if (vm.gridOptions.api)
-				vm.gridOptions.api.setRowData(null);
+			var sortModel = {};
+			var filterModel = {};
+			if (vm.gridOptions.api) {
+				sortModel = vm.gridOptions.api.getSortModel();
+				filterModel = vm.gridOptions.api.getFilterModel();
+			}
 
 			return svc.liveListSourceRead().then(function (success) {
 				vm.gridOptions.api.setRowData(success.data);
+				vm.gridOptions.api.setSortModel(sortModel);
+				vm.gridOptions.api.setFilterModel(filterModel);
 			});
 		}
 
