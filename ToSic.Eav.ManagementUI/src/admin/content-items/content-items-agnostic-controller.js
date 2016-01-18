@@ -10,7 +10,7 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance, $q, $window) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance, $q, $modalStack) {
 		/* jshint validthis:true */
 		var vm = angular.extend(this, {
 			debug: debugState,
@@ -71,11 +71,24 @@
 		function activate() {
 			svc = contentItemsSvc(appId, contentType);
 
+			// set RowData an Column Definitions
 			$q.all([setRowData(), svc.getColumns()])
 				.then(function (success) {
 					var columnDefs = getColumnDefs(success[1].data);
 					vm.gridOptions.api.setColumnDefs(columnDefs);
+
+					// resize outer modal (if needed)
+					var bodyWidth = vm.gridOptions.api.gridPanel.eBodyContainer.clientWidth;
+					var viewportWidth = vm.gridOptions.api.gridPanel.eBodyViewport.clientWidth;
+					if (bodyWidth < viewportWidth)
+						setModalWidth(bodyWidth);
 				});
+		}
+
+		function setModalWidth(width) {
+			var modalDomEl = $modalStack.getTop().value.modalDomEl;
+			var modalDialog = modalDomEl.children();
+			modalDialog.css("width", (width + 47) + "px");	// add some pixels for padding and scrollbars
 		}
 
 		function add() {
@@ -209,7 +222,7 @@
 
 		function tryToDelete(item) {
 			if (confirm("Delete '" + item.Title + "' (" + item.RepositoryId + ") ?"))
-			    svc.delete(item.RepositoryId).then(setRowData);
+				svc.delete(item.RepositoryId).then(setRowData);
 		}
 
 		function openDuplicate(item) {
