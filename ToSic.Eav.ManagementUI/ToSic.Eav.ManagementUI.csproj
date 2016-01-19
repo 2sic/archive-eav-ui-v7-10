@@ -144,6 +144,7 @@
     <Content Include="src\admin\eav-admin.css" />
     <Content Include="src\admin\pipelines\query-stats-controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
+    <Content Include="src\admin\services\ctrl-save.service.js" />
     <Content Include="src\admin\services\drag-body-class.js" />
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
