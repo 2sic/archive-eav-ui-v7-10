@@ -30,4 +30,20 @@ angular.module("EavServices")
         };
         return toastr;
     })
+
+    .factory("saveToastr", function (toastr, $translate) {
+            function saveWithToaster(promise) {
+                var saving = toastr.info($translate.instant("Message.Saving"));
+                return promise.then(function() {
+                    toastr.clear(saving);
+                    toastr.success($translate.instant("Message.Saved"), { timeOut: 3000 });
+
+                }, function errorWhileSaving() {
+                    toastr.clear(saving);
+                    toastr.error($translate.instant("Message.ErrorWhileSaving"));
+                });
+            }
+
+            return saveWithToaster;
+        })
 ;
