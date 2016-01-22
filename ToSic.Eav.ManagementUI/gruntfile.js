@@ -295,6 +295,7 @@ module.exports = function(grunt) {
     grunt.task.loadTasks("grunt-tasks/jsplumb-clean");
     grunt.task.loadTasks("grunt-tasks/i18n");
     grunt.task.loadTasks("grunt-tasks/ag-grid");
+    grunt.task.loadTasks("grunt-tasks/icons");
 
     // custom field
     grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");

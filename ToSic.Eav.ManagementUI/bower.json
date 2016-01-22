@@ -33,7 +33,9 @@
     "angular-ui-switch": "https://github.com/2sic/angular-ui-switch.git#0.1.2",
     "angular-toastr": "1.5.0",
 		"bootflat-for-2sic": "https://github.com/2sic/bootflat-for-2sic.git",
-		"ag-grid": "2.3.5"
+    "ag-grid": "2.3.5",
+    "2sxc-icons": "2sic/2sxc-icons"
+
   },
   "private": true,
   "resolutions": {
