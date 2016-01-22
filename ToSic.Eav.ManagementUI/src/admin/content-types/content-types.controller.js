@@ -28,6 +28,13 @@
             eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
         };
 
+        vm.addGhost = function addGhost() {
+            var sourceName = window.prompt("enter source static name / id");
+            if (!sourceName)
+                return;
+            svc.createGhost(sourceName);
+        };
+
         vm.editFields = function editFields(item) {
             eavAdminDialogs.openContentTypeFields(item, vm.refresh);
         };

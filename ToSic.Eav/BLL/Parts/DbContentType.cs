@@ -52,6 +52,41 @@ namespace ToSic.Eav.BLL.Parts
 
         }
 
+        public void CreateGhost(string staticName)
+        {
+            // find the original
+            var attSet = Context.SqlDb.AttributeSets
+                .Where(ats => ats.StaticName == staticName 
+                    && !ats.UsesConfigurationOfAttributeSet.HasValue    // never duplicate a clone/ghost
+                    && ats.ChangeLogDeleted == null                     // never duplicate a deleted
+                    && ats.AlwaysShareConfiguration == false)           // never duplicate an always-share
+                .OrderBy(ats => ats.AttributeSetID)
+                .FirstOrDefault();
+
+            if(attSet == null)
+                throw new ArgumentNullException("can't find an original, non-ghost content-type with the static name " + staticName);
+
+            var newSet = new AttributeSet()
+            {
+                AppID = Context.AppId, // needs the new, current appid
+                StaticName = attSet.StaticName,
+                Name = attSet.Name,
+                Scope = attSet.Scope,
+                Description = attSet.Description,
+                UsesConfigurationOfAttributeSet = attSet.AttributeSetID,
+                AlwaysShareConfiguration = false, // this is copy, never re-share
+                ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName)
+            };
+            Context.SqlDb.AddToAttributeSets(newSet);
+            
+            // save first, to ensure it has an Id
+            Context.SqlDb.SaveChanges();
+
+            //var fullApi = new BetaFullApi(Context.ZoneId, Context.AppId, Context);
+            //fullApi.Metadata_AddOrUpdate(Constants.AssignmentObjectTypeIdFieldProperties, ct.AttributeSetID, "@All", newValues);
+
+        }
+
 
         public void Delete(string staticName)
         {

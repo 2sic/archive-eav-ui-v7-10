@@ -97,6 +97,11 @@ a { cursor: pointer; }
     padding-left: 9px;
 }
 
+.btn-icon {
+    height: 34px;
+    width: 34px;
+    padding-left: 6px;
+}
 .btn-lg.btn-square {
     height: 46px;
     width: 46px;

@@ -78,6 +78,13 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
+        [HttpPost]
+	    public bool CreateGhost(int appId, string sourceStaticName)
+	    {
+	        CurrentContext.ContentType.CreateGhost(sourceStaticName);
+            return true;
+	    }
+
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
         /// <summary>
         /// Returns the configuration for a content type

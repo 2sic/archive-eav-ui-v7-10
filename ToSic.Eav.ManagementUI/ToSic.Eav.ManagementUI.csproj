@@ -116,11 +116,13 @@
     <Content Include="EAV\AngularServices\eav4ng.js" />
     <Content Include="EAV\AngularServices\lazy-load-ag-grid-for-angular.js" />
     <Content Include="grunt-tasks\ag-grid\gruntfile.js" />
+    <Content Include="grunt-tasks\icons\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
+    <Content Include="src\admin\app-icons-codes.css" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export-service.js" />
@@ -142,6 +144,7 @@
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />
+    <Content Include="src\admin\icons.css" />
     <Content Include="src\admin\pipelines\query-stats-controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
     <Content Include="src\admin\services\ctrl-save.service.js" />
@@ -218,7 +221,7 @@
     <Content Include="src\admin\content-items\history-controller.js" />
     <Content Include="src\admin\content-items\history-details.html" />
     <Content Include="src\admin\content-items\history.html" />
-    <Content Include="src\admin\content-types\content-types-controller.js" />
+    <Content Include="src\admin\content-types\content-types.controller.js" />
     <Content Include="src\admin\content-types\content-types-edit.html" />
     <Content Include="src\admin\content-types\content-types-field-edit.html" />
     <Content Include="src\admin\content-types\content-types-fields.html" />
@@ -233,7 +236,7 @@
     <Content Include="src\admin\pipelines\pipelines.html" />
     <Content Include="src\admin\services\content-items-services.js" />
     <Content Include="src\admin\services\content-types-field-services.js" />
-    <Content Include="src\admin\services\content-types-services.js" />
+    <Content Include="src\admin\services\content-type.service.js" />
     <Content Include="src\admin\services\eav-admin-ui-service.js" />
     <Content Include="src\admin\services\eavNgSvcs-todo-refactor.js" />
     <Content Include="src\admin\services\history-services.js" />

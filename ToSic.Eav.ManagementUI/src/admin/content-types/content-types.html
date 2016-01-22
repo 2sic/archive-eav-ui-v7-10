@@ -9,6 +9,7 @@
 
         <span class="btn-group" ng-if="vm.debug.on">
             <button title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
+            <button title="todo" type="button" class="btn btn-warning btn-icon"><i class="icon-ghost"></i></button>
             <button title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.changeScope()"><i icon="record"></i></button>
             <button title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.liveEval()"><i icon="flash"></i></button>
         </span>
@@ -37,10 +38,10 @@
                 </td>
                 <td stop-event="click">
                     <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
-                        <span icon="list">&nbsp;{{item.Fields}}</span>
+                        <i class="icon-fields"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
                     <button ng-if="item.UsesSharedDef" tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-default btn-xs" style="width: 60px">
-                        <span icon="adjust">&nbsp;{{item.Fields}}</span>
+                        <i class="icon-ghost"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
                 </td>
 

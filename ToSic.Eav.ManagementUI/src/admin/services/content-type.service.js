@@ -39,6 +39,11 @@ angular.module("EavServices")
                 svc.scope = newScope;
                 svc.liveListReload();
             };
+
+            svc.createGhost = function createGhost(sourceId) {
+                return $http.post("eav/contenttype/createghost", { params: { appid: svc.appId, staticName: item.StaticName } })
+                    .then(svc.liveListReload);
+            };
             return svc;
         };
 
