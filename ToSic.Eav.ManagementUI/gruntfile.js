@@ -296,6 +296,7 @@ module.exports = function(grunt) {
     grunt.task.loadTasks("grunt-tasks/i18n");
     grunt.task.loadTasks("grunt-tasks/ag-grid");
     grunt.task.loadTasks("grunt-tasks/icons");
+    grunt.task.loadTasks("grunt-tasks/import-languages");
 
     // custom field
     grunt.task.loadTasks("grunt-tasks/edit-extended-custom-gps");

@@ -117,6 +117,7 @@
     <Content Include="EAV\AngularServices\lazy-load-ag-grid-for-angular.js" />
     <Content Include="grunt-tasks\ag-grid\gruntfile.js" />
     <Content Include="grunt-tasks\icons\gruntfile.js" />
+    <Content Include="grunt-tasks\import-languages\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-jquery\gruntfile.js" />
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
@@ -255,8 +256,6 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
-    <Content Include="src\i18n\admin-en.json" />
-    <Content Include="src\i18n\edit-en.json" />
     <Content Include="grunt-tasks\angular-set\gruntfile.js" />
   </ItemGroup>
   <ItemGroup>
@@ -267,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\edit\ml-entities\specs\helpers\" />
+    <Folder Include="src\i18n\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
