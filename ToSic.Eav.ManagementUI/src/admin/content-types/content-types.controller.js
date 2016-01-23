@@ -28,8 +28,8 @@
             eavAdminDialogs.openContentTypeEdit(item, vm.refresh);
         };
 
-        vm.addGhost = function addGhost() {
-            var sourceName = window.prompt("enter source static name / id");
+        vm.createGhost = function createGhost() {
+            var sourceName = window.prompt("to create a ghost content-type enter source static name / id - this is a very advanced operation - read more about it on 2sxc.org/help?tag=ghost");
             if (!sourceName)
                 return;
             svc.createGhost(sourceName);

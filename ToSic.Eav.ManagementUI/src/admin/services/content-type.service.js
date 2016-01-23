@@ -40,8 +40,8 @@ angular.module("EavServices")
                 svc.liveListReload();
             };
 
-            svc.createGhost = function createGhost(sourceId) {
-                return $http.post("eav/contenttype/createghost", { params: { appid: svc.appId, staticName: item.StaticName } })
+            svc.createGhost = function createGhost(sourceStaticName) {
+                return $http.get("eav/contenttype/createghost", { params: { appid: svc.appId, sourceStaticName: sourceStaticName } })
                     .then(svc.liveListReload);
             };
             return svc;

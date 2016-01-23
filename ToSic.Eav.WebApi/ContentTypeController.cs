@@ -78,10 +78,11 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
-        [HttpPost]
+        [HttpGet]
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
-	        CurrentContext.ContentType.CreateGhost(sourceStaticName);
+            SetAppIdAndUser(appId);
+            CurrentContext.ContentType.CreateGhost(sourceStaticName);
             return true;
 	    }
 
