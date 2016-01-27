@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
-using ToSic.Eav.Data;
 
 namespace ToSic.Eav.ImportExport
 {
@@ -78,7 +76,7 @@ namespace ToSic.Eav.ImportExport
 		/// </summary>
 		private XElement GetValueXElement(string attributeStaticname, IValue value, string attributeType)
 		{
-            var valueSerialized = value.Serialized;// SerializeValue(value);
+		    var valueSerialized = value.Serialized; 
 			// create Value-Child-Element with Dimensions as Children
 			var valueXElement = new XElement("Value",
 				new XAttribute("Key", attributeStaticname),
@@ -93,37 +91,5 @@ namespace ToSic.Eav.ImportExport
 			return valueXElement;
 		}
 
-        //2015-08-18 2dm removed this, as I moved the functionality to the IValue interface
-        ///// <summary>
-        ///// Serialize Value to a String for SQL Server or XML Export
-        ///// </summary>
-        //internal string SerializeValue(IValue value)
-        //{
-        //    var stringValue = value as Value<string>;
-        //    if (stringValue != null)
-        //        return stringValue.TypedContents;
-
-        //    var relationshipValue = value as Value<Data.EntityRelationship>;
-        //    if (relationshipValue != null)
-        //    {
-        //        var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
-
-        //        return string.Join(",", entityGuids);
-        //    }
-
-        //    var boolValue = value as Value<bool?>;
-        //    if (boolValue != null)
-        //        return boolValue.TypedContents.ToString();
-
-        //    var dateTimeValue = value as Value<DateTime?>;
-        //    if (dateTimeValue != null)
-        //        return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
-
-        //    var decimalValue = value as Value<decimal?>;
-        //    if (decimalValue != null)
-        //        return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(CultureInfo.InvariantCulture) : "";
-
-        //    throw new NotSupportedException("Can't serialize Value");
-        //}
 	}
 }

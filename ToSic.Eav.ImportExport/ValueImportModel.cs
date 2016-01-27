@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using static System.Decimal;
 
 namespace ToSic.Eav.Import
 {
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Import
                     break;
                 case AttributeTypeEnum.Number:
                     decimal typedDecimal;
-                    var isDecimal = Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
+                    var isDecimal = TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out typedDecimal);
                     decimal? typedDecimalNullable = null;
                     if (isDecimal)
                         typedDecimalNullable = typedDecimal;
@@ -79,26 +80,28 @@ namespace ToSic.Eav.Import
                         Value = typedDecimalNullable
                     };
                     break;
-                case AttributeTypeEnum.Entity:// "Entity":
-                    var entityGuids = !String.IsNullOrEmpty(value) ? value.Split(',').Select(v =>
+                case AttributeTypeEnum.Entity:
+                    var entityGuids = !string.IsNullOrEmpty(value) ? value.Split(',').Select(v =>
                     {
+                        if(v=="null")   // this is the case when an export contains a list with nulls
+                            return new Guid?();
                         var guid = Guid.Parse(v);
                         return guid == Guid.Empty ? new Guid?() : guid;
                     }).ToList() : new List<Guid?>(0);
                     valueModel = new ValueImportModel<List<Guid?>>(importEntity) { Value = entityGuids };
                     break;
-                case AttributeTypeEnum.DateTime: // "DateTime":
+                case AttributeTypeEnum.DateTime: 
                     DateTime typedDateTime;
                     valueModel = new ValueImportModel<DateTime?>(importEntity)
                     {
                         Value = DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime) ? typedDateTime : new DateTime?()
                     };
                     break;
-                case AttributeTypeEnum.Boolean: // "Boolean":
+                case AttributeTypeEnum.Boolean: 
                     bool typedBoolean;
                     valueModel = new ValueImportModel<bool?>(importEntity)
                     {
-                        Value = Boolean.TryParse(value, out typedBoolean) ? typedBoolean : new bool?()
+                        Value = bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?()
                     };
                     break;
                 default:
