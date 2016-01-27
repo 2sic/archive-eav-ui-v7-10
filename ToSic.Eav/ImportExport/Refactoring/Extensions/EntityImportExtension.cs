@@ -70,7 +70,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 valueString = "";
                 foreach (var item in enumerable)
                 {
-                    // warning: 2dm testing 2016-01-27
+                    // warning: 2dm testing 2016-01-27 
                     // should actually be something like
                     // (item as Newtonsoft.Json.Linq.JValue).Type == Newtonsoft.Json.Linq.JTokenType.Null
                     // but these are libraries I don't want in this project / temp-refactoring
