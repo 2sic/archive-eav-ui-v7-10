@@ -66,17 +66,22 @@ angular.module("eavFieldTemplates")
             });
         };
 
-        $scope.getEntityText = function(entityId) {
+        $scope.getEntityText = function (entityId) {
+            if (entityId === null)
+                return "empty slot"; // todo: i18n
             var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
             return entities.length > 0 ? entities[0].Text : $translate.instant("FieldType.Entity.EntityNotFound"); 
         };
 
-        $scope.remove = function (item) {
-            var index = $scope.chosenEntities.indexOf(item);
+        // remove needs the index --> don't name "remove" - causes problems
+        $scope.removeSlot = function remove(itemGuid, index) {
             $scope.chosenEntities.splice(index, 1);
         };
 
-        $scope.edit = function (itemGuid) {
+        // edit needs the Guid - the index isn't important
+        $scope.edit = function (itemGuid, index) {
+            if (itemGuid === null)
+                return alert('no can do'); // todo: i18n
             var entities = $filter("filter")($scope.availableEntities, { Value: itemGuid });
             var id = entities[0].Id;
 
