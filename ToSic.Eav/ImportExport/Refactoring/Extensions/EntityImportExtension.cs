@@ -70,9 +70,13 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 valueString = "";
                 foreach (var item in enumerable)
                 {
-                    valueString += item + ",";
+                    // warning: 2dm testing 2016-01-27
+                    // should actually be something like
+                    // (item as Newtonsoft.Json.Linq.JValue).Type == Newtonsoft.Json.Linq.JTokenType.Null
+                    // but these are libraries I don't want in this project / temp-refactoring
+                    valueString += (item.ToString() == "" ? "null" : item) + ",";
                 }
-                valueString = valueString.Trim(',');
+                valueString = valueString.Trim(','); // rmv trailing/leading commas
             }    
             else
             {
@@ -104,6 +108,8 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         }
 
 
+        // Todo / warning: highly duplicate code with ValueImportModel.cs
+        // but can't quickly refactor, because it's still a bit different
         private static IValueImportModel GetValueModel(Import.ImportEntity importEntity, string valueString, string valueType, string valueLanguage = null, bool valueRedOnly = false, bool resolveHyperlink = false)
         {
             IValueImportModel valueModel;
@@ -115,7 +121,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
             switch (type)
             {
-                case AttributeTypeEnum.Boolean:// "Boolean":
+                case AttributeTypeEnum.Boolean:
                     {
                         valueModel = new ValueImportModel<bool?>(importEntity)
                         {
@@ -124,7 +130,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case AttributeTypeEnum.Number:// "Number":
+                case AttributeTypeEnum.Number:
                     {
                         valueModel = new ValueImportModel<decimal?>(importEntity)
                         {
@@ -133,7 +139,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case AttributeTypeEnum.DateTime:// "DateTime":
+                case AttributeTypeEnum.DateTime:
                     {
                         valueModel = new ValueImportModel<DateTime?>(importEntity)
                         {
@@ -142,7 +148,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case AttributeTypeEnum.Hyperlink:// "Hyperlink":
+                case AttributeTypeEnum.Hyperlink:
                     {
                         string valueReference;
                         if (string.IsNullOrEmpty(valueString) || !resolveHyperlink)
@@ -155,12 +161,16 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                     }
                     break;
 
-                case AttributeTypeEnum.Entity:// "Entity":
-                    {   // TODO2tk: GUID comes like [\r\n "xxxx-xxxx-xxxxx-xxx" \r\n]
-                        valueModel = new ValueImportModel<List<Guid>>(importEntity) 
-                        { 
-                            Value = string.IsNullOrEmpty(valueString) ? new List<Guid>() : valueString.Split(',').Select(Guid.Parse).ToList()
-                        };
+                case AttributeTypeEnum.Entity:
+                    {   
+                        // trying to re-use existing code
+                        valueModel = ValueImportModel.GenerateLightValueImportModel(valueString, valueType, importEntity);
+                        //valueModel = new ValueImportModel<List<Guid>>(importEntity) 
+                        //{ 
+                        //    Value = string.IsNullOrEmpty(valueString) 
+                        //        ? new List<Guid?>() 
+                        //        : valueString.Split(',').Select(Guid.Parse).ToList()
+                        //};
                     }
                     break;
 

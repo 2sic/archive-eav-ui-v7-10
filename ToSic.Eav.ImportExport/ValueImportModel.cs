@@ -57,17 +57,27 @@ namespace ToSic.Eav.Import
     {   
         public static IValueImportModel GetModel(string value, string attributeType, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
         {
+            var valueModel = GenerateLightValueImportModel(value, attributeType, importEntity);
+
+            valueModel.ValueDimensions = dimensions;
+
+            return valueModel;
+        }
+
+        public static IValueImportModel GenerateLightValueImportModel(string value, string attributeType,
+            ImportEntity importEntity)
+        {
             IValueImportModel valueModel;
             var type = AttributeTypeEnum.Undefined;
-            if (attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
-                type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
+            if (attributeType != null && Enum.IsDefined(typeof (AttributeTypeEnum), attributeType))
+                type = (AttributeTypeEnum) Enum.Parse(typeof (AttributeTypeEnum), attributeType);
 
             switch (type)
             {
-                case AttributeTypeEnum.String: 
-                case AttributeTypeEnum.Hyperlink: 
-                case AttributeTypeEnum.Custom: 
-                    valueModel = new ValueImportModel<string>(importEntity) { Value = value };
+                case AttributeTypeEnum.String:
+                case AttributeTypeEnum.Hyperlink:
+                case AttributeTypeEnum.Custom:
+                    valueModel = new ValueImportModel<string>(importEntity) {Value = value};
                     break;
                 case AttributeTypeEnum.Number:
                     decimal typedDecimal;
@@ -81,23 +91,28 @@ namespace ToSic.Eav.Import
                     };
                     break;
                 case AttributeTypeEnum.Entity:
-                    var entityGuids = !string.IsNullOrEmpty(value) ? value.Split(',').Select(v =>
-                    {
-                        if(v=="null")   // this is the case when an export contains a list with nulls
-                            return new Guid?();
-                        var guid = Guid.Parse(v);
-                        return guid == Guid.Empty ? new Guid?() : guid;
-                    }).ToList() : new List<Guid?>(0);
-                    valueModel = new ValueImportModel<List<Guid?>>(importEntity) { Value = entityGuids };
+                    var entityGuids = !string.IsNullOrEmpty(value)
+                        ? value.Split(',').Select(v =>
+                        {
+                            if (v == "null") // this is the case when an export contains a list with nulls
+                                return new Guid?();
+                            var guid = Guid.Parse(v);
+                            return guid == Guid.Empty ? new Guid?() : guid;
+                        }).ToList()
+                        : new List<Guid?>(0);
+                    valueModel = new ValueImportModel<List<Guid?>>(importEntity) {Value = entityGuids};
                     break;
-                case AttributeTypeEnum.DateTime: 
+                case AttributeTypeEnum.DateTime:
                     DateTime typedDateTime;
                     valueModel = new ValueImportModel<DateTime?>(importEntity)
                     {
-                        Value = DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime) ? typedDateTime : new DateTime?()
+                        Value =
+                            DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
+                                ? typedDateTime
+                                : new DateTime?()
                     };
                     break;
-                case AttributeTypeEnum.Boolean: 
+                case AttributeTypeEnum.Boolean:
                     bool typedBoolean;
                     valueModel = new ValueImportModel<bool?>(importEntity)
                     {
@@ -107,12 +122,7 @@ namespace ToSic.Eav.Import
                 default:
                     throw new ArgumentOutOfRangeException(attributeType, value, "Unknown type argument found in import XML.");
             }
-
-            valueModel.ValueDimensions = dimensions;
-
             return valueModel;
         }
-
-
     }
 }
