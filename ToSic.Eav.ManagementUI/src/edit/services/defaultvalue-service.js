@@ -19,7 +19,7 @@
 				case "datetime":
 					return d !== undefined && d !== null && d !== "" ? new Date(d) : null;
 				case "entity":
-					return []; 
+				    return d !== undefined && d !== null ? d : []; 
 				case "number":
 					return null;
 				default:
