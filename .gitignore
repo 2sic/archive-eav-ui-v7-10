@@ -160,10 +160,8 @@ $RECYCLE.BIN/
 testing/bin
 Testing/Bin
 #/Testing/Bin/ToSic.Eav.pdb
-**/ToSic.Eav.dll
-**/ToSic.Eav.pdb
 /packages
-ToSic.Eav.ManagementUI/node_modules/
-ToSic.Eav.ManagementUI/.grunt/
-ToSic.Eav.ManagementUI/bower_components/
-ToSic.Eav.ManagementUI/tmp/
+/node_modules/
+/.grunt/
+/bower_components/
+tmp/*
