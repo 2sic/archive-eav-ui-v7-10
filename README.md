@@ -9,3 +9,7 @@ It's currently mainly used inside [2sxc](http://2sxc.org) ([github](https://gith
 We separated the UI from the server components because most people will want to contribute to the UI but won't actually understand the server. 
 
 The UI component needs the compiled DLLs from the main EAV project
+
+# How to setup for development
+
+...todo

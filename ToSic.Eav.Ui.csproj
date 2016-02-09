@@ -144,6 +144,7 @@
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
     <Content Include="src\admin\app-icons-codes.css" />
+    <Content Include="src\admin\bootstrap-override.css" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export-service.js" />
@@ -320,8 +321,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)ToSic.Eav.ManagementUI\dist" "$(SolutionDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"
-copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)dist" "$(ProjectDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"
+copy "$(TargetPath)" "$(ProjectDir)..\2SexyContent\Web\bin"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,8 @@
 ﻿@font-face {
   font-family: 'app-icons';
-  src: url('..//lib/fonts/app-icons.woff?11720481') format('woff');
+    src: url('../lib/fonts/app-icons.woff?78331213') format('woff'),
+         url('../lib/fonts/app-icons.eot?78331213#iefix') format('embedded-opentype'),
+         url('../lib/fonts/app-icons.ttf?78331213') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
