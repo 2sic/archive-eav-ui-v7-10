@@ -1,0 +1,13 @@
+{
+  "name": "2sxc-eav-languages",
+  "homepage": "https://github.com/2sic/2sxc-eav-languages",
+  "_release": "181c50602f",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "181c50602fc3ca9310f0854f8dc6bf04f45b3442"
+  },
+  "_source": "git://github.com/2sic/2sxc-eav-languages.git",
+  "_target": "*",
+  "_originalSource": "2sic/2sxc-eav-languages"
+}

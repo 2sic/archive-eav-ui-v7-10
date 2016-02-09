@@ -1,6 +1,9 @@
+2sic EAV UI uses the extremely permissing MIT license
+Parts of it use other licenses incl. Apache and AGPL - see note below
+
 The MIT License (MIT)
 
-Copyright (c) 2014 2sic Internet Solutions GmbH
+Copyright (c) 2015 2sic Internet Solutions GmbH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -18,3 +21,12 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+
+Note that we are also using many external and third party libraries like
+Grunt, AngularJs, DropZone, JSPlumb, ImageResizer, EAV and more, all of these have 
+a free, open source license but they may not be MIT. Make sure that you review this
+if it is critical you your use case. 

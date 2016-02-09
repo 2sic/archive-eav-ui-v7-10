@@ -1,0 +1,13 @@
+{
+  "name": "2sxc-icons",
+  "homepage": "https://github.com/2sic/2sxc-icons",
+  "_release": "cd7a7e7faa",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "cd7a7e7faa2fe30dd5f916d8c0b9535dfa5c9653"
+  },
+  "_source": "git://github.com/2sic/2sxc-icons.git",
+  "_target": "*",
+  "_originalSource": "2sic/2sxc-icons"
+}

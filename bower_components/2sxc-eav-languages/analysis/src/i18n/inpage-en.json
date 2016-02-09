@@ -1,0 +1,15 @@
+[
+
+  {
+    "Category": "Cat de",
+    "Send": "Schick",
+    "SendingMessage": "sendend...",
+    "Template": "Subj De",
+    "TemplatePicker.AppPickerDefault": "&lt;Choose App&gt;",
+    "TemplatePicker.Cancel": "Cancel change",
+    "TemplatePicker.Close": "Close",
+    "TemplatePicker.ContentTypePickerDefault": "&lt;Choose Content Type&gt;",
+    "TemplatePicker.Save": "Save and close",
+    "ThanksMessage": "danke...2"
+  }
+]
