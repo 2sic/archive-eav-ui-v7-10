@@ -15,14 +15,14 @@ angular.module("eavFieldTemplates")
         });
 
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService) {
         if (!$scope.to.settings.merged)
             $scope.to.settings.merged = {};
 
         $scope.availableEntities = [];
 
         if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
-            $scope.model[$scope.options.key] = { Values: [{ Value: [], Dimensions: {} }] };
+            $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
 
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
 
