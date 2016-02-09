@@ -132,10 +132,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Themes\Default\Site.css" />
-    <Content Include="App_Themes\Dialog\Dialog.css" />
-    <Content Include="EAV\AngularServices\eav4ng.js" />
-    <Content Include="EAV\AngularServices\lazy-load-ag-grid-for-angular.js" />
+    <Content Include=".gitignore" />
+    <Content Include="js-for-testing\eav4ng.js" />
+    <Content Include="js-for-testing\lazy-load-ag-grid-for-angular.js" />
     <Content Include="grunt-tasks\ag-grid\gruntfile.js" />
     <Content Include="grunt-tasks\icons\gruntfile.js" />
     <Content Include="grunt-tasks\import-languages\gruntfile.js" />
@@ -230,7 +229,7 @@
     <Content Include="src\edit\ml-entities\tests\SpecRunner.html" />
     <Content Include="gruntfile.js" />
     <Content Include="bower.json" />
-    <Content Include="EAV\AngularServices\eav-configuration.js" />
+    <Content Include="js-for-testing\eav-configuration.js" />
     <Content Include="Global.asax" />
     <Content Include="Pages\WebApiQuickTests.html" />
     <Content Include="packages.config">
