@@ -3,6 +3,15 @@
 (function () {
     /*jshint laxbreak:true */
 
+    // helper method because we don't have jQuery any more to find the offset
+    function getElementOffset(element) {
+        var de = document.documentElement;
+        var box = element.getBoundingClientRect();
+        var top = box.top + window.pageYOffset - de.clientTop;
+        var left = box.left + window.pageXOffset - de.clientLeft;
+        return { top: top, left: left };
+    }
+
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
             function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
@@ -321,8 +330,8 @@
                     if (dataSource.ReadOnly) return;
 
                     var newName = prompt("Rename DataSource", dataSource.Name);
-                    if (newName !== undefined && newName.trim())
-                        dataSource.Name = newName;
+                    if (newName && newName.trim())
+                        dataSource.Name = newName.trim();
                 };
 
                 // Edit Description of a DataSource
@@ -330,15 +339,14 @@
                     if (dataSource.ReadOnly) return;
 
                     var newDescription = prompt("Edit Description", dataSource.Description);
-                    if (newDescription !== undefined && newDescription.trim())
-                        dataSource.Description = newDescription;
+                    if (newDescription && newDescription.trim())
+                        dataSource.Description = newDescription.trim();
                 };
 
                 // Update DataSource Position on Drag
-                $scope.dataSourceDrag = function() {
-                    var $this = /* angular.element(this); /*/  $(this);
-                    var offset = $this.offset();
-                    var dataSource = $scope.findDataSourceOfElement($this).dataSource;// $this.scope().dataSource;
+                $scope.dataSourceDrag = function(draggedWrapper) {
+                    var offset = getElementOffset(draggedWrapper.el);
+                    var dataSource = $scope.findDataSourceOfElement(draggedWrapper.el);
                     $scope.$apply(function() {
                         dataSource.VisualDesignerData.Top = Math.round(offset.top);
                         dataSource.VisualDesignerData.Left = Math.round(offset.left);

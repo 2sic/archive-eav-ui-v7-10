@@ -10,7 +10,6 @@
 }());
 (function () {
 
-    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter", "$translate"];
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
@@ -120,10 +119,10 @@
             $modalInstance.dismiss("cancel");
         };
     }
+    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter", "$translate"];
 }());
 (function () {
 
-    contentExportService.$inject = ["$http", "eavConfig"];
     angular.module("ContentExportApp")
          .factory("contentExportService", contentExportService);
 
@@ -139,6 +138,7 @@
             window.open(url + "?appId=" + args.AppId + "&language=" + args.Language + "&defaultLanguage=" + args.DefaultLanguage + "&contentType=" + args.ContentType + "&recordExport=" + args.RecordExport + "&resourcesReferences=" + args.ResourcesReferences + "&languageReferences=" + args.LanguageReferences, "_self", "");
         }
     }
+    contentExportService.$inject = ["$http", "eavConfig"];
 }());
 (function () {
     angular.module("ContentFormlyTypes", [
@@ -192,7 +192,6 @@
 }());
 (function () {
 
-    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$modalInstance", "$filter", "$translate"];
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
@@ -310,10 +309,10 @@
             $modalInstance.dismiss("cancel");
         };
     }
+    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$modalInstance", "$filter", "$translate"];
 }());
 (function () {
 
-    contentImportService.$inject = ["$http"];
     angular.module("ContentImportApp")
          .factory("contentImportService", contentImportService);
 
@@ -333,10 +332,10 @@
             return $http.post("eav/ContentImport/ImportContent", { AppId: args.AppId, DefaultLanguage: args.DefaultLanguage, ContentType: args.ContentType, ContentBase64: args.File.base64, ResourcesReferences: args.ResourcesReferences, ClearEntities: args.ClearEntities });
         }
     }
+    contentImportService.$inject = ["$http"];
 }());
 (function () { 
 
-    EditContentItemController.$inject = ["mode", "entityId", "contentType", "eavAdminDialogs", "$modalInstance"];
     angular.module("ContentEditApp", [
         "EavServices",
         "EavAdminUi"
@@ -357,12 +356,12 @@
 
         vm.close = function () { $modalInstance.dismiss("cancel"); };
     }
+    EditContentItemController.$inject = ["mode", "entityId", "contentType", "eavAdminDialogs", "$modalInstance"];
 
 } ());
 (function () {
 	'use strict';
 
-	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance", "$q", "$modalStack"];
 	angular.module("ContentItemsAppAgnostic", [
         "EavConfiguration",
         "EavAdminUi",
@@ -617,11 +616,11 @@
 			$modalInstance.dismiss("cancel");
 		}
 	}
+	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance", "$q", "$modalStack"];
 
 }());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    ContentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance"];
     angular.module("ContentItemsApp", [
         "EavConfiguration",
         "EavAdminUi",
@@ -679,12 +678,11 @@
         vm.close = function () { $modalInstance.dismiss("cancel"); };
 
     }
+    ContentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance"];
 
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    HistoryController.$inject = ["appId", "entityId", "historySvc", "$modalInstance", "$modal"];
-    HistoryDetailsController.$inject = ["changeId", "dataSvc", "$modalInstance"];
     angular.module("HistoryApp", [
         "EavServices",
         "EavConfiguration",
@@ -715,6 +713,7 @@
             });
         };
     }
+    HistoryController.$inject = ["appId", "entityId", "historySvc", "$modalInstance", "$modal"];
 
     function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
         var vm = this;
@@ -729,6 +728,7 @@
 
         vm.close = function () { $modalInstance.dismiss("cancel"); };
     }
+    HistoryDetailsController.$inject = ["changeId", "dataSvc", "$modalInstance"];
 } ());
 // This is the main declaration for the app ContentTypesApp
 (function () {
@@ -746,7 +746,6 @@
 }());
 (function() {
 
-    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$modalInstance"];
     angular.module("ContentTypesApp")
         .controller("Edit", contentTypeEditController);
 
@@ -772,11 +771,11 @@
             $modalInstance.dismiss("cancel");
         };
     }
+    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$modalInstance"];
 
 }());
 (function () {
     /*jshint laxbreak:true */
-    contentTypeFieldEditController.$inject = ["appId", "svc", "item", "$filter", "$modalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldEdit", contentTypeFieldEditController)
     ;
@@ -803,10 +802,10 @@
 
         vm.close = function() { $modalInstance.dismiss("cancel"); };
     }
+    contentTypeFieldEditController.$inject = ["appId", "svc", "item", "$filter", "$modalInstance"];
 }());
 (function () {
     /*jshint laxbreak:true */
-    contentTypeFieldsAddController.$inject = ["appId", "svc", "$filter", "$modalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldsAdd", contentTypeFieldsAddController)
     ;
@@ -856,10 +855,10 @@
 
         vm.close = function() { $modalInstance.dismiss("cancel"); };
     }
+    contentTypeFieldsAddController.$inject = ["appId", "svc", "$filter", "$modalInstance"];
 }());
 /*jshint laxbreak:true */
 (function () {
-    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$filter", "$translate", "eavConfig"];
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
     ;
@@ -955,11 +954,11 @@
                 };      
         };
     }
+    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$filter", "$translate", "eavConfig"];
 
 }());
 (function() {
 
-    contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "debugState", "$translate"];
     angular.module("ContentTypesApp")
         .controller("List", contentTypeListController);
 
@@ -1039,6 +1038,7 @@
         };
 
     }
+    contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "debugState", "$translate"];
 
 
 }());
@@ -1174,7 +1174,6 @@ angular.module('eavTemplates', []).run(['$templateCache', function($templateCach
 
 (function () { 
 
-    permissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavConfig", "appId", "targetGuid", "$modalInstance"];
     angular.module("PermissionsApp", [
         "EavServices",
         "EavConfiguration",
@@ -1206,6 +1205,7 @@ angular.module('eavTemplates', []).run(['$templateCache', function($templateCach
             $modalInstance.dismiss("cancel");
         };
     }
+    permissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavConfig", "appId", "targetGuid", "$modalInstance"];
 
 } ());
 angular.module("PipelineDesigner", [
@@ -1260,6 +1260,15 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
 (function () {
     /*jshint laxbreak:true */
+
+    // helper method because we don't have jQuery any more to find the offset
+    function getElementOffset(element) {
+        var de = document.documentElement;
+        var box = element.getBoundingClientRect();
+        var top = box.top + window.pageYOffset - de.clientTop;
+        var left = box.left + window.pageXOffset - de.clientLeft;
+        return { top: top, left: left };
+    }
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
@@ -1579,8 +1588,8 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                     if (dataSource.ReadOnly) return;
 
                     var newName = prompt("Rename DataSource", dataSource.Name);
-                    if (newName !== undefined && newName.trim())
-                        dataSource.Name = newName;
+                    if (newName && newName.trim())
+                        dataSource.Name = newName.trim();
                 };
 
                 // Edit Description of a DataSource
@@ -1588,15 +1597,14 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                     if (dataSource.ReadOnly) return;
 
                     var newDescription = prompt("Edit Description", dataSource.Description);
-                    if (newDescription !== undefined && newDescription.trim())
-                        dataSource.Description = newDescription;
+                    if (newDescription && newDescription.trim())
+                        dataSource.Description = newDescription.trim();
                 };
 
                 // Update DataSource Position on Drag
-                $scope.dataSourceDrag = function() {
-                    var $this = /* angular.element(this); /*/  $(this);
-                    var offset = $this.offset();
-                    var dataSource = $scope.findDataSourceOfElement($this).dataSource;// $this.scope().dataSource;
+                $scope.dataSourceDrag = function(draggedWrapper) {
+                    var offset = getElementOffset(draggedWrapper.el);
+                    var dataSource = $scope.findDataSourceOfElement(draggedWrapper.el);
                     $scope.$apply(function() {
                         dataSource.VisualDesignerData.Top = Math.round(offset.top);
                         dataSource.VisualDesignerData.Left = Math.round(offset.left);
