@@ -20,8 +20,6 @@
                     $modalInstance.dismiss("cancel");
                 };
 
-
-
             }
         );
 })();

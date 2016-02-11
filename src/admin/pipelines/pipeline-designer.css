@@ -44,9 +44,9 @@
 		filter: alpha(opacity=60);
 	}
 
-	.dataSource.jsplumb-dragged {
-		z-index: 27;
-	}
+/*.dataSource.jsplumb-dragged {
+	z-index: 27;
+}*/
 
 	.dataSource .name, .dataSource .description {
 		display: inline-block;
@@ -108,33 +108,33 @@
 	cursor: pointer;
 }
 
-	.jsplumb-endpoint.active, .dataSource.active {
-		border: 1px dotted green;
-	}
+.jsplumb-endpoint.active, .dataSource.active {
+	border: 1px dotted green;
+}
 
-		.jsplumb-endpoint.hover, .dataSource.active.hover {
-			border: 1px dotted red;
-		}
+.jsplumb-endpoint.hover, .dataSource.active.hover {
+	border: 1px dotted red;
+}
 
 .endpointTargetLabel, .endpointSourceLabel {
 	background-color: white;
 	padding: 0.4em;
 	font: 12px sans-serif;
 	color: #444;
-	z-index: 20;
+	/*z-index: 20;*/
 	border: 1px dotted gray;
 	opacity: 0.8;
 	filter: alpha(opacity=80);
 	cursor: pointer;
 }
 
-	.endpointSourceLabel.jsplumb-hover, .endpointTargetLabel.jsplumb-hover {
-		background-color: #5C96BC;
-		color: white;
-		border: 1px solid white;
-		z-index: 26;
-		opacity: 1;
-	}
+.endpointSourceLabel.jsplumb-hover, .endpointTargetLabel.jsplumb-hover {
+	background-color: #5C96BC;
+	color: white;
+	border: 1px solid white;
+	/*z-index: 26;*/
+	opacity: 1;
+}
 
 .streamEntitiesCount {
 	background: #FCF8E3;

@@ -1157,7 +1157,7 @@ angular.module('eavTemplates', []).run(['$templateCache', function($templateCach
 
 
   $templateCache.put('pipelines/pipeline-designer.html',
-    "<div class=ng-cloak><div ng-controller=PipelineDesignerController><div id=pipelineContainer><div ng-repeat=\"dataSource in pipelineData.DataSources\" datasource guid={{dataSource.EntityGuid}} id=dataSource_{{dataSource.EntityGuid}} class=dataSource ng-attr-style=\"top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px\"><div class=configure ng-click=configureDataSource(dataSource) title=\"Configure this DataSource\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-list-alt\"></span></div><div class=name title=\"Click to edit the Name\" ng-click=editName(dataSource)>{{dataSource.Name || '(unnamed)'}}</div><br><div class=description title=\"Click to edit the Description\" ng-click=editDescription(dataSource)>{{dataSource.Description || '(no description)'}}</div><br><div class=typename ng-attr-title={{dataSource.PartAssemblyAndType}}>Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div><div class=ep title=\"Drag a new Out-Connection from here\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-plus-sign\"></span></div><div class=\"delete glyphicon glyphicon-remove\" title=\"Delete this DataSource\" ng-click=remove($index) ng-if=!dataSource.ReadOnly></div></div></div><div class=\"actions panel panel-default\"><div class=panel-heading><span class=pull-left>Actions</span> <a href=http://2sxc.org/help class=\"btn btn-info btn-xs pull-right\" target=_blank><span class=\"glyphicon glyphicon-question-sign\"></span> Help</a></div><div class=panel-body><button type=button class=\"btn btn-primary btn-block\" ng-disabled=readOnly ng-click=savePipeline()><span class=\"glyphicon glyphicon-floppy-save\"></span> Save</button><select class=form-control ng-model=addDataSourceType ng-disabled=readOnly ng-change=addDataSource() ng-options=\"d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'\"><option value=\"\">-- Add DataSource --</option></select><button type=button class=\"btn btn-default btn-sm\" title=\"Query the Data of this Pipeline\" ng-click=queryPipeline()><span class=\"glyphicon glyphicon-play\"></span> Query</button> <button type=button class=\"btn btn-default btn-sm\" title=\"Clone this Pipeline with all DataSources and Configurations\" ng-click=clonePipeline() ng-disabled=!PipelineEntityId><span class=\"glyphicon glyphicon-share-alt\"></span> Clone</button> <button type=button class=\"btn btn-default btn-sm\" ng-click=editPipelineEntity()><span class=\"glyphicon glyphicon-pencil\"></span> Test Parameters</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=toggleEndpointOverlays()><span class=\"glyphicon glyphicon-info-sign\"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=repaint()><span class=\"glyphicon glyphicon-repeat\"></span> Repaint</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=toogleDebug()><span class=\"glyphicon glyphicon-info-sign\"></span> {{debug ? 'Hide' : 'Show'}} Debug Info</button></div></div><toaster-container></toaster-container><pre ng-if=debug>{{pipelineData | json}}</pre></div></div>"
+    "<div class=ng-cloak><div ng-controller=\"PipelineDesignerController as vm\" ng-click=vm.debug.autoEnableAsNeeded($event)><div id=pipelineContainer><div ng-repeat=\"dataSource in pipelineData.DataSources\" datasource guid={{dataSource.EntityGuid}} id=dataSource_{{dataSource.EntityGuid}} class=dataSource ng-attr-style=\"top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px\"><div class=configure ng-click=configureDataSource(dataSource) title=\"Configure this DataSource\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-list-alt\"></span></div><div class=name title=\"Click to edit the Name\" ng-click=editName(dataSource)>{{dataSource.Name || '(unnamed)'}}</div><br><div class=description title=\"Click to edit the Description\" ng-click=editDescription(dataSource)>{{dataSource.Description || '(no description)'}}</div><br><div class=typename ng-attr-title={{dataSource.PartAssemblyAndType}}>Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div><div class=ep title=\"Drag a new Out-Connection from here\" ng-if=!dataSource.ReadOnly><span class=\"glyphicon glyphicon-plus-sign\"></span></div><div class=\"delete glyphicon glyphicon-remove\" title=\"Delete this DataSource\" ng-click=remove($index) ng-if=!dataSource.ReadOnly></div></div></div><div class=\"actions panel panel-default\"><div class=panel-heading><span class=pull-left>Actions</span> <a href=http://2sxc.org/help class=\"btn btn-info btn-xs pull-right\" target=_blank><span class=\"glyphicon glyphicon-question-sign\"></span> Help</a></div><div class=panel-body><button type=button class=\"btn btn-primary btn-block\" title=\"Query the Data of this Pipeline\" ng-click=queryPipeline()><span class=\"glyphicon glyphicon-play\"></span> Query</button><select class=form-control ng-model=addDataSourceType ng-disabled=readOnly ng-change=addDataSource() ng-options=\"d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'\"><option value=\"\">-- Add DataSource --</option></select><button type=button class=\"btn btn-default btn-block\" ng-click=editPipelineEntity()><span class=\"glyphicon glyphicon-pencil\"></span> Test Parameters</button> <button type=button class=\"btn btn-primary btn-block\" ng-disabled=readOnly ng-click=savePipeline()><span icon=ok></span> Save</button><br><br><button type=button class=\"btn btn-info btn-xs\" ng-click=toggleEndpointOverlays()><span class=\"glyphicon glyphicon-info-sign\"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button> <button type=button class=\"btn btn-info btn-xs\" ng-click=repaint()><span class=\"glyphicon glyphicon-repeat\"></span> Repaint</button> <button type=button class=\"btn btn-info btn-xs\" ng-if=vm.debug.on ng-click=toogleDebug()><span class=\"glyphicon glyphicon-info-sign\"></span> {{debug ? 'Hide' : 'Show'}} Debug Info</button><show-debug-availability class=pull-right></show-debug-availability></div></div><toaster-container></toaster-container><pre ng-if=debug>{{pipelineData | json}}</pre></div></div>"
   );
 
 
@@ -1272,8 +1272,11 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "$timeout", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "debugState", "$timeout", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
+                var vm = this;
+                vm.debug = debugState;
+
 
                 // Init
                 var toastr = toastrWithHttpErrorHandling;
@@ -1289,6 +1292,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
                 pipelineService.setAppId(appId);
 
+                // this will retrieve the dataSource info-object for a DOM element
                 $scope.findDataSourceOfElement = function fdsog(element) {
                     var guid = element.attributes.guid.value;
                     var list = $scope.pipelineData.DataSources;
@@ -1316,8 +1320,10 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                         toastr.error(reason, "Loading Pipeline failed");
                     });
 
+
                 // init new jsPlumb Instance
-                jsPlumb.ready(function() {
+                jsPlumb.ready(function () {
+
                     $scope.jsPlumbInstance = jsPlumb.getInstance({
                         Connector: ["Bezier", { curviness: 70 }],
                         HoverPaintStyle: {
@@ -1335,6 +1341,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                         },
                         Container: "pipelineContainer"
                     });
+
 
                     // If connection on Out-DataSource was removed, remove custom Endpoint
                     $scope.jsPlumbInstance.bind("connectionDetached", function(info) {
@@ -1433,7 +1440,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                 };
                 // #endregion
 
-                // make a DataSource with Endpoints, called by the datasource-Directive
+                // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
                 $scope.makeDataSource = function(dataSource, element) {
                     // suspend drawing and initialise
                     $scope.jsPlumbInstance.doWhileSuspended(function() {
@@ -1479,8 +1486,6 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                     console.log(element);
 
                     var dataSource = $scope.findDataSourceOfElement(element[0]);
-                    // old, using jQuery - var dataSource = element.scope().dataSource;
-
 
                     var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
                     // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
@@ -1896,8 +1901,6 @@ angular.module("PipelineManagement", [
                 vm.close = function () {
                     $modalInstance.dismiss("cancel");
                 };
-
-
 
             }]
         );

@@ -14,8 +14,11 @@
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
+                var vm = this;
+                vm.debug = debugState;
+
 
                 // Init
                 var toastr = toastrWithHttpErrorHandling;
@@ -31,6 +34,7 @@
 
                 pipelineService.setAppId(appId);
 
+                // this will retrieve the dataSource info-object for a DOM element
                 $scope.findDataSourceOfElement = function fdsog(element) {
                     var guid = element.attributes.guid.value;
                     var list = $scope.pipelineData.DataSources;
@@ -58,8 +62,10 @@
                         toastr.error(reason, "Loading Pipeline failed");
                     });
 
+
                 // init new jsPlumb Instance
-                jsPlumb.ready(function() {
+                jsPlumb.ready(function () {
+
                     $scope.jsPlumbInstance = jsPlumb.getInstance({
                         Connector: ["Bezier", { curviness: 70 }],
                         HoverPaintStyle: {
@@ -77,6 +83,7 @@
                         },
                         Container: "pipelineContainer"
                     });
+
 
                     // If connection on Out-DataSource was removed, remove custom Endpoint
                     $scope.jsPlumbInstance.bind("connectionDetached", function(info) {
@@ -175,7 +182,7 @@
                 };
                 // #endregion
 
-                // make a DataSource with Endpoints, called by the datasource-Directive
+                // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
                 $scope.makeDataSource = function(dataSource, element) {
                     // suspend drawing and initialise
                     $scope.jsPlumbInstance.doWhileSuspended(function() {
@@ -221,8 +228,6 @@
                     console.log(element);
 
                     var dataSource = $scope.findDataSourceOfElement(element[0]);
-                    // old, using jQuery - var dataSource = element.scope().dataSource;
-
 
                     var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
                     // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
