@@ -185,7 +185,16 @@
                 // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
                 $scope.makeDataSource = function(dataSource, element) {
                     // suspend drawing and initialise
-                    $scope.jsPlumbInstance.doWhileSuspended(function() {
+                	$scope.jsPlumbInstance.batch(function () {
+
+                		// make DataSources draggable. Must happen before makeSource()!
+                		if (!$scope.readOnly) {
+                			$scope.jsPlumbInstance.draggable(element, {
+                				grid: [20, 20],
+                				drag: $scope.dataSourceDrag
+                			});
+                		}
+
                         // Add Out- and In-Endpoints from Definition
                         var dataSourceDefinition = dataSource.Definition();
                         if (dataSourceDefinition !== null) {
@@ -207,13 +216,7 @@
                             $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon" });
                         }
 
-                        // make DataSources draggable
-                        if (!$scope.readOnly) {
-                            $scope.jsPlumbInstance.draggable(element, {
-                                grid: [20, 20],
-                                drag: $scope.dataSourceDrag
-                            });
-                        }
+                        
                     });
 
                     $scope.dataSourcesCount++;
@@ -245,7 +248,7 @@
                     if ($scope.connectionsInitialized) return;
 
                     // suspend drawing and initialise
-                    $scope.jsPlumbInstance.doWhileSuspended(function() {
+                    $scope.jsPlumbInstance.batch(function() {
                         initWirings($scope.pipelineData.Pipeline.StreamWiring);
                     });
                     $scope.repaint(); // repaint so continuous connections are aligned correctly
