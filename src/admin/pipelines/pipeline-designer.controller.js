@@ -14,11 +14,17 @@
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
                 var vm = this;
                 vm.debug = debugState;
 
+                activate();
+
+                function activate() {
+                    // add ctrl+s to save
+                    vm.saveShortcut = ctrlS(function() { vm.savePipeline(); });
+                }
 
                 // Init
                 var toastr = toastrWithHttpErrorHandling;
@@ -396,9 +402,11 @@
                 $scope.editPipelineEntity = function() {
                     // save Pipeline, then open Edit Dialog
                     $scope.savePipeline().then(function() {
-
+                        vm.saveShortcut.unbind();
                         eavAdminDialogs.openEditItems([{ EntityId: $scope.PipelineEntityId }], function() {
-                            pipelineService.getPipeline($scope.PipelineEntityId).then(pipelineSaved);
+                            pipelineService.getPipeline($scope.PipelineEntityId)
+                                .then(pipelineSaved)
+                                .then(vm.saveShortcut.rebind);
                         });
 
                     });
@@ -427,7 +435,7 @@
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                $scope.savePipeline = function (successHandler) {
+                vm.savePipeline = $scope.savePipeline = function (successHandler) {
                     var waitMsg = toastr.info("This shouldn't take long", "Saving...");
                     $scope.readOnly = true;
 

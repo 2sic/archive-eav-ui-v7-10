@@ -1272,11 +1272,17 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "debugState", "$timeout", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "debugState", "$timeout", "ctrlS", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
                 var vm = this;
                 vm.debug = debugState;
 
+                activate();
+
+                function activate() {
+                    // add ctrl+s to save
+                    vm.saveShortcut = ctrlS(function() { vm.savePipeline(); });
+                }
 
                 // Init
                 var toastr = toastrWithHttpErrorHandling;
@@ -1654,9 +1660,11 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                 $scope.editPipelineEntity = function() {
                     // save Pipeline, then open Edit Dialog
                     $scope.savePipeline().then(function() {
-
+                        vm.saveShortcut.unbind();
                         eavAdminDialogs.openEditItems([{ EntityId: $scope.PipelineEntityId }], function() {
-                            pipelineService.getPipeline($scope.PipelineEntityId).then(pipelineSaved);
+                            pipelineService.getPipeline($scope.PipelineEntityId)
+                                .then(pipelineSaved)
+                                .then(vm.saveShortcut.rebind);
                         });
 
                     });
@@ -1685,7 +1693,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                $scope.savePipeline = function (successHandler) {
+                vm.savePipeline = $scope.savePipeline = function (successHandler) {
                     var waitMsg = toastr.info("This shouldn't take long", "Saving...");
                     $scope.readOnly = true;
 
@@ -2122,27 +2130,65 @@ angular.module("EavServices")
             return svc;
         };
     }]);
+/* 
+ * 
+ * Simple service which takes care of ctrl+S keyboard shortcuts. 
+ * use it as a service for your controller, then add a line like 
+         function activate() {
+            // add ctrl+s to save
+            ctrlS.bind(function() { vm.save(false); });
+        }
+
+ */
+
 angular.module("EavServices")
     .factory("ctrlS", ["$window", function ($window) {
-        var save = {
-            _event: null,
 
-            bind: function bind(action) {
-                save._event = window.addEventListener("keydown", function (e) {
+        // Create a capture Ctrl+S and execute action-object
+        function createSave(action) {
+            var save = {
+                _event: null,
+                _action: null,
+                _isbound: false,
+
+                // this will be called on each keydown, will check if it was a ctrl+S
+                detectCtrlSAndExcecute: function(e) {
                     if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                        if (save._action === null)
+                            return console.log("can't do anything on ctrl+S, no action registered");
                         e.preventDefault();
-                        action();
+                        save._action();
                     }
-                }, false);
+                },
 
-            },
+                bind: function bind(action) {
+                    save._action = action;
+                    save._isbound = true;
+                    save._event = $window.addEventListener("keydown", save.detectCtrlSAndExcecute, false);
 
-            unbind: function unbind() {
-                window.removeEventListener(save._event);
-            }
-        };
+                },
 
-        return save;
+                unbind: function unbind() {
+                    $window.removeEventListener("keydown", save.detectCtrlSAndExcecute);
+                    save._isbound = false;
+                },
+
+                // re-attach Ctrl+S if it had already been attached previously
+                rebind: function rebind() {
+                    if (save._action === null)
+                        throw "can't rebind, as it was never initially bound";
+                    if (!save._isbound)
+                        throw "can't rebind, as it's still bound";
+                    save.bind(save._action);
+                }
+            };
+
+            save.bind(action);
+
+            return save;
+        }
+
+        return createSave;
     }]);
 /* shared debugState = advancedMode
  * 
