@@ -3,10 +3,28 @@
 (function () {
     /*jshint laxbreak:true */
 
+    // helper method because we don't have jQuery any more to find the offset
+    function getElementOffset(element) {
+        var de = document.documentElement;
+        var box = element.getBoundingClientRect();
+        var top = box.top + window.pageYOffset - de.clientTop;
+        var left = box.left + window.pageXOffset - de.clientLeft;
+        return { top: top, left: left };
+    }
+
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, $timeout, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
+                var vm = this;
+                vm.debug = debugState;
+
+                activate();
+
+                function activate() {
+                    // add ctrl+s to save
+                    vm.saveShortcut = ctrlS(function() { vm.savePipeline(); });
+                }
 
                 // Init
                 var toastr = toastrWithHttpErrorHandling;
@@ -22,6 +40,7 @@
 
                 pipelineService.setAppId(appId);
 
+                // this will retrieve the dataSource info-object for a DOM element
                 $scope.findDataSourceOfElement = function fdsog(element) {
                     var guid = element.attributes.guid.value;
                     var list = $scope.pipelineData.DataSources;
@@ -49,8 +68,10 @@
                         toastr.error(reason, "Loading Pipeline failed");
                     });
 
+
                 // init new jsPlumb Instance
-                jsPlumb.ready(function() {
+                jsPlumb.ready(function () {
+
                     $scope.jsPlumbInstance = jsPlumb.getInstance({
                         Connector: ["Bezier", { curviness: 70 }],
                         HoverPaintStyle: {
@@ -68,6 +89,7 @@
                         },
                         Container: "pipelineContainer"
                     });
+
 
                     // If connection on Out-DataSource was removed, remove custom Endpoint
                     $scope.jsPlumbInstance.bind("connectionDetached", function(info) {
@@ -166,10 +188,19 @@
                 };
                 // #endregion
 
-                // make a DataSource with Endpoints, called by the datasource-Directive
+                // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
                 $scope.makeDataSource = function(dataSource, element) {
                     // suspend drawing and initialise
-                    $scope.jsPlumbInstance.doWhileSuspended(function() {
+                	$scope.jsPlumbInstance.batch(function () {
+
+                		// make DataSources draggable. Must happen before makeSource()!
+                		if (!$scope.readOnly) {
+                			$scope.jsPlumbInstance.draggable(element, {
+                				grid: [20, 20],
+                				drag: $scope.dataSourceDrag
+                			});
+                		}
+
                         // Add Out- and In-Endpoints from Definition
                         var dataSourceDefinition = dataSource.Definition();
                         if (dataSourceDefinition !== null) {
@@ -191,13 +222,7 @@
                             $scope.jsPlumbInstance.makeSource(element, sourceEndpoint, { filter: ".ep .glyphicon" });
                         }
 
-                        // make DataSources draggable
-                        if (!$scope.readOnly) {
-                            $scope.jsPlumbInstance.draggable(element, {
-                                grid: [20, 20],
-                                drag: $scope.dataSourceDrag
-                            });
-                        }
+                        
                     });
 
                     $scope.dataSourcesCount++;
@@ -212,8 +237,6 @@
                     console.log(element);
 
                     var dataSource = $scope.findDataSourceOfElement(element[0]);
-                    // old, using jQuery - var dataSource = element.scope().dataSource;
-
 
                     var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
                     // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
@@ -231,7 +254,7 @@
                     if ($scope.connectionsInitialized) return;
 
                     // suspend drawing and initialise
-                    $scope.jsPlumbInstance.doWhileSuspended(function() {
+                    $scope.jsPlumbInstance.batch(function() {
                         initWirings($scope.pipelineData.Pipeline.StreamWiring);
                     });
                     $scope.repaint(); // repaint so continuous connections are aligned correctly
@@ -321,8 +344,8 @@
                     if (dataSource.ReadOnly) return;
 
                     var newName = prompt("Rename DataSource", dataSource.Name);
-                    if (newName !== undefined && newName.trim())
-                        dataSource.Name = newName;
+                    if (newName && newName.trim())
+                        dataSource.Name = newName.trim();
                 };
 
                 // Edit Description of a DataSource
@@ -330,15 +353,14 @@
                     if (dataSource.ReadOnly) return;
 
                     var newDescription = prompt("Edit Description", dataSource.Description);
-                    if (newDescription !== undefined && newDescription.trim())
-                        dataSource.Description = newDescription;
+                    if (newDescription && newDescription.trim())
+                        dataSource.Description = newDescription.trim();
                 };
 
                 // Update DataSource Position on Drag
-                $scope.dataSourceDrag = function() {
-                    var $this = /* angular.element(this); /*/  $(this);
-                    var offset = $this.offset();
-                    var dataSource = $scope.findDataSourceOfElement($this).dataSource;// $this.scope().dataSource;
+                $scope.dataSourceDrag = function(draggedWrapper) {
+                    var offset = getElementOffset(draggedWrapper.el);
+                    var dataSource = $scope.findDataSourceOfElement(draggedWrapper.el);
                     $scope.$apply(function() {
                         dataSource.VisualDesignerData.Top = Math.round(offset.top);
                         dataSource.VisualDesignerData.Left = Math.round(offset.left);
@@ -380,9 +402,11 @@
                 $scope.editPipelineEntity = function() {
                     // save Pipeline, then open Edit Dialog
                     $scope.savePipeline().then(function() {
-
+                        vm.saveShortcut.unbind();
                         eavAdminDialogs.openEditItems([{ EntityId: $scope.PipelineEntityId }], function() {
-                            pipelineService.getPipeline($scope.PipelineEntityId).then(pipelineSaved);
+                            pipelineService.getPipeline($scope.PipelineEntityId)
+                                .then(pipelineSaved)
+                                .then(vm.saveShortcut.rebind);
                         });
 
                     });
@@ -411,7 +435,7 @@
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                $scope.savePipeline = function (successHandler) {
+                vm.savePipeline = $scope.savePipeline = function (successHandler) {
                     var waitMsg = toastr.info("This shouldn't take long", "Saving...");
                     $scope.readOnly = true;
 
