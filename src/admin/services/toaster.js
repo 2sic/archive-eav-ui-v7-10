@@ -15,7 +15,7 @@ angular.module("EavServices")
     })
 
     .factory("toastrWithHttpErrorHandling", function (toastr) {
-        toastr.error1 = toastr.error;
+        toastr.originalError = toastr.error;
         toastr.error = function errorWithHttpErrorDisplay(messageOrHttpError, title, optionsOverride) {
             var message;
             // test whether bodyOrError is an Error from Web API
@@ -26,13 +26,16 @@ angular.module("EavServices")
             } else
                 message = messageOrHttpError;
 
-            toastr.error2(message, title, optionsOverride);
+            toastr.originalError(message, title, optionsOverride);
         };
         return toastr;
     })
 
+    
     .factory("saveToastr", function (toastr, $translate) {
-            function saveWithToaster(promise) {
+        function saveWithToaster(promise) {
+            // todo: replace all this with a single-line calling the promise-toaster below...
+            // ? return saveWithToaster(promise, "Message.Saving", "Message.Saved", "Message.ErrorWhileSaving", null, 3000, null);
                 var saving = toastr.info($translate.instant("Message.Saving"));
                 return promise.then(function(result) {
                     toastr.clear(saving);
@@ -46,5 +49,23 @@ angular.module("EavServices")
             }
 
             return saveWithToaster;
-        })
+    })
+
+    .factory("promiseToastr", function (toastrWithHttpErrorHandling, $translate) {
+        function saveWithToaster(promise, keyInfo, keyOk, keyError, durInfo, durOk, durError) {
+            var toastr = toastrWithHttpErrorHandling;
+            var saving = toastr.info($translate.instant(keyInfo));
+            return promise.then(function (result) {
+                toastr.clear(saving);
+                toastr.success($translate.instant(keyOk), { timeOut: durOk || 1000 });
+                return result;
+            }, function errorWhileSaving(result) {
+                toastr.clear(saving);
+                toastr.error(result, $translate.instant(keyError));
+                return result;
+            });
+        }
+
+        return saveWithToaster;
+    })
 ;

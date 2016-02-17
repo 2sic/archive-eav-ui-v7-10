@@ -17,18 +17,17 @@
             function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
                 var vm = this;
+                // Init
                 vm.debug = debugState;
-
-                activate();
+                var toastr = toastrWithHttpErrorHandling;
+                var waitMsg = toastr.info("This shouldn't take long", "Please wait...");
 
                 function activate() {
                     // add ctrl+s to save
                     vm.saveShortcut = ctrlS(function() { vm.savePipeline(); });
                 }
+                activate();
 
-                // Init
-                var toastr = toastrWithHttpErrorHandling;
-                var waitMsg = toastr.info("This shouldn't take long", "Please wait...");
 
                 $scope.readOnly = true;
                 $scope.dataSourcesCount = 0;

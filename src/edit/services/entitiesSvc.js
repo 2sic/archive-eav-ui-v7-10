@@ -4,8 +4,10 @@
 
     angular.module("eavEditEntity")
         /// Standard entity commands like get one, many etc.
-        .factory("entitiesSvc", function($http, appId) {
-            var svc = {};
+        .factory("entitiesSvc", function ($http, appId, toastrWithHttpErrorHandling, promiseToastr) {
+            var svc = {
+                toastr: toastrWithHttpErrorHandling
+            };
 
             svc.getManyForEditing = function(appId, items) {
                 return $http.post("eav/entities/getmanyforediting", items, { params: { appId: appId } });
@@ -36,13 +38,17 @@
             };
 
             svc.delete = function del(type, id) {
-                return $http.get("eav/entities/delete", {
+                console.log("try to delete");
+
+                var delPromise = $http.get("eav/entities/delete", {
+                    ignoreErrors: true,
                     params: {
                         'contentType': type,
                         'id': id,
                         'appId': appId
                     }
                 });
+                return promiseToastr(delPromise, "Message.Deleting", "Message.Ok", "Message.Error");
             };
 
             svc.newEntity = function(header) {
