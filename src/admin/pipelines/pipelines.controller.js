@@ -11,7 +11,9 @@ angular.module("PipelineManagement", [
         vm.appId = appId;
 
 	    pipelineService.setAppId(appId);
-	    pipelineService.initContentTypes();
+
+        // 2016-02-18 2dm - probably not needed
+	    // pipelineService.initContentTypes();
 
 	    // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
 	    // Make URL-Provider available to the scope
