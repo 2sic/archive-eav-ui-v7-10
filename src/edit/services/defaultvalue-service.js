@@ -21,8 +21,8 @@
 				case "entity":
 				    return d !== undefined && d !== null ? d : []; 
 				case "number":
-					return null;
-				default:
+				    return d !== undefined && d !== null && d !== "" ? Number(d) : "";
+                default:
 					return d ? d : "";
 			}
 		};
