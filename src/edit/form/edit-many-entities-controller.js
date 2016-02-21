@@ -6,7 +6,7 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, saveToastr, $translate, debugState, ctrlS) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, saveToastr, $translate, debugState, ctrlS) {
 
         var vm = this;
         vm.debug = debugState;
@@ -65,8 +65,37 @@
                 });
         };
 
+        vm.showFormErrors = function() {
+                var errors = vm.formErrors();
+                var msgs = [], msgTemplate = $translate.instant("Message.FieldErrorList");
+                for (var set = 0; set < errors.length; set++) {
+                    if (errors[set].required) {
+                        var req = errors[set].required.map(function (itm) { return { field: itm.$name, error: "required" }; });
+                        msgs = msgs.concat(req);
+                    }
+                }
+                var nice = msgs.map(function (err) {
+                    var specs = err.field.split("_");
+
+                    return msgTemplate.replace("{form}", specs[1])
+                        .replace("{field}", specs[3])
+                        .replace("{error}", err.error);
+                });
+            var msg = nice.join("<br/>");
+            return toastr.error($translate.instant("Message.CantSaveInvalid").replace("{0}", msg),
+                $translate.instant("Message.Error"), { allowHtml: true }); 
+        };
+
         // the save-call
         vm.save = function (close) {
+            // check if saving is allowed
+            if (!vm.isValid()) 
+                return vm.showFormErrors();
+
+            if (vm.isWorking > 0)
+                return toastr.error($translate.instant("Message.CantSaveProcessing")); // todo: i18n
+
+            // save
             vm.isWorking++;
             saveToastr(entitiesSvc.saveMany(appId, vm.items)).then(function (result) {
                 $scope.state.setPristine();
@@ -92,6 +121,15 @@
                     valid = false;
             });
             return valid;
+        };
+
+        vm.formErrors = function () {
+            var list = [];
+            angular.forEach(vm.registeredControls, function (e, i) {
+                if (!e.isValid())
+                    list.push(e.error());
+            });
+            return list;
         };
 
         // check if dirty
