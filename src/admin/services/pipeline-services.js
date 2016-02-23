@@ -8,7 +8,8 @@ angular.module("EavServices")
         svc.pipelineResource = $resource("eav/PipelineDesigner/:action");
         svc.entitiesResource = $resource("eav/Entities/:action");
 
-        svc.dataPipelineAttributeSetId = 0;
+        // 2016-02-18 2dm - not needed?
+        // svc.dataPipelineAttributeSetId = 0;
         svc.appId = 0;
 
         // Get the Definition of a DataSource
@@ -153,12 +154,16 @@ angular.module("EavServices")
             setAppId: function (newAppId) {
                 svc.appId = newAppId;
             },
+
+            // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
             // Init some Content Types, currently only used for getPipelineUrl('new', ...)
-            initContentTypes: function initContentTypes() {
-                return contentTypeSvc(svc.appId).getDetails("DataPipeline").then(function (result) {
-                    svc.dataPipelineAttributeSetId = result.data.AttributeSetId;
-                });
-            },
+            //initContentTypes: function initContentTypes() {
+            //    return contentTypeSvc(svc.appId).getDetails("DataPipeline").then(function (result) {
+            //        svc.dataPipelineAttributeSetId = result.data.Id; // 2016-02-14 previously AttributeSetId;
+            //    });
+            //},
+
+
             // Get all Pipelines of current App
             getPipelines: function () {
                 return svc.entitiesResource.query({ action: "GetEntities", appId: svc.appId, contentType: "DataPipeline" });

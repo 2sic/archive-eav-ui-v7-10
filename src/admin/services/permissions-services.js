@@ -18,9 +18,10 @@ angular.module("EavServices")
                 return metadataSvc.getMetadata(svc.EntityAssignment, svc.PermissionTargetGuid, svc.ctName).then(svc.updateLiveAll);
             }));
 
+            // 2016-02-14 2dm commented out, don't think the ctId is ever used...
             // Get ID of this content-type 
             svc.ctSvc.getDetails(svc.ctName).then(function (result) {
-                svc.ctId = result.data.AttributeSetId;
+                svc.ctId = result.data.Id; // 2016-02-14 previously AttributeSetId;
             });
 
             // delete, then reload

@@ -18,7 +18,8 @@
 		vm.control = {
 		    isValid: function () { return vm.formFields.length === 0 || vm.form && vm.form.$valid; },
 		    isDirty: function () { return (vm.form && vm.form.$dirty); },
-		    setPristine: function () { if(vm.form) vm.form.$setPristine(); }
+		    setPristine: function () { if (vm.form) vm.form.$setPristine(); },
+            error: function () { return vm.form.$error; }
 		};
 
 		// Register this control in the parent control
