@@ -124,7 +124,7 @@
 		};
 	});
 
-	eavLocalization.directive("eavLocalizationMenu", function() {
+	eavLocalization.directive("eavLocalizationMenu", function () {
 		return {
 			restrict: "E",
 			scope: {
@@ -187,7 +187,9 @@
 				    linkDefault: function linkDefault() {
 				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				    },
-				    autoTranslate: function(languageKey) {
+				    autoTranslate: function (languageKey) {
+				        // Google translate is not implemented yet, because
+                        // there is no longer a free api.
 				        alert(translate("LangMenu.NotImplemented"));
 				    },
 				    copyFrom: function (languageKey) {
