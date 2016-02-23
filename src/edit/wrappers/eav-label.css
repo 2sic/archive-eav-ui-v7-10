@@ -1,2 +1,3 @@
 ﻿/* must hide help-block because of duplicate description */
 .help-block { display:none; }
+.eav-label { padding-right:150px; }

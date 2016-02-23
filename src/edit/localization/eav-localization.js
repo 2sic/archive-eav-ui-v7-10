@@ -178,7 +178,7 @@
 				        else
 				            vm.actions.linkDefault();
 				    },
-				    translate: function trnslt() {
+				    translate: function translate() {
 				        if (vm.enableTranslate()) {
 				            vm.fieldModel.removeLanguage(languages.currentLanguage);
 				            vm.fieldModel.addVs($scope.value.Value, languages.currentLanguage, false);
