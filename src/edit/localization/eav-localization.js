@@ -110,7 +110,6 @@
 					if (oldValue === undefined || newValue == oldValue)
 						return;
 					initCurrentValue();
-					console.log("switched language from " + oldValue + " to " + newValue);
 				});
 
 				// ToDo: Could cause performance issues (deep watch array)...
@@ -131,12 +130,14 @@
 				fieldModel: "=fieldModel",
 				options: "=options",
 				value: "=value",
-                index: "=index"
+				index: "=index",
+                formModel: "=formModel"
 			},
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
 			controllerAs: "vm",
 			controller: function ($scope, languages, $translate) {
+
 			    var vm = this;
 			    var lblDefault = $translate.instant("LangMenu.UseDefault");
 			    var lblIn = $translate.instant("LangMenu.In");
@@ -190,26 +191,66 @@
 				    autoTranslate: function (languageKey) {
 				        // Google translate is not implemented yet, because
                         // there is no longer a free api.
-				        alert(translate("LangMenu.NotImplemented"));
+				        alert($translate.instant("LangMenu.NotImplemented"));
 				    },
 				    copyFrom: function (languageKey) {
 				        if ($scope.options.templateOptions.disabled)
-				            alert(translate("LangMenu.CopyNotPossible"));
-				        var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
-				        $scope.value.Value = value;
+				            alert($translate.instant("LangMenu.CopyNotPossible"));
+				        else {
+				            var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
+				            if (vs === null || vs === undefined)
+				                console.log($scope.options.key + ": Can't copy value from " + languageKey + ' because that value does not exist.');
+				            else
+				                $scope.value.Value = value;
+				        }
 				    },
 				    useFrom: function (languageKey) {
-				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
-				        vs.setLanguage(languages.currentLanguage, true);
+				        if (vs === null || vs === undefined)
+				            console.log($scope.options.key + ": Can't use value from " + languageKey + ' because that value does not exist.');
+				        else {
+				            vm.fieldModel.removeLanguage(languages.currentLanguage);
+				            vs.setLanguage(languages.currentLanguage, true);
+				        }
 				    },
 				    shareFrom: function (languageKey) {
-				        vm.fieldModel.removeLanguage(languages.currentLanguage);
 				        var vs = vm.fieldModel.getVsWithLanguage(languageKey);
-				        vs.setLanguage(languages.currentLanguage, false);
+				        if (vs === null || vs === undefined)
+				            console.log($scope.options.key + ": Can't share value from " + languageKey + ' because that value does not exist.');
+				        else {
+				            vm.fieldModel.removeLanguage(languages.currentLanguage);
+				            vs.setLanguage(languages.currentLanguage, false);
+				        }
+				    },
+				    all: {
+				        translate: function translate() {
+				            forAllMenus('translate');
+				        },
+				        linkDefault: function linkDefault() {
+				            forAllMenus('linkDefault');
+				        },
+				        copyFrom: function (languageKey) {
+				            forAllMenus('copyFrom', languageKey);
+				        },
+				        useFrom: function (languageKey) {
+				            forAllMenus('useFrom', languageKey);
+				        },
+				        shareFrom: function (languageKey) {
+				            forAllMenus('shareFrom', languageKey);
+				        }
 				    }
 				};
 
+			    // Collect all localizationMenus (to enable "all" actions)
+				if ($scope.formModel.localizationMenus === undefined)
+				    $scope.formModel.localizationMenus = [];
+				$scope.formModel.localizationMenus.push(vm.actions);
+
+				var forAllMenus = function (action, languageKey) {
+				    for (var i = 0; i < $scope.formModel.localizationMenus.length; i++) {
+				        $scope.formModel.localizationMenus[i][action](languageKey);
+				    }
+				};
 			}
 		};
 	});

@@ -38,8 +38,38 @@
                 </li>
             </ul>
         </li>
-        <!-- ToDo: All fields -->
-        <!--<li class="divider"></li>
-        <li role="menuitem"><a href="#">Separated link</a></li>-->
+        <!-- All fields -->
+        <li class="divider"></li>
+        <li role="menuitem" class="dropdown-submenu">
+            <a href="#" translate="LangMenu.AllFields"></a>
+            <ul class="dropdown-menu">
+                <li role="menuitem"><a ng-click="vm.actions.all.translate()" translate="LangMenu.Unlink"></a></li>
+                <li role="menuitem"><a ng-click="vm.actions.all.linkDefault()" translate="LangMenu.LinkDefault"></a></li>
+                <li role="menuitem" class="dropdown-submenu">
+                    <a href="#" translate="LangMenu.Copy"></a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="language in vm.languages.languages" role="menuitem">
+                            <a ng-click="vm.actions.all.copyFrom(language.key)" title="{{language.name}}" href="#">{{language.key}}</a>
+                        </li>
+                    </ul>
+                </li>
+                <li role="menuitem" class="dropdown-submenu">
+                    <a href="#" translate="LangMenu.Use"></a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="language in vm.languages.languages" role="menuitem">
+                            <a ng-click="vm.actions.all.useFrom(language.key)" title="{{language.name}}" href="#">{{language.key}}</a>
+                        </li>
+                    </ul>
+                </li>
+                <li role="menuitem" class="dropdown-submenu">
+                    <a href="#" translate="LangMenu.Share"></a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="language in vm.languages.languages" role="menuitem">
+                            <a ng-click="vm.actions.all.shareFrom(language.key)" title="{{language.name}}" href="#">{{language.key}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
     </ul>
 </div>

@@ -14,8 +14,10 @@
     border-radius: 0 6px 6px 6px;
 }
 
+.dropdown-submenu .dropdown-menu { display:none!important; }
+
 .dropdown-submenu:hover>.dropdown-menu {
-    display: block;
+    display: block!important;
 }
 
 .dropdown-submenu>a:after {
