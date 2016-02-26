@@ -25,12 +25,12 @@ angular.module("EavServices")
             svc.toast = toastr.info($translate.instant("AdvancedMode.Info.Turn" + (svc.on ? "On" : "Off")), { timeOut: 3000 });
         };
 
-        svc.autoEnableAsNeeded = function (evt) {
-            evt = window.event || evt;
-            var ctrlAndShiftPressed = evt.ctrlKey;
-            if (ctrlAndShiftPressed && !evt.alreadySwitchedDebugState) {
+        svc.autoEnableAsNeeded = function (e) {
+            e = window.event || e;
+            var ctrlPressed = (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey);//evt.ctrlKey;
+            if (ctrlPressed && !e.alreadySwitchedDebugState) {
                 svc.toggle();
-                evt.alreadySwitchedDebugState = true;
+                e.alreadySwitchedDebugState = true;
             }
         };
 
