@@ -90,6 +90,10 @@ angular.module("eavFieldTemplates")
             $scope.chosenEntities.splice(index, 1);
         };
 
+        $scope.deleteItemInSlot = function remove(itemGuid, index) {
+            alert('this feature is not implemented yet, sorry. it will be added some day...');
+        };
+
         // edit needs the Guid - the index isn't important
         $scope.edit = function (itemGuid, index) {
             if (itemGuid === null)

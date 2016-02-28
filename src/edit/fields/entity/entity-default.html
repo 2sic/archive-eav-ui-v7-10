@@ -3,17 +3,17 @@
         <ol ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false">
             <li ng-repeat="item in chosenEntities track by $index" ui-tree-node class="eav-entityselect-item">
                 <div ui-tree-handle>
-                    <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-tag pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                    <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
                     <span title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
                     <span class="eav-entityselect-item-actions">
-                        <span data-nodrag title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)">
+                        <span data-nodrag title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)" ng-if="to.settings.merged.EnableEdit">
                             <i class="icon-pencil"></i>
                         </span>
                         <span data-nodrag title="{{ 'FieldType.Entity.Remove' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove" ng-if="to.settings.merged.EnableRemove">
                             <i ng-class="{ 'icon-minus-circled': to.settings.merged.AllowMultiValue, 'icon-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
                         </span>
                         <!-- todo: i18n, code in action, icon-visiblity/alignment -->
-                        <span data-nodrag title="{{ 'FieldType.Entity.Delete' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove" ng-if="to.settings.merged.EnableDelete">
+                        <span data-nodrag title="{{ 'FieldType.Entity.Delete' | translate }}" ng-click="deleteItemInSlot(item, $index)" class="eav-entityselect-item-remove" ng-if="to.settings.merged.EnableDelete">
                             <i class="icon-cancel"></i>
                         </span>
                     </span>
