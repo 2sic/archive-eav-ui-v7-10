@@ -10,7 +10,7 @@
                             <i icon="pencil"></i>
                         </span>
                         <span data-nodrag title="{{ 'FieldType.Entity.Remove' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove">
-                            <i icon="minus"></i>
+                            <i ng-class="{ 'icon-minus-circled': to.settings.merged.AllowMultiValue, 'icon-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
                         </span>
                     </span>
                 </div>
