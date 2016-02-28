@@ -38,20 +38,21 @@ angular.module("eavFieldTemplates")
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
 
         $scope.addEntity = function () {            
-            if ($scope.selectedEntity === "new")
-                $scope.openNewEntityDialog();
-            else
+            //if ($scope.selectedEntity === "new")
+            //    $scope.openNewEntityDialog();
+            //else
                 $scope.chosenEntities.push($scope.selectedEntity);
             $scope.selectedEntity = "";
         };
 
         $scope.createEntityAllowed = function() {
-            return $scope.to.settings.merged.EntityType !== null && $scope.to.settings.merged.EntityType !== "";
+            var settings = $scope.to.settings.merged;
+            return settings.EntityType !== null && settings.EntityType !== "" && settings.EnableCreate;
         };
 
         $scope.openNewEntityDialog = function() {
             function reload(result) {
-                if (result.data === null || result.data === undefined)
+                if (!result || result.data === null || result.data === undefined)
                     return;
 
                 $scope.getAvailableEntities().then(function () {

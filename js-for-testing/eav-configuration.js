@@ -121,10 +121,11 @@ angular.module("EavConfiguration", [])
                 inputTypeReplacementMap: {
                     //"string-wysiwyg": "string-dropdown"
                     //"string-wysiwyg": "string-wysiwyg-dnn"
+                
                 },
 
                 // used to inject additional / change config if necessary
-                inputTypeReconfig: function (field) {
+                inputTypeReconfig: function(field) {
                     var config = field.InputTypeConfig || {}; // note: can be null
                     var applyChanges = false;
                     switch (field.InputType) {
@@ -132,8 +133,14 @@ angular.module("EavConfiguration", [])
                         config.Assets = "hello.js";
                         applyChanges = true;
                         break;
+                    case "entity-default":
+                        config.EnableCreate = true;
+                        config.EnableAddExisting = true;
+                        config.EnableRemove = true;
+                        config.EnableDelete = false;
+                        break;
                     case "unknown": // server default if not defined
-                    default:        // default if not defined in this list
+                    default: // default if not defined in this list
                         break;
 
                     }
