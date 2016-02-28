@@ -1,5 +1,5 @@
 ﻿<div class="eav-entityselect">
-    <div ui-tree="options" data-empty-placeholder-enabled="false">
+    <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="chosenEntities.length > 0">
         <ol ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false" ng-class="{'with-selector' : to.settings.merged.AllowMultiValue}">
             <li ng-repeat="item in chosenEntities track by $index" ui-tree-node class="eav-entityselect-item">
                 <div ui-tree-handle>
