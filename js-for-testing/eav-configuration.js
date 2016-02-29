@@ -134,10 +134,13 @@ angular.module("EavConfiguration", [])
                         applyChanges = true;
                         break;
                     case "entity-default":
-                        config.EnableCreate = true;
-                        config.EnableAddExisting = true;
-                        config.EnableRemove = true;
-                        config.EnableDelete = false;
+                        angular.extend(field.Metadata.merged, {
+                            EnableEdit: true,
+                            EnableCreate: true,
+                            EnableAddExisting: true,
+                            EnableRemove: true,
+                            EnableDelete: false
+                        });
                         break;
                     case "unknown": // server default if not defined
                     default: // default if not defined in this list
