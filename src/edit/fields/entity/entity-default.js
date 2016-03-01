@@ -31,6 +31,7 @@ angular.module("eavFieldTemplates")
             $scope.to.settings.merged = {};
 
         $scope.availableEntities = [];
+        $scope.options = {};
 
         if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
             $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
