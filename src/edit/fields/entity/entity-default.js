@@ -36,13 +36,13 @@ angular.module("eavFieldTemplates")
             $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
 
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
+        $scope.selectedEntity = null;
 
-        $scope.addEntity = function () {            
-            //if ($scope.selectedEntity === "new")
-            //    $scope.openNewEntityDialog();
-            //else
+        $scope.addEntity = function () {
+            if ($scope.selectedEntity !== null) {
                 $scope.chosenEntities.push($scope.selectedEntity);
-            $scope.selectedEntity = "";
+                $scope.selectedEntity = null;
+            }
         };
 
         $scope.createEntityAllowed = function() {
@@ -86,11 +86,11 @@ angular.module("eavFieldTemplates")
         };
 
         // remove needs the index --> don't name "remove" - causes problems
-        $scope.removeSlot = function remove(itemGuid, index) {
+        $scope.removeSlot = function(itemGuid, index) {
             $scope.chosenEntities.splice(index, 1);
         };
 
-        $scope.deleteItemInSlot = function remove(itemGuid, index) {
+        $scope.deleteItemInSlot = function(itemGuid, index) {
             alert('this feature is not implemented yet, sorry. it will be added some day...');
         };
 

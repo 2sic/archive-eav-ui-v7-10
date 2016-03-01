@@ -1,4 +1,4 @@
-﻿.eav-entityselect ol {
+﻿.eav-entityselect {
      margin-top: 1px;
     border-color: rgb(170, 178, 189);
     border-width: 1px;
@@ -6,6 +6,7 @@
     border-radius: 4px;
     font-size: 18px;
 }
+.eav-entityselect ol { list-style-type:none; margin:0; padding:0; }
 
 
 li.eav-entityselect-item {

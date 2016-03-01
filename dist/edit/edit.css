@@ -96,7 +96,7 @@
 [visually-disabled='true'] { opacity: 0.3; -webkit-filter: grayscale(100%); filter: grayscale(100%); }
 .ng-touched.ng-invalid { border-color:red; }
 .checkbox.checkbox-labeled input[type='checkbox'] { margin-left:0; }
-.eav-entityselect ol {
+.eav-entityselect {
      margin-top: 1px;
     border-color: rgb(170, 178, 189);
     border-width: 1px;
@@ -104,6 +104,7 @@
     border-radius: 4px;
     font-size: 18px;
 }
+.eav-entityselect ol { list-style-type:none; margin:0; padding:0; }
 
 
 li.eav-entityselect-item {

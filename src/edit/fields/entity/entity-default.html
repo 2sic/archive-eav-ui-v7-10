@@ -1,7 +1,8 @@
 ﻿<div class="eav-entityselect">
+
     <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
         <ol ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false">
-            <li ng-repeat="item in chosenEntities track by $index" ui-tree-node class="eav-entityselect-item">
+            <li ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item">
                 <div ui-tree-handle>
                     <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
                     <span title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
@@ -19,35 +20,33 @@
                     </span>
                 </div>
             </li>
-
-            <!-- add existing entity to this list-->
-            <li class="eav-entityselect-item subtle-till-mouseover" 
-                ng-if="to.settings.merged.EnableAddExisting"
-                ng-show="to.settings.merged.AllowMultiValue || chosenEntities.length < 1">
-                <div>
-                    <i class="icon-plus-circled pull-left eav-entityselect-icon-before-select"></i>
-                    <span>
-                        <select class="eav-entityselect-selector form-control input-lg"
-                                formly-skip-ng-model-attrs-manipulator
-                                ng-model="selectedEntity"
-                                ng-change="addEntity()"
-                                >
-                            <option value="" translate="FieldType.Entity.Choose"></option>
-                            <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
-                        </select>
-                    </span>
-                </div>
-            </li>
-
-            <!-- create new entity to add to this list -->
-            <li ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)" 
-                class="eav-entityselect-item eav-entityselect-create subtle-till-mouseover">
-                <div ng-click="openNewEntityDialog()">
-                    <i class="icon-plus pull-left eav-entityselect-icon"></i>
-                    <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
-                </div>
-            </li>
         </ol>
     </div>
+    <ol>
+        <!-- add existing entity to this list--><!--ng-if="to.settings.merged.EnableAddExisting"-->
+        <li class="eav-entityselect-item subtle-till-mouseover"
+            ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
+            <div>
+                <i class="icon-plus-circled pull-left eav-entityselect-icon-before-select"></i>
+                <span>
+                    <select class="eav-entityselect-selector form-control input-lg"
+                            formly-skip-ng-model-attrs-manipulator
+                            ng-model="selectedEntity"
+                            ng-change="addEntity()">
+                        <option value="" translate="FieldType.Entity.Choose"></option>
+                        <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
+                    </select>
+                </span>
+            </div>
+        </li>
 
+        <!-- create new entity to add to this list -->
+        <li ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
+            class="eav-entityselect-item eav-entityselect-create subtle-till-mouseover">
+            <div ng-click="openNewEntityDialog()">
+                <i class="icon-plus pull-left eav-entityselect-icon"></i>
+                <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
+            </div>
+        </li>
+    </ol>
 </div>
