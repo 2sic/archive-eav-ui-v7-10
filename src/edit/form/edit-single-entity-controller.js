@@ -78,7 +78,7 @@
 	            var isFieldHeading = (fieldType === "empty-default");
 	            if (isFieldHeading)
 	                lastGroupHeadingId = i;
-
+                
 	            var nextField = {
 	                key: e.StaticName,
 	                type: fieldType,

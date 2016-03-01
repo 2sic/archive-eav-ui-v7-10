@@ -1,11 +1,22 @@
 ﻿<div class="eav-entityselect">
 
     <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
-        <ol ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false">
-            <li ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item">
-                <div ui-tree-handle>
+        <table ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false" class="table eav-entityselect-table" style="table-layout:fixed;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item" ui-tree-handle>
+                <td>
                     <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                </td>
+                <td>
                     <span class="eav-entityselect-item-title" title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
+                </td>
+                <td style="text-align:right;">
                     <ul class="eav-entityselect-item-actions" data-nodrag>
                         <li>
                             <a title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)" ng-if="to.settings.merged.EnableEdit">
@@ -24,9 +35,9 @@
                             </a>
                         </li>
                     </ul>
-                </div>
-            </li>
-        </ol>
+                </td>
+            </tr>
+        </table>
     </div>
     <ol>
         <!-- add existing entity to this list--><!--ng-if="to.settings.merged.EnableAddExisting"-->
