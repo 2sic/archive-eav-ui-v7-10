@@ -43,6 +43,10 @@
             eavAdminDialogs.openContentItems(svc.appId, item.StaticName, item.Id, vm.refresh);
         };
 
+        vm.addItem = function(contentType) {
+            eavAdminDialogs.openItemNew(contentType, vm.refresh);
+        };
+
 
         vm.liveEval = function admin() {
             $translate("General.Questions.SystemInput").then(function (msg) {
