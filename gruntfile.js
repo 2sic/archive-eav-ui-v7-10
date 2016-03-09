@@ -260,26 +260,26 @@ module.exports = function(grunt) {
     
 
     // Default task.
-    grunt.registerTask("build", [
-        "jshint:mainApp",
-        "clean:mainAppTmp",
-        "copy:mainApp",
-        "copy:mainAppi18n",
-        "ngtemplates:mainApp",
-        "ngtemplates:mainAppEdit",
-        "concat:mainApp",
-        "concat:mainAppAdminCss",
-        "concat:mainAppEditUi",
-        "concat:mainAppPipelineCss",
-        "concat:mainAppEditUiCss",
-        "ngAnnotate:mainApp",
-        "ngAnnotate:mainAppEditUi",
-        "uglify:mainApp",
-        "uglify:mainAppEditUi",
-        "cssmin:mainApp",
-        //"clean:tmp",
+    //grunt.registerTask("build", [
+    //    "jshint:mainApp",
+    //    "clean:mainAppTmp",
+    //    "copy:mainApp",
+    //    "copy:mainAppi18n",
+    //    "ngtemplates:mainApp",
+    //    "ngtemplates:mainAppEdit",
+    //    "concat:mainApp",
+    //    "concat:mainAppAdminCss",
+    //    "concat:mainAppEditUi",
+    //    "concat:mainAppPipelineCss",
+    //    "concat:mainAppEditUiCss",
+    //    "ngAnnotate:mainApp",
+    //    "ngAnnotate:mainAppEditUi",
+    //    "uglify:mainApp",
+    //    "uglify:mainAppEditUi",
+    //    "cssmin:mainApp",
+    //    //"clean:tmp",
         
-    ]);
+    //]);
 
     grunt.registerTask("build-auto", ["build", "watch:ngUi"]);
     grunt.registerTask("lint", "jshint");

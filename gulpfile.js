@@ -6,8 +6,8 @@ var gulp = require("gulp"),
     css = "css",
     config = {
         debug: true,
-        autostart: false,
-        rootDist: "tmp-gulp/dist/"
+        autostart: true,
+        rootDist: "dist/",// "tmp-gulp/dist/"
     };
 
 // setup admin, exclude pipeline css (later also exclude pipeline js)
@@ -17,6 +17,13 @@ admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
 // setup edit & extended
 var edit = createConfig("edit", "eavEditTemplates");
 var editExtGps = createConfig("edit-extended");
+
+// pipeline-designer (CSS only)
+var pDesigner = createConfig("admin", "");
+pDesigner.css.files = [admin.cwd + "**/pipeline*.css"];
+pDesigner.css.concat = "pipeline-designer.css";
+
+// extension: gps-field
 editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
 editExtGps.js.concat = "custom-gps.js";
@@ -33,7 +40,9 @@ gulp.task("watch-all", function () {
     gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
     gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, css));
 
-    // gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
+    gulp.watch(pDesigner.files, createWatchCallback(pDesigner, css));
+
+    gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
     //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
 });
 
