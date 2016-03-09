@@ -17,67 +17,48 @@ var config = {
     },
     temp: "./.tmp/"
 };
+
+// setup admin, exclude pipeline css (later also exclude pipeline js)
 var admin = createConfig("admin");
+admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
+
+// setup edit & extended
 var edit = createConfig("edit");
-
-
-gulp.task("build-test-run", function () {
-    packageJs(admin);
-});
-
-gulp.task('watch-all', function() {
-    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
-    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
-});
-
-// assemble a function which will call the desired set
-function createWatchCallback(set, part) {
-    if (debug) console.log('creating watcher callback for ' + set.name);
-    if(part === js)
-    return function(event) {
-        if(debug) console.log('File ' + event.path + ' was ' + event.type + ', running tasks on set ' + set.name);
-        packageJs(set);
-        console.log("finished '" + set.name + "'");
-    }
-    if(part === css)
-        return function(event) {
-            // todo
-        }
-}
-
-// deploy the result to the current 2sxc-dev
-gulp.task("publish-dist-to-2sxc", function () {
-    gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
-    .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
-});
+var editExtGps = createConfig("edit-extended");
+editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
+editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
+editExtGps.js.concat = "custom-gps.js";
+editExtGps.js.libs = [
+    "bower_components/lodash/lodash.min.js",
+    "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
+    "bower_components/angular-simple-logger/dist/index.js"
+];
 
 
 //#region basic functions I'll need a lot
 function createConfig(key) {
+    var cwd = "src/" + key + "/";
     return {
         name: key,
-        cwd: "src/" + key + "/",
+        cwd: cwd,
         dist: "tmp-gulp/dist/" + key + "/",
         css: {
-            cwd: ["src/" + key + "/**/*.css"],
+            files: [cwd + "**/*.css"], //, "!**/pipeline*.css"],
             concat: "eav-" + key + ".css"
         },
         js: {
-            cwd: ["src/" + key + "/**/*.js"],
+            files: [cwd + "**/*.js", "!" + cwd + "**/*spec.js", "!" + cwd + "**/tests/**"],
+            libs: [],
             concat: "eav-" + key + ".js",
             templates: ["src/" + key + "/**/*.html"]
-        },
-        // tmp: "tmp/" + key + "/",
-        // templates: "tmp/" + key + "/html-templates.js",
-        // concatFile: "eav-" + key + ".js",
-        // uglifyFile: "eav-" + key + ".min.js",
+        }
     }
 }
 
 function packageJs(set) {
     if (debug) console.log("bundling start: " + set.name);
 
-    var js = gulp.src(set.js.cwd)
+    var js = gulp.src(set.js.files)
         .pipe($.jshint())
         .pipe($.ngAnnotate())
     ;
@@ -88,7 +69,9 @@ function packageJs(set) {
             module: "eavTemplates"
         }));
 
-    var result = merge(js, tmpl)
+    var libs = gulp.src(set.js.libs);
+
+    var result = merge(js, tmpl, libs)
         .pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
@@ -106,7 +89,7 @@ function packageJs(set) {
 function packageCss(set) {
     if (debug) console.log("css packaging start: " + set.name);
 
-    var result = gulp.src(set.css.cwd)
+    var result = gulp.src(set.css.files)
         // lint the css - not enabled right now, too many fix-suggestions
         //.pipe($.csslint())
         //.pipe($.csslint.reporter())
@@ -130,3 +113,44 @@ function packageCss(set) {
 gulp.task("test-css", function() {
     packageCss(admin);
 });
+
+gulp.task("build-test-run", function () {
+    packageJs(admin);
+});
+
+gulp.task('watch-all', function () {
+    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
+    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, css));
+    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
+    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, css));
+    gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
+    //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
+});
+
+// assemble a function which will call the desired set
+function createWatchCallback(set, part) {
+    if (debug) console.log('creating watcher callback for ' + set.name);
+    //if (part === js)
+        return function (event) {
+            if (debug) console.log('File ' + event.path + ' was ' + event.type + ', running tasks on set ' + set.name);
+            if(part === js)
+                packageJs(set);
+            if (part === css)
+                packageCss(set);
+            console.log("finished '" + set.name + "'");
+        }
+    //if (part === css)
+    //    return function (event) {
+    //        if (debug) console.log('File ' + event.path + ' was ' + event.type + ', running tasks on set ' + set.name);
+    //        packageCss(set);
+    //        console.log("finished '" + set.name + "'");
+    //    }
+}
+
+
+// deploy the result to the current 2sxc-dev
+gulp.task("publish-dist-to-2sxc", function () {
+    gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
+    .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
+});
+
