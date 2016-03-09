@@ -10,5 +10,5 @@
             createdBy: "2sic internet solutions",
             license: "MIT"
             })             
-    ;
-}());
+    ;  
+}()); 

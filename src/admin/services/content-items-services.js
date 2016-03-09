@@ -10,7 +10,7 @@ angular.module("EavServices")
                 svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
                     return $http.get("eav/entities/GetAllOfTypeForAdmin", { params: { appId: svc.appId, contentType: svc.contentType } });
                 }));
-
+                
                 // delete, then reload
                 svc.delete = function del(id) {
                     return entitiesSvc.delete(svc.contentType, id) // for now must work with get :( - delete doesn't work well in dnn

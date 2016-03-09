@@ -1,29 +1,21 @@
-﻿var gulp = require("gulp"),
+﻿// Initial variables, constants, etc.
+var gulp = require("gulp"),
     $ = require("gulp-load-plugins")({ lazy: false }),
     merge = require("merge-stream"),
-    debug = true,
     js = "js",
-    css = "css";
-
-// General configuration
-var config = {
-    templateCache: {
-        file: "templates.js",
-        options: {
-            module: "app.core",
-            root: "app/",
-            standAlone: false
-        }
-    },
-    temp: "./.tmp/"
-};
+    css = "css",
+    config = {
+        debug: true,
+        autostart: false,
+        rootDist: "tmp-gulp/dist/"
+    };
 
 // setup admin, exclude pipeline css (later also exclude pipeline js)
-var admin = createConfig("admin");
+var admin = createConfig("admin", "eavTemplates");
 admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
 
 // setup edit & extended
-var edit = createConfig("edit");
+var edit = createConfig("edit", "eavEditTemplates");
 var editExtGps = createConfig("edit-extended");
 editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
@@ -34,44 +26,77 @@ editExtGps.js.libs = [
     "bower_components/angular-simple-logger/dist/index.js"
 ];
 
+// register all watches & run them
+gulp.task("watch-all", function () {
+    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
+    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, css));
+    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
+    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, css));
+
+    // gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
+    //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
+});
+
+// test something - add your code here to test it
+gulp.task("test-something", function () {
+
+});
+
+gulp.task("clean-dist", function () {
+    gulp.src(config.rootDist)
+        .pipe($.clean());
+});
+
+// deploy the result to the current 2sxc-dev
+gulp.task("publish-dist-to-2sxc", function () {
+    gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
+    .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
+});
+
 
 //#region basic functions I'll need a lot
-function createConfig(key) {
+function createConfig(key, tmplSetName) {
     var cwd = "src/" + key + "/";
     return {
         name: key,
         cwd: cwd,
-        dist: "tmp-gulp/dist/" + key + "/",
+        dist: config.rootDist + key + "/",
         css: {
-            files: [cwd + "**/*.css"], //, "!**/pipeline*.css"],
+            files: [cwd + "**/*.css"],
             concat: "eav-" + key + ".css"
         },
         js: {
             files: [cwd + "**/*.js", "!" + cwd + "**/*spec.js", "!" + cwd + "**/tests/**"],
             libs: [],
             concat: "eav-" + key + ".js",
-            templates: ["src/" + key + "/**/*.html"]
+            templates: ["src/" + key + "/**/*.html"],
+            templateSetName: tmplSetName
         }
     }
 }
 
+// package a JS set
 function packageJs(set) {
-    if (debug) console.log("bundling start: " + set.name);
+    if (config.debug) console.log("bundling start: " + set.name);
 
     var js = gulp.src(set.js.files)
+        .pipe($.sort())
         .pipe($.jshint())
         .pipe($.ngAnnotate())
     ;
 
-    var tmpl = gulp.src(set.js.templates)
+    var tmpl = set.js.templates ? gulp.src(set.js.templates)
         //.pipe($.htmlmin({ collapseWhitespace: true }))
-        .pipe($.angularTemplatecache("templates.js", {
-            module: "eavTemplates"
-        }));
+        .pipe($.angularTemplatecache("templates.js", { // set.js.templateSetName + ".js", { //"templates.js", {
+            standalone: true,
+            module: set.js.templateSetName // "eavTemplates"
+        })) : null;
 
     var libs = gulp.src(set.js.libs);
 
-    var result = merge(js, tmpl, libs)
+    var prelib = merge(js, tmpl).pipe($.sort());
+
+    var result = merge(libs, prelib)
         .pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
@@ -81,13 +106,14 @@ function packageJs(set) {
         .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
 
-    if (debug) console.log("bundling done: " + set.name);
+    if (config.debug) console.log("bundling done: " + set.name);
 
     return result;
 }
 
+// package a set of CSS
 function packageCss(set) {
-    if (debug) console.log("css packaging start: " + set.name);
+    if (config.debug) console.log("css packaging start: " + set.name);
 
     var result = gulp.src(set.css.files)
         // lint the css - not enabled right now, too many fix-suggestions
@@ -105,52 +131,25 @@ function packageCss(set) {
         .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
     ;
-    if (debug) console.log("css packaging done: " + set.name);
+    if (config.debug) console.log("css packaging done: " + set.name);
     return result;
 }
-//#endregion
 
-gulp.task("test-css", function() {
-    packageCss(admin);
-});
-
-gulp.task("build-test-run", function () {
-    packageJs(admin);
-});
-
-gulp.task('watch-all', function () {
-    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
-    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, css));
-    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
-    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, css));
-    gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
-    //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
-});
-
-// assemble a function which will call the desired set
+// assemble a function which will call the desired set - this is a helper for the watch-sequence. 
 function createWatchCallback(set, part) {
-    if (debug) console.log('creating watcher callback for ' + set.name);
-    //if (part === js)
-        return function (event) {
-            if (debug) console.log('File ' + event.path + ' was ' + event.type + ', running tasks on set ' + set.name);
-            if(part === js)
-                packageJs(set);
-            if (part === css)
-                packageCss(set);
-            console.log("finished '" + set.name + "'");
-        }
-    //if (part === css)
-    //    return function (event) {
-    //        if (debug) console.log('File ' + event.path + ' was ' + event.type + ', running tasks on set ' + set.name);
-    //        packageCss(set);
-    //        console.log("finished '" + set.name + "'");
-    //    }
+    if (config.debug) console.log("creating watcher callback for " + set.name);
+    var run = function (event) {
+        if (config.debug) console.log("File " + event.path + " was " + event.type + ", running tasks on set " + set.name);
+        var call = (part === js) ? packageJs : packageCss;
+        call(set);
+        console.log("finished '" + set.name + "'");
+    }
+    if (config.autostart)
+        run({ path: "[none]", type: "autostart" });
+    return run;
 }
 
 
-// deploy the result to the current 2sxc-dev
-gulp.task("publish-dist-to-2sxc", function () {
-    gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
-    .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
-});
+//#endregion
+
 
