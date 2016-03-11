@@ -15,45 +15,22 @@ angular.module("eavFieldTemplates")
     }).controller("FieldTemplate-String-Url-Item-Ctrl", function($scope, debugState, stripNonUrlCharacters) {
         var vm = this;
 
-        // todo: 
-        // 3. auto-pickup the address if this is still blank and a / the source-field changed
-
         // get configured
-        var autoGenerateLink = false, sourceMask;
         var controlSettings = $scope.to.settings["string-url-path"];
-        if (controlSettings) {
-            sourceMask = controlSettings.AutoGenerateMask || null;
-        };
-        sourceMask = "[Name]";
-        // we have specs...
-        if (sourceMask && $scope.model.hasOwnProperty(sourceMask) && $scope.model[sourceMask]) // && $scope.model[sourceField]._currentValue) {
-            autoGenerateLink = true;
+        var sourceMask = (controlSettings) ? controlSettings.AutoGenerateMask || null : null;
 
-        autoGenerateLink = true;
-        autoGenerateLink = autoGenerateLink && !($scope.value && $scope.value.Value); // only auto-generate if the initial value was blank...
+        // test values
+        //sourceMask = "[Name]";
+        //autoGenerateLink = true;
 
-        // todo: setup watch
-        if (autoGenerateLink) {
-            // todo
-            $scope.$watch('model.Name._currentValue.Value', function() {
-                console.log('changed...');
-                sourcesChangedTryToUpdate();
-            });
-            // 1. check the fields we rely on
-            // 2. watch them
-            // 3. if anything changes...call sourcesChangedTryToUpdate
-            // 4. check if the current value.Value is empty - if not, return;
-            // 5. otherwise use the new value, clean it, apply. 
-        }
-
+        //#region Field-Mask handling 
         vm.lastAutoCopy = "";
-        vm.fieldMask = sourceMask;
-        function sourcesChangedTryToUpdate() {
+        vm.sourcesChangedTryToUpdate = function sourcesChangedTryToUpdate() {
             // don't do anything if the current field is not empty and doesn't have the last copy of the stripped value
             if($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
                 return;
             
-            var orig = vm.getFieldContentBasedOnMask();
+            var orig = vm.getFieldContentBasedOnMask(sourceMask);
             var cleaned = stripNonUrlCharacters(orig, false, true);
             if (cleaned) {
                 vm.lastAutoCopy = cleaned;
@@ -62,39 +39,27 @@ angular.module("eavFieldTemplates")
         }
 
         vm.maskRegEx = /\[.*?\]/ig;
-        vm.getFieldContentBasedOnMask = function getNewAutoValue() {
-            var mask = vm.fieldMask; // controlSettings.AddressMask;
-            //if (!mask) return "";
-            ////var tokenRe = /\[.*?\]/ig;
-            //var matches = mask.match(vm.maskRegEx);
-            //angular.forEach(matches, function(e, i) {
-            //    var staticName = e.replace(/[\[\]]/ig, "");
-            //    var replaceValue = ($scope.model.hasOwnProperty(staticName) && $scope.model[staticName] !== null) ? $scope.model[staticName]._currentValue.Value : "";
-            //    mask = mask.replace(e, replaceValue);
-            //});
-
-            angular.forEach(vm.getFieldsOfMask(), function (e, i) {
-                //var e = e.replace(/[\[\]]/ig, "");
-                var replaceValue = ($scope.model.hasOwnProperty(e) && $scope.model[e] !== null) ? $scope.model[e]._currentValue.Value : "";
+        vm.getFieldContentBasedOnMask = function getNewAutoValue(mask) {
+            angular.forEach(vm.getFieldsOfMask(mask), function (e, i) {
+                var replaceValue = ($scope.model.hasOwnProperty(e) && $scope.model[e] && $scope.model[e]._currentValue && $scope.model[e]._currentValue.Value)
+                    ? $scope.model[e]._currentValue.Value : "";
                 mask = mask.replace(e, replaceValue);
             });
 
             return mask;
         };
 
-        vm.getFieldsOfMask = function () {
+        vm.getFieldsOfMask = function (mask) {
             var result = [];
-            var mask = vm.fieldMask; 
             if (!mask) return "";
             var matches = mask.match(vm.maskRegEx);
             angular.forEach(matches, function (e, i) {
                 var staticName = e.replace(/[\[\]]/ig, "");
                 result.push(staticName);
-                //var replaceValue = ($scope.model.hasOwnProperty(staticName) && $scope.model[staticName] !== null) ? $scope.model[staticName]._currentValue.Value : "";
-                //mask = mask.replace(e, replaceValue);
             });
             return result;
         };
+        //#endregion 
 
 
         //#region enforce custom regex - copied from string-default
@@ -102,7 +67,7 @@ angular.module("eavFieldTemplates")
         var stringSettings = $scope.options.templateOptions.settings.merged;
         if (stringSettings && stringSettings.ValidationRegExJavaScript)
             validationRegexString = stringSettings.ValidationRegExJavaScript;
-        vm.regexPattern = new RegExp(validationRegexString, 'i');
+        vm.regexPattern = new RegExp(validationRegexString, "i");
 
         //#endregion
 
@@ -115,15 +80,27 @@ angular.module("eavFieldTemplates")
         };
         //#endregion
 
-        $scope.debug = debugState;
-        console.log($scope.options.templateOptions);
+        vm.activate = function() {
+            // add a watch for each field in the field-mask
+            angular.forEach(vm.getFieldsOfMask(sourceMask), function(e, i) {
+                $scope.$watch("model." + e + "._currentValue.Value", function() {
+                    if (debugState.on) console.log("url-path: " + e + " changed...");
+                    vm.sourcesChangedTryToUpdate(sourceMask);
+                });
+            });
+
+            $scope.debug = debugState;
+            if (debugState.on) console.log($scope.options.templateOptions);
+        };
+        vm.activate();
+
     })
 
     // this is a helper which cleans up the url and is used in various places
     .factory("stripNonUrlCharacters", function() {
         return function(inputValue, allowPath, trimEnd) {
             if (inputValue == null)
-                return '';
+                return "";
             var rexAllowed = /[^a-z0-9-_]/gi,
                 rexSeparators = /[^a-z0-9-_]+/gi,
                 rexMult = /-+/gi,
@@ -138,14 +115,14 @@ angular.module("eavFieldTemplates")
     })
 
     // this monitors an input-field and ensures that only allowed characters are typed
-    .directive('onlySimpleUrlChars', function(stripNonUrlCharacters) {
+    .directive("onlySimpleUrlChars", function(stripNonUrlCharacters) {
         return {
-            require: 'ngModel',
-            restrict: 'A',
+            require: "ngModel",
+            restrict: "A",
             link: function(scope, element, attrs, modelCtrl) {
                 modelCtrl.$parsers.push(function(inputValue) {
                     if (inputValue == null)
-                        return '';
+                        return "";
                     var cleanInputValue = stripNonUrlCharacters(inputValue, false, false);
 
                     if (cleanInputValue !== inputValue) {
