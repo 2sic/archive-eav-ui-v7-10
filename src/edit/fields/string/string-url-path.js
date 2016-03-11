@@ -106,7 +106,8 @@ angular.module("eavFieldTemplates")
                 rexMult = /-+/gi,
                 rexTrim = trimEnd ? /^-|-+$/gi : /^-/gi;
             // allow only lower-case, numbers and _/- characters
-            var cleanInputValue = inputValue.replace(rexSeparators, "-");
+            var cleanInputValue = inputValue.replace("'s ", "s ") // neutralize it's, daniel's etc.
+                .toLowerCase().replace(rexSeparators, "-");
             cleanInputValue = cleanInputValue.replace(rexMult, "-");
             cleanInputValue = cleanInputValue.replace(rexAllowed, ""); ///[^\w\s]/gi, '');
             cleanInputValue = cleanInputValue.replace(rexTrim, "");
