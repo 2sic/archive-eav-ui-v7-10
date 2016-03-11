@@ -203,6 +203,7 @@
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
     <Content Include="src\edit\fields\entity\entity-default.js" />
+    <Content Include="src\edit\fields\string\string-url-path.js" />
     <Content Include="src\edit\fields\string\string-dropdown.js" />
     <Content Include="src\edit\fields\string\string-default.js" />
     <Content Include="src\edit\fields\datetime\date-reconfigure-json.js" />
@@ -303,6 +304,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="src\edit-extended\fields\string-url\" />
     <Folder Include="src\edit\ml-entities\specs\helpers\" />
     <Folder Include="src\i18n\" />
   </ItemGroup>

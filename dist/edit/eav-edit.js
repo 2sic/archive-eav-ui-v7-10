@@ -357,6 +357,166 @@ angular.module("eavFieldTemplates")
             }
         });
     }]);
+/* 
+ * Field: String - url-item
+ */
+
+angular.module("eavFieldTemplates")
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function(formlyConfigProvider, defaultFieldWrappers) {
+
+        formlyConfigProvider.setType({
+            name: "string-url-path",
+            template: "<div><input class=\"form-control input-lg\" only-simple-url-chars ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\" ng-blur=\"vm.finalClean()\"></div>",
+            wrapper: defaultFieldWrappers,
+            controller: "FieldTemplate-String-Url-Item-Ctrl as vm"
+        });
+
+    }]).controller("FieldTemplate-String-Url-Item-Ctrl", ["$scope", "debugState", "stripNonUrlCharacters", function($scope, debugState, stripNonUrlCharacters) {
+        var vm = this;
+
+        // todo: 
+        // 3. auto-pickup the address if this is still blank and a / the source-field changed
+
+        // get configured
+        var autoGenerateLink = false, sourceMask;
+        var controlSettings = $scope.to.settings["string-url-path"];
+        if (controlSettings) {
+            sourceMask = controlSettings.AutoGenerateMask || null;
+        };
+        sourceMask = "[Name]";
+        // we have specs...
+        if (sourceMask && $scope.model.hasOwnProperty(sourceMask) && $scope.model[sourceMask]) // && $scope.model[sourceField]._currentValue) {
+            autoGenerateLink = true;
+
+        autoGenerateLink = true;
+        autoGenerateLink = autoGenerateLink && !($scope.value && $scope.value.Value); // only auto-generate if the initial value was blank...
+
+        // todo: setup watch
+        if (autoGenerateLink) {
+            // todo
+            $scope.$watch('model.Name._currentValue.Value', function() {
+                console.log('changed...');
+                sourcesChangedTryToUpdate();
+            });
+            // 1. check the fields we rely on
+            // 2. watch them
+            // 3. if anything changes...call sourcesChangedTryToUpdate
+            // 4. check if the current value.Value is empty - if not, return;
+            // 5. otherwise use the new value, clean it, apply. 
+        }
+
+        vm.lastAutoCopy = "";
+        vm.fieldMask = sourceMask;
+        function sourcesChangedTryToUpdate() {
+            // don't do anything if the current field is not empty and doesn't have the last copy of the stripped value
+            if($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
+                return;
+            
+            var orig = vm.getFieldContentBasedOnMask();
+            var cleaned = stripNonUrlCharacters(orig, false, true);
+            if (cleaned) {
+                vm.lastAutoCopy = cleaned;
+                $scope.value.Value = cleaned;
+            }
+        }
+
+        vm.maskRegEx = /\[.*?\]/ig;
+        vm.getFieldContentBasedOnMask = function getNewAutoValue() {
+            var mask = vm.fieldMask; // controlSettings.AddressMask;
+            //if (!mask) return "";
+            ////var tokenRe = /\[.*?\]/ig;
+            //var matches = mask.match(vm.maskRegEx);
+            //angular.forEach(matches, function(e, i) {
+            //    var staticName = e.replace(/[\[\]]/ig, "");
+            //    var replaceValue = ($scope.model.hasOwnProperty(staticName) && $scope.model[staticName] !== null) ? $scope.model[staticName]._currentValue.Value : "";
+            //    mask = mask.replace(e, replaceValue);
+            //});
+
+            angular.forEach(vm.getFieldsOfMask(), function (e, i) {
+                //var e = e.replace(/[\[\]]/ig, "");
+                var replaceValue = ($scope.model.hasOwnProperty(e) && $scope.model[e] !== null) ? $scope.model[e]._currentValue.Value : "";
+                mask = mask.replace(e, replaceValue);
+            });
+
+            return mask;
+        };
+
+        vm.getFieldsOfMask = function () {
+            var result = [];
+            var mask = vm.fieldMask; 
+            if (!mask) return "";
+            var matches = mask.match(vm.maskRegEx);
+            angular.forEach(matches, function (e, i) {
+                var staticName = e.replace(/[\[\]]/ig, "");
+                result.push(staticName);
+                //var replaceValue = ($scope.model.hasOwnProperty(staticName) && $scope.model[staticName] !== null) ? $scope.model[staticName]._currentValue.Value : "";
+                //mask = mask.replace(e, replaceValue);
+            });
+            return result;
+        };
+
+
+        //#region enforce custom regex - copied from string-default
+        var validationRegexString = ".*";
+        var stringSettings = $scope.options.templateOptions.settings.merged;
+        if (stringSettings && stringSettings.ValidationRegExJavaScript)
+            validationRegexString = stringSettings.ValidationRegExJavaScript;
+        vm.regexPattern = new RegExp(validationRegexString, 'i');
+
+        //#endregion
+
+        //#region do final cleaning; mainly remove trailing "/"
+        vm.finalClean = function() {
+            var orig = $scope.value.Value;
+            var cleaned = stripNonUrlCharacters(orig, false, true);
+            if (orig !== cleaned)
+                $scope.value.Value = cleaned;
+        };
+        //#endregion
+
+        $scope.debug = debugState;
+        console.log($scope.options.templateOptions);
+    }])
+
+    // this is a helper which cleans up the url and is used in various places
+    .factory("stripNonUrlCharacters", function() {
+        return function(inputValue, allowPath, trimEnd) {
+            if (inputValue == null)
+                return '';
+            var rexAllowed = /[^a-z0-9-_]/gi,
+                rexSeparators = /[^a-z0-9-_]+/gi,
+                rexMult = /-+/gi,
+                rexTrim = trimEnd ? /^-|-+$/gi : /^-/gi;
+            // allow only lower-case, numbers and _/- characters
+            var cleanInputValue = inputValue.replace(rexSeparators, "-");
+            cleanInputValue = cleanInputValue.replace(rexMult, "-");
+            cleanInputValue = cleanInputValue.replace(rexAllowed, ""); ///[^\w\s]/gi, '');
+            cleanInputValue = cleanInputValue.replace(rexTrim, "");
+            return cleanInputValue;
+        }
+    })
+
+    // this monitors an input-field and ensures that only allowed characters are typed
+    .directive('onlySimpleUrlChars', ["stripNonUrlCharacters", function(stripNonUrlCharacters) {
+        return {
+            require: 'ngModel',
+            restrict: 'A',
+            link: function(scope, element, attrs, modelCtrl) {
+                modelCtrl.$parsers.push(function(inputValue) {
+                    if (inputValue == null)
+                        return '';
+                    var cleanInputValue = stripNonUrlCharacters(inputValue, false, false);
+
+                    if (cleanInputValue !== inputValue) {
+                        modelCtrl.$setViewValue(cleanInputValue);
+                        modelCtrl.$render();
+                    }
+                    return cleanInputValue;
+                });
+            }
+        }
+    }]);
+
 /* global angular */
 (function () {
     /* jshint laxbreak:true*/
@@ -1385,11 +1545,11 @@ $templateCache.put("wrappers/collapsible.html","<div ng-show=\"!to.collapse\" cl
 $templateCache.put("wrappers/disablevisually.html","<div visually-disabled=\"{{to.disabled}}\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/eav-label.html","<div>\r\n    <label for=\"{{id}}\" class=\"control-label eav-label {{to.labelSrOnly ? \'sr-only\' : \'\'}} {{to.type}}\" ng-if=\"to.label\">\r\n        {{to.label}}\r\n        {{to.required ? \'*\' : \'\'}}\r\n        <a tabindex=\"-1\" ng-click=\"to.showDescription = !to.showDescription\" href=\"javascript:void(0);\" ng-if=\"to.description && to.description != \'\'\">\r\n            <i icon=\"info-sign\" class=\"low-priority\"></i>\r\n        </a>\r\n    </label>\r\n    <p ng-if=\"to.showDescription\" class=\"bg-info\" style=\"padding: 5px;\" ng-bind-html=\"to.description\">\r\n    </p>\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/field-group.html","<div>\r\n    <h4 class=\"clickable\" ng-click=\"to.collapseGroup = !to.collapseGroup\">\r\n        {{to.label}}\r\n        <span class=\"pull-right btn-sm\">\r\n            <span ng-if=\"to.collapseGroup\" class=\"low-priority collapse-fieldgroup-button\" icon=\"plus-sign\"></span>\r\n            <span ng-if=\"!to.collapseGroup\" class=\"low-priority collapse-fieldgroup-button\" icon=\"minus-sign\"></span>\r\n        </span>\r\n    </h4>\r\n    <div ng-if=\"!to.collapseGroup\" style=\"padding: 5px;\" ng-bind-html=\"to.description\">\r\n    </div>\r\n    <formly-transclude></formly-transclude>\r\n</div>");
+$templateCache.put("ml-entities/tests/SpecRunner.html","<!DOCTYPE html>\r\n<html>\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n  <title>Jasmine Spec Runner v2.3.4</title>\r\n    <!--\r\n  <link rel=\"shortcut icon\" type=\"image/png\" href=\"lib/jasmine-2.3.4/jasmine_favicon.png\">\r\n  <link rel=\"stylesheet\" href=\"lib/jasmine-2.3.4/jasmine.css\">\r\n\r\n  <script src=\"lib/jasmine-2.3.4/jasmine.js\"></script>\r\n  <script src=\"lib/jasmine-2.3.4/jasmine-html.js\"></script>\r\n  <script src=\"lib/jasmine-2.3.4/boot.js\"></script>\r\n        -->\r\n\r\n    <link rel=\"stylesheet\" href=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine.css\">\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine.js\"></script>\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine-html.js\"></script>\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/boot.js\"></script>\r\n  <!-- include source files here... -->\r\n    <!--\r\n  <script src=\"src/Player.js\"></script>\r\n  <script src=\"src/Song.js\"></script>\r\n    -->\r\n    <script src=\"../entity-enhancer.js\"></script>\r\n\r\n\r\n  <!-- include spec files here... -->\r\n    <!--\r\n  <script src=\"spec/SpecHelper.js\"></script>\r\n  <script src=\"spec/PlayerSpec.js\"></script>\r\n        -->\r\n    <script src=\"../specs/eav-content-ml.spec.js\"></script>\r\n\r\n</head>\r\n\r\n<body>\r\n</body>\r\n</html>\r\n");
 $templateCache.put("fields/boolean/boolean-default.html","<div class=\"checkbox checkbox-labeled\">\r\n    <!--<label>-->\r\n        <switch class=\"tosic-green pull-left\" ng-model=\"value.Value\"></switch>\r\n    <!-- maybe need the (hidden) input to ensure the label actually switches the boolean -->\r\n        <!--<input type=\"checkbox\" class=\"formly-field-checkbox\" ng-model=\"value.Value\" style=\"display: none\">-->\r\n        <div ng-include=\"\'wrappers/eav-label.html\'\"></div>\r\n        <!--{{to.label}} {{to.required ? \'*\' : \'\'}}-->\r\n    <!--</label>-->\r\n</div>");
 $templateCache.put("fields/custom/custom-default.html","<div class=\"alert alert-danger\">\r\n    ERROR - This is a custom field, you shouldn\'t see this. You only see this because the custom-dialog is missing.\r\n</div>\r\n<input class=\"form-control input-lg\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">");
-$templateCache.put("fields/entity/entity-default.html","<div class=\"eav-entityselect\">\r\n\r\n    <div ui-tree=\"options\" data-empty-placeholder-enabled=\"false\" ng-show=\"to.settings.merged.EnableCreate || chosenEntities.length > 0\">\r\n        <table ui-tree-nodes ng-model=\"chosenEntities\" entity-validation ng-required=\"false\" class=\"table eav-entityselect-table\" style=\"table-layout:fixed;\">\r\n            <thead>\r\n                <tr>\r\n                    <th></th>\r\n                    <th></th>\r\n                    <th></th>\r\n                </tr>\r\n            </thead>\r\n            <tr ng-repeat=\"item in chosenEntities track by $id(item)\" ui-tree-node class=\"eav-entityselect-item\" ui-tree-handle>\r\n                <td>\r\n                    <i title=\"{{ \'FieldType.Entity.DragMove\' | translate }}\" class=\"icon-link pull-left eav-entityselect-icon\" ng-show=\"to.settings.Entity.AllowMultiValue\"></i>\r\n                </td>\r\n                <td>\r\n                    <span class=\"eav-entityselect-item-title\" title=\"{{getEntityText(item) + \' (\' + item + \')\'}}\">{{getEntityText(item)}}</span>\r\n                </td>\r\n                <td style=\"text-align:right;\">\r\n                    <ul class=\"eav-entityselect-item-actions\" data-nodrag>\r\n                        <li>\r\n                            <a title=\"{{ \'FieldType.Entity.Edit\' | translate }}\" ng-click=\"edit(item, index)\" ng-if=\"to.settings.merged.EnableEdit\">\r\n                                <i class=\"icon-pencil\"></i>\r\n                            </a>\r\n                        </li>\r\n                        <li>\r\n                            <a title=\"{{ \'FieldType.Entity.Remove\' | translate }}\" ng-click=\"removeSlot(item, $index)\" class=\"eav-entityselect-item-remove\" ng-if=\"to.settings.merged.EnableRemove\">\r\n                                <i ng-class=\"{ \'icon-minus-circled\': to.settings.merged.AllowMultiValue, \'icon-down-dir\': !to.settings.merged.AllowMultiValue  }\"></i>\r\n                            </a>\r\n                        </li>\r\n                        <li>\r\n                            <!-- todo: i18n, code in action, icon-visiblity/alignment -->\r\n                            <a title=\"{{ \'FieldType.Entity.Delete\' | translate }}\" ng-click=\"deleteItemInSlot(item, $index)\" class=\"eav-entityselect-item-remove\" ng-if=\"to.settings.merged.EnableDelete\">\r\n                                <i class=\"icon-cancel\"></i>\r\n                            </a>\r\n                        </li>\r\n                    </ul>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n    <ol>\r\n        <!-- add existing entity to this list--><!--ng-if=\"to.settings.merged.EnableAddExisting\"-->\r\n        <li class=\"eav-entityselect-item subtle-till-mouseover\"\r\n            ng-show=\"to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)\">\r\n            <div>\r\n                <i class=\"icon-plus-circled pull-left eav-entityselect-icon-before-select\"></i>\r\n                <div class=\"eav-entityselect-selector-wrapper\">\r\n                    <select class=\"eav-entityselect-selector form-control input-lg\"\r\n                            formly-skip-ng-model-attrs-manipulator\r\n                            ng-model=\"selectedEntity\"\r\n                            ng-change=\"addEntity()\">\r\n                        <option value=\"\" translate=\"FieldType.Entity.Choose\"></option>\r\n                        <option ng-repeat=\"item in availableEntities\" ng-disabled=\"chosenEntities.indexOf(item.Value) != -1\" value=\"{{item.Value}}\">{{item.Text}}</option>\r\n                    </select>\r\n                </div>\r\n            </div>\r\n        </li>\r\n\r\n        <!-- create new entity to add to this list -->\r\n        <li ng-if=\"to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)\"\r\n            class=\"eav-entityselect-item eav-entityselect-create subtle-till-mouseover\">\r\n            <div ng-click=\"openNewEntityDialog()\">\r\n                <i class=\"icon-plus pull-left eav-entityselect-icon\"></i>\r\n                <span>{{ \'FieldType.Entity.New\' | translate }}&nbsp;</span>\r\n            </div>\r\n        </li>\r\n    </ol>\r\n</div>");
 $templateCache.put("fields/empty/empty-default.html","<span></span>");
-$templateCache.put("ml-entities/tests/SpecRunner.html","<!DOCTYPE html>\r\n<html>\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n  <title>Jasmine Spec Runner v2.3.4</title>\r\n    <!--\r\n  <link rel=\"shortcut icon\" type=\"image/png\" href=\"lib/jasmine-2.3.4/jasmine_favicon.png\">\r\n  <link rel=\"stylesheet\" href=\"lib/jasmine-2.3.4/jasmine.css\">\r\n\r\n  <script src=\"lib/jasmine-2.3.4/jasmine.js\"></script>\r\n  <script src=\"lib/jasmine-2.3.4/jasmine-html.js\"></script>\r\n  <script src=\"lib/jasmine-2.3.4/boot.js\"></script>\r\n        -->\r\n\r\n    <link rel=\"stylesheet\" href=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine.css\">\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine.js\"></script>\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/jasmine-html.js\"></script>\r\n    <script src=\"../../../../node_modules\\grunt-contrib-jasmine\\node_modules\\jasmine-core/lib/jasmine-core/boot.js\"></script>\r\n  <!-- include source files here... -->\r\n    <!--\r\n  <script src=\"src/Player.js\"></script>\r\n  <script src=\"src/Song.js\"></script>\r\n    -->\r\n    <script src=\"../entity-enhancer.js\"></script>\r\n\r\n\r\n  <!-- include spec files here... -->\r\n    <!--\r\n  <script src=\"spec/SpecHelper.js\"></script>\r\n  <script src=\"spec/PlayerSpec.js\"></script>\r\n        -->\r\n    <script src=\"../specs/eav-content-ml.spec.js\"></script>\r\n\r\n</head>\r\n\r\n<body>\r\n</body>\r\n</html>\r\n");}]);
+$templateCache.put("fields/entity/entity-default.html","<div class=\"eav-entityselect\">\r\n\r\n    <div ui-tree=\"options\" data-empty-placeholder-enabled=\"false\" ng-show=\"to.settings.merged.EnableCreate || chosenEntities.length > 0\">\r\n        <table ui-tree-nodes ng-model=\"chosenEntities\" entity-validation ng-required=\"false\" class=\"table eav-entityselect-table\" style=\"table-layout:fixed;\">\r\n            <thead>\r\n                <tr>\r\n                    <th></th>\r\n                    <th></th>\r\n                    <th></th>\r\n                </tr>\r\n            </thead>\r\n            <tr ng-repeat=\"item in chosenEntities track by $id(item)\" ui-tree-node class=\"eav-entityselect-item\" ui-tree-handle>\r\n                <td>\r\n                    <i title=\"{{ \'FieldType.Entity.DragMove\' | translate }}\" class=\"icon-link pull-left eav-entityselect-icon\" ng-show=\"to.settings.Entity.AllowMultiValue\"></i>\r\n                </td>\r\n                <td>\r\n                    <span class=\"eav-entityselect-item-title\" title=\"{{getEntityText(item) + \' (\' + item + \')\'}}\">{{getEntityText(item)}}</span>\r\n                </td>\r\n                <td style=\"text-align:right;\">\r\n                    <ul class=\"eav-entityselect-item-actions\" data-nodrag>\r\n                        <li>\r\n                            <a title=\"{{ \'FieldType.Entity.Edit\' | translate }}\" ng-click=\"edit(item, index)\" ng-if=\"to.settings.merged.EnableEdit\">\r\n                                <i class=\"icon-pencil\"></i>\r\n                            </a>\r\n                        </li>\r\n                        <li>\r\n                            <a title=\"{{ \'FieldType.Entity.Remove\' | translate }}\" ng-click=\"removeSlot(item, $index)\" class=\"eav-entityselect-item-remove\" ng-if=\"to.settings.merged.EnableRemove\">\r\n                                <i ng-class=\"{ \'icon-minus-circled\': to.settings.merged.AllowMultiValue, \'icon-down-dir\': !to.settings.merged.AllowMultiValue  }\"></i>\r\n                            </a>\r\n                        </li>\r\n                        <li>\r\n                            <!-- todo: i18n, code in action, icon-visiblity/alignment -->\r\n                            <a title=\"{{ \'FieldType.Entity.Delete\' | translate }}\" ng-click=\"deleteItemInSlot(item, $index)\" class=\"eav-entityselect-item-remove\" ng-if=\"to.settings.merged.EnableDelete\">\r\n                                <i class=\"icon-cancel\"></i>\r\n                            </a>\r\n                        </li>\r\n                    </ul>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n    <ol>\r\n        <!-- add existing entity to this list--><!--ng-if=\"to.settings.merged.EnableAddExisting\"-->\r\n        <li class=\"eav-entityselect-item subtle-till-mouseover\"\r\n            ng-show=\"to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)\">\r\n            <div>\r\n                <i class=\"icon-plus-circled pull-left eav-entityselect-icon-before-select\"></i>\r\n                <div class=\"eav-entityselect-selector-wrapper\">\r\n                    <select class=\"eav-entityselect-selector form-control input-lg\"\r\n                            formly-skip-ng-model-attrs-manipulator\r\n                            ng-model=\"selectedEntity\"\r\n                            ng-change=\"addEntity()\">\r\n                        <option value=\"\" translate=\"FieldType.Entity.Choose\"></option>\r\n                        <option ng-repeat=\"item in availableEntities\" ng-disabled=\"chosenEntities.indexOf(item.Value) != -1\" value=\"{{item.Value}}\">{{item.Text}}</option>\r\n                    </select>\r\n                </div>\r\n            </div>\r\n        </li>\r\n\r\n        <!-- create new entity to add to this list -->\r\n        <li ng-if=\"to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)\"\r\n            class=\"eav-entityselect-item eav-entityselect-create subtle-till-mouseover\">\r\n            <div ng-click=\"openNewEntityDialog()\">\r\n                <i class=\"icon-plus pull-left eav-entityselect-icon\"></i>\r\n                <span>{{ \'FieldType.Entity.New\' | translate }}&nbsp;</span>\r\n            </div>\r\n        </li>\r\n    </ol>\r\n</div>");}]);
 
 (function () {
     "use strict";
