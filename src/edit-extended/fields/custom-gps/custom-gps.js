@@ -80,6 +80,7 @@
             }
         };
 
+        // todo: should replace this block with the new fieldMask service
         $scope.formattedAddress = function () {
             var address = controlSettings.AddressMask;
             if (address === undefined) return "";

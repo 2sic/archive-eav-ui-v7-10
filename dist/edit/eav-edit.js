@@ -358,7 +358,7 @@ angular.module("eavFieldTemplates")
         });
     }]);
 /* 
- * Field: String - url-item
+ * Field: String - url-path
  */
 
 angular.module("eavFieldTemplates")
@@ -368,58 +368,42 @@ angular.module("eavFieldTemplates")
             name: "string-url-path",
             template: "<div><input class=\"form-control input-lg\" only-simple-url-chars ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\" ng-blur=\"vm.finalClean()\"></div>",
             wrapper: defaultFieldWrappers,
-            controller: "FieldTemplate-String-Url-Item-Ctrl as vm"
+            controller: "FieldTemplate-String-Url-Path-Ctrl as vm"
         });
 
-    }]).controller("FieldTemplate-String-Url-Item-Ctrl", ["$scope", "debugState", "stripNonUrlCharacters", function($scope, debugState, stripNonUrlCharacters) {
+    }])
+
+    .controller("FieldTemplate-String-Url-Path-Ctrl", ["$scope", "debugState", "stripNonUrlCharacters", "fieldMask", function ($scope, debugState, stripNonUrlCharacters, fieldMask) {
         var vm = this;
 
         // get configured
         var controlSettings = $scope.to.settings["string-url-path"];
         var sourceMask = (controlSettings) ? controlSettings.AutoGenerateMask || null : null;
+        var mask = fieldMask(sourceMask, $scope.model, function preCleane(key, value) {
+            return value.replace("/", "-").replace("\\", "-"); // this will remove slashes which could look like path-parts
+        });
 
         // test values
         //sourceMask = "[Name]";
         //autoGenerateLink = true;
+        var enableSlashes = true;
+        $scope.enablePath = enableSlashes;
 
         //#region Field-Mask handling 
         vm.lastAutoCopy = "";
         vm.sourcesChangedTryToUpdate = function sourcesChangedTryToUpdate() {
             // don't do anything if the current field is not empty and doesn't have the last copy of the stripped value
-            if($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
+            if ($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
                 return;
-            
-            var orig = vm.getFieldContentBasedOnMask(sourceMask);
-            var cleaned = stripNonUrlCharacters(orig, false, true);
+
+            var orig = mask.resolve(); // vm.getFieldContentBasedOnMask(sourceMask);
+            //orig = orig.replace("/", "-").replace("\\", "-"); // when auto-importing, remove slashes as they shouldn't feel like paths afterwards
+            var cleaned = stripNonUrlCharacters(orig, enableSlashes, true);
             if (cleaned) {
                 vm.lastAutoCopy = cleaned;
                 $scope.value.Value = cleaned;
             }
-        }
-
-        vm.maskRegEx = /\[.*?\]/ig;
-        vm.getFieldContentBasedOnMask = function getNewAutoValue(mask) {
-            angular.forEach(vm.getFieldsOfMask(mask), function (e, i) {
-                var replaceValue = ($scope.model.hasOwnProperty(e) && $scope.model[e] && $scope.model[e]._currentValue && $scope.model[e]._currentValue.Value)
-                    ? $scope.model[e]._currentValue.Value : "";
-                mask = mask.replace(e, replaceValue);
-            });
-
-            return mask;
         };
-
-        vm.getFieldsOfMask = function (mask) {
-            var result = [];
-            if (!mask) return "";
-            var matches = mask.match(vm.maskRegEx);
-            angular.forEach(matches, function (e, i) {
-                var staticName = e.replace(/[\[\]]/ig, "");
-                result.push(staticName);
-            });
-            return result;
-        };
-        //#endregion 
-
 
         //#region enforce custom regex - copied from string-default
         var validationRegexString = ".*";
@@ -430,18 +414,19 @@ angular.module("eavFieldTemplates")
 
         //#endregion
 
-        //#region do final cleaning; mainly remove trailing "/"
+        //#region do final cleaning on blur / leave-field; mainly remove trailing "/"
         vm.finalClean = function() {
             var orig = $scope.value.Value;
-            var cleaned = stripNonUrlCharacters(orig, false, true);
+            var cleaned = stripNonUrlCharacters(orig, enableSlashes, true);
             if (orig !== cleaned)
                 $scope.value.Value = cleaned;
         };
         //#endregion
 
+
         vm.activate = function() {
             // add a watch for each field in the field-mask
-            angular.forEach(vm.getFieldsOfMask(sourceMask), function(e, i) {
+            angular.forEach(mask.fieldList() /* vm.getFieldsOfMask(sourceMask)*/, function (e, i) {
                 $scope.$watch("model." + e + "._currentValue.Value", function() {
                     if (debugState.on) console.log("url-path: " + e + " changed...");
                     vm.sourcesChangedTryToUpdate(sourceMask);
@@ -455,23 +440,27 @@ angular.module("eavFieldTemplates")
 
     }])
 
+
+
     // this is a helper which cleans up the url and is used in various places
     .factory("stripNonUrlCharacters", function() {
         return function(inputValue, allowPath, trimEnd) {
-            if (inputValue == null)
+            if (!inputValue)
                 return "";
-            var rexAllowed = /[^a-z0-9-_]/gi,
-                rexSeparators = /[^a-z0-9-_]+/gi,
-                rexMult = /-+/gi,
-                rexTrim = trimEnd ? /^-|-+$/gi : /^-/gi;
+            var //rexNotAllowed = allowPath ? /[^a-z0-9-_/]/gi : /[^a-z0-9-_]/gi,
+                rexSeparators = allowPath ? /[^a-z0-9-_/]+/gi : /[^a-z0-9-_]+/gi;
+
             // allow only lower-case, numbers and _/- characters
-            var cleanInputValue = inputValue.replace("'s ", "s ") // neutralize it's, daniel's etc.
-                .toLowerCase().replace(rexSeparators, "-");
-            cleanInputValue = cleanInputValue.replace(rexMult, "-");
-            cleanInputValue = cleanInputValue.replace(rexAllowed, ""); ///[^\w\s]/gi, '');
-            cleanInputValue = cleanInputValue.replace(rexTrim, "");
+            var cleanInputValue = inputValue.toLowerCase()
+                .replace("'s ", "s ")   // neutralize it's, daniel's etc. but only if followed by a space, to ensure we don't kill quotes
+                .replace("\\", "/")     // neutralize slash representation
+                .replace(rexSeparators, "-");
+            cleanInputValue = cleanInputValue.replace(/-+/gi, "-") // reduce multiple "-"
+                .replace(/\/+/gi, "/") // reduce multiple slashes
+                //.replace(rexNotAllowed, "")
+                .replace(trimEnd ? /^-|-+$/gi : /^-/gi, ""); // trim front and maybe end "-"
             return cleanInputValue;
-        }
+        };
     })
 
     // this monitors an input-field and ensures that only allowed characters are typed
@@ -481,9 +470,9 @@ angular.module("eavFieldTemplates")
             restrict: "A",
             link: function(scope, element, attrs, modelCtrl) {
                 modelCtrl.$parsers.push(function(inputValue) {
-                    if (inputValue == null)
+                    if (inputValue === null)
                         return "";
-                    var cleanInputValue = stripNonUrlCharacters(inputValue, false, false);
+                    var cleanInputValue = stripNonUrlCharacters(inputValue, scope.enablePath, false);
 
                     if (cleanInputValue !== inputValue) {
                         modelCtrl.$setViewValue(cleanInputValue);
@@ -492,7 +481,7 @@ angular.module("eavFieldTemplates")
                     return cleanInputValue;
                 });
             }
-        }
+        };
     }]);
 
 /* global angular */
@@ -1513,12 +1502,66 @@ function enhanceEntity(entity) {
 
 
 })();
-angular.module("eavEditTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("localization/formly-localization-wrapper.html","<eav-localization-scope-control></eav-localization-scope-control>\r\n<div ng-if=\"!!value\">\r\n    <formly-transclude></formly-transclude>\r\n    <eav-localization-menu form-model=\"model\" field-model=\"model[options.key]\" options=\"options\" value=\"value\" index=\"index\"></eav-localization-menu>\r\n</div>\r\n<p class=\"bg-info\" style=\"padding:12px;\" ng-if=\"!value\" translate=\"LangWrapper.CreateValueInDefFirst\" translate-values=\"{ fieldname: \'{{to.label}}\' }\">Please... <i>\'{{to.label}}\'</i> in the def...</p>");
-$templateCache.put("localization/language-switcher.html","<tabset>\r\n    <tab ng-repeat=\"l in languages.languages\" heading=\"{{ l.name.substring(0, l.name.indexOf(\'(\') > 0 ? l.name.indexOf(\'(\') - 1 : 100 ) }}\" ng-click=\"!isDisabled ? languages.currentLanguage = l.key : false;\" disable=\"isDisabled\" active=\"languages.currentLanguage == l.key\" tooltip=\"{{l.name}}\"></tab>\r\n</tabset>");
-$templateCache.put("localization/localization-menu.html","<div dropdown is-open=\"status.isopen\" class=\"eav-localization\"> <!--style=\"z-index:{{1000 - index}};\"-->\r\n	<a class=\"eav-localization-lock\" ng-click=\"vm.actions.toggleTranslate();\" ng-if=\"vm.isDefaultLanguage()\" title=\"{{vm.tooltip()}}\" ng-class=\"{ \'eav-localization-lock-open\': !options.templateOptions.disabled }\" dropdown-toggle>\r\n        {{vm.infoMessage()}} <i class=\"glyphicon glyphicon-globe\"></i>\r\n	</a>\r\n    <ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=\"menu\" aria-labelledby=\"single-button\">\r\n        <li role=\"menuitem\"><a ng-click=\"vm.actions.translate()\" translate=\"LangMenu.Unlink\"></a></li>\r\n        <li role=\"menuitem\"><a ng-click=\"vm.actions.linkDefault()\" translate=\"LangMenu.LinkDefault\"></a></li>\r\n        <!-- Google translate is disabled because there is no longer a free version\r\n            <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.GoogleTranslate\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.autoTranslate(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>-->\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Copy\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: options.templateOptions.disabled || !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.copyFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Use\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.useFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Share\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.shareFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <!-- All fields -->\r\n        <li class=\"divider\"></li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.AllFields\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li role=\"menuitem\"><a ng-click=\"vm.actions.all.translate()\" translate=\"LangMenu.Unlink\"></a></li>\r\n                <li role=\"menuitem\"><a ng-click=\"vm.actions.all.linkDefault()\" translate=\"LangMenu.LinkDefault\"></a></li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Copy\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.copyFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Use\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.useFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Share\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.shareFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n    </ul>\r\n</div>");
-$templateCache.put("form/edit-many-entities.html","<div ng-if=\"vm.items != null\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <eav-language-switcher is-disabled=\"!vm.isValid()\"></eav-language-switcher>\r\n\r\n    <div ng-repeat=\"p in vm.items\" class=\"group-entity\">\r\n        <h3 class=\"clickable\" ng-click=\"p.collapse = !p.collapse\">\r\n            {{p.Header.Title ? p.Header.Title : \'EditEntity.DefaultTitle\' | translate }}&nbsp;\r\n            <span ng-if=\"p.Header.Group.SlotCanBeEmpty\" ng-click=\"vm.toggleSlotIsEmpty(p)\" stop-event=\"click\">\r\n                <switch ng-model=\"p.slotIsUsed\" class=\"tosic-blue\" style=\"top: 6px;\" tooltip=\"{{\'EditEntity.SlotUsed\' + p.slotIsUsed | translate}}\"></switch>\r\n            </span>\r\n            <span class=\"pull-right clickable\" style=\"font-size: smaller\">\r\n                <span class=\"low-priority collapse-entity-button\" ng-if=\"p.collapse\" icon=\"plus-sign\"></span>\r\n                <span class=\"collapse-entity-button\" ng-if=\"!p.collapse\" icon=\"minus-sign\"></span>\r\n            </span>\r\n        </h3>\r\n        <eav-edit-entity-form entity=\"p.Entity\" header=\"p.Header\" register-edit-control=\"vm.registerEditControl\" ng-hide=\"p.collapse\"></eav-edit-entity-form>\r\n    </div>\r\n\r\n\r\n    <div>\r\n        <!-- note: the buttons are not really disabled, because we want to be able to click them and see the error message -->\r\n        <button ng-class=\"{ \'disabled\': !vm.isValid() || vm.isWorking > 0}\" ng-click=\"vm.save(true)\" type=\"button\" class=\"btn btn-primary btn-lg submit-button\">\r\n            <span icon=\"ok\" tooltip=\"{{ \'Button.Save\' | translate }}\"></span> &nbsp;<span translate=\"Button.Save\"></span>\r\n        </button>\r\n        &nbsp;\r\n        <button ng-class=\"{ \'disabled\': !vm.isValid() || vm.isWorking > 0}\" class=\"btn btn-default btn-lg btn-square\" type=\"button\" ng-click=\"vm.save(false)\">\r\n            <span icon=\"check\" tooltip=\"{{ \'Button.SaveAndKeepOpen\' | translate }}\"></span>\r\n        </button>\r\n        &nbsp;\r\n        <!-- note: published status will apply to all - so the first is taken for identification if published -->\r\n        <switch ng-model=\"vm.willPublish\" class=\"tosic-blue\" style=\"top: 13px;\"></switch>\r\n        &nbsp;\r\n        <span ng-click=\"vm.willPublish = !vm.willPublish;\" class=\"save-published-icon\">\r\n            <i ng-if=\"vm.willPublish\" icon=\"eye-open\" tooltip=\"{{ \'Status.Published\' | translate }} - {{ \'Message.WillPublish\' | translate }}\"></i>\r\n            <i ng-if=\"!vm.willPublish\" icon=\"eye-close\" tooltip=\"{{ \'Status.Unpublished\' | translate }} - {{ \'Message.WontPublish\' | translate }}\"></i>\r\n        </span>\r\n\r\n\r\n        <span ng-if=\"vm.debug.on\">\r\n            <button tooltip=\"debug\" icon=\"zoom-in\" class=\"btn\" ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button>\r\n        </span>\r\n        <show-debug-availability class=\"pull-right\" style=\"margin-top: 20px;\"></show-debug-availability>\r\n    </div>\r\n    <div ng-if=\"vm.debug.on && vm.showDebugItems\">\r\n        <div>\r\n            isValid: {{vm.isValid()}}<br/>\r\n            isWorking: {{vm.isWorking}}\r\n        </div>\r\n        <pre>{{ vm.items | json }}</pre>\r\n    </div>\r\n</div>");
+/*
+ * This is a special service which uses a field mask 
+ * 
+ * like "[Title] - [Subtitle]" 
+ * 
+ * and will then provide a list of fields which were used, as well as a resolved value if needed
+ * 
+ */
+
+angular.module("eavFieldTemplates")
+    .factory("fieldMask", function() {
+        function createFieldMask(mask, model, overloadPreCleanValues) {
+            var srv = {
+                mask: mask,
+                model: model,
+                findFields: /\[.*?\]/ig,
+                unwrapField: /[\[\]]/ig
+            };
+
+            srv.resolve = function getNewAutoValue() {
+                var mask = srv.mask;
+                angular.forEach(srv.fieldList(), function(e, i) {
+                    var replaceValue = (srv.model.hasOwnProperty(e) && srv.model[e] && srv.model[e]._currentValue && srv.model[e]._currentValue.Value)
+                        ? srv.model[e]._currentValue.Value : "";
+                    var cleaned = srv.preClean(e, replaceValue);
+                    mask = mask.replace(e, cleaned);
+                });
+
+                return mask;
+            };
+
+            srv.fieldList = function() {
+                var result = [];
+                if (!srv.mask) return result;
+                var matches = srv.mask.match(srv.findFields);
+                angular.forEach(matches, function(e, i) {
+                    var staticName = e.replace(srv.unwrapField, "");
+                    result.push(staticName);
+                });
+                return result;
+            };
+
+            srv.preClean = function(key, value) {
+                return value;
+            };
+
+            if (overloadPreCleanValues) // got an overload...
+                srv.preClean = overloadPreCleanValues;
+
+            return srv;
+        }
+
+        return createFieldMask;
+    });
+angular.module("eavEditTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("form/edit-many-entities.html","<div ng-if=\"vm.items != null\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <eav-language-switcher is-disabled=\"!vm.isValid()\"></eav-language-switcher>\r\n\r\n    <div ng-repeat=\"p in vm.items\" class=\"group-entity\">\r\n        <h3 class=\"clickable\" ng-click=\"p.collapse = !p.collapse\">\r\n            {{p.Header.Title ? p.Header.Title : \'EditEntity.DefaultTitle\' | translate }}&nbsp;\r\n            <span ng-if=\"p.Header.Group.SlotCanBeEmpty\" ng-click=\"vm.toggleSlotIsEmpty(p)\" stop-event=\"click\">\r\n                <switch ng-model=\"p.slotIsUsed\" class=\"tosic-blue\" style=\"top: 6px;\" tooltip=\"{{\'EditEntity.SlotUsed\' + p.slotIsUsed | translate}}\"></switch>\r\n            </span>\r\n            <span class=\"pull-right clickable\" style=\"font-size: smaller\">\r\n                <span class=\"low-priority collapse-entity-button\" ng-if=\"p.collapse\" icon=\"plus-sign\"></span>\r\n                <span class=\"collapse-entity-button\" ng-if=\"!p.collapse\" icon=\"minus-sign\"></span>\r\n            </span>\r\n        </h3>\r\n        <eav-edit-entity-form entity=\"p.Entity\" header=\"p.Header\" register-edit-control=\"vm.registerEditControl\" ng-hide=\"p.collapse\"></eav-edit-entity-form>\r\n    </div>\r\n\r\n\r\n    <div>\r\n        <!-- note: the buttons are not really disabled, because we want to be able to click them and see the error message -->\r\n        <button ng-class=\"{ \'disabled\': !vm.isValid() || vm.isWorking > 0}\" ng-click=\"vm.save(true)\" type=\"button\" class=\"btn btn-primary btn-lg submit-button\">\r\n            <span icon=\"ok\" tooltip=\"{{ \'Button.Save\' | translate }}\"></span> &nbsp;<span translate=\"Button.Save\"></span>\r\n        </button>\r\n        &nbsp;\r\n        <button ng-class=\"{ \'disabled\': !vm.isValid() || vm.isWorking > 0}\" class=\"btn btn-default btn-lg btn-square\" type=\"button\" ng-click=\"vm.save(false)\">\r\n            <span icon=\"check\" tooltip=\"{{ \'Button.SaveAndKeepOpen\' | translate }}\"></span>\r\n        </button>\r\n        &nbsp;\r\n        <!-- note: published status will apply to all - so the first is taken for identification if published -->\r\n        <switch ng-model=\"vm.willPublish\" class=\"tosic-blue\" style=\"top: 13px;\"></switch>\r\n        &nbsp;\r\n        <span ng-click=\"vm.willPublish = !vm.willPublish;\" class=\"save-published-icon\">\r\n            <i ng-if=\"vm.willPublish\" icon=\"eye-open\" tooltip=\"{{ \'Status.Published\' | translate }} - {{ \'Message.WillPublish\' | translate }}\"></i>\r\n            <i ng-if=\"!vm.willPublish\" icon=\"eye-close\" tooltip=\"{{ \'Status.Unpublished\' | translate }} - {{ \'Message.WontPublish\' | translate }}\"></i>\r\n        </span>\r\n\r\n\r\n        <span ng-if=\"vm.debug.on\">\r\n            <button tooltip=\"debug\" icon=\"zoom-in\" class=\"btn\" ng-click=\"vm.showDebugItems = !vm.showDebugItems\"></button>\r\n        </span>\r\n        <show-debug-availability class=\"pull-right\" style=\"margin-top: 20px;\"></show-debug-availability>\r\n    </div>\r\n    <div ng-if=\"vm.debug.on && vm.showDebugItems\">\r\n        <div>\r\n            isValid: {{vm.isValid()}}<br/>\r\n            isWorking: {{vm.isWorking}}\r\n        </div>\r\n        <pre>{{ vm.items | json }}</pre>\r\n    </div>\r\n</div>");
 $templateCache.put("form/edit-single-entity.html","<div ng-show=\"vm.editInDefaultLanguageFirst()\" translate=\"Message.PleaseCreateDefLang\">\r\n	\r\n</div>\r\n<div ng-show=\"!vm.editInDefaultLanguageFirst()\">\r\n    <formly-form ng-if=\"vm.formFields && vm.formFields.length\" ng-submit=\"vm.onSubmit()\" form=\"vm.form\" model=\"vm.entity.Attributes\" fields=\"vm.formFields\"></formly-form>\r\n</div>");
 $templateCache.put("form/main-form.html","<div class=\"modal-body\">\r\n    <span class=\"pull-right\">\r\n        <span style=\"display: inline-block; position: relative; left:15px\">\r\n            <button class=\"btn btn-default btn-square btn-subtle\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        </span>\r\n    </span>\r\n    <eav-edit-entities item-list=\"vm.itemList\" after-save-event=\"vm.afterSave\" state=\"vm.state\"></eav-edit-entities>\r\n</div>");
+$templateCache.put("localization/formly-localization-wrapper.html","<eav-localization-scope-control></eav-localization-scope-control>\r\n<div ng-if=\"!!value\">\r\n    <formly-transclude></formly-transclude>\r\n    <eav-localization-menu form-model=\"model\" field-model=\"model[options.key]\" options=\"options\" value=\"value\" index=\"index\"></eav-localization-menu>\r\n</div>\r\n<p class=\"bg-info\" style=\"padding:12px;\" ng-if=\"!value\" translate=\"LangWrapper.CreateValueInDefFirst\" translate-values=\"{ fieldname: \'{{to.label}}\' }\">Please... <i>\'{{to.label}}\'</i> in the def...</p>");
+$templateCache.put("localization/language-switcher.html","<tabset>\r\n    <tab ng-repeat=\"l in languages.languages\" heading=\"{{ l.name.substring(0, l.name.indexOf(\'(\') > 0 ? l.name.indexOf(\'(\') - 1 : 100 ) }}\" ng-click=\"!isDisabled ? languages.currentLanguage = l.key : false;\" disable=\"isDisabled\" active=\"languages.currentLanguage == l.key\" tooltip=\"{{l.name}}\"></tab>\r\n</tabset>");
+$templateCache.put("localization/localization-menu.html","<div dropdown is-open=\"status.isopen\" class=\"eav-localization\"> <!--style=\"z-index:{{1000 - index}};\"-->\r\n	<a class=\"eav-localization-lock\" ng-click=\"vm.actions.toggleTranslate();\" ng-if=\"vm.isDefaultLanguage()\" title=\"{{vm.tooltip()}}\" ng-class=\"{ \'eav-localization-lock-open\': !options.templateOptions.disabled }\" dropdown-toggle>\r\n        {{vm.infoMessage()}} <i class=\"glyphicon glyphicon-globe\"></i>\r\n	</a>\r\n    <ul class=\"dropdown-menu multi-level pull-right eav-localization-dropdown\" role=\"menu\" aria-labelledby=\"single-button\">\r\n        <li role=\"menuitem\"><a ng-click=\"vm.actions.translate()\" translate=\"LangMenu.Unlink\"></a></li>\r\n        <li role=\"menuitem\"><a ng-click=\"vm.actions.linkDefault()\" translate=\"LangMenu.LinkDefault\"></a></li>\r\n        <!-- Google translate is disabled because there is no longer a free version\r\n            <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.GoogleTranslate\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.autoTranslate(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>-->\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Copy\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: options.templateOptions.disabled || !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.copyFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Use\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.useFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.Share\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li ng-repeat=\"language in vm.languages.languages\" ng-class=\"{ disabled: !vm.hasLanguage(language.key) }\" role=\"menuitem\">\r\n                    <a ng-click=\"vm.actions.shareFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n        <!-- All fields -->\r\n        <li class=\"divider\"></li>\r\n        <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n            <a href=\"#\" translate=\"LangMenu.AllFields\"></a>\r\n            <ul class=\"dropdown-menu\">\r\n                <li role=\"menuitem\"><a ng-click=\"vm.actions.all.translate()\" translate=\"LangMenu.Unlink\"></a></li>\r\n                <li role=\"menuitem\"><a ng-click=\"vm.actions.all.linkDefault()\" translate=\"LangMenu.LinkDefault\"></a></li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Copy\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.copyFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Use\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.useFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n                <li role=\"menuitem\" class=\"dropdown-submenu\">\r\n                    <a href=\"#\" translate=\"LangMenu.Share\"></a>\r\n                    <ul class=\"dropdown-menu\">\r\n                        <li ng-repeat=\"language in vm.languages.languages\" role=\"menuitem\">\r\n                            <a ng-click=\"vm.actions.all.shareFrom(language.key)\" title=\"{{language.name}}\" href=\"#\">{{language.key}}</a>\r\n                        </li>\r\n                    </ul>\r\n                </li>\r\n            </ul>\r\n        </li>\r\n    </ul>\r\n</div>");
 $templateCache.put("wrappers/collapsible.html","<div ng-show=\"!to.collapse\" class=\"group-field-set\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/disablevisually.html","<div visually-disabled=\"{{to.disabled}}\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/eav-label.html","<div>\r\n    <label for=\"{{id}}\" class=\"control-label eav-label {{to.labelSrOnly ? \'sr-only\' : \'\'}} {{to.type}}\" ng-if=\"to.label\">\r\n        {{to.label}}\r\n        {{to.required ? \'*\' : \'\'}}\r\n        <a tabindex=\"-1\" ng-click=\"to.showDescription = !to.showDescription\" href=\"javascript:void(0);\" ng-if=\"to.description && to.description != \'\'\">\r\n            <i icon=\"info-sign\" class=\"low-priority\"></i>\r\n        </a>\r\n    </label>\r\n    <p ng-if=\"to.showDescription\" class=\"bg-info\" style=\"padding: 5px;\" ng-bind-html=\"to.description\">\r\n    </p>\r\n    <formly-transclude></formly-transclude>\r\n</div>");

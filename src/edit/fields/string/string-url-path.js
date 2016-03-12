@@ -1,5 +1,5 @@
 ﻿/* 
- * Field: String - url-item
+ * Field: String - url-path
  */
 
 angular.module("eavFieldTemplates")
@@ -9,58 +9,42 @@ angular.module("eavFieldTemplates")
             name: "string-url-path",
             template: "<div><input class=\"form-control input-lg\" only-simple-url-chars ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\" ng-blur=\"vm.finalClean()\"></div>",
             wrapper: defaultFieldWrappers,
-            controller: "FieldTemplate-String-Url-Item-Ctrl as vm"
+            controller: "FieldTemplate-String-Url-Path-Ctrl as vm"
         });
 
-    }).controller("FieldTemplate-String-Url-Item-Ctrl", function($scope, debugState, stripNonUrlCharacters) {
+    })
+
+    .controller("FieldTemplate-String-Url-Path-Ctrl", function ($scope, debugState, stripNonUrlCharacters, fieldMask) {
         var vm = this;
 
         // get configured
         var controlSettings = $scope.to.settings["string-url-path"];
         var sourceMask = (controlSettings) ? controlSettings.AutoGenerateMask || null : null;
+        var mask = fieldMask(sourceMask, $scope.model, function preCleane(key, value) {
+            return value.replace("/", "-").replace("\\", "-"); // this will remove slashes which could look like path-parts
+        });
 
         // test values
         //sourceMask = "[Name]";
         //autoGenerateLink = true;
+        var enableSlashes = true;
+        $scope.enablePath = enableSlashes;
 
         //#region Field-Mask handling 
         vm.lastAutoCopy = "";
         vm.sourcesChangedTryToUpdate = function sourcesChangedTryToUpdate() {
             // don't do anything if the current field is not empty and doesn't have the last copy of the stripped value
-            if($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
+            if ($scope.value && $scope.value.Value && $scope.value.Value !== vm.lastAutoCopy)
                 return;
-            
-            var orig = vm.getFieldContentBasedOnMask(sourceMask);
-            var cleaned = stripNonUrlCharacters(orig, false, true);
+
+            var orig = mask.resolve(); // vm.getFieldContentBasedOnMask(sourceMask);
+            //orig = orig.replace("/", "-").replace("\\", "-"); // when auto-importing, remove slashes as they shouldn't feel like paths afterwards
+            var cleaned = stripNonUrlCharacters(orig, enableSlashes, true);
             if (cleaned) {
                 vm.lastAutoCopy = cleaned;
                 $scope.value.Value = cleaned;
             }
-        }
-
-        vm.maskRegEx = /\[.*?\]/ig;
-        vm.getFieldContentBasedOnMask = function getNewAutoValue(mask) {
-            angular.forEach(vm.getFieldsOfMask(mask), function (e, i) {
-                var replaceValue = ($scope.model.hasOwnProperty(e) && $scope.model[e] && $scope.model[e]._currentValue && $scope.model[e]._currentValue.Value)
-                    ? $scope.model[e]._currentValue.Value : "";
-                mask = mask.replace(e, replaceValue);
-            });
-
-            return mask;
         };
-
-        vm.getFieldsOfMask = function (mask) {
-            var result = [];
-            if (!mask) return "";
-            var matches = mask.match(vm.maskRegEx);
-            angular.forEach(matches, function (e, i) {
-                var staticName = e.replace(/[\[\]]/ig, "");
-                result.push(staticName);
-            });
-            return result;
-        };
-        //#endregion 
-
 
         //#region enforce custom regex - copied from string-default
         var validationRegexString = ".*";
@@ -71,18 +55,19 @@ angular.module("eavFieldTemplates")
 
         //#endregion
 
-        //#region do final cleaning; mainly remove trailing "/"
+        //#region do final cleaning on blur / leave-field; mainly remove trailing "/"
         vm.finalClean = function() {
             var orig = $scope.value.Value;
-            var cleaned = stripNonUrlCharacters(orig, false, true);
+            var cleaned = stripNonUrlCharacters(orig, enableSlashes, true);
             if (orig !== cleaned)
                 $scope.value.Value = cleaned;
         };
         //#endregion
 
+
         vm.activate = function() {
             // add a watch for each field in the field-mask
-            angular.forEach(vm.getFieldsOfMask(sourceMask), function(e, i) {
+            angular.forEach(mask.fieldList() /* vm.getFieldsOfMask(sourceMask)*/, function (e, i) {
                 $scope.$watch("model." + e + "._currentValue.Value", function() {
                     if (debugState.on) console.log("url-path: " + e + " changed...");
                     vm.sourcesChangedTryToUpdate(sourceMask);
@@ -96,23 +81,27 @@ angular.module("eavFieldTemplates")
 
     })
 
+
+
     // this is a helper which cleans up the url and is used in various places
     .factory("stripNonUrlCharacters", function() {
         return function(inputValue, allowPath, trimEnd) {
-            if (inputValue == null)
+            if (!inputValue)
                 return "";
-            var rexAllowed = /[^a-z0-9-_]/gi,
-                rexSeparators = /[^a-z0-9-_]+/gi,
-                rexMult = /-+/gi,
-                rexTrim = trimEnd ? /^-|-+$/gi : /^-/gi;
+            var //rexNotAllowed = allowPath ? /[^a-z0-9-_/]/gi : /[^a-z0-9-_]/gi,
+                rexSeparators = allowPath ? /[^a-z0-9-_/]+/gi : /[^a-z0-9-_]+/gi;
+
             // allow only lower-case, numbers and _/- characters
-            var cleanInputValue = inputValue.replace("'s ", "s ") // neutralize it's, daniel's etc.
-                .toLowerCase().replace(rexSeparators, "-");
-            cleanInputValue = cleanInputValue.replace(rexMult, "-");
-            cleanInputValue = cleanInputValue.replace(rexAllowed, ""); ///[^\w\s]/gi, '');
-            cleanInputValue = cleanInputValue.replace(rexTrim, "");
+            var cleanInputValue = inputValue.toLowerCase()
+                .replace("'s ", "s ")   // neutralize it's, daniel's etc. but only if followed by a space, to ensure we don't kill quotes
+                .replace("\\", "/")     // neutralize slash representation
+                .replace(rexSeparators, "-");
+            cleanInputValue = cleanInputValue.replace(/-+/gi, "-") // reduce multiple "-"
+                .replace(/\/+/gi, "/") // reduce multiple slashes
+                //.replace(rexNotAllowed, "")
+                .replace(trimEnd ? /^-|-+$/gi : /^-/gi, ""); // trim front and maybe end "-"
             return cleanInputValue;
-        }
+        };
     })
 
     // this monitors an input-field and ensures that only allowed characters are typed
@@ -122,9 +111,9 @@ angular.module("eavFieldTemplates")
             restrict: "A",
             link: function(scope, element, attrs, modelCtrl) {
                 modelCtrl.$parsers.push(function(inputValue) {
-                    if (inputValue == null)
+                    if (inputValue === null)
                         return "";
-                    var cleanInputValue = stripNonUrlCharacters(inputValue, false, false);
+                    var cleanInputValue = stripNonUrlCharacters(inputValue, scope.enablePath, false);
 
                     if (cleanInputValue !== inputValue) {
                         modelCtrl.$setViewValue(cleanInputValue);
@@ -133,5 +122,5 @@ angular.module("eavFieldTemplates")
                     return cleanInputValue;
                 });
             }
-        }
+        };
     });
