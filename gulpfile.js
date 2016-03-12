@@ -1,6 +1,8 @@
 ﻿// Initial variables, constants, etc.
 var gulp = require("gulp"),
     $ = require("gulp-load-plugins")({ lazy: false }),
+    packageJSON = require('./package'),
+    jshintConfig = packageJSON.jshintConfig,
     merge = require("merge-stream"),
     js = "js",
     css = "css",
@@ -90,7 +92,9 @@ function packageJs(set) {
 
     var js = gulp.src(set.js.files)
         .pipe($.sort())
-        .pipe($.jshint())
+        .pipe($.jshint(jshintConfig))
+        .pipe($.jshint.reporter('jshint-stylish'))
+        //.pipe($.jshint.reporter('fail'))
         .pipe($.ngAnnotate())
     ;
 
