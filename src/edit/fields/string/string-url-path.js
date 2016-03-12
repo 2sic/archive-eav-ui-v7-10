@@ -13,8 +13,7 @@ angular.module("eavFieldTemplates")
         });
 
     })
-
-    .controller("FieldTemplate-String-Url-Path-Ctrl", function ($scope, debugState, stripNonUrlCharacters, fieldMask) {
+    .controller("FieldTemplate-String-Url-Path-Ctrl", function($scope, debugState, stripNonUrlCharacters, fieldMask) {
         var vm = this;
 
         // get configured
@@ -40,7 +39,7 @@ angular.module("eavFieldTemplates")
             var orig = mask.resolve(); // vm.getFieldContentBasedOnMask(sourceMask);
             //orig = orig.replace("/", "-").replace("\\", "-"); // when auto-importing, remove slashes as they shouldn't feel like paths afterwards
             var cleaned = stripNonUrlCharacters(orig, enableSlashes, true);
-            if (cleaned) {
+            if (cleaned && $scope.value) {
                 vm.lastAutoCopy = cleaned;
                 $scope.value.Value = cleaned;
             }
@@ -67,7 +66,7 @@ angular.module("eavFieldTemplates")
 
         vm.activate = function() {
             // add a watch for each field in the field-mask
-            angular.forEach(mask.fieldList() /* vm.getFieldsOfMask(sourceMask)*/, function (e, i) {
+            angular.forEach(mask.fieldList() /* vm.getFieldsOfMask(sourceMask)*/, function(e, i) {
                 $scope.$watch("model." + e + "._currentValue.Value", function() {
                     if (debugState.on) console.log("url-path: " + e + " changed...");
                     vm.sourcesChangedTryToUpdate(sourceMask);
@@ -82,27 +81,26 @@ angular.module("eavFieldTemplates")
     })
 
 
-
-    // this is a helper which cleans up the url and is used in various places
-    .factory("stripNonUrlCharacters", function() {
+// this is a helper which cleans up the url and is used in various places
+    .factory("stripNonUrlCharacters", function(latinizeText) {
         return function(inputValue, allowPath, trimEnd) {
-            if (!inputValue)
-                return "";
-            var //rexNotAllowed = allowPath ? /[^a-z0-9-_/]/gi : /[^a-z0-9-_]/gi,
-                rexSeparators = allowPath ? /[^a-z0-9-_/]+/gi : /[^a-z0-9-_]+/gi;
+            if (!inputValue) return "";
+            var rexSeparators = allowPath ? /[^a-z0-9-_/]+/gi : /[^a-z0-9-_]+/gi;
 
             // allow only lower-case, numbers and _/- characters
-            var cleanInputValue = inputValue.toLowerCase()
-                .replace("'s ", "s ")   // neutralize it's, daniel's etc. but only if followed by a space, to ensure we don't kill quotes
-                .replace("\\", "/")     // neutralize slash representation
-                .replace(rexSeparators, "-");
-            cleanInputValue = cleanInputValue.replace(/-+/gi, "-") // reduce multiple "-"
+            var latinized = latinizeText(inputValue.toLowerCase());
+            var cleanInputValue = latinized
+                .replace("'s ", "s ") // neutralize it's, daniel's etc. but only if followed by a space, to ensure we don't kill quotes
+                .replace("\\", "/") // neutralize slash representation
+                .replace(rexSeparators, "-") // replace everything we don't want with a -
+                .replace(/-+/gi, "-") // reduce multiple "-"
                 .replace(/\/+/gi, "/") // reduce multiple slashes
-                //.replace(rexNotAllowed, "")
+                .replace(/-*\/-*/gi, "/") // reduce "-/" or "/-" combinations to a simple "/"
                 .replace(trimEnd ? /^-|-+$/gi : /^-/gi, ""); // trim front and maybe end "-"
             return cleanInputValue;
         };
     })
+
 
     // this monitors an input-field and ensures that only allowed characters are typed
     .directive("onlySimpleUrlChars", function(stripNonUrlCharacters) {

@@ -188,6 +188,7 @@
     <Content Include="src\admin\services\ctrl-save.service.js" />
     <Content Include="src\admin\services\drag-body-class.js" />
     <Content Include="src\admin\services\file-type.service.js" />
+    <Content Include="src\admin\services\latinize-text-service.js" />
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
     <Content Include="src\edit-extended\fields\custom-gps\custom-gps.css" />
