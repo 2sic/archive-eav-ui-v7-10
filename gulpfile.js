@@ -9,6 +9,7 @@ var gulp = require("gulp"),
     config = {
         debug: true,
         autostart: true,
+        autopublish: true,
         rootDist: "dist/",// "tmp-gulp/dist/"
     };
 
@@ -54,8 +55,9 @@ gulp.task("test-something", function () {
 });
 
 gulp.task("clean-dist", function () {
-    gulp.src(config.rootDist)
-        .pipe($.clean());
+    // disabled 2016-03-13 to prevent mistakes as gulp doesn't generate everything yet
+    //gulp.src(config.rootDist)
+    //    .pipe($.clean());
 });
 
 // deploy the result to the current 2sxc-dev
@@ -155,7 +157,12 @@ function createWatchCallback(set, part) {
         if (config.debug) console.log("File " + event.path + " was " + event.type + ", running tasks on set " + set.name);
         var call = (part === js) ? packageJs : packageCss;
         call(set);
-        console.log("finished '" + set.name + "'");
+        console.log("finished '" + set.name + "'" + new Date());
+        if (config.autopublish) {
+            console.log("publishing...");
+            gulp.start("publish-dist-to-2sxc");
+            console.log("publishing done...");
+        }
     }
     if (config.autostart)
         run({ path: "[none]", type: "autostart" });
