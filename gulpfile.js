@@ -2,6 +2,7 @@
 var gulp = require("gulp"),
     $ = require("gulp-load-plugins")({ lazy: false }),
     packageJSON = require('./package'),
+    // would need this to always auto-publish after compile... runSequence = require('run-sequence'),
     jshintConfig = packageJSON.jshintConfig,
     merge = require("merge-stream"),
     js = "js",
@@ -65,7 +66,9 @@ gulp.task("publish-dist-to-2sxc", function () {
     gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
     .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
 });
-
+gulp.task("watch-publish-dist-to-2sxc", function() {
+    gulp.watch("dist/**/*", ['publish-dist-to-2sxc']);
+});
 
 //#region basic functions I'll need a lot
 function createConfig(key, tmplSetName) {
@@ -156,13 +159,16 @@ function createWatchCallback(set, part) {
     var run = function (event) {
         if (config.debug) console.log("File " + event.path + " was " + event.type + ", running tasks on set " + set.name);
         var call = (part === js) ? packageJs : packageCss;
-        call(set);
+        var running = call(set);
         console.log("finished '" + set.name + "'" + new Date());
-        if (config.autopublish) {
-            console.log("publishing...");
-            gulp.start("publish-dist-to-2sxc");
-            console.log("publishing done...");
-        }
+        //if (config.autopublish) {
+        //    console.log("publishing...");
+        //    //running.pipe(
+        //    runSequence(running, "publish-dist-to-2sxc");
+        //    //gulp.start("publish-dist-to-2sxc");
+        //    //);
+        //    console.log("publishing done...");
+        //}
     }
     if (config.autostart)
         run({ path: "[none]", type: "autostart" });
