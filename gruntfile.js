@@ -27,25 +27,25 @@ module.exports = function(grunt) {
         concatCssMin: "dist/edit/edit.min.css"
     };
 
-    var i18n = {
-        cwd: "src/i18n/",
-        dist: "dist/i18n/"
-    };
+    //var i18n = {
+    //    cwd: "src/i18n/",
+    //    dist: "dist/i18n/"
+    //};
 
-    var configConstants = {
-        ngTemplatesHtmlMin: {
-            collapseBooleanAttributes: true,
-            collapseWhitespace: true,
-            removeAttributeQuotes: true,
-            removeComments: true,
-            removeEmptyAttributes: true,
-            removeRedundantAttributes: false,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributes: true
-        }
-    };
+    //var configConstants = {
+    //    ngTemplatesHtmlMin: {
+    //        collapseBooleanAttributes: true,
+    //        collapseWhitespace: true,
+    //        removeAttributeQuotes: true,
+    //        removeComments: true,
+    //        removeEmptyAttributes: true,
+    //        removeRedundantAttributes: false,
+    //        removeScriptTypeAttributes: true,
+    //        removeStyleLinkTypeAttributes: true
+    //    }
+    //};
 
-    var concatPipelineCss = "pipeline-designer.css";
+    //var concatPipelineCss = "pipeline-designer.css";
 
     var js = {
         eav: {
@@ -71,32 +71,32 @@ module.exports = function(grunt) {
             tests: "tests"
         },
 
-        jshint: {
-            mainApp: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
-        },
+        //jshint: {
+        //    mainApp: ["gruntfile.js", admin.cwdJs, editUi.cwdJs]
+        //},
 
-        clean: {
-            mainAppTmp: tmpRoot + "**/*",
-            dist: "dist/**/*"
-        },
+        //clean: {
+        //    mainAppTmp: tmpRoot + "**/*",
+        //    dist: "dist/**/*"
+        //},
 
         copy: {
-            mainApp: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: admin.cwd,
-                        src: ["**", "!**/*spec.js", "!**/tests/**"],
-                        dest: admin.tmp
-                    },
-                    {
-                        expand: true,
-                        cwd: editUi.cwd,
-                        src: ["**", "!**/*spec.js", "!**/tests/**"],
-                        dest: editUi.tmp
-                    }
-                ]
-            },
+            //mainApp: {
+            //    files: [
+            //        {
+            //            expand: true,
+            //            cwd: admin.cwd,
+            //            src: ["**", "!**/*spec.js", "!**/tests/**"],
+            //            dest: admin.tmp
+            //        },
+            //        {
+            //            expand: true,
+            //            cwd: editUi.cwd,
+            //            src: ["**", "!**/*spec.js", "!**/tests/**"],
+            //            dest: editUi.tmp
+            //        }
+            //    ]
+            //},
             mainAppi18n: {
                 files: [
                     {
@@ -112,109 +112,109 @@ module.exports = function(grunt) {
                 ]
             }
         },
-        ngtemplates: {
-            mainApp: {
-                options: {
-                    module: "eavTemplates",
-                    // append: true,
-                    standalone: true,
-                    htmlmin: configConstants.ngTemplatesHtmlMin
-                },
-                files: [
-                    {
-                        cwd: admin.tmp,
-                        src: ["**/*.html"],
-                        dest: admin.templates
-                    }
-                ]
-            },
-            mainAppEdit: {
-                options: {
-                    module: "eavEditTemplates",
-                    // append: true,
-                    standalone: true,
-                    htmlmin: configConstants.ngTemplatesHtmlMin
-                },
-                files: [
-                     {
-                         cwd: editUi.tmp,
-                         src: ["**/*.html"], 
-                         dest: editUi.templates
-                     }
-                ]
+        //ngtemplates: {
+        //    mainApp: {
+        //        options: {
+        //            module: "eavTemplates",
+        //            // append: true,
+        //            standalone: true,
+        //            htmlmin: configConstants.ngTemplatesHtmlMin
+        //        },
+        //        files: [
+        //            {
+        //                cwd: admin.tmp,
+        //                src: ["**/*.html"],
+        //                dest: admin.templates
+        //            }
+        //        ]
+        //    },
+        //    mainAppEdit: {
+        //        options: {
+        //            module: "eavEditTemplates",
+        //            // append: true,
+        //            standalone: true,
+        //            htmlmin: configConstants.ngTemplatesHtmlMin
+        //        },
+        //        files: [
+        //             {
+        //                 cwd: editUi.tmp,
+        //                 src: ["**/*.html"], 
+        //                 dest: editUi.templates
+        //             }
+        //        ]
 
-            }
-        },
-        concat: {
-            mainApp: {
-                src: admin.tmp + "**/*.js",
-                dest: admin.concatFile
-            },
-            mainAppAdminCss: {
-                src: admin.tmp + "**.css",
-                dest: admin.concatCss
-            },
-            mainAppEditUi: {
-                src: editUi.tmp + "**/*.js",
-                dest: editUi.concatFile
-            },
-            mainAppPipelineCss: {
-                src: [admin.tmp + "pipelines/pipeline-designer.css"],
-                dest: admin.dist + concatPipelineCss
-            },
-            mainAppEditUiCss: {
-                src: [editUi.tmp + "**/*.css"],
-                dest: editUi.concatCss
-            }
+        //    }
+        //},
+        //concat: {
+        //    mainApp: {
+        //        src: admin.tmp + "**/*.js",
+        //        dest: admin.concatFile
+        //    },
+        //    mainAppAdminCss: {
+        //        src: admin.tmp + "**.css",
+        //        dest: admin.concatCss
+        //    },
+        //    mainAppEditUi: {
+        //        src: editUi.tmp + "**/*.js",
+        //        dest: editUi.concatFile
+        //    },
+        //    mainAppPipelineCss: {
+        //        src: [admin.tmp + "pipelines/pipeline-designer.css"],
+        //        dest: admin.dist + concatPipelineCss
+        //    },
+        //    mainAppEditUiCss: {
+        //        src: [editUi.tmp + "**/*.css"],
+        //        dest: editUi.concatCss
+        //    }
 
-        },
-        ngAnnotate: {
-            mainApp: {
-                expand: true,
-                src: admin.concatFile,
-                extDot: "last"          // Extensions in filenames begin after the last dot 
-            },
-            mainAppEditUi: {
-                expand: true,
-                src: editUi.concatFile,
-                extDot: "last"          // Extensions in filenames begin after the last dot 
-            }
+        //},
+        //ngAnnotate: {
+        //    mainApp: {
+        //        expand: true,
+        //        src: admin.concatFile,
+        //        extDot: "last"          // Extensions in filenames begin after the last dot 
+        //    },
+        //    mainAppEditUi: {
+        //        expand: true,
+        //        src: editUi.concatFile,
+        //        extDot: "last"          // Extensions in filenames begin after the last dot 
+        //    }
 
-        },
+        //},
 
 
-        uglify: {
-            options: {
-                banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"yyyy-mm-dd hh:MM\") %> */\n",
-                sourceMap: true
-            },
+        //uglify: {
+        //    options: {
+        //        banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"yyyy-mm-dd hh:MM\") %> */\n",
+        //        sourceMap: true
+        //    },
 
-            mainApp: {
-                src: admin.concatFile,
-                dest: admin.uglifyFile
-            },
-            mainAppEditUi: {
-                src: editUi.concatFile,
-                dest: editUi.uglifyFile
-            }
-        },
+        //    mainApp: {
+        //        src: admin.concatFile,
+        //        dest: admin.uglifyFile
+        //    },
+        //    mainAppEditUi: {
+        //        src: editUi.concatFile,
+        //        dest: editUi.uglifyFile
+        //    }
+        //},
         
-        cssmin: {
-            options: {
-                shorthandCompacting: false,
-                roundingPrecision: -1
-            },
-            mainApp: {
-                files: [{
-                    expand: true,
-                    cwd: distRoot,
-                    src: ["**/*.css", "!**/*.min.css"],
-                    dest: distRoot,
-                    ext: ".min.css"
-                }
-                ]
-            }
-        },
+        //cssmin: {
+        //    options: {
+        //        shorthandCompacting: false,
+        //        roundingPrecision: -1
+        //    },
+        //    mainApp: {
+        //        files: [{
+        //            expand: true,
+        //            cwd: distRoot,
+        //            src: ["**/*.css", "!**/*.min.css"],
+        //            dest: distRoot,
+        //            ext: ".min.css"
+        //        }
+        //        ]
+        //    }
+        //},
 
         //compress: {
         //    mainApp: {
@@ -229,29 +229,29 @@ module.exports = function(grunt) {
         //    }
         //},
 
-        jasmine: {
-            default: {
-                // Your project's source files
-                src: js.eav.src,
-                options: {
-                    // Your Jasmine spec files 
-                    specs: js.eav.specs,
-                    // Your spec helper files
-                    helpers: js.eav.helpers
-                }
-            }
-        },
+        //jasmine: {
+        //    default: {
+        //        // Your project's source files
+        //        src: js.eav.src,
+        //        options: {
+        //            // Your Jasmine spec files 
+        //            specs: js.eav.specs,
+        //            // Your spec helper files
+        //            helpers: js.eav.helpers
+        //        }
+        //    }
+        //},
 
-        watch: {
-            ngUi: {
-                files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**"],
-                tasks: ["build"]
-            },
-            devEavMlJson: {
-                files: ["gruntfile.js", js.eav.src, js.eav.specs],
-                tasks: ["jasmine:default", "jasmine:default:build"]                
-            }
-        }
+        //watch: {
+        //    ngUi: {
+        //        files: ["gruntfile.js", admin.cwd + "**", editUi.cwd + "**"],
+        //        tasks: ["build"]
+        //    },
+        //    devEavMlJson: {
+        //        files: ["gruntfile.js", js.eav.src, js.eav.specs],
+        //        tasks: ["jasmine:default", "jasmine:default:build"]                
+        //    }
+        //}
     });
 
     // Load all grunt-plugins mentioned in the package.json
@@ -281,7 +281,7 @@ module.exports = function(grunt) {
         
     //]);
 
-    grunt.registerTask("build-auto", ["build", "watch:ngUi"]);
+    // grunt.registerTask("build-auto", ["build", "watch:ngUi"]);
     grunt.registerTask("lint", "jshint");
     grunt.registerTask("default", "jasmine");
     grunt.registerTask("manualDebug", "jasmine:default:build");

@@ -11,6 +11,7 @@ var gulp = require("gulp"),
         debug: true,
         autostart: true,
         autopublish: true,
+        autopublishTarget: "./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist",
         rootDist: "dist/",// "tmp-gulp/dist/"
     };
 
@@ -63,8 +64,8 @@ gulp.task("clean-dist", function () {
 
 // deploy the result to the current 2sxc-dev
 gulp.task("publish-dist-to-2sxc", function () {
-    gulp.src("./dist/**/*")// '*.{ttf,woff,eof,svg}')
-    .pipe(gulp.dest("./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist"));
+    gulp.src(["./dist/**/*", "!./dist/i18n/**/*", "!./dist/lib/fonts/**/*"])// '*.{ttf,woff,eof,svg}')
+    .pipe(gulp.dest(config.autopublishTarget));
 });
 gulp.task("watch-publish-dist-to-2sxc", function() {
     gulp.watch("dist/**/*", ['publish-dist-to-2sxc']);

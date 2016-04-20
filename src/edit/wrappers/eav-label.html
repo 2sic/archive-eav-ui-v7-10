@@ -7,13 +7,13 @@
         <a tabindex="-1" ng-click="to.showDescription = !to.showDescription" href="javascript:void(0);" ng-if="to.description && to.description != ''">
             <i icon="info-sign" class="low-priority"></i>
         </a>
-        <span class="xpull-right btn-sm" ng-if="to.enableCollapseField">
+        <span class="btn-sm" ng-if="to.enableCollapseField">
             <span ng-if="to.collapseField" class="low-priority collapse-fieldgroup-button" icon="plus-sign"></span>
             <span ng-if="!to.collapseField" class="low-priority collapse-fieldgroup-button" icon="minus-sign"></span>
         </span>
     </label>
     <p ng-if="to.showDescription" class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
-    </p> 
+    </p>
     <div ng-show="!(to.collapseField && to.enableCollapseField)">
         <formly-transclude></formly-transclude>
     </div>
