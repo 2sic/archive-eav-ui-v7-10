@@ -11,7 +11,8 @@
             scope: {
                 itemList: "=",
                 afterSaveEvent: "=",
-                state: "="
+                state: "=",
+                close: "="
             },
             controller: "EditEntities",
             controllerAs: "vm"

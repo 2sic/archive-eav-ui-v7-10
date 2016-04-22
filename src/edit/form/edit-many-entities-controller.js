@@ -58,8 +58,7 @@
 
                         // set slot value - must be inverte for boolean-switch
                         var grp = vm.items[i].Header.Group;
-                        vm.items[i].slotIsUsed = (grp === null
-                            || grp.SlotIsEmpty !== true);
+                        vm.items[i].slotIsUsed = (grp === null || grp === undefined || grp.SlotIsEmpty !== true);
                     });
                     vm.willPublish = vm.items[0].Entity.IsPublished;
                 });
@@ -102,9 +101,10 @@
                 if (close)
                     vm.afterSaveEvent(result);
                 vm.isWorking--;
-            }, function errorWhileSaving(response) {
+            }, function errorWhileSaving() {
                 vm.isWorking--;
             });
+            return null;
         };
 
         // things to do after saving
@@ -116,7 +116,7 @@
         // check if form is valid
         vm.isValid = function () {
             var valid = true;
-            angular.forEach(vm.registeredControls, function (e, i) {
+            angular.forEach(vm.registeredControls, function (e) {
                 if (!e.isValid())
                     valid = false;
             });
@@ -125,7 +125,7 @@
 
         vm.formErrors = function () {
             var list = [];
-            angular.forEach(vm.registeredControls, function (e, i) {
+            angular.forEach(vm.registeredControls, function (e) {
                 if (!e.isValid())
                     list.push(e.error());
             });
@@ -135,7 +135,7 @@
         // check if dirty
         $scope.state.isDirty = function() {
             var dirty = false;
-            angular.forEach(vm.registeredControls, function(e, i) {
+            angular.forEach(vm.registeredControls, function(e) {
                 if (e.isDirty())
                     dirty = true;
             });
@@ -144,18 +144,54 @@
 
         // set to not-dirty (pristine)
         $scope.state.setPristine = function() {
-            angular.forEach(vm.registeredControls, function(e, i) {
+            angular.forEach(vm.registeredControls, function(e) {
                 e.setPristine();
             });
         };
         //#endregion
 
         // monitor for changes in publish-state and set it for all items being edited
-        $scope.$watch('vm.willPublish', function (newValue, oldValue) {
+        $scope.$watch("vm.willPublish", function () {
             angular.forEach(vm.items, function (v, i) {
                 vm.items[i].Entity.IsPublished = vm.willPublish;
             });
         });
+
+        // handle maybe-leave
+        vm.maybeLeave = {
+            save: function() { vm.save(true); },
+            quit: $scope.close,
+            handleClick: function(event) {
+                var target = event.target || event.srcElement;
+                if (target.id === "save" || target.id === "quit") {
+                    vm.allowCloseWithoutAsking = true;
+                    vm.maybeLeave[target.id]();
+                }
+            },
+            ask: function(e) {
+                if (vm.allowCloseWithoutAsking)
+                    return;
+                var template = "<div>"  // note: this variable must be inside this method, to ensure that translate is pre-loaded before we call it
+                    + $translate.instant("Errors.UnsavedChanges") + "<br>"
+                    + "<button type='button' id='save' class='btn btn-primary' ><i class='icon-ok'></i>" +  $translate.instant("General.Buttons.Save") + "</button> &nbsp;"
+                    + "<button type='button' id='quit' class='btn btn-default' ><i class= 'icon-cancel'></i>" + $translate.instant("General.Buttons.NotSave") + "</button>"
+                    + "</div>";
+                if (vm.dialog && vm.dialog.isOpened)
+                    toastr.clear(vm.dialog);
+                vm.dialog = toastr.warning(template, {
+                    allowHtml: true,
+                    timeOut: 3000,
+                    onShown: function (toast) {
+                        toast.el[0].onclick = vm.maybeLeave.handleClick;
+                    }
+                });
+                e.preventDefault();
+            }
+        };
+        
+        $scope.$on("modal.closing", vm.maybeLeave.ask);
+
+
 
         /// toggle / change if a section (slot) is in use or not (like an unused presentation)
         vm.toggleSlotIsEmpty = function (item) {

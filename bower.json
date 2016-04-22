@@ -32,8 +32,8 @@
     "angular-toastr": "1.7.0",
 		"bootflat-for-2sic": "https://github.com/2sic/bootflat-for-2sic.git",
     "ag-grid": "2.3.5",
-    "2sxc-eav-languages": "2sic/2sxc-eav-languages#9733802c385fea4d30d612068f2c4be6a3eed368",
-    "2sxc-icons": "2sic/2sxc-icons#104657b"
+    "2sxc-eav-languages": "2sic/2sxc-eav-languages",
+    "2sxc-icons": "2sic/2sxc-icons"
 
   },
   "private": true,
