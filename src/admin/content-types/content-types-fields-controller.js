@@ -63,9 +63,17 @@
                     alert(translations["General.Messages.CantDelete"].replace("{0}", translations["General.Terms.Title"]));
                 });
 
-            $translate("General.Questions.Delete", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
+            return $translate("General.Questions.Delete", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
                 if (confirm(msg))
                     svc.delete(item);
+            });
+        };
+
+        vm.rename = function rename(item) {
+            $translate("General.Questions.Rename", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
+                var newName = prompt(msg);
+                if (newName)
+                    svc.rename(item, newName);
             });
         };
 
@@ -74,7 +82,7 @@
             // assemble an array of 2 items for editing
             var items = [vm.createItemDefinition(item, "All"),
                 vm.createItemDefinition(item, metadataType),
-                vm.createItemDefinition(item, item.InputType),
+                vm.createItemDefinition(item, item.InputType)
             ];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };

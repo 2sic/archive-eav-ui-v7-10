@@ -18,7 +18,7 @@
                     <th translate="Fields.Table.Label" style="width: 30%"></th>
                     <th translate="Fields.Table.Notes" style="width: 50%"></th>
                     <th translate="Fields.Table.Sort" class="mini-btn-2"></th>
-                    <th translate="Fields.Table.Action" class="mini-btn-1"></th>
+                    <th translate="Fields.Table.Action" class="mini-btn-2"></th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +53,7 @@
                         <button icon="arrow-down" type="button" class="btn btn-xs btn-square" ng-disabled="$last" ng-click="vm.moveDown(item)"></button>
                     </td>
                     <td stop-event="click">
+                        <button icon="cog" type="button" class="btn btn-xs btn-square" ng-click="vm.rename(item)"></button>
                         <button icon="remove" type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(item)"></button>
                     </td>
                 </tr>

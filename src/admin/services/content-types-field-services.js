@@ -121,6 +121,11 @@ angular.module("EavServices")
                     .then(svc.liveListReload);
             };
 
+            svc.rename = function rename(item, newName) {
+                return $http.get("eav/contenttype/rename", { params: { appid: svc.appId, contentTypeId: svc.contentType.Id, attributeId: item.Id, newName: newName } })
+                    .then(svc.liveListReload);
+            };
+
 
             return svc;
         };
