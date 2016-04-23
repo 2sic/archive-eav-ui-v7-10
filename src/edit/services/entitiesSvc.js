@@ -37,7 +37,7 @@
                 });
             };
 
-            svc.delete = function del(type, id) {
+            svc.delete = function del(type, id, tryForce) {
                 console.log("try to delete");
 
                 var delPromise = $http.get("eav/entities/delete", {
@@ -45,7 +45,8 @@
                     params: {
                         'contentType': type,
                         'id': id,
-                        'appId': appId
+                        'appId': appId,
+                        'force': tryForce
                     }
                 });
                 return promiseToastr(delPromise, "Message.Deleting", "Message.Ok", "Message.Error");

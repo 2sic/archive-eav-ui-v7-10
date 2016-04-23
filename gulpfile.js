@@ -12,7 +12,7 @@ var gulp = require("gulp"),
         autostart: true,
         autopublish: true,
         autopublishTarget: "./../2SexyContent/Web/DesktopModules/ToSIC_SexyContent/dist",
-        rootDist: "dist/",// "tmp-gulp/dist/"
+        rootDist: "dist/" // "tmp-gulp/dist/"
     };
 
 // setup admin, exclude pipeline css (later also exclude pipeline js)
@@ -119,13 +119,14 @@ function packageJs(set) {
         .pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
-        .pipe($.sourcemaps.init({ loadMaps: true }))
+        // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
+        // .pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.uglify())
             .on("error", $.util.log)
-        .pipe($.sourcemaps.write("./"))
+        // .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
 
-    if (config.debug) console.log("bundling done: " + set.name);
+    if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));
 
     return result;
 }
@@ -150,7 +151,7 @@ function packageCss(set) {
         .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
     ;
-    if (config.debug) console.log("css packaging done: " + set.name);
+    if (config.debug) console.log($.util.colors.cyan("css packaging done: " + set.name));
     return result;
 }
 
@@ -160,7 +161,7 @@ function createWatchCallback(set, part) {
     var run = function (event) {
         if (config.debug) console.log("File " + event.path + " was " + event.type + ", running tasks on set " + set.name);
         var call = (part === js) ? packageJs : packageCss;
-        var running = call(set);
+        call(set);
         console.log("finished '" + set.name + "'" + new Date());
         //if (config.autopublish) {
         //    console.log("publishing...");
