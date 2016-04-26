@@ -343,8 +343,8 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>
-      xcopy /E /Y "$(ProjectDir)dist" "$(ProjectDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"
-    </PostBuildEvent>
+rem      xcopy /E /Y "$(ProjectDir)dist" "$(ProjectDir)..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\dist\"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

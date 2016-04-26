@@ -267,7 +267,7 @@
 			                            if (target.id === "del")
 			                                svc.delete(item.RepositoryId, true)
 			                                    .then(setRowData);
-			                        }
+			                        };
 			                    }
 
 

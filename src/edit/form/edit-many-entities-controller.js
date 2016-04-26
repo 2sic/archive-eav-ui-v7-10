@@ -98,8 +98,10 @@
             vm.isWorking++;
             saveToastr(entitiesSvc.saveMany(appId, vm.items)).then(function (result) {
                 $scope.state.setPristine();
-                if (close)
+                if (close) {
+                    vm.allowCloseWithoutAsking = true;
                     vm.afterSaveEvent(result);
+                }
                 vm.isWorking--;
             }, function errorWhileSaving() {
                 vm.isWorking--;
