@@ -64,7 +64,7 @@ gulp.task("clean-dist", function () {
 
 // deploy the result to the current 2sxc-dev
 gulp.task("publish-dist-to-2sxc", function () {
-    gulp.src(["./dist/**/*", "!./dist/i18n/**/*", "!./dist/lib/fonts/**/*"])// '*.{ttf,woff,eof,svg}')
+    gulp.src(["./dist/**/*", "!./dist/i18n/**/*", "!./dist/lib/fonts/**/*"])
     .pipe(gulp.dest(config.autopublishTarget));
 });
 gulp.task("watch-publish-dist-to-2sxc", function() {
@@ -120,10 +120,10 @@ function packageJs(set) {
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
-        .pipe($.sourcemaps.init({ loadMaps: true }))
+        // .pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.uglify())
             .on("error", $.util.log)
-        .pipe($.sourcemaps.write("./"))
+        // .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
 
     if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));

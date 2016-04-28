@@ -7,6 +7,10 @@
 
     // The controller for the main form directive
     app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, saveToastr, $translate, debugState, ctrlS) {
+        //#region detailled logging if necessary
+        var detailedLogging = false;
+        var clog = detailedLogging ? function () { for (var i = 0; i < arguments.length; i++) console.log(arguments[i]) } : function () { };
+        //#endregion
 
         var vm = this;
         vm.debug = debugState;
@@ -163,9 +167,12 @@
         vm.maybeLeave = {
             save: function() { vm.save(true); },
             quit: $scope.close,
-            handleClick: function(event) {
+            handleClick: function (event) {
+                clog('handleClick', event);
                 var target = event.target || event.srcElement;
+                if (target.nodeName === "I") target = target.parentNode;
                 if (target.id === "save" || target.id === "quit") {
+                    clog('for ' + target.id);
                     vm.allowCloseWithoutAsking = true;
                     vm.maybeLeave[target.id]();
                 }

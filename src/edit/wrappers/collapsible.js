@@ -1,4 +1,7 @@
-﻿
+﻿/*
+ * This wrapper should be around all fields, so that they can collapse 
+ * when a field-group-title requires collapsing
+ */
 (function () {
     "use strict";
 

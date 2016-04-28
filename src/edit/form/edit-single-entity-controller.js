@@ -65,12 +65,48 @@
 		        });
 		};
 
+	    vm.initCustomJavaScript = function(field) {
+	        var jsobject,
+                cjs = field.Metadata.merged.CustomJavaScript;
+	        if (!cjs) return;
+	        if (cjs.indexOf("/* compatibility: 1.0 */") < 0) {
+	            console.log("found custom js for field '" + field.StaticName + "', but didn't find correct version support; ignore");
+	            return;
+	        }
+
+	        try {
+	            var fn = new Function(cjs); // jshint ignore:line
+	            jsobject = fn();
+	        }
+            catch (ex) {
+                console.log("wasn't able to process the custom javascript for field '" + field.StaticName + "'. tried: " + cjs);
+            }
+	        if (jsobject === undefined || jsobject === null)
+	            return;
+
+	        var context = {
+	            field: field,
+	            formVm: vm,
+	            formlyConfig: formlyConfig,
+	            appId: appId,
+	            module: app, // pass in this current module in case something complex is wanted
+	        };
+
+	        // now cjs should be the initiliazed object...
+	        if (jsobject && jsobject.init)
+	            jsobject.init(context);
+	        
+
+	    };
+
 	    vm.registerAllFieldsFromReturnedDefinition = function raffrd(result) {
 	        var lastGroupHeadingId = 0;
 	        angular.forEach(result.data, function (e, i) {
 
 	            if (e.Metadata.All === undefined)
 	                e.Metadata.All = {};
+
+	            vm.initCustomJavaScript(e);
 
 	            var fieldType = e.InputType;
 

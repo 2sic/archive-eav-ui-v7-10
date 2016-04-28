@@ -11,17 +11,7 @@ angular.module("eavFieldTemplates")
             name: "entity-default",
             templateUrl: "fields/entity/entity-default.html",
             wrapper: ["eavLabel", "bootstrapHasError", "collapsible"],
-            controller: "FieldTemplate-EntityCtrl",
-            //defaultOptions: {
-            //    validators: {
-            //        required: function (viewValue, modelValue, scope) {
-            //            var value = viewValue || modelValue;
-            //            if (!Array.isArray(value))
-            //                return true;
-            //            return value.length > 0;
-            //        }
-            //    }
-            //}
+            controller: "FieldTemplate-EntityCtrl"
         });
 
 
