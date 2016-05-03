@@ -12,6 +12,7 @@
             <tr ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item" ui-tree-handle>
                 <td>
                     <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                    <i title="" class="icon-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
                 </td>
                 <td>
                     <span class="eav-entityselect-item-title" title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
