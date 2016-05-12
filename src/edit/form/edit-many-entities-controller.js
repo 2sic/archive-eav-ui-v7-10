@@ -9,7 +9,9 @@
     app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, saveToastr, $translate, debugState, ctrlS) {
         //#region detailled logging if necessary
         var detailedLogging = false;
-        var clog = detailedLogging ? function () { for (var i = 0; i < arguments.length; i++) console.log(arguments[i]) } : function () { };
+        var clog = detailedLogging
+            ? function () { for (var i = 0; i < arguments.length; i++) console.log(arguments[i]); }
+            : function () { };
         //#endregion
 
         var vm = this;

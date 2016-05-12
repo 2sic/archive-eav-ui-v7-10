@@ -5,7 +5,8 @@ angular.module("PipelineDesigner", [
         "EavServices",
         "eavTemplates",
         "eavNgSvcs",
-        "EavAdminUi"
+        "EavAdminUi",
+        "eavEditEntity"
     ])
 
 // datasource directive makes an element a DataSource with jsPlumb

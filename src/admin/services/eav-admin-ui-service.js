@@ -38,11 +38,17 @@ angular.module("EavAdminUi", ["ng",
     "ContentImportApp",
     "ContentExportApp",
     "HistoryApp",            // the item-history app
-	"eavEditEntity"			// the edit-app
+
+    // big todo: currently removed dependency to eavEditentity (much faster) but it actually does...
+    // ...need it to initialize this class, so ATM this only works in a system where the other dependency
+    // is defined. very not clean :( 
+    // but much faster for now
+    // the correct clean up would be to create an edit-dialogs class or something (todo)
+	// "eavEditEntity"			// the edit-app
 ])
     .factory("eavAdminDialogs", function ($modal, eavConfig, $window,
         // these are needed just for simple access to some dialogs
-        entitiesSvc,
+        entitiesSvc,    // warning: this only works ATM when called in 2sxc, because it needs the eavEditEntity dependency
         contentTypeSvc,
         appId) {
             /*jshint laxbreak:true */
@@ -187,7 +193,7 @@ angular.module("EavAdminUi", ["ng",
         //#region Internal helpers
             svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
                 if (typeof (callbacks) === "undefined")
-                    return;
+                    return null;
                 if (typeof (callbacks) === "function") // if it's only one callback, use it for all close-cases
                     callbacks = { close: callbacks };
                 return promise.result.then(callbacks.success || callbacks.close, callbacks.error || callbacks.close, callbacks.notify || callbacks.close);
