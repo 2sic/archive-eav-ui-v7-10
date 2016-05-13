@@ -95,6 +95,43 @@
 
 [visually-disabled='true'] { opacity: 0.3; -webkit-filter: grayscale(100%); filter: grayscale(100%); }
 .ng-touched.ng-invalid { border-color:red; }
+
+
+/* new floating label styles */
+
+input.test.material {
+    border: 0;
+    border-bottom: 1px;
+    border-bottom-color: #ddd; /* #8DCAFA; /* todo: define the official color  #0087F4; */
+    border-bottom-style: solid;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-left: 0;
+    /*height: 16px; */
+}
+input.test.material:focus {
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color:  #0087F4;
+}
+
+.has-error input.test.material {
+    border-bottom-color: red;
+}
+
+div.wrap-float-label label {
+    position: absolute;
+    top: 16px;
+    font-size: 18px;
+    opacity: 0.4;
+}
+
+div.wrap-float-label.float-away label {
+    position: absolute;
+    top: -8px;
+    font-size: 14px;
+    opacity: 1;
+}
 .formly-field { position:relative; }
 .eav-localization { position:absolute; top:0; right:0; }
 .eav-localization-lock { float: right; display: inline-block; }

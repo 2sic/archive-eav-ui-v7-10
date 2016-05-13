@@ -127,7 +127,12 @@
 	                    canCollapse: lastGroupHeadingId > 0 && !isFieldHeading,
 	                    fieldGroup: vm.formFields[lastGroupHeadingId],
 	                    disabled: e.Metadata.All.Disabled,
-	                    langReadOnly: false // Will be set by the language directive to override the disabled state
+	                    langReadOnly: false, // Will be set by the language directive to override the disabled state
+
+                        // test to discover focused for floating labels
+	                    onBlur: 'to.focused=false',
+	                    onFocus: 'to.focused=true',
+	                    focused: false
 	                },
 	                className: "type-" + e.Type.toLowerCase() + " input-" + fieldType + " field-" + e.StaticName.toLowerCase(),
 	                hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),

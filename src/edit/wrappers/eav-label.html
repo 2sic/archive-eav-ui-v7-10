@@ -1,7 +1,10 @@
-﻿<div>
-    <label for="{{id}}" class="control-label eav-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}"
+﻿<div class="wrap-float-label" ng-class="{'float-away': (fc[0] || fc).$modelValue.length || to.showDescription || to.focused}">
+    <!-- some notes as to what is happening here
+        the ng-class adds a "float-away" if the notes are shown or if the field has content
+        -->
+    <label for="{{id}}" class="control-label eav-label xtest xfloat-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}"
            ng-if="to.label"
-            ng-click="to.collapseField = !to.collapseField">
+           ng-click="to.collapseField = !to.collapseField">
         {{to.label}}
         {{to.required ? '*' : ''}}
         <a tabindex="-1" ng-click="to.showDescription = !to.showDescription" href="javascript:void(0);" ng-if="to.description && to.description != ''">
@@ -16,5 +19,9 @@
     </p>
     <div ng-show="!(to.collapseField && to.enableCollapseField)">
         <formly-transclude></formly-transclude>
+    </div>
+
+    <div ng-if="debug.on">
+        Field-Debug: {{fc}}
     </div>
 </div>
