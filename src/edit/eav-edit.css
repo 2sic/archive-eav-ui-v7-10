@@ -97,9 +97,10 @@
 .ng-touched.ng-invalid { border-color:red; }
 
 
-/* new floating label styles */
+/****** new floating label styles ******/
 
-input.test.material {
+/* the input */
+div.wrap-float-label input {
     border: 0;
     border-bottom: 1px;
     border-bottom-color: #ddd; /* #8DCAFA; /* todo: define the official color  #0087F4; */
@@ -107,28 +108,50 @@ input.test.material {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     padding-left: 0;
-    /*height: 16px; */
 }
-input.test.material:focus {
+div.wrap-float-label input:focus {
     border-bottom: 2px;
     border-bottom-style: solid;
     border-bottom-color:  #0087F4;
 }
 
-.has-error input.test.material {
+.has-error div.wrap-float-label input {
     border-bottom-color: red;
 }
 
-div.wrap-float-label label {
+/* the label */
+.has-error div.wrap-float-label label,
+.has-error div.wrap-float-label.focused label {
+    color: red;
+}
+
+:not(.disable-float-label) > div.wrap-float-label {
+    padding-top: 8px;
+}
+
+:not(.disable-float-label) > div.wrap-float-label label {
     position: absolute;
-    top: 16px;
+    top: 20px;
     font-size: 18px;
     opacity: 0.4;
 }
 
-div.wrap-float-label.float-away label {
+:not(.disable-float-label) > div.wrap-float-label.float-away label {
     position: absolute;
-    top: -8px;
+    top: -2px;
     font-size: 14px;
+}
+
+div.wrap-float-label.focused label {
+    color: #0087f4;
     opacity: 1;
+}
+
+div.wrap-float-label div.info-wrapper {
+    padding-top: 12px;
+}
+
+div.wrap-float-label p.bg-info,
+div.wrap-float-label p.bg-info p {
+    margin-bottom: 0;
 }

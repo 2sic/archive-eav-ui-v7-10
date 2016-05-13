@@ -1,4 +1,4 @@
-﻿<div class="wrap-float-label" ng-class="{'float-away': (fc[0] || fc).$modelValue.length || to.showDescription || to.focused}">
+﻿<div class="wrap-float-label" ng-class="[{'float-away': (fc[0] || fc).$modelValue.length || to.showDescription || to.focused},{focused: to.focused}]">
     <!-- some notes as to what is happening here
         the ng-class adds a "float-away" if the notes are shown or if the field has content
         -->
@@ -15,8 +15,11 @@
             <span ng-if="!to.collapseField" class="low-priority collapse-fieldgroup-button" icon="minus-sign"></span>
         </span>
     </label>
-    <p ng-if="to.showDescription" class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
-    </p>
+    <div ng-if="to.showDescription" class="info-wrapper">
+        <p class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
+        </p>        
+    </div>
+
     <div ng-show="!(to.collapseField && to.enableCollapseField)">
         <formly-transclude></formly-transclude>
     </div>

@@ -7,7 +7,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-default",
-            template: "<div><input class=\"form-control input-lg test material\" ng-if=\"!(options.templateOptions.settings.merged.RowCount > 1)\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">" +
+            template: "<div><input class=\"form-control input-lg\" ng-if=\"!(options.templateOptions.settings.merged.RowCount > 1)\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">" +
                 "<textarea ng-if=\"options.templateOptions.settings.merged.RowCount > 1\" rows=\"{{options.templateOptions.settings.merged.RowCount}}\" class=\"form-control input-lg\" ng-model=\"value.Value\"></textarea></div>",
             wrapper: defaultFieldWrappers, 
             controller: "FieldTemplate-StringCtrl as vm"
