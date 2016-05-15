@@ -1,8 +1,8 @@
-﻿<div class="wrap-float-label" ng-class="[{'float-away': (fc[0] || fc).$modelValue.length || to.showDescription || to.focused},{focused: to.focused}]">
+﻿<div>
     <!-- some notes as to what is happening here
         the ng-class adds a "float-away" if the notes are shown or if the field has content
         -->
-    <label for="{{id}}" class="control-label eav-label xtest xfloat-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}"
+    <label for="{{id}}" class="control-label eav-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}"
            ng-if="to.label"
            ng-click="to.collapseField = !to.collapseField">
         {{to.label}}

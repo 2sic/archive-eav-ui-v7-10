@@ -15,6 +15,7 @@ angular.module("eavFieldTemplates",
     // important: order of use is backwards, so the last is around the second-last, etc.
     .constant("defaultFieldWrappers", [
         "eavLabel",
+        "float-label",
         "bootstrapHasError",
         "disablevisually",
         "eavLocalization",

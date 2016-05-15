@@ -1,0 +1,74 @@
+﻿/****** new floating label styles ******/
+
+/* the input with just a thin line under the information */
+div.wrap-float-label input {
+    border: 0;
+    border-bottom: 1px;
+    border-bottom-color: #ddd; /* #8DCAFA; /* todo: define the official color  #0087F4; */
+    border-bottom-style: solid;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-left: 0;
+
+    background-color: transparent;
+}
+
+/* when focussed, make the line thicker and blue */
+div.wrap-float-label input:focus {
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color:  #0087F4;
+}
+
+/* error state: when the input has an error, make it strongly visible */
+.has-error div.wrap-float-label input {
+    border-bottom-color: red;
+}
+
+/* error state: the label should be red too */
+.has-error div.wrap-float-label label,
+.has-error div.wrap-float-label.focused label,
+div.wrap-float-label.focused.ng-invalid.ng-touched label
+ {
+    color: red;
+}
+
+/****** the label ******/
+
+/* float it - but at the same spot when on top */
+div.wrap-float-label.float-disabled label {
+    position: absolute;
+    top: 0;
+    font-size: 14px;
+}
+
+/* the label will be floating in this mode, so we need to add the space with a padding on the container */
+div.wrap-float-label {
+    padding-top: 8px;
+}
+
+/* when really floating, the label must move down to the line and be live a background-text */
+div.wrap-float-label label {
+    position: absolute;
+    top: 20px;
+    font-size: 18px;
+    opacity: 0.4;
+}
+
+
+/* when focussed, the label should glow blue */
+div.wrap-float-label.focused label {
+    color: #0087f4;
+    opacity: 1;
+}
+
+/* when floating, the info-wrapper must move down some*/
+div.wrap-float-label div.info-wrapper {
+    padding-top: 12px;
+}
+
+/* remove some strange padding on the help-text, which duplicates again on all P tags in the help text (these are commmon, as they are added with the wysiwyg */
+div.wrap-float-label p.bg-info,
+div.wrap-float-label p.bg-info p {
+    margin-bottom: 0;
+}

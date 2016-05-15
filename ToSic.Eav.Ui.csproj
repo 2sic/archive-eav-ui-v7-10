@@ -200,6 +200,7 @@
     <Content Include="src\edit-extended\fields\custom-gps\custom-gps.js" />
     <Content Include="src\edit\fields\custom\custom-default.html" />
     <Content Include="src\edit\fields\custom\custom-default.js" />
+    <Content Include="src\edit\fields\datetime\datetime-default.html" />
     <Content Include="src\edit\fields\empty\empty-default.js" />
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
@@ -214,10 +215,13 @@
     <Content Include="src\edit\fields\_eav-field-templates.js" />
     <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\services\fieldMask-service.js" />
+    <Content Include="src\edit\wrappers\float-label.css" />
+    <Content Include="src\edit\wrappers\float-label.js" />
     <Content Include="src\edit\wrappers\collapsible.html" />
     <Content Include="src\edit\wrappers\collapsible.js" />
     <Content Include="src\edit\wrappers\disablevisually.html" />
     <Content Include="src\edit\wrappers\disablevisually.js" />
+    <Content Include="src\edit\wrappers\float-label.html" />
     <Content Include="src\edit\wrappers\field-group.html" />
     <Content Include="src\edit\wrappers\field-group.js" />
     <Content Include="src\edit\wrappers\eav-label.js" />

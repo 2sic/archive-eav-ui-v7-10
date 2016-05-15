@@ -8,14 +8,7 @@ angular.module("eavFieldTemplates")
         formlyConfigProvider.setType({
             name: "datetime-default",
             wrapper: defaultFieldWrappers,
-            template: "<div>" +
-                "<div class=\"input-group\">" +
-                    "<div class=\"input-group-addon\" style=\"cursor:pointer;\" ng-click=\"to.isOpen = true;\">" +
-                        "<i class=\"glyphicon glyphicon-calendar\"></i>" +
-                    "</div>" +
-                    "<input class=\"form-control input-lg\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup />" +
-				    "<timepicker ng-show=\"to.settings.merged.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></timepicker>" +
-                "</div>",
+            templateUrl: "fields/datetime/datetime-default.html",
             defaultOptions: {
                 templateOptions: {
                     datepickerOptions: {},
