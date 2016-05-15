@@ -21,4 +21,14 @@ angular.module("eavFieldTemplates",
         "eavLocalization",
         "collapsible"
     ])
+
+    .constant("fieldWrappersWithPreview", [
+        "eavLabel",
+        "float-label",
+        "bootstrapHasError",
+        "disablevisually",
+        "eavLocalization",
+        "preview-default",
+        "collapsible"
+    ])
 ;

@@ -215,6 +215,9 @@
     <Content Include="src\edit\fields\_eav-field-templates.js" />
     <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\services\fieldMask-service.js" />
+    <Content Include="src\edit\wrappers\preview-default.css" />
+    <Content Include="src\edit\wrappers\preview-default.js" />
+    <Content Include="src\edit\wrappers\preview-default.html" />
     <Content Include="src\edit\wrappers\float-label.css" />
     <Content Include="src\edit\wrappers\float-label.js" />
     <Content Include="src\edit\wrappers\collapsible.html" />

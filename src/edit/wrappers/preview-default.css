@@ -1,0 +1,15 @@
+﻿.preview-default {
+    display: table;
+    width: 100%;
+}
+
+div.preview-area {
+    display: block;
+    float: left;
+    width: 64px;
+    height: 64px;
+    /*border: solid;*/
+    margin-right: 8px;
+    margin-bottom: 8px;
+    background-color: #eee;
+}

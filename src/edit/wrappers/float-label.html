@@ -1,9 +1,9 @@
 ﻿<div class="wrap-float-label"
      ng-class="[
-     {'float-disabled': (fc[0] || fc).$modelValue.length || to.showDescription || to.focused || ( (fc[0] || fc).$invalid && (fc[0] || fc).$touched ) },
+     {'float-disabled': (fc[0] || fc).$modelValue || to.showDescription || to.focused || ( (fc[0] || fc).$invalid && (fc[0] || fc).$touched ) },
      {focused: to.focused},
      {'ng-touched': (fc[0] || fc).$touched},
      {'ng-invalid' : (fc[0] || fc).$invalid}
      ]">
-        <formly-transclude></formly-transclude>
+    <formly-transclude></formly-transclude>
 </div>
