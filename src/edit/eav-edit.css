@@ -97,3 +97,11 @@
 .ng-touched.ng-invalid { border-color:red; }
 
 
+/* the new round buttons on any field */
+.btn-lg.icon-field-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    padding-right: 10px;
+    padding-left: 8px;
+}
