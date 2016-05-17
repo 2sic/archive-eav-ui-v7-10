@@ -97,17 +97,39 @@ a { cursor: pointer; }
     padding-left: 9px;
 }
 
+/* new class, will have to replace all uses of btn-square when icons are done */
+.btn-icon-square {
+    width: 36px;
+    height: 36px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .btn-icon {
     height: 34px;
     width: 34px;
     padding-left: 6px;
 }
+
+/* old glyphicon... */
 .btn-lg.btn-square {
     height: 46px;
     width: 46px;
     padding-left: 13px;
     padding-top: 11px;
 }
+
+/* new icon... */
+.btn-lg.btn-icon-square {
+    height: 46px;
+    width: 46px;
+    padding-left: 0;
+    padding-top: 0;
+    font-size: 28px;
+    vertical-align: bottom;
+}
+
+
 
 .btn-xs.btn-square {
     height: 22px;
@@ -127,7 +149,10 @@ a { cursor: pointer; }
 .clickable:hover { text-decoration: underline }
 .clickable-row:hover td.clickable { text-decoration: underline }
 
-.low-priority .glyphicon, .low-priority.glyphicon {
+/* old glyphicon */
+.low-priority .glyphicon, .low-priority.glyphicon,
+/* new icon set */
+i.low-priority {
     color: lightgray;
 }
 

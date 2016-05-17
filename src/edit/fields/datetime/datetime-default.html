@@ -1,10 +1,20 @@
 ﻿<div>
-    <div class="input-group">
-        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup/>
+    <div class="input-group" style="width: 100%">
 
-        <div class="input-group-addon" style="cursor: pointer;" ng-click="to.isOpen = true;">
+
+
+        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />
+
+        <span class="input-group-btn" style="vertical-align: top;">
+            <button type="button" class="btn btn-default btn-lg icon-field-button pull-right"
+                    ng-disabled="to.disabled"
+                    ng-click="to.isOpen = true;">
+                <i class="icon-calendar"></i>
+            </button>
+        </span>
+            <!--<div class="input-group-addon" style="cursor: pointer;" ng-click="to.isOpen = true;">
             <i class="glyphicon glyphicon-calendar"></i>
-        </div>
-        <timepicker ng-show="to.settings.merged.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>
-    </div>
+        </div>-->
+       <timepicker ng-show="to.settings.merged.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>
+</div>
 </div>

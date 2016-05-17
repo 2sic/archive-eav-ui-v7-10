@@ -2,8 +2,8 @@
     <h4 class="clickable" ng-click="toggle()">
         {{to.label}}
         <span class="pull-right btn-sm">
-            <span ng-if="to.collapseGroup" class="low-priority collapse-fieldgroup-button" icon="plus-sign"></span>
-            <span ng-if="!to.collapseGroup" class="low-priority collapse-fieldgroup-button" icon="minus-sign"></span>
+            <span ng-if="to.collapseGroup" class="icon-plus-circled low-priority collapse-fieldgroup-button" xicon="plus-sign"></span>
+            <span ng-if="!to.collapseGroup" class="icon-minus-circled low-priority collapse-fieldgroup-button" xicon="minus-sign"></span>
         </span>
     </h4>
     <div ng-if="!to.collapseGroup" style="padding: 5px;" ng-bind-html="to.description">

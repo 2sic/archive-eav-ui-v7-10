@@ -23,17 +23,17 @@
     "jsPlumb": "2.0.7",
 
 
-    "angular-google-maps": "2.2.1", 
+    "angular-google-maps": "2.2.1",
     "angular-simple-logger": "0.0.4",
 
     "angular-ui-tree": "2.15.0",
     "dropzone": "4.2.0",
     "angular-ui-switch": "https://github.com/2sic/angular-ui-switch.git#0.1.2",
     "angular-toastr": "1.7.0",
-		"bootflat-for-2sic": "https://github.com/2sic/bootflat-for-2sic.git",
+    "bootflat-for-2sic": "https://github.com/2sic/bootflat-for-2sic.git",
     "ag-grid": "2.3.5",
     "2sxc-eav-languages": "2sic/2sxc-eav-languages",
-    "2sxc-icons": "2sic/2sxc-icons"
+    "2sxc-icons": "2sic/2sxc-icons#13c6489"
 
   },
   "private": true,
