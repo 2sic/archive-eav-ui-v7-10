@@ -1,3 +1,3 @@
 ﻿<tabset>
-    <tab ng-repeat="l in languages.languages" heading="{{ l.name.substring(0, l.name.indexOf('(') > 0 ? l.name.indexOf('(') - 1 : 100 ) }}" ng-click="!isDisabled ? languages.currentLanguage = l.key : false;" disable="isDisabled" active="languages.currentLanguage == l.key" tooltip="{{l.name}}"></tab>
+    <tab ng-repeat="l in languages.languages" heading="{{ l.name.substring(0, l.name.indexOf('(') > 0 ? l.name.indexOf('(') - 1 : 100 ) }}" ng-click="!isDisabled ? languages.currentLanguage = l.key : false;" disable="isDisabled" tooltip="{{l.name}}"></tab><!-- active="languages.currentLanguage == l.key" -->
 </tabset>
