@@ -105,6 +105,46 @@
     padding-right: 10px;
     padding-left: 8px;
 }
+
+.form-container-multi {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.form-ci-title {
+    font-size: 24px;
+    font-family: Roboto Light;
+    height: 40px;
+}
+
+.form-ci-title > .decoration {
+    width: 40px;
+    height: 40px;
+    background-color: silver;
+    float: left;
+    position: relative;
+    left: -40px;
+}
+
+.form-ci-subtitle {
+    font-family: Roboto Light;
+    font-size: 14px;
+}
+.form-ci-subtitle > .decoration {
+    position: relative;
+    left: -40px;
+}
+
+.form-field-grid-keeper {
+    min-height: 48px;
+}
+
+label.eav-label {
+    font-size: 12px;
+    font-family: Roboto Light;
+    padding-right:150px;
+    color: #ccc;
+}
 .formly-field { position:relative; }
 .eav-localization { position:absolute; top:0; right:0; }
 .eav-localization-lock { float: right; display: inline-block; }
@@ -166,10 +206,7 @@
 .help-block {
     display:none;
 }
-.eav-label {
-    padding-right:150px;
-    color: #ccc;
-}
+
 /****** new floating label styles ******/
 
 /* the input with just a thin line under the information */

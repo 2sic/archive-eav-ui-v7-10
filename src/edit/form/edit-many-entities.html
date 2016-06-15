@@ -1,8 +1,9 @@
-﻿<div ng-if="vm.items != null" ng-click="vm.debug.autoEnableAsNeeded($event)">
+﻿<div ng-if="vm.items != null" ng-click="vm.debug.autoEnableAsNeeded($event)" class="form-container-multi">
     <eav-language-switcher is-disabled="!vm.isValid()"></eav-language-switcher>
 
     <div ng-repeat="p in vm.items" class="group-entity">
-        <h3 class="clickable" ng-click="p.collapse = !p.collapse">
+        <div class="clickable form-ci-title" ng-click="p.collapse = !p.collapse">
+            <span class="decoration"></span>
             {{p.Header.Title ? p.Header.Title : 'EditEntity.DefaultTitle' | translate }}&nbsp;
             <span ng-if="p.Header.Group.SlotCanBeEmpty" ng-click="vm.toggleSlotIsEmpty(p)" stop-event="click">
                 <switch ng-model="p.slotIsUsed" class="tosic-blue" style="top: 6px;" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></switch>
@@ -11,7 +12,7 @@
                 <span class="icon-plus-circled low-priority collapse-entity-button" ng-if="p.collapse"></span>
                 <span class="icon-minus-circled collapse-entity-button" ng-if="!p.collapse"></span>
             </span>
-        </h3>
+        </div>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" ng-hide="p.collapse"></eav-edit-entity-form>
     </div>
 

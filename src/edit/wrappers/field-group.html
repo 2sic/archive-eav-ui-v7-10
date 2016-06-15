@@ -1,11 +1,12 @@
 ﻿<div>
-    <h4 class="clickable" ng-click="toggle()">
+    <div class="clickable form-ci-subtitle" ng-click="toggle()">
+        <i class="icon-star decoration"></i>
         {{to.label}}
         <span class="pull-right btn-sm">
             <span ng-if="to.collapseGroup" class="icon-plus-circled low-priority collapse-fieldgroup-button"></span>
             <span ng-if="!to.collapseGroup" class="icon-minus-circled low-priority collapse-fieldgroup-button"></span>
         </span>
-    </h4>
+    </div>
     <div ng-if="!to.collapseGroup" style="padding: 5px;" ng-bind-html="to.description">
     </div>
     <formly-transclude></formly-transclude>
