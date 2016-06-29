@@ -82,7 +82,7 @@ button.icon-field-button {
     font-size: 24px;
     text-indent: -3px;
 }
-button.icon-field-button:hover {
+button.icon-field-button:hover, button.icon-field-button:focus{
     border-color: transparent !important;
     background-color: #0087F4!important;
     color: white!important;
@@ -91,6 +91,9 @@ button.icon-field-button:hover {
 button.icon-field-button.btn-primary {
     color: #0087F4;
 }
+
+
+
 
 /* main container around all input-forms */
 .form-container-multi {
@@ -117,9 +120,8 @@ button.icon-field-button.btn-primary {
     color: #0087F4;
     float: left;
     position: absolute;
-    left: -54px;
+    left: -55px;
 }
-
 .form-ci-title .decoration.state {
     color: white; 
     font-size: 12px; 
@@ -136,7 +138,7 @@ button.icon-field-button.btn-primary {
 }
 .form-ci-subtitle .decoration {
     position: absolute;
-    left: -47px;
+    left: -48px;
     color: #0087F4;
     font-size: 16px;
 }
@@ -160,12 +162,29 @@ label.eav-label {
     color: #888;
 }
 
-/* buttons */
 
 /* fields with preview */
 
 .after-preview {
     height: 64px;
+}
+
+/* input fields new */
+input.material {
+    height: 46px;
+    font-size: 18px;
+    padding-top: 20px;
+}
+
+/* drop-downs */
+select.material {
+    height: 46px;
+    font-size: 18px;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #ddd;
+    padding-left: 0;
+    padding-top: 14px;
 }
 .formly-field { position:relative; }
 .eav-localization { position:absolute; top:0; right:0; }

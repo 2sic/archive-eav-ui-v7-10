@@ -20,6 +20,8 @@
         vm.registeredControls = []; // array of input-type controls used in these forms
         vm.items = null;            // array of items to edit
         vm.willPublish = false;     // default is won't publish, but will usually be overridden
+        vm.publishMode = "hide";    // has 3 modes: show, hide, branch (where branch is a hidden, linked clone)
+        vm.enableDraft = false;
 
         //#region activate / deactivate + bindings
         // the activate-command, to intialize everything. Must be called later, when all methods have been attached
@@ -67,6 +69,10 @@
                         vm.items[i].slotIsUsed = (grp === null || grp === undefined || grp.SlotIsEmpty !== true);
                     });
                     vm.willPublish = vm.items[0].Entity.IsPublished;
+                    vm.enableDraft = vm.items[0].Header.EntityId !== 0; // it already exists, so enable draft
+                    vm.publishMode = vm.items[0].Entity.IsBranch
+                        ? "branch" // it's a branch, so it must have been saved as a draft-branch
+                        : vm.items[0].Entity.IsPublished ? "show" : "hide";
                 });
         };
 
@@ -108,6 +114,7 @@
                     vm.allowCloseWithoutAsking = true;
                     vm.afterSaveEvent(result);
                 }
+                vm.enableDraft = true;  // after saving, we can re-save as draft
                 vm.isWorking--;
             }, function errorWhileSaving() {
                 vm.isWorking--;
@@ -159,9 +166,18 @@
         //#endregion
 
         // monitor for changes in publish-state and set it for all items being edited
-        $scope.$watch("vm.willPublish", function () {
+        $scope.$watch("vm.willPublish", function () {   // ToDO Todo
             angular.forEach(vm.items, function (v, i) {
                 vm.items[i].Entity.IsPublished = vm.willPublish;
+            });
+        });
+
+        $scope.$watch("vm.publishMode", function () {   // ToDO Todo
+            var publish = vm.publishMode === "show"; // all other cases are hide
+            var branch = vm.publishMode === "branch"; // all other cases are no-branch
+            angular.forEach(vm.items, function (v, i) {
+                vm.items[i].Entity.IsPublished = publish;
+                vm.items[i].Entity.IsBranch = branch;
             });
         });
 
