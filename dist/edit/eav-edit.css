@@ -48,12 +48,14 @@
     position: relative;
     top: 0;
     padding-top: 8px;
-    background-color: white;
-    color: white;
+    opacity: 0;
+    color: #0087F4;
+    /*background-color: white;
+    color: white;*/
 }
 
 .clickable:hover .collapse-entity-button {
-    color: #0087F4;
+    opacity: 1;
 }
 
 .collapse-fieldgroup-button {
@@ -65,7 +67,7 @@
 
 /* shrink space a bit in input boxes as it's too large by default '*/
 .input-lg {
-     padding-left: 8px;
+    padding-left: 8px;
     padding-right: 8px;
     border-radius: 4px;
 }
@@ -98,52 +100,92 @@
 
 
 /* the new round buttons on any field */
-.btn-lg.icon-field-button {
+button.icon-field-button {
     width: 44px;
     height: 44px;
     border-radius: 22px;
     padding-right: 10px;
     padding-left: 8px;
+    border-color: transparent!important;
+    background-color: transparent!important;
+    font-size: 24px;
+    text-indent: -3px;
+}
+button.icon-field-button:hover {
+    border-color: transparent !important;
+    background-color: #0087F4!important;
+    color: white!important;
 }
 
+button.icon-field-button.btn-primary {
+    color: #0087F4;
+}
+
+/* main container around all input-forms */
 .form-container-multi {
     padding-left: 40px;
     padding-right: 40px;
 }
 
+.form-container-multi .input-lg {
+    padding-top: 25px;
+}
+
+/* Titles and title decorations */
 .form-ci-title {
+    color: #0087F4;
     font-size: 24px;
     font-family: Roboto Light;
     height: 40px;
 }
-
-.form-ci-title > .decoration {
+.form-ci-title .decoration {
     width: 40px;
     height: 40px;
-    background-color: silver;
+    font-size: 32px;
+    color: #0087F4;
     float: left;
-    position: relative;
-    left: -40px;
+    position: absolute;
+    left: -54px;
 }
 
+.form-ci-title .decoration.state {
+    color: white; font-size: 12px; padding-top: 7px;
+    padding-left: 12px;
+}
 .form-ci-subtitle {
+    color: #0087F4;
     font-family: Roboto Light;
     font-size: 14px;
+    margin-top: 40px;
 }
-.form-ci-subtitle > .decoration {
-    position: relative;
-    left: -40px;
+.form-ci-subtitle .decoration {
+    position: absolute;
+    left: -47px;
+    color: #0087F4;
+    font-size: 16px;
+
 }
+
+/* grid per field */
 
 .form-field-grid-keeper {
     min-height: 48px;
 }
 
+/* labels on fields */
 label.eav-label {
     font-size: 12px;
     font-family: Roboto Light;
     padding-right:150px;
     color: #ccc;
+}
+
+/* buttons */
+
+/* fields with preview */
+
+.after-preview {
+    height: 80px;
 }
 .formly-field { position:relative; }
 .eav-localization { position:absolute; top:0; right:0; }
