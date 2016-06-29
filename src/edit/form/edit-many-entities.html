@@ -5,17 +5,13 @@
         <div class="clickable form-ci-title" ng-click="p.collapse = !p.collapse">
             <span style="position: relative">
                 <i class="decoration icon-side-marker"></i>
-                <i class="decoration state icon-minus collapse-entity-button" ng-if="!p.collapse"></i>
+                <i class="decoration state icon-minus collapse-entity-button hide-till-mouseover" ng-if="!p.collapse"></i>
                 <i class="decoration state icon-plus collapse-entity-button" ng-if="p.collapse"></i>
             </span>
 
             {{p.Header.Title ? p.Header.Title : 'EditEntity.DefaultTitle' | translate }}&nbsp;
             <span ng-if="p.Header.Group.SlotCanBeEmpty" ng-click="vm.toggleSlotIsEmpty(p)" stop-event="click">
                 <switch ng-model="p.slotIsUsed" class="tosic-blue" style="top: 6px;" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></switch>
-            </span>
-            <span class="pull-right clickable" style="font-size: smaller">
-                <span class="icon-plus-circled low-priority collapse-entity-button" ng-if="p.collapse"></span>
-                <span class="icon-minus-circled collapse-entity-button" ng-if="!p.collapse"></span>
             </span>
         </div>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" ng-hide="p.collapse"></eav-edit-entity-form>

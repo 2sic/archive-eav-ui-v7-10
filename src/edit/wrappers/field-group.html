@@ -2,12 +2,10 @@
     <div class="clickable form-ci-subtitle" ng-click="toggle()">
         <span style="position: relative">
             <i class="icon-side-marker decoration"></i>
+            <span ng-if="to.collapseGroup" class="decoration state icon-plus-circled low-priority collapse-fieldgroup-button"></span>
+            <span ng-if="!to.collapseGroup" class="decoration state icon-minus-circled low-priority collapse-fieldgroup-button hide-till-mouseover"></span>
         </span>
         {{to.label}}
-        <span class="pull-right btn-sm">
-            <span ng-if="to.collapseGroup" class="icon-plus-circled low-priority collapse-fieldgroup-button"></span>
-            <span ng-if="!to.collapseGroup" class="icon-minus-circled low-priority collapse-fieldgroup-button"></span>
-        </span>
     </div>
     <div ng-if="!to.collapseGroup" style="padding: 5px;" ng-bind-html="to.description">
     </div>

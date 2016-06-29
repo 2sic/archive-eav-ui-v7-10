@@ -47,14 +47,14 @@
 .collapse-entity-button {
     position: relative;
     top: 0;
-    padding-top: 8px;
+    padding-top: 8px;    
+}
+.hide-till-mouseover {
     opacity: 0;
     color: #0087F4;
-    /*background-color: white;
-    color: white;*/
 }
 
-.clickable:hover .collapse-entity-button {
+.clickable:hover .hide-till-mouseover {
     opacity: 1;
 }
 
@@ -149,9 +149,12 @@ button.icon-field-button.btn-primary {
 }
 
 .form-ci-title .decoration.state {
-    color: white; font-size: 12px; padding-top: 7px;
+    color: white; 
+    font-size: 12px; 
+    padding-top: 6px;
     padding-left: 12px;
 }
+
 .form-ci-subtitle {
     color: #0087F4;
     font-family: Roboto Light;
@@ -163,7 +166,10 @@ button.icon-field-button.btn-primary {
     left: -47px;
     color: #0087F4;
     font-size: 16px;
-
+}
+.form-ci-subtitle .decoration.state {
+    font-size: 12px;
+    left: -23px;
 }
 
 /* grid per field */
