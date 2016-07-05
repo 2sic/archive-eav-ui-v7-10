@@ -108,7 +108,7 @@ button.icon-field-button.btn-primary {
 /* Titles and title decorations */
 .form-ci-title {
     color: #0087F4;
-    font-size: 24px;
+    font-size: 28px;
     font-family: Roboto Light;
     height: 40px;
     cursor: pointer;
@@ -132,7 +132,7 @@ button.icon-field-button.btn-primary {
 .form-ci-subtitle {
     color: #0087F4;
     font-family: Roboto Light;
-    font-size: 14px;
+    font-size: 16px;
     margin-top: 40px;
     cursor: pointer;
 }
@@ -155,10 +155,11 @@ button.icon-field-button.btn-primary {
 
 /* labels on fields */
 label.eav-label {
-    font-size: 12px;
+    font-size: 14px;
     font-family: Roboto Light;
     font-weight: normal;
     padding-right:150px;
+    padding-top: 2px;
     color: #888;
 }
 
@@ -172,8 +173,9 @@ label.eav-label {
 /* input fields new */
 input.material {
     height: 46px;
-    font-size: 18px;
+    font-size: 20px;
     padding-top: 20px;
+    padding-bottom: 10px;
 }
 
 /* drop-downs */

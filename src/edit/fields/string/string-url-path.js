@@ -7,7 +7,7 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-url-path",
-            template: "<div><input class=\"form-control input-lg\" only-simple-url-chars ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\" ng-blur=\"vm.finalClean()\"></div>",
+            template: "<div><input class=\"form-control material\" only-simple-url-chars ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\" ng-blur=\"vm.finalClean()\"></div>",
             wrapper: defaultFieldWrappers,
             controller: "FieldTemplate-String-Url-Path-Ctrl as vm"
         });

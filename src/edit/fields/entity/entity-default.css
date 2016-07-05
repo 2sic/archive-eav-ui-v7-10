@@ -1,6 +1,6 @@
 ﻿.eav-entityselect {
      margin-top: 1px; 
-     font-size: 18px;
+     font-size: 20px;
     border-bottom-color: #ddd;
     border-bottom-style: solid;
     border-bottom: 1px;
@@ -26,7 +26,10 @@ table.eav-entityselect-table tr td {
 .eav-entityselect-table tr th:last-child { width: 110px; text-align: right; }
 .eav-entityselect-table th { padding:0!important; line-height:0!important; border:0!important; }
 
-.eav-entityselect-icon { margin-right: 4px; }
+.eav-entityselect-icon {
+    margin-right: 4px;
+    color: #ccc;
+}
 .eav-entityselect-icon-before-select { margin-right: 0; }
 
 .subtle-till-mouseover { opacity: 0.2; }
@@ -53,3 +56,13 @@ table.eav-entityselect-table tr td {
 
 .eav-entityselect-selector option[disabled], .eav-entityselect-selector option:disabled { color: #dddddd; }
 .angular-ui-tree-placeholder { margin: 0; border:1px dotted #DDD; background:#EFEFEF }
+
+table.eav-entityselect-table {
+    width: 100%;
+}
+
+table.eav-entityselect-table tr.eav-entityselect-item td {
+    padding-top: 2px;
+    padding-bottom: 4px;
+    line-height: 24px;
+}

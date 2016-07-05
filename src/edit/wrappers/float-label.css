@@ -51,8 +51,8 @@ div.wrap-float-label {
 div.wrap-float-label label {
     position: absolute;
     top: 20px;
-    font-size: 18px;
-    opacity: 0.4;
+    font-size: 20px;
+    /* opacity: 0.4;*/
 }
 
 
