@@ -392,9 +392,9 @@ h3.clickable:hover, h4.clickable:hover {
 .hover-pair:hover .hover-hover { display: block; }
 @font-face {
   font-family: 'app-icons';
-    src: url('../lib/fonts/app-icons.woff?78331213') format('woff'),
-         url('../lib/fonts/app-icons.eot?78331213#iefix') format('embedded-opentype'),
-         url('../lib/fonts/app-icons.ttf?78331213') format('truetype');
+    src: url('../lib/fonts/app-icons.woff?78331214') format('woff'),
+         url('../lib/fonts/app-icons.eot?78331214#iefix') format('embedded-opentype'),
+         url('../lib/fonts/app-icons.ttf?78331214') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
