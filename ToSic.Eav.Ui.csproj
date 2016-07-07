@@ -215,6 +215,10 @@
     <Content Include="src\edit\fields\_eav-field-templates.js" />
     <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\services\fieldMask-service.js" />
+    <Content Include="src\edit\wrappers\eav-label-inside.html" />
+    <Content Include="src\edit\wrappers\no-label-space.html" />
+    <Content Include="src\edit\wrappers\no-label-space.js" />
+    <Content Include="src\edit\wrappers\responsive.js" />
     <Content Include="src\edit\wrappers\preview-default.css" />
     <Content Include="src\edit\wrappers\preview-default.js" />
     <Content Include="src\edit\wrappers\preview-default.html" />
@@ -293,6 +297,7 @@
     <Content Include="src\admin\services\init-parameters-from-url.js" />
     <Content Include="src\admin\services\permissions-services.js" />
     <Content Include="src\admin\services\pipeline-services.js" />
+    <Content Include="src\edit\wrappers\responsive.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

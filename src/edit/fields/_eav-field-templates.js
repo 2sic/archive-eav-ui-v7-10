@@ -19,6 +19,7 @@ angular.module("eavFieldTemplates",
         "bootstrapHasError",
         "disablevisually",
         "eavLocalization",
+        "responsive",
         "collapsible"
     ])
 
@@ -29,6 +30,30 @@ angular.module("eavFieldTemplates",
         "disablevisually",
         "eavLocalization",
         "preview-default",
+        "responsive",
+        "collapsible"
+    ])
+
+    .constant("defaultFieldWrappersNoFloat", [
+        "eavLabel",
+        //"float-label",
+        "bootstrapHasError",
+        "disablevisually",
+        "eavLocalization",
+        //"preview-default",
+        "responsive",
+        "collapsible"
+    ])
+
+    .constant("fieldWrappersNoLabel", [
+        //"eavLabel",
+        //"float-label",
+        "bootstrapHasError",
+        "disablevisually",
+        "eavLocalization",
+        //"preview-default",
+        "responsive",
+        "no-label-space",
         "collapsible"
     ])
 ;

@@ -41,6 +41,29 @@
         </table>
     </div>
     <ol>
+        <li class="eav-entityselect-item subtle-till-mouseover"
+            ng-if="(to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))
+            || (to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))">
+
+            <span
+                  style="width: 200px"
+                   class="eav-entityselect-item subtle-till-mouseover"
+            ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
+            <div>
+                <i class="icon-plus-circled pull-left eav-entityselect-icon-before-select"></i>
+                <div class="eav-entityselect-selector-wrapper">
+                    <select class="eav-entityselect-selector form-control input-lg"
+                            formly-skip-ng-model-attrs-manipulator
+                            ng-model="selectedEntity"
+                            ng-change="addEntity()">
+                        <option value="" translate="FieldType.Entity.Choose"></option>
+                        <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
+                    </select>
+                </div>
+            </div>
+        </span>
+
+        </li>
         <!-- add existing entity to this list--><!--ng-if="to.settings.merged.EnableAddExisting"-->
         <li class="eav-entityselect-item subtle-till-mouseover"
             ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">

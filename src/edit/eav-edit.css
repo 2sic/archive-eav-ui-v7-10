@@ -194,3 +194,58 @@ select.material {
     background: transparent !important;
     border-bottom: 0;
 }
+
+
+/* Side-by-side on large screens */
+@media only screen and (max-width: 799px) {
+    .responsive-optional {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    .responsive-priority {
+        /*max-width: 75%;*/
+        float: right;
+        width: 75%;
+    }
+
+    .responsive-optional {
+        display: inline-block;
+        width: 25%;
+    }
+
+
+    .responsive-priority .wrap-float-label .eav-label {
+        top: 12px;
+    }
+
+    .responsive-priority .eav-label {
+        display: none;
+    }
+    .responsive-priority div.wrap-float-label {
+        padding-top: 0;
+    }
+
+    .thumbnail-before-input.icon-preview {
+        top: 0!important;
+    }
+}
+
+.responsive-optional .eav-label {
+    color: #888888;
+    font-size: 20px!important;
+    padding: 0;
+    padding-right: 10px;
+    padding-top: 14px;
+}
+
+.no-label-space .responsive-optional .eav-label {
+    padding-top: 0;
+}
+
+
+/* debug helper classes */
+.debug {
+    border: 1px black dashed;
+}

@@ -1,30 +1,18 @@
 ﻿<div>
-    <!-- some notes as to what is happening here
-        the ng-class adds a "float-away" if the notes are shown or if the field has content
-        -->
-    <label for="{{id}}" class="control-label eav-label {{to.labelSrOnly ? 'sr-only' : ''}} {{to.type}}"
-           ng-if="to.label"
-           ng-click="to.collapseField = !to.collapseField">
-        {{to.label}}
-        {{to.required ? '*' : ''}}
-        <a tabindex="-1" ng-click="to.showDescription = !to.showDescription" href="javascript:void(0);" ng-if="to.description && to.description != ''">
-            <i class="icon-info-circled low-priority"></i>
-        </a>
-        <span class="btn-sm" ng-if="to.enableCollapseField">
-            <span ng-if="to.collapseField" class="icon-plus-circled low-priority collapse-fieldgroup-button"></span>
-            <span ng-if="!to.collapseField" class="icon-minus-circled low-priority collapse-fieldgroup-button"></span>
-        </span>
-    </label>
-    <div ng-if="to.showDescription" class="info-wrapper">
-        <p class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
-        </p>        
-    </div>
+    <!-- just fyi: the ng-class adds a "float-away" if the notes are shown or if the field has content -->
+    <div>
+        <div class="inside" ng-include="'wrappers/eav-label-inside.html'"></div>
+        <div ng-if="to.showDescription" class="info-wrapper">
+            <p class="bg-info" style="padding: 5px;" ng-bind-html="to.description">
+            </p>
+        </div>
 
-    <div ng-show="!(to.collapseField && to.enableCollapseField)">
-        <formly-transclude></formly-transclude>
-    </div>
+        <div ng-show="!(to.collapseField && to.enableCollapseField)">
+            <formly-transclude></formly-transclude>
+        </div>
 
-    <div ng-if="debug.on">
-        Field-Debug: {{fc}}
+        <div ng-if="debug.on">
+            Field-Debug: {{fc}}
+        </div>
     </div>
 </div>
