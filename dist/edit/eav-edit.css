@@ -189,6 +189,15 @@ select.material {
     padding-top: 14px;
 }
 
+textarea.material {
+    font-size: 20px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    padding: 0;
+    padding-top: 12px;
+}
+
 /* disabled - try to override the default bootstrap... */
 .form-control[disabled], .form-control[readonly], .fieldset[disabled] .form-control {
     background: transparent !important;
@@ -407,6 +416,7 @@ div.preview-area {
     border-bottom-color: #ddd;
     border-bottom-style: solid;
     border-bottom: 1px;
+    padding-top: 12px;
 }
 
 .eav-entityselect-table tr,
@@ -455,7 +465,7 @@ table.eav-entityselect-table tr td {
 /*.eav-entityselect-item-remove { display: block; position: absolute; right: 0; top: 0; cursor: pointer; padding: 4px 9px 2px; }
 */
 .eav-entityselect-selector-wrapper { margin-left:26px; }
-.eav-entityselect-selector { width: 99%; border-style: none; padding-left: 0; padding-bottom: 0; padding-top: 0; height: 30px!important; }
+.eav-entityselect-selector { width: 97%; border-style: none; padding-left: 0; padding-bottom: 0; padding-top: 0; height: 30px!important; }
 
 .eav-entityselect-selector option[disabled], .eav-entityselect-selector option:disabled { color: #dddddd; }
 .angular-ui-tree-placeholder { margin: 0; border:1px dotted #DDD; background:#EFEFEF }
