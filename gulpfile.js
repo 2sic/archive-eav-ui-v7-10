@@ -147,7 +147,7 @@ function packageCss(set) {
         // minify and save
         .pipe($.rename({ extname: ".min.css" }))
         .pipe($.sourcemaps.init())
-        .pipe($.cleanCss({ compatibility: "*" /* ie9 compatibility */ }))
+        .pipe($.cleanCss({ compatibility: "*", processImportFrom: ['!fonts.googleapis.com'] /* ie9 compatibility */ }))
         .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
     ;
