@@ -148,7 +148,7 @@
         };
 
         // check if dirty
-        $scope.state.isDirty = function() {
+        $scope.state.isDirty = function () {
             var dirty = false;
             angular.forEach(vm.registeredControls, function(e) {
                 if (e.isDirty())
@@ -195,8 +195,8 @@
                     vm.maybeLeave[target.id]();
                 }
             },
-            ask: function(e) {
-                if (vm.allowCloseWithoutAsking)
+            ask: function (e) {
+                if (!$scope.state.isDirty() || vm.allowCloseWithoutAsking)
                     return;
                 var template = "<div>"  // note: this variable must be inside this method, to ensure that translate is pre-loaded before we call it
                     + $translate.instant("Errors.UnsavedChanges") + "<br>"
