@@ -215,7 +215,7 @@
 				return params.value;
 
 			var encodedValue = htmlEncode(params.value);
-			return '<span title="' + encodedValue + '">' + encodedValue + '</span>';
+			return '<span ng-non-bindable><span title="' + encodedValue + '">' + encodedValue + '</span></span>';
 		}
 
 		function cellRendererDefaultFilter(params) {
@@ -234,7 +234,7 @@
 			var encodedValue = htmlEncode(params.value.join(", "));
 			var result = '<span title="' + encodedValue + '">';
 			if (params.colDef.allowMultiValue)
-				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
+			    result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
 			result += encodedValue + '</span>';
 
 			return result;
