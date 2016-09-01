@@ -5,7 +5,7 @@
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
@@ -15,6 +15,25 @@
         };
 
         vm.items = svc.liveList();
+
+        vm.orderList = function () {
+            var orderList = [];
+            vm.items.map(function (e,i) {
+                orderList.push(e.Id);
+            });
+            return orderList;
+        };
+
+        vm.treeOptions = {
+            dropped: function () {
+                vm.dragEnabled = false; // Disable drag while updating (causes strange effects like duplicate items)
+                svc.reOrder(vm.orderList()).then(function () {
+                    vm.dragEnabled = true;
+                });
+            }
+        };
+
+        vm.dragEnabled = true;
 
         // Open an add-dialog, and add them if the dialog is closed
         vm.add = function add() {
@@ -53,8 +72,8 @@
         };
 
         // Actions like moveUp, Down, Delete, Title
-        vm.moveUp = svc.moveUp;
-        vm.moveDown = svc.moveDown;
+        //vm.moveUp = svc.moveUp;
+        //vm.moveDown = svc.moveDown;
         vm.setTitle = svc.setTitle;
 
         vm.tryToDelete = function tryToDelete(item) {

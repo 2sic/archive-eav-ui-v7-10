@@ -8,21 +8,23 @@
         <button icon="plus" ng-click="vm.add()" class="btn btn-primary btn-square"></button>
 
         <!-- Table of content types for editing -->
-        <table class="table table-hover table-manage-eav">
+        <table ui-tree="vm.treeOptions" data-drag-enabled="vm.dragEnabled" ui-tree-nodes ng-model="vm.items" class="table table-hover table-manage-eav">
             <thead>
                 <tr>
+                    <th style="width:5%"></th>
                     <th translate="Fields.Table.Title" class="mini-btn-1"></th>
-                    <th translate="Fields.Table.Name" style="width: 40%"></th>
+                    <th translate="Fields.Table.Name" style="width: 35%"></th>
                     <th translate="Fields.Table.DataType" style="width: 20%"></th>
                     <th translate="Fields.Table.InputType" style="width: 20%"></th>
                     <th translate="Fields.Table.Label" style="width: 30%"></th>
                     <th translate="Fields.Table.Notes" style="width: 50%"></th>
-                    <th translate="Fields.Table.Sort" class="mini-btn-2"></th>
+                    <!--<th translate="Fields.Table.Sort" class="mini-btn-2"></th>-->
                     <th translate="Fields.Table.Action" class="mini-btn-2"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="item in vm.items | orderBy: 'SortOrder'" class="clickable-row" ng-click="vm.createOrEditMetadata(item, item.Type)">
+                <tr ng-repeat="item in vm.items track by $id(item)" ui-tree-node class="clickable-row" ng-click="vm.createOrEditMetadata(item, item.Type)">
+                    <td ui-tree-handle><i class="glyphicon glyphicon-sort"></i></td>
                     <td stop-event="click">
                         <button type="button" class="btn btn-xs btn-square" ng-style="(item.IsTitle ? '' : 'color: transparent !important')" ng-click="vm.setTitle(item)">
                             <i icon="{{item.IsTitle ? 'star' : 'star-empty'}}"></i>
@@ -48,10 +50,10 @@
                         </div>
                     </td>
 
-                    <td class="text-nowrap" stop-event="click">
+                    <!--<td class="text-nowrap" stop-event="click">
                         <button icon="arrow-up" type="button" class="btn btn-xs btn-square" ng-disabled="$first" ng-click="vm.moveUp(item)"></button>
                         <button icon="arrow-down" type="button" class="btn btn-xs btn-square" ng-disabled="$last" ng-click="vm.moveDown(item)"></button>
-                    </td>
+                    </td>-->
                     <td stop-event="click">
                         <button icon="cog" type="button" class="btn btn-xs btn-square" ng-click="vm.rename(item)"></button>
                         <button icon="remove" type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(item)"></button>
@@ -63,6 +65,7 @@
             </tbody>
         </table>
 
+        <!--Ordered  {{vm.orderList()}} Test-->
     </div>
 
 
