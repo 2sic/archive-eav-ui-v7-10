@@ -120,10 +120,11 @@ function packageJs(set) {
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
-        // .pipe($.sourcemaps.init({ loadMaps: true }))
+        // 2016-09-07 2dm re-enabled it, seems to work now...
+        .pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.uglify())
             .on("error", $.util.log)
-        // .pipe($.sourcemaps.write("./"))
+        .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
 
     if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));
