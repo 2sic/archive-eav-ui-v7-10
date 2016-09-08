@@ -125,7 +125,7 @@ function packageJs(set) {
         //.pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.uglify())
             .on("error", $.util.log)
-        .pipe($.sourcemaps.write("./"))
+        // .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
 
     if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));
