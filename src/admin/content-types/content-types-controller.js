@@ -84,6 +84,7 @@
 
 
         //#region metadata for this type - new 2016-09-07
+
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item) {
             // assemble an array of items for editing
@@ -93,7 +94,7 @@
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             var title = "ContentType Metadata"; // todo: i18n
-            return item.Metadata !== undefined  // check if it already has metadata
+            return item.Metadata  // check if it already has metadata
                 ? { EntityId: item.Metadata.Id, Title: title }  // if defined, return the entity-number to edit
                 : {
                     ContentTypeName: metadataType,        // otherwise the content type for new-assegnment
@@ -103,7 +104,7 @@
                         TargetType: eavConfig.metadataOfContentType
                     },
                     Title: title,
-                    Prefill: { Name: item.Name }
+                    Prefill: { Label: item.Name, Description: item.Description }
                 };
         };
 

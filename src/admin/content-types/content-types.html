@@ -30,7 +30,7 @@
             <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'" class="clickable-row" ng-click="vm.editItems(item)">
                 <!--<td style="text-align: center" class="clickable"> {{item.Items}} </td>-->
                 <td class="clickable">
-                    <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Label}} ({{item.Name}})">{{item.Label}} ({{item.Name}})</span>
+                    <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Label}} ({{item.Name}})">{{item.Label}} <span ng-if="item.Name != item.Label">({{item.Name}})</span></span>
                 </td>
                 <td class="clickable" style="text-align: right">
                     <div class="badge pull-right badge-primary hover-pair" stop-event="click" ng-click="vm.addItem(item.StaticName)"><span class="hover-default">{{item.Items}}</span><span class="hover-hover icon-plus"></span></div></td>
@@ -51,7 +51,7 @@
                         <button tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
                             <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
                         </button>
-                        <button tooltip="{{ 'General.Buttons.Configure' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.createOrEditMetadata(item)">
+                        <button tooltip="{{ 'General.Buttons.Metadata' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.createOrEditMetadata(item)">
                             <i class="eav-icon-tag"></i>
                         </button>
                         <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)">
