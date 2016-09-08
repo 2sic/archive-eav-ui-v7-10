@@ -82,6 +82,8 @@
 
         // todo: should replace this block with the new fieldMask service
         $scope.formattedAddress = function () {
+            if (!controlSettings)
+                return "";
             var address = controlSettings.AddressMask;
             if (address === undefined) return "";
             var tokenRe = /\[.*?\]/ig;

@@ -33,7 +33,7 @@ editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/field
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
 editExtGps.js.concat = "custom-gps.js";
 editExtGps.js.libs = [
-    "bower_components/lodash/lodash.min.js",
+    "bower_components/lodash/dist/lodash.min.js",
     "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
     "bower_components/angular-simple-logger/dist/index.js"
 ];
@@ -121,7 +121,8 @@ function packageJs(set) {
         .pipe($.rename({ extname: ".min.js" }))
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
         // 2016-09-07 2dm re-enabled it, seems to work now...
-        .pipe($.sourcemaps.init({ loadMaps: true }))
+        // 2016-09-08 2rm had to disable it again, sourcmap generator throws an error
+        //.pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.uglify())
             .on("error", $.util.log)
         .pipe($.sourcemaps.write("./"))
