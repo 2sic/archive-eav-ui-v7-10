@@ -274,7 +274,7 @@
     <Content Include="src\admin\content-items\history-controller.js" />
     <Content Include="src\admin\content-items\history-details.html" />
     <Content Include="src\admin\content-items\history.html" />
-    <Content Include="src\admin\content-types\content-types.controller.js" />
+    <Content Include="src\admin\content-types\content-types-controller.js" />
     <Content Include="src\admin\content-types\content-types-edit.html" />
     <Content Include="src\admin\content-types\content-types-field-edit.html" />
     <Content Include="src\admin\content-types\content-types-fields.html" />

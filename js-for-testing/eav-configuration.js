@@ -1,5 +1,8 @@
 ﻿/// <reference path="eavConfig.js" />
 // eavConfig providers default global values for the EAV angular system
+// WARNING !!!
+// WARNING !!!
+// WARNING !!!
 // The ConfigurationProvider in 2SexyContent is not the same as in the EAV project.
 
 // temp helper object
@@ -109,6 +112,8 @@ angular.module("EavConfiguration", [])
             },
             metadataOfEntity: 4,
             metadataOfAttribute: 2,
+            metadataOfContentType: 5,
+            metadataOfApp: 3,
             metadataOfCmsObject: 10,
 
             contentType: {
