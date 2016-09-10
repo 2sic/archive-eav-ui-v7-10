@@ -616,7 +616,7 @@
 
                         // if delete failed, ask to force-delete in a toaster
 			            var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: item.Title, id: item.RepositoryId}) + "<br/>"
-			                + "<button type='button' id='del' class='btn btn-default' ><i class= 'icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
+			                + "<button type='button' id='del' class='btn btn-default' ><i class= 'eav-icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
 			                + "</div>";
 
 			            toastr.warning(msg, {
@@ -2531,7 +2531,7 @@ angular.module("eavNgSvcs", ["ng"])
  */
 angular.module("EavServices").service("fileType", function () {
     var svc = {};
-    svc.iconPrefix = "icon-";
+    svc.iconPrefix = "eav-icon-";
     svc.defaultIcon = "file";
     svc.checkImgRegEx = /(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?/i;
     svc.extensions = {
