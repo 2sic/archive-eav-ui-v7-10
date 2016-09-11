@@ -1,0 +1,12 @@
+﻿<div>
+    <select class="form-control input-material material"
+            ng-model="value.Value">
+        <option value="">(none)</option>
+        <option
+            ng-repeat="item in contentTypes"
+            ng-selected="{{item.StaticName == value.Value}}"
+            value="{{item.StaticName}}">
+            {{item.Label}}
+        </option>
+    </select>
+</div>

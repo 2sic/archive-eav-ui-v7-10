@@ -20,18 +20,21 @@ angular.module("eavFieldTemplates")
 
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService) {
+        // ensure settings are merged
         if (!$scope.to.settings.merged)
             $scope.to.settings.merged = {};
 
         $scope.availableEntities = [];
-        //$scope.options = {};
 
+        // of no real data-model exists yet for this value (list of chosen entities), then create a blank
         if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
             $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
 
+        // create short names for template
         $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
         $scope.selectedEntity = null;
 
+        // add an just-picked entity to the selected list
         $scope.addEntity = function () {
             if ($scope.selectedEntity !== null) {
                 $scope.chosenEntities.push($scope.selectedEntity);
@@ -39,11 +42,13 @@ angular.module("eavFieldTemplates")
             }
         };
 
+        // check if new-entity is an allowed operation
         $scope.createEntityAllowed = function() {
             var settings = $scope.to.settings.merged;
             return settings.EntityType !== null && settings.EntityType !== "" && settings.EnableCreate;
         };
 
+        // open the dialog for a new item
         $scope.openNewEntityDialog = function() {
             function reload(result) {
                 if (!result || result.data === null || result.data === undefined)
@@ -58,6 +63,8 @@ angular.module("eavFieldTemplates")
 
         };
 
+        // ajax call to get all entities
+        // todo: move to a service some time
         $scope.getAvailableEntities = function() {
             return $http({
                 method: "GET",
@@ -72,6 +79,7 @@ angular.module("eavFieldTemplates")
             });
         };
 
+        // get a nice label for any entity, including non-existing ones
         $scope.getEntityText = function (entityId) {
             if (entityId === null)
                 return "empty slot"; // todo: i18n
@@ -85,26 +93,28 @@ angular.module("eavFieldTemplates")
         };
 
         $scope.deleteItemInSlot = function(itemGuid, index) {
-            alert('this feature is not implemented yet, sorry. it will be added some day...');
+            alert("this feature is not implemented yet, sorry. it will be added some day...");
         };
 
         // edit needs the Guid - the index isn't important
         $scope.edit = function (itemGuid, index) {
             if (itemGuid === null)
-                return alert('no can do'); // todo: i18n
+                return alert("no can do"); // todo: i18n
             var entities = $filter("filter")($scope.availableEntities, { Value: itemGuid });
             var id = entities[0].Id;
 
-            eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
+            return eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
         };
 
         // Initialize entities
         $scope.getAvailableEntities();
 
-    }).directive('entityValidation', [function() {
+    })
+
+    .directive("entityValidation", [function () {
         return {
-            restrict: 'A',
-            require: '?ngModel',
+            restrict: "A",
+            require: "?ngModel",
             link: function(scope, element, attrs, ngModel) {
                 if (!ngModel) return;
 

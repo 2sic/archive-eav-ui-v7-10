@@ -205,6 +205,8 @@
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
     <Content Include="src\edit\fields\entity\entity-default.js" />
+    <Content Include="src\edit\fields\string\string-contenttype.html" />
+    <Content Include="src\edit\fields\string\string-contenttype.js" />
     <Content Include="src\edit\fields\string\string-url-path.js" />
     <Content Include="src\edit\fields\string\string-dropdown.js" />
     <Content Include="src\edit\fields\string\string-default.js" />
