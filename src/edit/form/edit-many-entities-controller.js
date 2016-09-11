@@ -6,7 +6,7 @@
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, toastr, saveToastr, $translate, debugState, ctrlS) {
+    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, contentTypeSvc, $sce, toastr, saveToastr, $translate, debugState, ctrlS) {
         //#region detailled logging if necessary
         var detailedLogging = false;
         var clog = detailedLogging
@@ -19,9 +19,12 @@
         vm.isWorking = 0;           // isWorking is > 0 when any $http request runs
         vm.registeredControls = []; // array of input-type controls used in these forms
         vm.items = null;            // array of items to edit
+        vm.itemsHelp = [];
         vm.willPublish = false;     // default is won't publish, but will usually be overridden
         vm.publishMode = "hide";    // has 3 modes: show, hide, branch (where branch is a hidden, linked clone)
         vm.enableDraft = false;
+
+        var ctSvc = contentTypeSvc(appId);
 
         //#region activate / deactivate + bindings
         // the activate-command, to intialize everything. Must be called later, when all methods have been attached
@@ -64,6 +67,9 @@
 
                         vm.items[i].Entity = enhanceEntity(vm.items[i].Entity);
 
+                        //// load more content-type metadata to show
+                        //vm.items[i].ContentType = contentTypeSvc.getDetails(vm.items[i].Header.ContentTypeName);
+
                         // set slot value - must be inverte for boolean-switch
                         var grp = vm.items[i].Header.Group;
                         vm.items[i].slotIsUsed = (grp === null || grp === undefined || grp.SlotIsEmpty !== true);
@@ -73,6 +79,15 @@
                     vm.publishMode = vm.items[0].Entity.IsBranch
                         ? "branch" // it's a branch, so it must have been saved as a draft-branch
                         : vm.items[0].Entity.IsPublished ? "show" : "hide";
+                    return result;
+                }).then(function(result) {
+                    angular.forEach(vm.items, function (v, i) {
+                        // load more content-type metadata to show
+                        ctSvc.getDetails(vm.items[i].Header.ContentTypeName).then(function(ct) {
+                            if (ct.data && ct.data.Metadata && ct.data.Metadata.EditInstructions)
+                                vm.itemsHelp[i] = $sce.trustAsHtml(ct.data.Metadata.EditInstructions);
+                        });
+                    });
                 });
         };
 
