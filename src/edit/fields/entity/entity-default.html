@@ -11,8 +11,8 @@
             </thead>
             <tr ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item" ui-tree-handle>
                 <td>
-                    <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
-                    <i title="" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
+                    <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-eav-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                    <i title="" class="icon-eav-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
                 </td>
                 <td>
                     <span class="eav-entityselect-item-title" title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
@@ -21,18 +21,18 @@
                     <ul class="eav-entityselect-item-actions" data-nodrag>
                         <li>
                             <a title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)" ng-if="to.settings.merged.EnableEdit">
-                                <i class="eav-icon-pencil"></i>
+                                <i class="icon-eav-pencil"></i>
                             </a>
                         </li>
                         <li>
                             <a title="{{ 'FieldType.Entity.Remove' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove" ng-if="to.settings.merged.EnableRemove">
-                                <i ng-class="{ 'eav-icon-minus-circled': to.settings.merged.AllowMultiValue, 'eav-icon-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
+                                <i ng-class="{ 'icon-eav-minus-circled': to.settings.merged.AllowMultiValue, 'icon-eav-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
                             </a>
                         </li>
                         <li>
-                            <!-- todo: i18n, code in action, eav-icon-visiblity/alignment -->
+                            <!-- todo: i18n, code in action, icon-eav-visiblity/alignment -->
                             <a title="{{ 'FieldType.Entity.Delete' | translate }}" ng-click="deleteItemInSlot(item, $index)" class="eav-entityselect-item-remove" ng-if="to.settings.merged.EnableDelete">
-                                <i class="eav-icon-cancel"></i>
+                                <i class="icon-eav-cancel"></i>
                             </a>
                         </li>
                     </ul>
@@ -51,7 +51,7 @@
                  ng-click="openNewEntityDialog()"
                  style="width: 50%; float: left"
                  >
-                <i class="eav-icon-plus pull-left eav-entityselect-icon"></i>
+                <i class="icon-eav-plus pull-left eav-entityselect-icon"></i>
                 <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
             </div>
 
@@ -59,7 +59,7 @@
                 style="width: 50%; float: left;"
                 class="eav-entityselect-item"
                 ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
-                    <i class="eav-icon-plus-circled pull-left eav-entityselect-icon-before-select"></i>
+                    <i class="icon-eav-plus-circled pull-left eav-entityselect-icon-before-select"></i>
                     <div class="eav-entityselect-selector-wrapper">
                         <select class="eav-entityselect-selector form-control input-lg"
                                 formly-skip-ng-model-attrs-manipulator
@@ -75,7 +75,7 @@
         <!--<li class="eav-entityselect-item subtle-till-mouseover"
             ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
             <div>
-                <i class="eav-icon-plus-circled pull-left eav-entityselect-icon-before-select"></i>
+                <i class="icon-eav-plus-circled pull-left eav-entityselect-icon-before-select"></i>
                 <div class="eav-entityselect-selector-wrapper">
                     <select class="eav-entityselect-selector form-control input-lg"
                             formly-skip-ng-model-attrs-manipulator
@@ -92,7 +92,7 @@
         <!--<li ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
             class="eav-entityselect-item eav-entityselect-create subtle-till-mouseover">
             <div ng-click="openNewEntityDialog()">
-                <i class="eav-icon-plus pull-left eav-entityselect-icon"></i>
+                <i class="icon-eav-plus pull-left eav-entityselect-icon"></i>
                 <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
             </div>
         </li>-->

@@ -215,8 +215,8 @@
                     return;
                 var template = "<div>"  // note: this variable must be inside this method, to ensure that translate is pre-loaded before we call it
                     + $translate.instant("Errors.UnsavedChanges") + "<br>"
-                    + "<button type='button' id='save' class='btn btn-primary' ><i class='eav-icon-ok'></i>" +  $translate.instant("General.Buttons.Save") + "</button> &nbsp;"
-                    + "<button type='button' id='quit' class='btn btn-default' ><i class= 'eav-icon-cancel'></i>" + $translate.instant("General.Buttons.NotSave") + "</button>"
+                    + "<button type='button' id='save' class='btn btn-primary' ><i class='icon-eav-ok'></i>" +  $translate.instant("General.Buttons.Save") + "</button> &nbsp;"
+                    + "<button type='button' id='quit' class='btn btn-default' ><i class= 'icon-eav-cancel'></i>" + $translate.instant("General.Buttons.NotSave") + "</button>"
                     + "</div>";
                 if (vm.dialog && vm.dialog.isOpened)
                     toastr.clear(vm.dialog);

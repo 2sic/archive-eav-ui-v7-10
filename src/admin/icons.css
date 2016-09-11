@@ -7,7 +7,7 @@
   font-style: normal;
 }
  
- [class^="eav-icon-"]:before, [class*=" eav-icon-"]:before {
+ [class^="icon-eav-"]:before, [class*=" icon-eav-"]:before {
   font-family: "app-icons";
   font-style: normal;
   font-weight: normal;
