@@ -64,7 +64,8 @@ angular.module("eavFieldTemplates")
         //#endregion
 
 
-        vm.activate = function() {
+        vm.activate = function () {
+            // TODO: use new functionality on the fieldMask instead!
             // add a watch for each field in the field-mask
             angular.forEach(mask.fieldList() /* vm.getFieldsOfMask(sourceMask)*/, function(e, i) {
                 $scope.$watch("model." + e + "._currentValue.Value", function() {

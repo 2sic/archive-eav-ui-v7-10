@@ -16,6 +16,8 @@
 
     "angular-bootstrap-file-field": "0.1.3",
     "angular-base64-upload": "0.1.13",
+    "angular-ui-select": "0.19.4",
+    "angular-sanitize": "1.4.5",
 
 
     "api-check": "7.5.5",

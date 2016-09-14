@@ -8,27 +8,37 @@
  */
 
 angular.module("eavFieldTemplates")
-    .factory("fieldMask", function() {
-        function createFieldMask(mask, model, overloadPreCleanValues) {
+    .factory("fieldMask", function (debugState) {
+        // mask: a string like "[FirstName] [LastName]"
+        // model: usually the $scope.model, passed into here
+        // overloadPreCleanValues: a function which will "scrub" the found field-values
+        // 
+        // use: first create an object like mask = fieldMask.createFieldMask("[FirstName]", $scope.model);
+        //      then: access result in your timer or whatever with mask.resolve();
+        function createFieldMask(mask, model, overloadPreCleanValues, $scope, changeEvent) {
             var srv = {
                 mask: mask,
                 model: model,
+                fields: [],
+                value: undefined,
                 findFields: /\[.*?\]/ig,
                 unwrapField: /[\[\]]/ig
             };
 
+            // resolves a mask to the final value
             srv.resolve = function getNewAutoValue() {
-                var mask = srv.mask;
-                angular.forEach(srv.fieldList(), function(e, i) {
+                var value = srv.mask;
+                angular.forEach(srv.fields, function(e, i) {
                     var replaceValue = (srv.model.hasOwnProperty(e) && srv.model[e] && srv.model[e]._currentValue && srv.model[e]._currentValue.Value)
                         ? srv.model[e]._currentValue.Value : "";
                     var cleaned = srv.preClean(e, replaceValue);
-                    mask = mask.replace(e, cleaned);
+                    value = value.replace("[" + e + "]", cleaned);
                 });
 
-                return mask;
+                return value;
             };
 
+            // retrieves a list of all fields used in the mask
             srv.fieldList = function() {
                 var result = [];
                 if (!srv.mask) return result;
@@ -44,8 +54,37 @@ angular.module("eavFieldTemplates")
                 return value;
             };
 
-            if (overloadPreCleanValues) // got an overload...
-                srv.preClean = overloadPreCleanValues;
+            // change-event - will only fire if it really changes
+            srv.onChange = function() {
+                var maybeNew = srv.resolve();
+                if (srv.value !== maybeNew)
+                    changeEvent(maybeNew);
+                srv.value = maybeNew;
+            };
+
+            // add watcher and execute onChange
+            srv.watchAllFields = function() {
+                // add a watch for each field in the field-mask
+                angular.forEach(srv.fields, function (e, i) {
+                    $scope.$watch("model." + e + "._currentValue.Value", function () {
+                        if (debugState.on) console.log("url-path: " + e + " changed...");
+                        srv.onChange();
+                    });
+                });
+            };
+
+            function activate() {
+                srv.fields = srv.fieldList();
+
+                if (overloadPreCleanValues) // got an overload...
+                    srv.preClean = overloadPreCleanValues;
+
+                // bind auto-watch only if needed...
+                if ($scope && srv.onChange)
+                    srv.watchAllFields();
+            }
+
+            activate();
 
             return srv;
         }

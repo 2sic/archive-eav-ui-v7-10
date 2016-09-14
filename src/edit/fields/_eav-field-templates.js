@@ -9,7 +9,11 @@ angular.module("eavFieldTemplates",
         "ui.bootstrap",
         "eavLocalization",
         "eavEditTemplates",
-        "ui.tree"
+        "ui.tree",
+
+        // testing for the entity-picker dropdown
+        "ui.select",
+        "ngSanitize"
     ]
 )
     // important: order of use is backwards, so the last is around the second-last, etc.

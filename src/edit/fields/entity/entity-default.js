@@ -19,12 +19,22 @@ angular.module("eavFieldTemplates")
 
 
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService) {
-        // ensure settings are merged
-        if (!$scope.to.settings.merged)
-            $scope.to.settings.merged = {};
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q) {
+        var contentType, lastContentType;
 
-        $scope.availableEntities = [];
+        function activate() {
+            // ensure settings are merged
+            if (!$scope.to.settings.merged)
+                $scope.to.settings.merged = {};
+
+            // Initialize entities
+            var sourceMask = $scope.to.settings.merged.EntityType || null;
+            contentType = fieldMask(sourceMask, $scope.model, null, $scope, $scope.maybeReload);// this will contain the auto-resolve type (based on other contentType-field)
+            lastContentType = contentType.resolve();
+
+            $scope.availableEntities = [];
+        }
+
 
         // of no real data-model exists yet for this value (list of chosen entities), then create a blank
         if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
@@ -35,10 +45,13 @@ angular.module("eavFieldTemplates")
         $scope.selectedEntity = null;
 
         // add an just-picked entity to the selected list
-        $scope.addEntity = function () {
-            if ($scope.selectedEntity !== null) {
-                $scope.chosenEntities.push($scope.selectedEntity);
-                $scope.selectedEntity = null;
+        $scope.addEntity = function (item) {
+            //console.log(item);
+            if (!item) item = $scope.selectedEntity; // if not provided by ui-select, use the property which was set by the old select
+            //console.log(item);
+            if (item !== null) {
+                $scope.chosenEntities.push(item);
+                $scope.selectedEntity = null;        // reset, for old method
             }
         };
 
@@ -50,27 +63,29 @@ angular.module("eavFieldTemplates")
 
         // open the dialog for a new item
         $scope.openNewEntityDialog = function() {
-            function reload(result) {
+            function reloadAfterAdd(result) {
                 if (!result || result.data === null || result.data === undefined)
                     return;
 
-                $scope.getAvailableEntities().then(function () {
+                $scope.maybeReload().then(function () {
                     $scope.chosenEntities.push(Object.keys(result.data)[0]);
                 });
             }
 
-            eavAdminDialogs.openItemNew($scope.to.settings.merged.EntityType, reload);
+            eavAdminDialogs.openItemNew(contentType.resolve(), reloadAfterAdd);
 
         };
 
         // ajax call to get all entities
-        // todo: move to a service some time
-        $scope.getAvailableEntities = function() {
+        // todo: move to a service some time + enhance to provide more fields if needed
+        $scope.getAvailableEntities = function (ctName) {
+            if (!ctName)
+                ctName = contentType.resolve();
             return $http({
                 method: "GET",
                 url: "eav/EntityPicker/getavailableentities",
                 params: {
-                    contentTypeName: $scope.to.settings.merged.EntityType,
+                    contentTypeName: ctName,// mask.resolve(),// $scope.to.settings.merged.EntityType,
                     appId: appId
                     // ToDo: dimensionId: $scope.configuration.DimensionId
                 }
@@ -78,6 +93,15 @@ angular.module("eavFieldTemplates")
                 $scope.availableEntities = data.data;
             });
         };
+        $scope.maybeReload = function () {
+            var newMask = contentType.resolve();
+            if (lastContentType !== newMask) {
+                lastContentType = newMask;
+                return $scope.getAvailableEntities(newMask);
+            }
+            return $q.when();
+        };
+
 
         // get a nice label for any entity, including non-existing ones
         $scope.getEntityText = function (entityId) {
@@ -106,9 +130,10 @@ angular.module("eavFieldTemplates")
             return eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
         };
 
-        // Initialize entities
-        $scope.getAvailableEntities();
 
+
+
+        activate();
     })
 
     .directive("entityValidation", [function () {

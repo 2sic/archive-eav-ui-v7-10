@@ -18,7 +18,7 @@ module.exports = function (grunt) {
             "bower_components/angular/angular.min.js",
 			"bower_components/angular-resource/angular-resource.min.js",
             "bower_components/angular-animate/angular-animate.min.js",
-            //"bower_components/angular-sanitize/angular-sanitize.min.js",
+            "bower_components/angular-sanitize/angular-sanitize.min.js", // currently testing, needed for ui-select, maybe will remove again
             "bower_components/oclazyload/dist/oclazyload.min.js",
 
 			// visual effects etc.
@@ -36,6 +36,9 @@ module.exports = function (grunt) {
 			"bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js",
             "bower_components/angular-ui-tree/dist/angular-ui-tree.min.js",
 
+            // testing
+            "bower_components/angular-ui-select/dist/select.min.js",
+
             // promise-window just to be sure we can use it till all old dialogs have been removed
 			"bower_components/promise-window/dist/promise-window.min.js",
 
@@ -52,7 +55,11 @@ module.exports = function (grunt) {
             "bower_components/angular-ui-switch/angular-ui-switch.min.css",
 
             // toaster
-            "bower_components/angular-toastr/dist/angular-toastr.css"
+            "bower_components/angular-toastr/dist/angular-toastr.css",
+
+            // testing
+            "bower_components/angular-ui-select/dist/select.min.css",
+
 		],
 		fontFiles: [
             //"bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2",
@@ -108,8 +115,8 @@ module.exports = function (grunt) {
     // Default task.
     grunt.registerTask("build-angular-lib", [
         "clean:angSetTmp",
-        "clean:angSetDist",
-        "clean:angSetFonts",
+        //"clean:angSetDist",
+        //"clean:angSetFonts",
         "copy:angSetFonts",
         "concat:angSetLib",
         "concat:angSetCss"
