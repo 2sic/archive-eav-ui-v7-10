@@ -19,7 +19,9 @@ angular.module("eavFieldTemplates")
         // get configured
         var controlSettings = $scope.to.settings["string-url-path"];
         var sourceMask = (controlSettings) ? controlSettings.AutoGenerateMask || null : null;
-        var mask = fieldMask(sourceMask, $scope.model, function preCleane(key, value) {
+
+        // todo: change to include the change-detection
+        var mask = fieldMask(sourceMask, $scope, null, function preCleane(key, value) {
             return value.replace("/", "-").replace("\\", "-"); // this will remove slashes which could look like path-parts
         });
 

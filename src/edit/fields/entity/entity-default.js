@@ -29,8 +29,8 @@ angular.module("eavFieldTemplates")
 
             // Initialize entities
             var sourceMask = $scope.to.settings.merged.EntityType || null;
-            contentType = fieldMask(sourceMask, $scope.model, null, $scope, $scope.maybeReload);// this will contain the auto-resolve type (based on other contentType-field)
-            lastContentType = contentType.resolve();
+            contentType = fieldMask(sourceMask, $scope, $scope.maybeReload, null);// this will contain the auto-resolve type (based on other contentType-field)
+            // don't get it, it must be blank to start with, so it will be loaded at least 1x lastContentType = contentType.resolve();
 
             $scope.availableEntities = [];
         }

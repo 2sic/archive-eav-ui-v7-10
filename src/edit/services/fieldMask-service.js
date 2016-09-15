@@ -15,10 +15,10 @@ angular.module("eavFieldTemplates")
         // 
         // use: first create an object like mask = fieldMask.createFieldMask("[FirstName]", $scope.model);
         //      then: access result in your timer or whatever with mask.resolve();
-        function createFieldMask(mask, model, overloadPreCleanValues, $scope, changeEvent) {
+        function createFieldMask(mask, $scope, changeEvent, overloadPreCleanValues) {
             var srv = {
                 mask: mask,
-                model: model,
+                model: $scope.model,
                 fields: [],
                 value: undefined,
                 findFields: /\[.*?\]/ig,
