@@ -75,6 +75,7 @@
 	        }
 
 	        try {
+	            console.log("fyi: will run custom js for " + field.StaticName);
 	            var fn = new Function(cjs); // jshint ignore:line
 	            jsobject = fn();
 	        }
@@ -93,9 +94,11 @@
 	        };
 
 	        // now cjs should be the initiliazed object...
-	        if (jsobject && jsobject.init)
+	        if (jsobject && jsobject.init) {
+                console.log("fyi: will init on custom js for " + field.StaticName);
 	            jsobject.init(context);
-	        
+	        }
+
 
 	    };
 
