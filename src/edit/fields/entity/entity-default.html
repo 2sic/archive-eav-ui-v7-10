@@ -40,84 +40,48 @@
                 </tr>
             </table>
         </div>
-        <ol>
-            <!-- test - want to re-align how two add-scenarios work; ideally side-by side -->
-            <li class="eav-entityselect-item subtle-till-mouseover"
-                ng-show="(to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)) || (to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))">
+        
+        <div class="eav-entityselect-actions">
 
-                <!-- create new entity to add to this list -->
-                <div ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
-                     class="eav-entityselect-item eav-entityselect-create"
-                     ng-click="openNewEntityDialog()"
-                     style="width: 50%; float: left">
-                    <i class="icon-eav-plus pull-left eav-entityselect-icon"></i>
-                    <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
+            <!-- pick existing entity -->
+            <div class="eav-entityselect-action-addexisting"
+                 ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
+                <div class="eav-entityselect-selector-wrapper">
+                    <ui-select theme="bootstrap" style=""
+                               ng-model="selectedEntity"
+                               on-highlight="maybeReload()"
+                               on-select="addEntity($select.selected.Value)" reset-search-input="true">
+                        <ui-select-match placeholder="{{ 'FieldType.Entity.Choose' | translate }}">
+                            <!--<span ng-bind="$select.selected.Text"></span>-->
+                            {{ 'FieldType.Entity.Choose' | translate }}
+                        </ui-select-match>
+                        <ui-select-choices repeat="item in availableEntities | filter: { Text : $select.search } track by item.Value"
+                                           refresh="maybeReload()"
+                                           refresh-delay="0"
+                                           minimum-input-length="0"
+                                           ui-disable-choice="chosenEntities.indexOf(item.Value) != -1">
+                            <span ng-bind="item.Text"></span>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
+            </div>
 
-                <!-- pick existing entity -->
-                <div style="width: 50%; float: left;"
-                     class="eav-entityselect-item"
-                     ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
-                    <!--<i class="icon-eav-plus-circled pull-left eav-entityselect-icon-before-select"></i>-->
-                    <div class="eav-entityselect-selector-wrapper">
-
-                        <!-- previous edition, without search and without dynamic loading -->
-                        <!--<select class="eav-entityselect-selector form-control input-lg"
-                                    formly-skip-ng-model-attrs-manipulator
-                                    ng-model="selectedEntity"
-                                    ng-change="addEntity()"
-                                    ng-focus="maybeReload()">
-                            <option selected="selected" value="" translate="FieldType.Entity.Choose"></option>
-                            <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
-                        </select>-->
-                        <!-- new 2016-09-14 for v08.05.03 -->
-                        <ui-select theme="bootstrap" style=""
-                                   ng-model="selectedEntity"
-                                   on-highlight="maybeReload()"
-                                   on-select="addEntity($select.selected.Value)">
-                            <ui-select-match placeholder="{{ 'FieldType.Entity.Choose' | translate }}">
-                                <span ng-bind="$select.selected.Text"></span>
-                            </ui-select-match>
-                            <ui-select-choices repeat="item in availableEntities | filter: { Text : $select.search } track by item.Value"
-                                               refresh="maybeReload()"
-                                               refresh-delay="0"
-                                               minimum-input-length="0"
-                                               ui-disable-choice="chosenEntities.indexOf(item.Value) != -1">
-                                <span ng-bind="item.Text"></span>
-                            </ui-select-choices>
-                        </ui-select>
-
-                    </div>
-                </div>
-                
-            </li>
-            <li>
-
-            </li>
-            <!-- add existing entity to this list--><!--ng-if="to.settings.merged.EnableAddExisting"-->
-            <!--<li class="eav-entityselect-item subtle-till-mouseover"
-                    ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
-                <div>
-                    <i class="icon-eav-plus-circled pull-left eav-entityselect-icon-before-select"></i>
-                    <div class="eav-entityselect-selector-wrapper">
-                        <select class="eav-entityselect-selector form-control input-lg"
-                                formly-skip-ng-model-attrs-manipulator
-                                ng-model="selectedEntity"
-                                ng-change="addEntity()">
-                            <option value="" translate="FieldType.Entity.Choose"></option>
-                            <option ng-repeat="item in availableEntities" ng-disabled="chosenEntities.indexOf(item.Value) != -1" value="{{item.Value}}">{{item.Text}}</option>
-                        </select>
-                    </div>
-                </div>
-            </li>-->
             <!-- create new entity to add to this list -->
-            <!--<li ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
-                    class="eav-entityselect-item eav-entityselect-create subtle-till-mouseover">
-                <div ng-click="openNewEntityDialog()">
-                    <i class="icon-eav-plus pull-left eav-entityselect-icon"></i>
-                    <span>{{ 'FieldType.Entity.New' | translate }}&nbsp;</span>
-                </div>
-            </li>-->
-        </ol>
+            <button ng-if="to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
+                 class="eav-entityselect-action-create icon-field-button"
+                 ng-click="openNewEntityDialog()">
+                <i class="icon-eav-plus"></i>
+            </button>
+
+        </div>
+
+
+            <!-- test - want to re-align how two add-scenarios work; ideally side-by side 
+            <div class="subtle-till-mouseover"
+                 ng-show="(to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)) || (to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))">
+
+                
+                
+            </div>-->
     </div>
 </div>

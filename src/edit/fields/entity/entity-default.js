@@ -19,7 +19,7 @@ angular.module("eavFieldTemplates")
 
 
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout) {
         var contentType, lastContentType;
 
         function activate() {
@@ -52,6 +52,7 @@ angular.module("eavFieldTemplates")
             if (item !== null) {
                 $scope.chosenEntities.push(item);
                 $scope.selectedEntity = null;        // reset, for old method
+                $timeout(function () { $scope.selectedEntity = null; });
             }
         };
 
