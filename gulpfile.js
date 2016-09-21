@@ -116,6 +116,7 @@ function packageJs(set) {
     var prelib = merge(js, tmpl).pipe($.sort());
 
     var result = merge(libs, prelib)
+        .pipe($.sort())
         .pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
@@ -138,6 +139,7 @@ function packageCss(set) {
     if (config.debug) console.log("css packaging start: " + set.name);
 
     var result = gulp.src(set.css.files)
+        .pipe($.sort())
         // lint the css - not enabled right now, too many fix-suggestions
         //.pipe($.csslint())
         //.pipe($.csslint.reporter())
