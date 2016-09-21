@@ -33,7 +33,7 @@ editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/field
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
 editExtGps.js.concat = "custom-gps.js";
 editExtGps.js.libs = [
-    "bower_components/lodash/dist/lodash.min.js",
+    "bower_components/lodash/lodash.min.js",
     "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
     "bower_components/angular-simple-logger/dist/index.js"
 ];
