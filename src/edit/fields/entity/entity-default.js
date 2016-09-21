@@ -56,6 +56,10 @@ angular.module("eavFieldTemplates")
             }
         };
 
+        //$scope.onOpenClose = function (isOpen) {
+        //    $scope.dropDownOpen = isOpen;
+        //};
+
         // check if new-entity is an allowed operation
         $scope.createEntityAllowed = function() {
             var settings = $scope.to.settings.merged;
