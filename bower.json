@@ -19,6 +19,8 @@
     "angular-ui-select": "0.19.4",
     "angular-sanitize": "1.4.5",
 
+    "lodash": "3.10.1",
+
 
     "api-check": "7.5.5",
     "promise-window": "1.0.0",
