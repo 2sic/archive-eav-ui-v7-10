@@ -159,7 +159,7 @@
     <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
-    <Content Include="src\admin\app-icons-codes.css" />
+    <None Include="src\admin\app-icons-codes.css-dont-use" />
     <Content Include="src\admin\deprecated-font-halflings.css" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
