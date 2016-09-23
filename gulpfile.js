@@ -105,6 +105,7 @@ function packageJs(set) {
     ;
 
     var tmpl = set.js.templates ? gulp.src(set.js.templates)
+        .pipe($.sort())
         //.pipe($.htmlmin({ collapseWhitespace: true }))
         .pipe($.angularTemplatecache("templates.js", { // set.js.templateSetName + ".js", { //"templates.js", {
             standalone: true,
