@@ -160,7 +160,7 @@
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
     <Content Include="src\admin\app-icons-codes.css" />
-    <Content Include="src\admin\bootstrap-override.css" />
+    <Content Include="src\admin\deprecated-font-halflings.css" />
     <Content Include="src\admin\content-import-export\content-export-app.js" />
     <Content Include="src\admin\content-import-export\content-export-controller.js" />
     <Content Include="src\admin\content-import-export\content-export-service.js" />
@@ -182,6 +182,7 @@
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />
+    <Content Include=".bowerrc" />
     <None Include="src\admin\icons.css.excluded" />
     <Content Include="src\admin\pipelines\query-stats.controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
