@@ -80,7 +80,7 @@ angular.module("eavFieldTemplates")
                     srv.preClean = overloadPreCleanValues;
 
                 // bind auto-watch only if needed...
-                if ($scope && srv.onChange)
+                if ($scope && changeEvent)
                     srv.watchAllFields();
             }
 
