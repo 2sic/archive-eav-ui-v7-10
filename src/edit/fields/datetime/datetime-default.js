@@ -12,7 +12,7 @@ angular.module("eavFieldTemplates")
             defaultOptions: {
                 templateOptions: {
                     datepickerOptions: {},
-                    datepickerPopup: "dd.MM.yyyy"
+                    datepickerPopup: "dd.MM.yyyy" // todo check - might need rename with #955
                 }
             },
             link: function (scope, el, attrs) {

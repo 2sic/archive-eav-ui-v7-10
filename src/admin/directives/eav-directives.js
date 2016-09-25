@@ -28,7 +28,7 @@ angular.module("EavDirectives", [])
     .directive('showDebugAvailability', function() {
         return {
             restrict: 'E',
-            template: "<span class=\"low-priority\" tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }}\">"
+            template: "<span class=\"low-priority\" uib-tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }}\">"
                 + "&pi;" // "<i icon=\"sunglasses\"></i>"
                 + "</span><br/>"
         };

@@ -18,7 +18,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="item in vm.items | orderBy:SysCreatedDate:reverse">
-                <td><span tooltip="ChangeId: {{item.ChangeId}}">{{item.VirtualVersion}}</span></td>
+                <td><span uib-tooltip="ChangeId: {{item.ChangeId}}">{{item.VirtualVersion}}</span></td>
                 <td>{{item.SysCreatedDate.replace("T", " ")}}</td>
                 <td>{{item.User}}</td>
                 <td>

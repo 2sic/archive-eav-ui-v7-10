@@ -18,7 +18,7 @@
             </td>
             <td>
                 <select class="input-lg" ng-model="item.Type" style="width: 100%"
-                        tooltip="{{ 'DataType.' + item.Type + '.Explanation' | translate }}"
+                        uib-tooltip="{{ 'DataType.' + item.Type + '.Explanation' | translate }}"
                         ng-options="o as 'DataType.' + o + '.Choice' | translate for o in vm.types | orderBy: 'toString()' "
                         ng-change="vm.resetSubTypes(item)">
                     <option>-- select --</option>
@@ -26,7 +26,7 @@
             </td>
             <td>
                 <select class="input-lg" ng-model="item.InputType" style="width: 100%"
-                        tooltip="{{ (vm.allInputTypes | filter: { inputType: item.InputType})[0].description }}"
+                        uib-tooltip="{{ (vm.allInputTypes | filter: { inputType: item.InputType})[0].description }}"
                         ng-options="o.inputType as o.label for o in vm.allInputTypes | filter: {dataType: item.Type.toLowerCase() } ">
                 </select>
 

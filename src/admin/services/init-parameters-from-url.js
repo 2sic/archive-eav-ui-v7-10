@@ -31,7 +31,7 @@
         //#endregion
         //#region helpers / dummy objects
         // This is a dummy object, because it's needed for dialogs
-        .factory("$modalInstance", function () {
+        .factory("$uibModalInstance", function () {
             return null;
         })
     //#endregion

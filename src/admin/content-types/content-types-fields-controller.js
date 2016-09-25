@@ -5,13 +5,13 @@
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $uibModalInstance, $uibModal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
         // to close this dialog
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
 
         vm.items = svc.liveList();
@@ -37,7 +37,7 @@
 
         // Open an add-dialog, and add them if the dialog is closed
         vm.add = function add() {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-types/content-types-fields-add.html",
                 controller: "FieldsAdd",
@@ -50,7 +50,7 @@
         };
 
         vm.edit = function edit(item) {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-types/content-types-field-edit.html",
                 controller: "FieldEdit",

@@ -2,7 +2,7 @@
 (function() {
 
     angular.module("PipelineDesigner")
-        .controller("QueryStats", function (testParams, result, $modalInstance) {
+        .controller("QueryStats", function (testParams, result, $uibModalInstance) {
                 var vm = this;
                 var success = result;
                 vm.testParameters = testParams.split("\n");
@@ -17,7 +17,7 @@
 
 
                 vm.close = function () {
-                    $modalInstance.dismiss("cancel");
+                    $uibModalInstance.dismiss("cancel");
                 };
 
             }

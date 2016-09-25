@@ -7,7 +7,7 @@
         .controller("PermissionList", permissionListController)
         ;
 
-    function permissionListController(permissionsSvc, eavAdminDialogs, eavConfig, appId, targetGuid, $modalInstance /* $location */) {
+    function permissionListController(permissionsSvc, eavAdminDialogs, eavConfig, appId, targetGuid, $uibModalInstance /* $location */) {
         var vm = this;
         var svc = permissionsSvc(appId, targetGuid);
 
@@ -28,7 +28,7 @@
         };
 
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 

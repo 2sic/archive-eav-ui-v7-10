@@ -29,7 +29,7 @@
 // var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
 
 angular.module("EavAdminUi", ["ng",
-    "ui.bootstrap",         // for the $modal etc.
+    "ui.bootstrap",         // for the $uibModal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
@@ -46,7 +46,7 @@ angular.module("EavAdminUi", ["ng",
     // the correct clean up would be to create an edit-dialogs class or something (todo)
 	// "eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", function ($modal, eavConfig, $window,
+    .factory("eavAdminDialogs", function ($uibModal, eavConfig, $window,
         // these are needed just for simple access to some dialogs
         entitiesSvc,    // warning: this only works ATM when called in 2sxc, because it needs the eavEditEntity dependency
         contentTypeSvc,
@@ -210,7 +210,7 @@ angular.module("EavAdminUi", ["ng",
                 if (foundAs > 0)
                     controller = controller.substring(0, foundAs);
 
-                var modalInstance = $modal.open({
+                var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: templateUrl,
                     controller: controller,

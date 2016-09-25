@@ -30,34 +30,34 @@
             <tr ng-if="vm.items.isLoaded" ng-repeat="item in vm.items | orderBy:'Name'" class="clickable-row" ng-click="vm.editItems(item)">
                 <!--<td style="text-align: center" class="clickable"> {{item.Items}} </td>-->
                 <td class="clickable">
-                    <span class="text-nowrap hide-overflow-text" style="max-width: 400px" tooltip="{{item.Label}} ({{item.Name}})">{{item.Label}} <span ng-if="item.Name != item.Label">({{item.Name}})</span></span>
+                    <span class="text-nowrap hide-overflow-text" style="max-width: 400px" uib-tooltip="{{item.Label}} ({{item.Name}})">{{item.Label}} <span ng-if="item.Name != item.Label">({{item.Name}})</span></span>
                 </td>
                 <td class="clickable" style="text-align: right">
                     <div class="badge pull-right badge-primary hover-pair" stop-event="click" ng-click="vm.addItem(item.StaticName)"><span class="hover-default">{{item.Items}}</span><span class="hover-hover icon-eav-plus"></span></div></td>
                 <td class="clickable">
-                    <div class="text-nowrap hide-overflow-text" style="max-width: 500px" tooltip="{{item.Description}}">{{item.Description}}</div>
+                    <div class="text-nowrap hide-overflow-text" style="max-width: 500px" uib-tooltip="{{item.Description}}">{{item.Description}}</div>
                 </td>
                 <td stop-event="click">
                     <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
                         <i class="icon-eav-fields"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
-                    <button ng-if="item.UsesSharedDef" tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-default btn-xs" style="width: 60px">
+                    <button ng-if="item.UsesSharedDef" uib-tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-default btn-xs" style="width: 60px">
                         <i class="icon-eav-ghost"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
                 </td>
 
                 <td class="text-nowrap" stop-event="click">
                     <span class="btn-group">
-                        <button tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
+                        <button uib-tooltip="{{ 'General.Buttons.Rename' | translate }} - {{  'ContentTypes.Messages.Type' + (item.UsesSharedDef ? 'Shared' : 'Own')  | translate:item }}" type="button" class="btn btn-xs btn-square" ng-click="vm.edit(item)">
                             <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
                         </button>
-                        <button tooltip="{{ 'General.Buttons.Metadata' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.createOrEditMetadata(item)">
+                        <button uib-tooltip="{{ 'General.Buttons.Metadata' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.createOrEditMetadata(item)">
                             <i class="icon-eav-tag"></i>
                         </button>
-                        <button tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)">
+                        <button uib-tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)">
                             <i icon="export"></i>
                         </button>
-                        <button tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)">
+                        <button uib-tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)">
                             <i icon="import"></i>
                         </button>
                         <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">

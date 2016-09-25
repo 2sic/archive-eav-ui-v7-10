@@ -43,7 +43,7 @@ module.exports = function (grunt) {
 			"bower_components/promise-window/dist/promise-window.min.js",
 
             // dropzone for uploads
-            "bower_components/dropzone/dist/dropzone.js",
+            "bower_components/dropzone/dist/min/dropzone.min.js",
 
             // switch for toggle-feature
             "bower_components/angular-ui-switch/angular-ui-switch.min.js",

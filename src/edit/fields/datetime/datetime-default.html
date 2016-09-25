@@ -3,7 +3,7 @@
 
 
 
-        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" datepicker-popup />
+        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" datepicker-options="to.datepickerOptions" uib-datepicker-popup />
 
         <span class="input-group-btn" style="vertical-align: top;">
             <button type="button" class="btn btn-default icon-eav-field-button pull-right"
@@ -15,6 +15,6 @@
             <!--<div class="input-group-addon" style="cursor: pointer;" ng-click="to.isOpen = true;">
             <i class="glyphicon glyphicon-calendar"></i>
         </div>-->
-       <timepicker ng-show="to.settings.merged.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></timepicker>
+       <uib-timepicker ng-show="to.settings.merged.UseTimePicker" ng-model="value.Value" show-meridian="ismeridian"></uib-timepicker>
 </div>
 </div>

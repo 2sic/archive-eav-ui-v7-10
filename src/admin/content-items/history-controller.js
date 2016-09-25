@@ -9,16 +9,16 @@
         .controller("HistoryDetails", HistoryDetailsController)
         ;
 
-    function HistoryController(appId, entityId, historySvc, $modalInstance, $modal) {
+    function HistoryController(appId, entityId, historySvc, $uibModalInstance, $uibModal) {
         var vm = this;
         var svc = historySvc(appId, entityId);
         vm.entityId = entityId;
         vm.items = svc.liveList();
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
 
         vm.details = function(item) {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-items/history-details.html",
                 controller: "HistoryDetails",
@@ -31,7 +31,7 @@
         };
     }
 
-    function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
+    function HistoryDetailsController(changeId, dataSvc, $uibModalInstance) {
         var vm = this;
         alert("not implemented yet");
         var svc = dataSvc;
@@ -42,6 +42,6 @@
         });
         // vm.items = svc.liveList();
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     }
 } ());
