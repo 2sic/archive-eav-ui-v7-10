@@ -6,7 +6,7 @@
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function contentTypeFieldsAddController(appId, svc, $filter, $modalInstance) {
+    function contentTypeFieldsAddController(appId, svc, $filter, $uibModalInstance) {
         var vm = this;
 
         // prepare empty array of up to 10 new items to be added
@@ -44,9 +44,9 @@
                 if (items[c].StaticName)
                     newList.push(items[c]);
             svc.addMany(newList, 0);
-            $modalInstance.close();
+            $uibModalInstance.close();
         };
 
-        vm.close = function() { $modalInstance.dismiss("cancel"); };
+        vm.close = function() { $uibModalInstance.dismiss("cancel"); };
     }
 }());

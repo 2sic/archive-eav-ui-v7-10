@@ -10,11 +10,11 @@
 }());
 (function () {
 
-    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$modalInstance", "$filter", "$translate"];
+    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$uibModalInstance", "$filter", "$translate"];
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
-    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $modalInstance, $filter, $translate) {
+    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
 
         var vm = this;
 
@@ -117,7 +117,7 @@
         };
 
         vm.close = function close() {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 }());
@@ -192,11 +192,11 @@
 }());
 (function () {
 
-    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$modalInstance", "$filter", "$translate"];
+    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$uibModalInstance", "$filter", "$translate"];
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, $translate) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $uibModalInstance, $filter, $translate) {
 
         var vm = this;
         vm.debug = debugState;
@@ -307,7 +307,7 @@
 
         vm.close = function close() {
             vm.viewStateSelected = vm.viewStates.Default;
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 }());
@@ -336,7 +336,7 @@
 }());
 (function () { 
 
-    EditContentItemController.$inject = ["mode", "entityId", "contentType", "eavAdminDialogs", "$modalInstance"];
+    EditContentItemController.$inject = ["mode", "entityId", "contentType", "eavAdminDialogs", "$uibModalInstance"];
     angular.module("ContentEditApp", [
         "EavServices",
         "EavAdminUi"
@@ -344,7 +344,7 @@
         .controller("EditContentItem", EditContentItemController)
         ;
 
-    function EditContentItemController(mode, entityId, contentType, eavAdminDialogs, $modalInstance) { //}, contentTypeId, eavAdminDialogs) {
+    function EditContentItemController(mode, entityId, contentType, eavAdminDialogs, $uibModalInstance) { //}, contentTypeId, eavAdminDialogs) {
         var vm = this;
         vm.mode = mode;
         vm.entityId = entityId;
@@ -355,14 +355,14 @@
             return eavAdminDialogs.openItemHistory(vm.entityId);
         };
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     }
 
 } ());
 (function () {
 	'use strict';
 
-	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$modalInstance", "$q", "$modalStack", "$translate"];
+	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$uibModalInstance", "$q", "$modalStack", "$translate"];
 	angular.module("ContentItemsAppAgnostic", [
         "EavConfiguration",
         "EavAdminUi",
@@ -372,7 +372,7 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $modalInstance, $q, $modalStack, $translate) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $q, $modalStack, $translate) {
 		/* jshint validthis:true */
 		var vm = angular.extend(this, {
 			debug: debugState,
@@ -453,10 +453,10 @@
 		}
 
 		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
-		// $modalStack.getTop() might get a wrong modal Instance
+		// $uibModalStack.getTop() might get a wrong modal Instance
 		// setting the width with inline css in a controller should be avoided
 		function setModalWidth(width) {
-			var modalDomEl = $modalStack.getTop().value.modalDomEl;
+			var modalDomEl = $uibModalStack.getTop().value.modalDomEl;
 			var modalDialog = modalDomEl.children();
 			modalDialog.css("width", (width + 47) + "px");	// add some pixels for padding and scrollbars
 		}
@@ -648,14 +648,14 @@
 		}
 
 		function close() {
-			$modalInstance.dismiss("cancel");
+			$uibModalInstance.dismiss("cancel");
 		}
 	}
 
 }());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    ContentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$modalInstance"];
+    ContentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$uibModalInstance"];
     angular.module("ContentItemsApp", [
         "EavConfiguration",
         "EavAdminUi",
@@ -664,7 +664,7 @@
         .controller("ContentItemsList", ContentItemsListController)
     ;
 
-    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance) {
+    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $uibModalInstance) {
         var vm = this;
         vm.debug = debugState;
 
@@ -710,15 +710,15 @@
 
         };
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
 
     }
 
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
-    HistoryController.$inject = ["appId", "entityId", "historySvc", "$modalInstance", "$modal"];
-    HistoryDetailsController.$inject = ["changeId", "dataSvc", "$modalInstance"];
+    HistoryController.$inject = ["appId", "entityId", "historySvc", "$uibModalInstance", "$uibModal"];
+    HistoryDetailsController.$inject = ["changeId", "dataSvc", "$uibModalInstance"];
     angular.module("HistoryApp", [
         "EavServices",
         "EavConfiguration",
@@ -728,16 +728,16 @@
         .controller("HistoryDetails", HistoryDetailsController)
         ;
 
-    function HistoryController(appId, entityId, historySvc, $modalInstance, $modal) {
+    function HistoryController(appId, entityId, historySvc, $uibModalInstance, $uibModal) {
         var vm = this;
         var svc = historySvc(appId, entityId);
         vm.entityId = entityId;
         vm.items = svc.liveList();
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
 
         vm.details = function(item) {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-items/history-details.html",
                 controller: "HistoryDetails",
@@ -750,7 +750,7 @@
         };
     }
 
-    function HistoryDetailsController(changeId, dataSvc, $modalInstance) {
+    function HistoryDetailsController(changeId, dataSvc, $uibModalInstance) {
         var vm = this;
         alert("not implemented yet");
         var svc = dataSvc;
@@ -761,7 +761,7 @@
         });
         // vm.items = svc.liveList();
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     }
 } ());
 // This is the main declaration for the app ContentTypesApp
@@ -898,13 +898,13 @@
 }());
 (function() {
 
-    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$modalInstance"];
+    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("Edit", contentTypeEditController);
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    function contentTypeEditController(appId, item, contentTypeSvc, debugState, $translate, $modalInstance) {
+    function contentTypeEditController(appId, item, contentTypeSvc, debugState, $translate, $uibModalInstance) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
@@ -916,26 +916,26 @@
 
         vm.ok = function () {
             svc.save(item).then(function() {
-                $modalInstance.close(vm.item);              
+                $uibModalInstance.close(vm.item);              
             });
         };
 
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 
 }());
 (function () {
     /*jshint laxbreak:true */
-    contentTypeFieldEditController.$inject = ["appId", "svc", "item", "$filter", "$modalInstance"];
+    contentTypeFieldEditController.$inject = ["appId", "svc", "item", "$filter", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldEdit", contentTypeFieldEditController)
     ;
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function contentTypeFieldEditController(appId, svc, item, $filter, $modalInstance) {
+    function contentTypeFieldEditController(appId, svc, item, $filter, $uibModalInstance) {
         var vm = this;
 
         vm.items = [item];
@@ -950,22 +950,22 @@
 
         vm.ok = function () {
             svc.updateInputType(vm.items[0]);
-            $modalInstance.close();
+            $uibModalInstance.close();
         };
 
-        vm.close = function() { $modalInstance.dismiss("cancel"); };
+        vm.close = function() { $uibModalInstance.dismiss("cancel"); };
     }
 }());
 (function () {
     /*jshint laxbreak:true */
-    contentTypeFieldsAddController.$inject = ["appId", "svc", "$filter", "$modalInstance"];
+    contentTypeFieldsAddController.$inject = ["appId", "svc", "$filter", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldsAdd", contentTypeFieldsAddController)
     ;
 
     /// This is the main controller for adding a field
     /// Add is a standalone dialog, showing 10 lines for new field names / types
-    function contentTypeFieldsAddController(appId, svc, $filter, $modalInstance) {
+    function contentTypeFieldsAddController(appId, svc, $filter, $uibModalInstance) {
         var vm = this;
 
         // prepare empty array of up to 10 new items to be added
@@ -1003,27 +1003,27 @@
                 if (items[c].StaticName)
                     newList.push(items[c]);
             svc.addMany(newList, 0);
-            $modalInstance.close();
+            $uibModalInstance.close();
         };
 
-        vm.close = function() { $modalInstance.dismiss("cancel"); };
+        vm.close = function() { $uibModalInstance.dismiss("cancel"); };
     }
 }());
 /*jshint laxbreak:true */
 (function () {
-    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$modalInstance", "$modal", "eavAdminDialogs", "$filter", "$translate", "eavConfig", "$scope"];
+    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$uibModalInstance", "$uibModal", "eavAdminDialogs", "$filter", "$translate", "eavConfig", "$scope"];
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
     ;
 
     /// The controller to manage the fields-list
-    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $modalInstance, $modal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
+    function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $uibModalInstance, $uibModal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
         var vm = this;
         var svc = contentTypeFieldSvc(appId, contentType);
 
         // to close this dialog
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
 
         vm.items = svc.liveList();
@@ -1049,7 +1049,7 @@
 
         // Open an add-dialog, and add them if the dialog is closed
         vm.add = function add() {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-types/content-types-fields-add.html",
                 controller: "FieldsAdd",
@@ -1062,7 +1062,7 @@
         };
 
         vm.edit = function edit(item) {
-            $modal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: "content-types/content-types-field-edit.html",
                 controller: "FieldEdit",
@@ -1178,7 +1178,7 @@ angular.module("EavDirectives", [])
 })();
 (function () { 
 
-    permissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavConfig", "appId", "targetGuid", "$modalInstance"];
+    permissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavConfig", "appId", "targetGuid", "$uibModalInstance"];
     angular.module("PermissionsApp", [
         "EavServices",
         "EavConfiguration",
@@ -1186,7 +1186,7 @@ angular.module("EavDirectives", [])
         .controller("PermissionList", permissionListController)
         ;
 
-    function permissionListController(permissionsSvc, eavAdminDialogs, eavConfig, appId, targetGuid, $modalInstance /* $location */) {
+    function permissionListController(permissionsSvc, eavAdminDialogs, eavConfig, appId, targetGuid, $uibModalInstance /* $location */) {
         var vm = this;
         var svc = permissionsSvc(appId, targetGuid);
 
@@ -1207,7 +1207,7 @@ angular.module("EavDirectives", [])
         };
 
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 
@@ -1832,7 +1832,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", ["$modalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($modalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+	controller("PipelineManagement", ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
 	    var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -1897,13 +1897,13 @@ angular.module("PipelineManagement", [
             if (inp)
                 eval(inp); // jshint ignore:line
         };
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     }]);
 /*jshint laxbreak:true */
 (function() {
 
     angular.module("PipelineDesigner")
-        .controller("QueryStats", ["testParams", "result", "$modalInstance", function (testParams, result, $modalInstance) {
+        .controller("QueryStats", ["testParams", "result", "$uibModalInstance", function (testParams, result, $uibModalInstance) {
                 var vm = this;
                 var success = result;
                 vm.testParameters = testParams.split("\n");
@@ -1918,7 +1918,7 @@ angular.module("PipelineManagement", [
 
 
                 vm.close = function () {
-                    $modalInstance.dismiss("cancel");
+                    $uibModalInstance.dismiss("cancel");
                 };
 
             }]
@@ -2218,7 +2218,7 @@ angular.module("EavServices")
  * vm.maybeEnableDebug - a method which checks for ctrl+shift-click and if yes, changes debug state
  *
  * How to use
- * 1. add uiDebug to your controller dependencies like:    contentImportController(appId, ..., debugState, $modalInstance, $filter)
+ * 1. add uiDebug to your controller dependencies like:    contentImportController(appId, ..., debugState, $uibModalInstance, $filter)
  * 2. add a line after creating your vm-object like:       vm.debug = debugState;
  * 3. add a click event as far out as possible on html:    <div ng-click="vm.debug.autoEnableAsNeeded($event)">
  * 4. wrap your hidden stuff in an ng-if:                  <div ng-if="vm.debug.on">
@@ -2298,7 +2298,7 @@ angular.module("EavServices")
 // var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
 
 angular.module("EavAdminUi", ["ng",
-    "ui.bootstrap",         // for the $modal etc.
+    "ui.bootstrap",         // for the $uibModal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
@@ -2315,7 +2315,7 @@ angular.module("EavAdminUi", ["ng",
     // the correct clean up would be to create an edit-dialogs class or something (todo)
 	// "eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", ["$modal", "eavConfig", "$window", "entitiesSvc", "contentTypeSvc", "appId", function ($modal, eavConfig, $window,
+    .factory("eavAdminDialogs", ["$uibModal", "eavConfig", "$window", "entitiesSvc", "contentTypeSvc", "appId", function ($uibModal, eavConfig, $window,
         // these are needed just for simple access to some dialogs
         entitiesSvc,    // warning: this only works ATM when called in 2sxc, because it needs the eavEditEntity dependency
         contentTypeSvc,
@@ -2479,7 +2479,7 @@ angular.module("EavAdminUi", ["ng",
                 if (foundAs > 0)
                     controller = controller.substring(0, foundAs);
 
-                var modalInstance = $modal.open({
+                var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: templateUrl,
                     controller: controller,
@@ -2677,7 +2677,7 @@ angular.module("EavServices")
         //#endregion
         //#region helpers / dummy objects
         // This is a dummy object, because it's needed for dialogs
-        .factory("$modalInstance", function () {
+        .factory("$uibModalInstance", function () {
             return null;
         })
     //#endregion

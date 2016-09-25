@@ -10,7 +10,7 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $modalInstance, $q, $modalStack, $translate) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $q, $modalStack, $translate) {
 		/* jshint validthis:true */
 		var vm = angular.extend(this, {
 			debug: debugState,
@@ -91,10 +91,10 @@
 		}
 
 		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
-		// $modalStack.getTop() might get a wrong modal Instance
+		// $uibModalStack.getTop() might get a wrong modal Instance
 		// setting the width with inline css in a controller should be avoided
 		function setModalWidth(width) {
-			var modalDomEl = $modalStack.getTop().value.modalDomEl;
+			var modalDomEl = $uibModalStack.getTop().value.modalDomEl;
 			var modalDialog = modalDomEl.children();
 			modalDialog.css("width", (width + 47) + "px");	// add some pixels for padding and scrollbars
 		}
@@ -286,7 +286,7 @@
 		}
 
 		function close() {
-			$modalInstance.dismiss("cancel");
+			$uibModalInstance.dismiss("cancel");
 		}
 	}
 

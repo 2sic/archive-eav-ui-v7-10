@@ -7,7 +7,7 @@
         .controller("EditContentItem", EditContentItemController)
         ;
 
-    function EditContentItemController(mode, entityId, contentType, eavAdminDialogs, $modalInstance) { //}, contentTypeId, eavAdminDialogs) {
+    function EditContentItemController(mode, entityId, contentType, eavAdminDialogs, $uibModalInstance) { //}, contentTypeId, eavAdminDialogs) {
         var vm = this;
         vm.mode = mode;
         vm.entityId = entityId;
@@ -18,7 +18,7 @@
             return eavAdminDialogs.openItemHistory(vm.entityId);
         };
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     }
 
 } ());

@@ -21,7 +21,7 @@
             //libraries: 'weather,geometry,visualization'
         });
     });
-    app.controller("FieldTemplate-CustomGpsController", function ($scope, $filter, $modal, appId, debugState, eavAdminDialogs, addtemplatestocache, uiGmapGoogleMapApi) {
+    app.controller("FieldTemplate-CustomGpsController", function ($scope, $filter, $uibModal, appId, debugState, eavAdminDialogs, addtemplatestocache, uiGmapGoogleMapApi) {
 
         var latField, lngField;
         

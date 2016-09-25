@@ -13,7 +13,7 @@ angular.module("eavFieldTemplates")
         });
 
     })
-    .controller("FieldTemplate-String-ContentType", function($scope, contentTypeSvc, appId) { //, $http, $filter, $translate, $modal, eavAdminDialogs, eavDefaultValueService) {
+    .controller("FieldTemplate-String-ContentType", function($scope, contentTypeSvc, appId) { //, $http, $filter, $translate, $uibModal, eavAdminDialogs, eavDefaultValueService) {
         // ensure settings are merged
         if (!$scope.to.settings.merged)
             $scope.to.settings.merged = {};

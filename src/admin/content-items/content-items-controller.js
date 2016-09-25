@@ -8,7 +8,7 @@
         .controller("ContentItemsList", ContentItemsListController)
     ;
 
-    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $modalInstance) {
+    function ContentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, debugState, $uibModalInstance) {
         var vm = this;
         vm.debug = debugState;
 
@@ -54,7 +54,7 @@
 
         };
 
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
 
     }
 

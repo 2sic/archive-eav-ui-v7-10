@@ -5,7 +5,7 @@
 	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $modalInstance, $window, $translate, toastr) {
+	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr) {
 
 	    var vm = this;
 	    vm.itemList = items;
@@ -26,7 +26,7 @@
 	    };
 
 	    vm.close = function (result) {
-		    $modalInstance.close(result);
+		    $uibModalInstance.close(result);
 		};
 
 	    $window.addEventListener('beforeunload', function (e) {

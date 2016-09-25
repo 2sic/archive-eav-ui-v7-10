@@ -5,7 +5,7 @@
 
     /// Edit or add a content-type
     /// Note that the svc can also be null if you don't already have it, the system will then create its own
-    function contentTypeEditController(appId, item, contentTypeSvc, debugState, $translate, $modalInstance) {
+    function contentTypeEditController(appId, item, contentTypeSvc, debugState, $translate, $uibModalInstance) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
@@ -17,12 +17,12 @@
 
         vm.ok = function () {
             svc.save(item).then(function() {
-                $modalInstance.close(vm.item);              
+                $uibModalInstance.close(vm.item);              
             });
         };
 
         vm.close = function () {
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 

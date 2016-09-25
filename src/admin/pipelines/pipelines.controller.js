@@ -5,7 +5,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", function ($modalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+	controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
 	    var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -70,5 +70,5 @@ angular.module("PipelineManagement", [
             if (inp)
                 eval(inp); // jshint ignore:line
         };
-        vm.close = function () { $modalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
     });

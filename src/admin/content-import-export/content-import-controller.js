@@ -3,7 +3,7 @@
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
-    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $modalInstance, $filter, $translate) {
+    function contentImportController(appId, contentType, contentImportService, eavAdminDialogs, eavConfig, languages, debugState, $uibModalInstance, $filter, $translate) {
 
         var vm = this;
         vm.debug = debugState;
@@ -114,7 +114,7 @@
 
         vm.close = function close() {
             vm.viewStateSelected = vm.viewStates.Default;
-            $modalInstance.dismiss("cancel");
+            $uibModalInstance.dismiss("cancel");
         };
     }
 }());

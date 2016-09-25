@@ -19,7 +19,7 @@ angular.module("eavFieldTemplates")
 
 
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $modal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout) {
         var contentType, lastContentType;
 
         function activate() {
