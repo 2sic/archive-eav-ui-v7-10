@@ -21,7 +21,7 @@
             </td>
             <td>
                 <select class="input-lg" ng-model="item.InputType" style="width: 100%"
-                        tooltip="{{ (vm.allInputTypes | filter: { inputType: item.InputType})[0].description }}"
+                        uib-tooltip="{{ (vm.allInputTypes | filter: { inputType: item.InputType})[0].description }}"
                         ng-options="o.inputType as o.label for o in vm.allInputTypes | filter: {dataType: item.Type.toLowerCase() } ">
                 </select>
 

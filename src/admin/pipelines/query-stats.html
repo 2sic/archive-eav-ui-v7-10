@@ -30,9 +30,9 @@
                 <th translate="Pipeline.Stats.Sources.Config"></th>
             </tr>
             <tr ng-repeat="s in vm.sources">
-                <td tooltip="{{s}}"><pre>{{s.Guid.substring(0, 13)}}...</pre></td>
+                <td uib-tooltip="{{s}}"><pre>{{s.Guid.substring(0, 13)}}...</pre></td>
                 <td>{{s.Type}}</td>
-                <td tooltip="{{s.Configuration}}">
+                <td uib-tooltip="{{s.Configuration}}">
                     <ol>
                         <li ng-repeat="(key, value) in s.Configuration"><b>{{key}}</b>=<em>{{value}}</em></li>
                     </ol>

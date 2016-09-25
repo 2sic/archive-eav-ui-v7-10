@@ -11,7 +11,7 @@
 
             {{p.Header.Title ? p.Header.Title : 'EditEntity.DefaultTitle' | translate }}&nbsp;
             <span ng-if="p.Header.Group.SlotCanBeEmpty" ng-click="vm.toggleSlotIsEmpty(p)" stop-event="click">
-                <i class="icon-eav-toggle-off" ng-class=" p.slotIsUsed ? 'icon-eav-toggle-on' : 'icon-eav-toggle-off' " ng-click="p.slotIsUsed = !p.slotIsUsed" tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></i>
+                <i class="icon-eav-toggle-off" ng-class=" p.slotIsUsed ? 'icon-eav-toggle-on' : 'icon-eav-toggle-off' " ng-click="p.slotIsUsed = !p.slotIsUsed" uib-tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></i>
             </span>
         </div>
         <div ng-if="vm.itemsHelp[$index]" ng-bind-html="vm.itemsHelp[$index]"></div>
@@ -23,7 +23,7 @@
         <!-- note: the buttons are not really disabled, because we want to be able to click them and see the error message -->
         <div class="btn-group" uib-dropdown>
             <button ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" ng-click="vm.save(true)" type="button" class="btn btn-primary btn-lg submit-button">
-                <span class="icon-eav-ok" tooltip="{{ 'Button.Save' | translate }}"></span> &nbsp;<span translate="Button.Save"></span>
+                <span class="icon-eav-ok" uib-tooltip="{{ 'Button.Save' | translate }}"></span> &nbsp;<span translate="Button.Save"></span>
             </button>
             <button class="dropdown-toggle btn btn-primary btn-lg" ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" uib-dropdown-toggle><i class="caret"></i></button>
             <ul class="dropdown-menu" role="menu">
@@ -33,7 +33,7 @@
         </div>
         <!--&nbsp;
         <button ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" class="btn btn-default btn-lg btn-icon-square" type="button" ng-click="vm.save(false)">
-            <span class="icon-eav-ok-circled2" tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
+            <span class="icon-eav-ok-circled2" uib-tooltip="{{ 'Button.SaveAndKeepOpen' | translate }}"></span>
         </button>-->
         &nbsp;
         <!-- note: published status will apply to all - so the first is taken for identification if published -->
@@ -50,7 +50,7 @@
 
 
         <span ng-if="vm.debug.on">
-            <button class="icon-eav-flash btn" tooltip="debug" ng-click="vm.showDebugItems = !vm.showDebugItems"></button>
+            <button class="icon-eav-flash btn" uib-tooltip="debug" ng-click="vm.showDebugItems = !vm.showDebugItems"></button>
         </span>
         <show-debug-availability class="pull-right" style="margin-top: 20px;"></show-debug-availability>
     </div>

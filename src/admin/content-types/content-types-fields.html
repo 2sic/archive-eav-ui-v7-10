@@ -30,12 +30,12 @@
                             <i icon="{{item.IsTitle ? 'star' : 'star-empty'}}"></i>
                         </button>
                     </td>
-                    <td class="clickable"><span tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
+                    <td class="clickable"><span uib-tooltip="{{ 'Id: ' + item.Id}}">{{item.StaticName}}</span></td>
                     <td class="text-nowrap clickable">
                         {{item.Type}}
                     </td>
                     <td class="text-nowrap InputType" stop-event="click">
-                        <span class="clickable" tooltip="{{ vm.inputTypeTooltip(item.InputType) }}" ng-click="vm.edit(item)">
+                        <span class="clickable" uib-tooltip="{{ vm.inputTypeTooltip(item.InputType) }}" ng-click="vm.edit(item)">
                             <i icon="pencil"></i>
                             {{item.InputType.substring(item.InputType.indexOf('-') + 1, 100)}}
                         </span>
