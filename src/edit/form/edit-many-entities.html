@@ -21,11 +21,11 @@
 
     <div>
         <!-- note: the buttons are not really disabled, because we want to be able to click them and see the error message -->
-        <div class="btn-group" dropdown>
+        <div class="btn-group" uib-dropdown>
             <button ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" ng-click="vm.save(true)" type="button" class="btn btn-primary btn-lg submit-button">
                 <span class="icon-eav-ok" tooltip="{{ 'Button.Save' | translate }}"></span> &nbsp;<span translate="Button.Save"></span>
             </button>
-            <button class="dropdown-toggle btn btn-primary btn-lg" ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" dropdown-toggle><i class="caret"></i></button>
+            <button class="dropdown-toggle btn btn-primary btn-lg" ng-class="{ 'disabled': !vm.isValid() || vm.isWorking > 0}" uib-dropdown-toggle><i class="caret"></i></button>
             <ul class="dropdown-menu" role="menu">
                 <li><a ng-click="vm.save(true)"><i class="icon-eav-ok"></i> {{ 'Button.Save' | translate }}</a></li>
                 <li><a ng-click="vm.save(false)"><i class="icon-eav-ok-circled2"></i> {{ 'Button.SaveAndKeepOpen' | translate }}</a></li>
@@ -38,8 +38,8 @@
         &nbsp;
         <!-- note: published status will apply to all - so the first is taken for identification if published -->
         &nbsp;
-        <div class="btn-group" dropdown>
-            <a class="dropdown-toggle" dropdown-toggle><i ng-class="{'icon-eav-eye': vm.publishMode === 'show', 'icon-eav-eye-close': vm.publishMode === 'hide', 'icon-eav-git-branch': vm.publishMode === 'branch'}"></i> {{ 'SaveMode.' + vm.publishMode |translate }}<i class="caret"></i></a>
+        <div class="btn-group" uib-dropdown>
+            <a class="dropdown-toggle" uib-dropdown-toggle><i ng-class="{'icon-eav-eye': vm.publishMode === 'show', 'icon-eav-eye-close': vm.publishMode === 'hide', 'icon-eav-git-branch': vm.publishMode === 'branch'}"></i> {{ 'SaveMode.' + vm.publishMode |translate }}<i class="caret"></i></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a ng-click="vm.publishMode = 'show'"><i class="icon-eav-eye"></i> {{ 'SaveMode.show' |translate }}</a></li>
                 <li><a ng-click="vm.publishMode = 'hide'"><i class="icon-eav-eye-close"></i> {{ 'SaveMode.hide' |translate }}</a></li>
