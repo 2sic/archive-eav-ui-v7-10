@@ -6,7 +6,7 @@
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig) {
+	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -86,17 +86,23 @@
 	            return;
 
 	        var context = {
-	            field: field,
-	            formVm: vm,
-	            formlyConfig: formlyConfig,
-	            appId: appId,
+	            field: field,   // current field object
+	            formVm: vm,     // the entire form view model
+	            formlyConfig: formlyConfig, // form configuration
+	            appId: appId,   // appId - in case needed for service calls or similar
 	            module: app, // pass in this current module in case something complex is wanted
+	            $injector: $injector,   // to get $http or similar
 	        };
 
 	        // now cjs should be the initiliazed object...
 	        if (jsobject && jsobject.init) {
-                console.log("fyi: will init on custom js for " + field.StaticName);
-	            jsobject.init(context);
+	            console.log("fyi: will init on custom js for " + field.StaticName);
+	            try {
+	                jsobject.init(context);
+	            } catch (ex) {
+	                console.log("init custom js failed with error - will ignore this");
+	                console.log(ex);
+	            }
 	        }
 
 
