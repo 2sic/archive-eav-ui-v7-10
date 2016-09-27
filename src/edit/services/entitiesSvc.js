@@ -4,7 +4,7 @@
 
     angular.module("eavEditEntity")
         /// Standard entity commands like get one, many etc.
-        .factory("entitiesSvc", function ($http, appId, toastrWithHttpErrorHandling, promiseToastr) {
+        .factory("entitiesSvc", function ($http, appId, toastrWithHttpErrorHandling, promiseToastr, $q, $translate, toastr) {
             var svc = {
                 toastr: toastrWithHttpErrorHandling
             };
@@ -37,6 +37,47 @@
                 });
             };
 
+            svc.tryDeleteAndAskForce = function tryDeleteAndAskForce(type, id, itemTitle) {
+
+                var deferred = $q.defer();
+
+                // todo: i18n
+                var msg = $translate.instant("General.Questions.DeleteEntity", { title: itemTitle, id: id });
+                if (!confirm(msg))
+                    deferred.reject("Delete aborted by user");
+                else {
+                    svc.delete(type, id, false).then(function (result) {
+
+                        if (result.status >= 200 && result.status < 300) {
+                            deferred.resolve(result);
+                        }
+                        else {
+                            // if delete failed, ask to force-delete in a toaster
+                            var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: itemTitle, id: id }) + "<br/>"
+                                + "<button type='button' id='del' class='btn btn-default' ><i class= 'icon-eav-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
+                                + "</div>";
+
+                            toastr.warning(msg, {
+                                allowHtml: true,
+                                timeOut: 5000,
+                                onShown: function (toast) {
+                                    // this checks for the click on the button in the toaster
+                                    toast.el[0].onclick = function (event) {
+                                        var target = event.target || event.srcElement;
+                                        if (target.id === "del")
+                                            svc.delete(type, id, true)
+                                                .then(deferred.resolve);
+                                    };
+                                }
+                            });
+                        }
+                    });
+                }
+
+                return deferred.promise;
+
+            };
+
             svc.delete = function del(type, id, tryForce) {
                 console.log("try to delete");
 
@@ -49,6 +90,7 @@
                         'force': tryForce
                     }
                 });
+
                 return promiseToastr(delPromise, "Message.Deleting", "Message.Ok", "Message.Error");
             };
 

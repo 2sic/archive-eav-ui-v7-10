@@ -19,7 +19,7 @@ angular.module("eavFieldTemplates")
 
 
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc) {
         var contentType, lastContentType;
 
         function activate() {
@@ -36,6 +36,11 @@ angular.module("eavFieldTemplates")
         }
 
 
+        //$scope.availableColors = ['Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Maroon', 'Umbra', 'Turquoise'];
+
+        //$scope.singleDemo = {};
+        //$scope.singleDemo.color = '';
+
         // of no real data-model exists yet for this value (list of chosen entities), then create a blank
         if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
             $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
@@ -46,24 +51,12 @@ angular.module("eavFieldTemplates")
 
         // add an just-picked entity to the selected list
         $scope.addEntity = function (item) {
-            //console.log(item);
             if (!item) item = $scope.selectedEntity; // if not provided by ui-select, use the property which was set by the old select
-            //console.log(item);
             if (item !== null) {
                 $scope.chosenEntities.push(item);
-                $scope.selectedEntity = null;        // reset, for old method
-                $timeout(function () { $scope.selectedEntity = null; });
+                $scope.selectedEntity = null;
+                //$timeout(function () { $scope.selectedEntity = null; });
             }
-        };
-
-        //$scope.onOpenClose = function (isOpen) {
-        //    $scope.dropDownOpen = isOpen;
-        //};
-
-        // check if new-entity is an allowed operation
-        $scope.createEntityAllowed = function() {
-            var settings = $scope.to.settings.merged;
-            return settings.EntityType !== null && settings.EntityType !== "" && settings.EnableCreate;
         };
 
         // open the dialog for a new item
@@ -72,13 +65,12 @@ angular.module("eavFieldTemplates")
                 if (!result || result.data === null || result.data === undefined)
                     return;
 
-                $scope.maybeReload().then(function () {
+                $scope.maybeReload(true).then(function () {
                     $scope.chosenEntities.push(Object.keys(result.data)[0]);
                 });
             }
 
             eavAdminDialogs.openItemNew(contentType.resolve(), reloadAfterAdd);
-
         };
 
         // ajax call to get all entities
@@ -98,9 +90,9 @@ angular.module("eavFieldTemplates")
                 $scope.availableEntities = data.data;
             });
         };
-        $scope.maybeReload = function () {
+        $scope.maybeReload = function (force) {
             var newMask = contentType.resolve();
-            if (lastContentType !== newMask) {
+            if (lastContentType !== newMask || force) {
                 lastContentType = newMask;
                 return $scope.getAvailableEntities(newMask);
             }
@@ -121,8 +113,23 @@ angular.module("eavFieldTemplates")
             $scope.chosenEntities.splice(index, 1);
         };
 
-        $scope.deleteItemInSlot = function(itemGuid, index) {
-            alert("this feature is not implemented yet, sorry. it will be added some day...");
+        $scope.alertTest = function () {
+            alert("test");
+        };
+
+        $scope.deleteItemInSlot = function (itemGuid, index) {
+            if ($scope.to.settings.merged.EntityType === '') {
+                alert('delete not possible - no type specified in entity field configuration');
+                return;
+            }
+
+            var entities = $filter("filter")($scope.availableEntities, { Value: itemGuid });
+            var id = entities[0].Id;
+            console.log(entities);
+            entitiesSvc.tryDeleteAndAskForce(contentType.resolve(), id, entities[0].Text).then(function () {
+                $scope.chosenEntities.splice(index, 1);
+                $scope.maybeReload(true);
+            });
         };
 
         // edit needs the Guid - the index isn't important
