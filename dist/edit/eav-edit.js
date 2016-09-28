@@ -5,11 +5,11 @@
     "use strict";
     var module = angular.module("eavCustomFields", ["oc.lazyLoad"])
 
-    .config(function ($ocLazyLoadProvider) {
+    .config(["$ocLazyLoadProvider", function ($ocLazyLoadProvider) {
         $ocLazyLoadProvider.config({
             debug: true
         });
-    });
+    }]);
 
 })();
 /* Main object with dependencies, used in wrappers and other places */
@@ -102,19 +102,19 @@ angular.module("eavFieldTemplates",
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, fieldWrappersNoLabel) {
+    .config(["formlyConfigProvider", "fieldWrappersNoLabel", function (formlyConfigProvider, fieldWrappersNoLabel) {
         formlyConfigProvider.setType({
             name: "boolean-default",
             templateUrl: "fields/boolean/boolean-default.html",
             wrapper: fieldWrappersNoLabel // ["bootstrapHasError", "disablevisually", "eavLocalization", "responsive", "collapsible"]
         });
-    });
+    }]);
 /* 
  * Field: Custom - Default (basically something you should never see)
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "custom-default",
@@ -122,7 +122,7 @@ angular.module("eavFieldTemplates")
             wrapper: defaultFieldWrappers
         });
 
-    });
+    }]);
 // this changes JSON-serialization for dates, 
 // because we usually want the time to be the same across time zones and NOT keeping the same moment
 Date.prototype.toJSON = function() {
@@ -135,7 +135,7 @@ Date.prototype.toJSON = function() {
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "datetime-default",
@@ -161,21 +161,21 @@ angular.module("eavFieldTemplates")
             }
         });
 
-    });
+    }]);
 /* 
  * Field: Empty - Default: this is usually a title/group section
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider) {
+    .config(["formlyConfigProvider", function(formlyConfigProvider) {
         formlyConfigProvider.setType({
             name: "empty-default",
             templateUrl: "fields/empty/empty-default.html",
             wrapper: ["fieldGroup"],
             controller: "FieldTemplate-TitleController"
         });
-    })
-    .controller("FieldTemplate-TitleController", function($scope, debugState) {
+    }])
+    .controller("FieldTemplate-TitleController", ["$scope", "debugState", function($scope, debugState) {
         if (!$scope.to.settings.merged)
             $scope.to.settings.merged = {};
 
@@ -193,7 +193,7 @@ angular.module("eavFieldTemplates")
         if ($scope.to.settings.merged.DefaultCollapsed === true) 
             $scope.set(true);
 
-    });
+    }]);
 /* 
  * Field: Entity - Default
  * Also contains much business logic and the necessary controller
@@ -201,7 +201,7 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         var wrappers = defaultFieldWrappers.slice(0); // copy the array
         wrappers.splice(defaultFieldWrappers.indexOf("eavLocalization"), 1); // remove the localization...
@@ -214,8 +214,8 @@ angular.module("eavFieldTemplates")
         });
 
 
-    })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc) {
+    }])
+    .controller("FieldTemplate-EntityCtrl", ["$scope", "$http", "$filter", "$translate", "$uibModal", "appId", "eavAdminDialogs", "eavDefaultValueService", "fieldMask", "$q", "$timeout", "entitiesSvc", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc) {
         var contentType, lastContentType;
 
         function activate() {
@@ -342,7 +342,7 @@ angular.module("eavFieldTemplates")
 
 
         activate();
-    })
+    }])
 
     .directive("entityValidation", [function () {
         return {
@@ -375,7 +375,7 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
         formlyConfigProvider.setType({
             name: "number-default",
             template: "<input type=\"number\" class=\"form-control input-lg\" ng-model=\"value.Value\">{{vm.isGoogleMap}}",
@@ -389,7 +389,7 @@ angular.module("eavFieldTemplates")
             },
             controller: "FieldTemplate-NumberCtrl as vm"
         });
-    }).controller("FieldTemplate-NumberCtrl", function () {
+    }]).controller("FieldTemplate-NumberCtrl", function () {
         var vm = this;
     });
 /* 
@@ -397,7 +397,7 @@ angular.module("eavFieldTemplates")
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function(formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-contenttype",
@@ -406,8 +406,8 @@ angular.module("eavFieldTemplates")
             controller: "FieldTemplate-String-ContentType"
         });
 
-    })
-    .controller("FieldTemplate-String-ContentType", function($scope, contentTypeSvc, appId) { //, $http, $filter, $translate, $uibModal, eavAdminDialogs, eavDefaultValueService) {
+    }])
+    .controller("FieldTemplate-String-ContentType", ["$scope", "contentTypeSvc", "appId", function($scope, contentTypeSvc, appId) { //, $http, $filter, $translate, $uibModal, eavAdminDialogs, eavDefaultValueService) {
         // ensure settings are merged
         if (!$scope.to.settings.merged)
             $scope.to.settings.merged = {};
@@ -420,13 +420,13 @@ angular.module("eavFieldTemplates")
             $scope.contentTypes = result.data;
         });
 
-    });
+    }]);
 /* 
  * Field: String - Default
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-default",
@@ -436,7 +436,7 @@ angular.module("eavFieldTemplates")
             controller: "FieldTemplate-StringCtrl as vm"
         });
 
-    }).controller("FieldTemplate-StringCtrl", function ($scope) {
+    }]).controller("FieldTemplate-StringCtrl", ["$scope", function ($scope) {
         var vm = this;
         var validationRegexString = ".*";
         var stringSettings = $scope.options.templateOptions.settings.merged;
@@ -445,13 +445,13 @@ angular.module("eavFieldTemplates")
         vm.regexPattern = new RegExp(validationRegexString, 'i');
 
         console.log($scope.options.templateOptions);
-    });
+    }]);
 /* 
  * Field: String - Dropdown
  */
 
 angular.module("eavFieldTemplates")
-    .config(function (formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function (formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-dropdown",
@@ -484,13 +484,13 @@ angular.module("eavFieldTemplates")
 
             }
         });
-    });
+    }]);
 /* 
  * Field: String - url-path
  */
 
 angular.module("eavFieldTemplates")
-    .config(function(formlyConfigProvider, defaultFieldWrappers) {
+    .config(["formlyConfigProvider", "defaultFieldWrappers", function(formlyConfigProvider, defaultFieldWrappers) {
 
         formlyConfigProvider.setType({
             name: "string-url-path",
@@ -499,8 +499,8 @@ angular.module("eavFieldTemplates")
             controller: "FieldTemplate-String-Url-Path-Ctrl as vm"
         });
 
-    })
-    .controller("FieldTemplate-String-Url-Path-Ctrl", function($scope, debugState, stripNonUrlCharacters, fieldMask) {
+    }])
+    .controller("FieldTemplate-String-Url-Path-Ctrl", ["$scope", "debugState", "stripNonUrlCharacters", "fieldMask", function($scope, debugState, stripNonUrlCharacters, fieldMask) {
         var vm = this;
 
         // get configured
@@ -568,11 +568,11 @@ angular.module("eavFieldTemplates")
         };
         vm.activate();
 
-    })
+    }])
 
 
 // this is a helper which cleans up the url and is used in various places
-    .factory("stripNonUrlCharacters", function(latinizeText) {
+    .factory("stripNonUrlCharacters", ["latinizeText", function(latinizeText) {
         return function(inputValue, allowPath, trimEnd) {
             if (!inputValue) return "";
             var rexSeparators = allowPath ? /[^a-z0-9-_/]+/gi : /[^a-z0-9-_]+/gi;
@@ -589,11 +589,11 @@ angular.module("eavFieldTemplates")
                 .replace(trimEnd ? /^-|-+$/gi : /^-/gi, ""); // trim front and maybe end "-"
             return cleanInputValue;
         };
-    })
+    }])
 
 
     // this monitors an input-field and ensures that only allowed characters are typed
-    .directive("onlySimpleUrlChars", function(stripNonUrlCharacters) {
+    .directive("onlySimpleUrlChars", ["stripNonUrlCharacters", function(stripNonUrlCharacters) {
         return {
             require: "ngModel",
             restrict: "A",
@@ -611,7 +611,7 @@ angular.module("eavFieldTemplates")
                 });
             }
         };
-    });
+    }]);
 
 /* global angular */
 (function () {
@@ -621,7 +621,7 @@ angular.module("eavFieldTemplates")
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
-    app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, contentTypeSvc, $sce, toastr, saveToastr, $translate, debugState, ctrlS) {
+    app.controller("EditEntities", ["appId", "$http", "$scope", "entitiesSvc", "contentTypeSvc", "$sce", "toastr", "saveToastr", "$translate", "debugState", "ctrlS", function editEntityCtrl(appId, $http, $scope, entitiesSvc, contentTypeSvc, $sce, toastr, saveToastr, $translate, debugState, ctrlS) {
         //#region detailled logging if necessary
         var detailedLogging = false;
         var clog = detailedLogging
@@ -860,7 +860,7 @@ angular.module("eavFieldTemplates")
 
         activate();
 
-    });
+    }]);
 
 
 
@@ -896,7 +896,7 @@ angular.module("eavFieldTemplates")
 	var app = angular.module("eavEditEntity"); 
 
 	// The controller for the main form directive
-	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
+	app.controller("EditEntityFormCtrl", ["appId", "$http", "$scope", "formlyConfig", "contentTypeFieldSvc", "$sce", "debugState", "customInputTypes", "eavConfig", "$injector", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -1113,7 +1113,7 @@ angular.module("eavFieldTemplates")
 
 		    return (inputType);
 		};
-	});
+	}]);
     
 	
 
@@ -1146,7 +1146,7 @@ angular.module("eavFieldTemplates")
 	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr) {
+	app.controller("EditEntityWrapperCtrl", ["$q", "$http", "$scope", "items", "$uibModalInstance", "$window", "$translate", "toastr", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr) {
 
 	    var vm = this;
 	    vm.itemList = items;
@@ -1178,7 +1178,7 @@ angular.module("eavFieldTemplates")
 	        }
 	        return null;
 	    });
-	});
+	}]);
 
 })();
 
@@ -1188,7 +1188,7 @@ angular.module("eavFieldTemplates")
 
 	/* This app handles all aspectes of the multilanguage features of the field templates */
 
-	var eavLocalization = angular.module("eavLocalization", ["formly", "EavConfiguration"], function (formlyConfigProvider) {
+	var eavLocalization = angular.module("eavLocalization", ["formly", "EavConfiguration"], ["formlyConfigProvider", function (formlyConfigProvider) {
 
 		// Field templates that use this wrapper must bind to value.Value instead of model[...]
 		formlyConfigProvider.setWrapper([
@@ -1198,15 +1198,15 @@ angular.module("eavFieldTemplates")
 			}
 		]);
 
-	});
+	}]);
 
 	eavLocalization.directive("eavLanguageSwitcher", function () {
 		return {
 			restrict: "E",
 			templateUrl: "localization/language-switcher.html",
-			controller: function($scope, languages) {
+			controller: ["$scope", "languages", function($scope, languages) {
 				$scope.languages = languages;
-			},
+			}],
 			scope: {
 			    isDisabled: "=isDisabled"
 			}
@@ -1220,7 +1220,7 @@ angular.module("eavFieldTemplates")
 			template: "",
 			link: function (scope, element, attrs) {
 			},
-			controller: function ($scope, $filter, $translate, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
+			controller: ["$scope", "$filter", "$translate", "eavDefaultValueService", "languages", function ($scope, $filter, $translate, eavDefaultValueService, languages) { // Can't use controllerAs because of transcluded scope
 
 				var scope = $scope;
 				var langConf = languages;
@@ -1302,7 +1302,7 @@ angular.module("eavFieldTemplates")
 
 				// The language menu must be able to trigger an update of the _currentValue property
 				scope.model[scope.options.key]._initCurrentValue = initCurrentValue;
-			}
+			}]
 		};
 	});
 
@@ -1319,7 +1319,7 @@ angular.module("eavFieldTemplates")
 			templateUrl: "localization/localization-menu.html",
 			link: function (scope, element, attrs) { },
 			controllerAs: "vm",
-			controller: function ($scope, languages, $translate) {
+			controller: ["$scope", "languages", "$translate", function ($scope, languages, $translate) {
 
 			    var vm = this;
 			    var lblDefault = $translate.instant("LangMenu.UseDefault");
@@ -1434,7 +1434,7 @@ angular.module("eavFieldTemplates")
 				        $scope.formModel.localizationMenus[i][action](languageKey);
 				    }
 				};
-			}
+			}]
 		};
 	});
 
@@ -1590,7 +1590,7 @@ function enhanceEntity(entity) {
     // keeps on growing and the UI might just get heavier with time ... must test once we have a few custom input types
 
 	angular.module("eavEditEntity")
-        .service("customInputTypes", function (eavConfig, toastr, formlyConfig, $q, $interval, $ocLazyLoad) {
+        .service("customInputTypes", ["eavConfig", "toastr", "formlyConfig", "$q", "$interval", "$ocLazyLoad", function (eavConfig, toastr, formlyConfig, $q, $interval, $ocLazyLoad) {
             // Returns a typed default value from the string representation
             var svc = {};
             svc.inputTypesOnPage = {};
@@ -1643,7 +1643,7 @@ function enhanceEntity(entity) {
 	        };
 
 	        return svc;
-	    });
+	    }]);
 
 })();
 /* global angular */
@@ -1699,7 +1699,7 @@ function enhanceEntity(entity) {
 
     angular.module("eavEditEntity")
         /// Standard entity commands like get one, many etc.
-        .factory("entitiesSvc", function ($http, appId, toastrWithHttpErrorHandling, promiseToastr, $q, $translate, toastr) {
+        .factory("entitiesSvc", ["$http", "appId", "toastrWithHttpErrorHandling", "promiseToastr", "$q", "$translate", "toastr", function ($http, appId, toastrWithHttpErrorHandling, promiseToastr, $q, $translate, toastr) {
             var svc = {
                 toastr: toastrWithHttpErrorHandling
             };
@@ -1807,7 +1807,7 @@ function enhanceEntity(entity) {
             };
 
             return svc;
-        });
+        }]);
 
 
 })();
@@ -1821,7 +1821,7 @@ function enhanceEntity(entity) {
  */
 
 angular.module("eavFieldTemplates")
-    .factory("fieldMask", function (debugState) {
+    .factory("fieldMask", ["debugState", function (debugState) {
         // mask: a string like "[FirstName] [LastName]"
         // model: usually the $scope.model, passed into here
         // overloadPreCleanValues: a function which will "scrub" the found field-values
@@ -1903,7 +1903,7 @@ angular.module("eavFieldTemplates")
         }
 
         return createFieldMask;
-    });
+    }]);
 angular.module("eavEditTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("fields/boolean/boolean-default.html","<div class=\"checkbox checkbox-labeled\">\r\n    <!--<label>-->\r\n        <switch class=\"tosic-green pull-left\" ng-model=\"value.Value\"></switch>\r\n    <!-- maybe need the (hidden) input to ensure the label actually switches the boolean -->\r\n        <!--<input type=\"checkbox\" class=\"formly-field-checkbox\" ng-model=\"value.Value\" style=\"display: none\">-->\r\n        <div ng-include=\"\'wrappers/eav-label.html\'\"></div>\r\n        <!--{{to.label}} {{to.required ? \'*\' : \'\'}}-->\r\n    <!--</label>-->\r\n</div>");
 $templateCache.put("fields/custom/custom-default.html","<div class=\"alert alert-danger\">\r\n    ERROR - This is a custom field, you shouldn\'t see this. You only see this because the custom-dialog is missing.\r\n</div>\r\n<input class=\"form-control input-lg\" ng-pattern=\"vm.regexPattern\" ng-model=\"value.Value\">");
 $templateCache.put("fields/datetime/datetime-default.html","<div>\r\n    <div class=\"input-group\" style=\"width: 100%\">\r\n        <input class=\"form-control input-lg\" ng-model=\"value.Value\" is-open=\"to.isOpen\" datepicker-options=\"to.datepickerOptions\" datepicker-popup/>\r\n\r\n        <span class=\"input-group-btn\" style=\"vertical-align: top;\">\r\n            <button type=\"button\" class=\"btn btn-default icon-eav-field-button pull-right\"\r\n                    ng-disabled=\"to.disabled\"\r\n                    ng-click=\"to.isOpen = true;\">\r\n                <i class=\"icon-eav-calendar\"></i>\r\n            </button>\r\n        </span>\r\n        <!--<div class=\"input-group-addon\" style=\"cursor: pointer;\" ng-click=\"to.isOpen = true;\">\r\n            <i class=\"glyphicon glyphicon-calendar\"></i>\r\n        </div>-->\r\n        <uib-timepicker ng-show=\"to.settings.merged.UseTimePicker\" ng-model=\"value.Value\" show-meridian=\"ismeridian\"></uib-timepicker>\r\n    </div>\r\n</div>\r\n");
@@ -1934,36 +1934,36 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
     "use strict";
 
     angular.module("eavFieldTemplates")
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'collapsible',
                 templateUrl: "wrappers/collapsible.html"
             });
-        });
+        }]);
 })();
 
 (function() {
 	"use strict";
 
     angular.module("eavFieldTemplates")
-        .config(function(formlyConfigProvider) {
+        .config(["formlyConfigProvider", function(formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'disablevisually',
                 templateUrl: "wrappers/disablevisually.html"
             });
-        });
+        }]);
 })();
 
 (function() {
 	"use strict";
 
     angular.module("eavFieldTemplates")
-        .config(function(formlyConfigProvider) {
+        .config(["formlyConfigProvider", function(formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'eavLabel',
                 templateUrl: "wrappers/eav-label.html"
             });
-        });
+        }]);
 })();
 
 /*
@@ -1975,12 +1975,12 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
 	"use strict";
 
     angular.module("eavFieldTemplates")
-        .config(function(formlyConfigProvider) {
+        .config(["formlyConfigProvider", function(formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'fieldGroup',
                 templateUrl: "wrappers/field-group.html"
             });
-        });
+        }]);
 })();
 /*
  * This wrapper should be around all fields, so that they can float the label 
@@ -1988,12 +1988,12 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
 (function () {
     "use strict";
     angular.module("eavFieldTemplates")
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'float-label',
                 templateUrl: "wrappers/float-label.html"
             });
-        });
+        }]);
 })();
 /*
  * This wrapper should be around all fields, so that they can float the label 
@@ -2001,12 +2001,12 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
 (function () {
     "use strict";
     angular.module("eavFieldTemplates")
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'no-label-space',
                 templateUrl: "wrappers/no-label-space.html"
             });
-        });
+        }]);
 })();
 /*
  * This wrapper should be around all fields, so that they can float the label 
@@ -2014,12 +2014,12 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
 (function () {
     "use strict";
     angular.module("eavFieldTemplates")
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'preview-default',
                 templateUrl: "wrappers/preview-default.html"
             });
-        });
+        }]);
 })();
 /*
  * This wrapper should be around all fields, so that they can float the label 
@@ -2027,10 +2027,10 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
 (function () {
     "use strict";
     angular.module("eavFieldTemplates")
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             formlyConfigProvider.setWrapper({
                 name: 'responsive',
                 templateUrl: "wrappers/responsive.html"
             });
-        });
+        }]);
 })();

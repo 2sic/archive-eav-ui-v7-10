@@ -10,6 +10,7 @@
 }());
 (function () {
 
+    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$uibModalInstance", "$filter", "$translate"];
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
@@ -122,6 +123,7 @@
 }());
 (function () {
 
+    contentExportService.$inject = ["$http", "eavConfig"];
     angular.module("ContentExportApp")
          .factory("contentExportService", contentExportService);
 
@@ -150,7 +152,7 @@
 
     angular.module("ContentFormlyTypes")
 
-        .config(function (formlyConfigProvider) {
+        .config(["formlyConfigProvider", function (formlyConfigProvider) {
             var formly = formlyConfigProvider;
 
             formly.setType({
@@ -164,7 +166,7 @@
                 template: "<input style='display:none' ng-model='model[options.key]' />",
                 wrapper: ["bootstrapLabel", "bootstrapHasError"]
             });
-    });
+    }]);
 }());
 (function () {
     angular.module("ContentHelperFilters", []);
@@ -190,6 +192,7 @@
 }());
 (function () {
 
+    contentImportController.$inject = ["appId", "contentType", "contentImportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$uibModalInstance", "$filter", "$translate"];
     angular.module("ContentImportApp")
         .controller("ContentImport", contentImportController);
 
@@ -310,6 +313,7 @@
 }());
 (function () {
 
+    contentImportService.$inject = ["$http"];
     angular.module("ContentImportApp")
          .factory("contentImportService", contentImportService);
 
@@ -332,6 +336,7 @@
 }());
 (function () { 
 
+    EditContentItemController.$inject = ["mode", "entityId", "contentType", "eavAdminDialogs", "$uibModalInstance"];
     angular.module("ContentEditApp", [
         "EavServices",
         "EavAdminUi"
@@ -357,6 +362,7 @@
 (function () {
 	'use strict';
 
+	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$uibModalInstance", "$q", "$translate", "entitiesSvc"];
 	angular.module("ContentItemsAppAgnostic", [
         "EavConfiguration",
         "EavAdminUi",
@@ -652,6 +658,7 @@
 }());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
+    ContentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "debugState", "$uibModalInstance"];
     angular.module("ContentItemsApp", [
         "EavConfiguration",
         "EavAdminUi",
@@ -713,6 +720,8 @@
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
+    HistoryController.$inject = ["appId", "entityId", "historySvc", "$uibModalInstance", "$uibModal"];
+    HistoryDetailsController.$inject = ["changeId", "dataSvc", "$uibModalInstance"];
     angular.module("HistoryApp", [
         "EavServices",
         "EavConfiguration",
@@ -774,6 +783,7 @@
 }()); 
 (function() {
 
+    contentTypeListController.$inject = ["contentTypeSvc", "eavAdminDialogs", "appId", "debugState", "$translate", "eavConfig"];
     angular.module("ContentTypesApp")
         .controller("List", contentTypeListController);
 
@@ -891,6 +901,7 @@
 }());
 (function() {
 
+    contentTypeEditController.$inject = ["appId", "item", "contentTypeSvc", "debugState", "$translate", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("Edit", contentTypeEditController);
 
@@ -920,6 +931,7 @@
 }());
 (function () {
     /*jshint laxbreak:true */
+    contentTypeFieldEditController.$inject = ["appId", "svc", "item", "$filter", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldEdit", contentTypeFieldEditController)
     ;
@@ -949,6 +961,7 @@
 }());
 (function () {
     /*jshint laxbreak:true */
+    contentTypeFieldsAddController.$inject = ["appId", "svc", "$filter", "$uibModalInstance"];
     angular.module("ContentTypesApp")
         .controller("FieldsAdd", contentTypeFieldsAddController)
     ;
@@ -1001,6 +1014,7 @@
 }());
 /*jshint laxbreak:true */
 (function () {
+    contentTypeFieldListController.$inject = ["appId", "contentTypeFieldSvc", "contentType", "$uibModalInstance", "$uibModal", "eavAdminDialogs", "$filter", "$translate", "eavConfig", "$scope"];
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
     ;
@@ -1167,6 +1181,7 @@ angular.module("EavDirectives", [])
 })();
 (function () { 
 
+    permissionListController.$inject = ["permissionsSvc", "eavAdminDialogs", "eavConfig", "appId", "targetGuid", "$uibModalInstance"];
     angular.module("PermissionsApp", [
         "EavServices",
         "EavConfiguration",
@@ -1212,7 +1227,7 @@ angular.module("PipelineDesigner", [
     ])
 
 // datasource directive makes an element a DataSource with jsPlumb
-    .directive("datasource", function($timeout) {
+    .directive("datasource", ["$timeout", function($timeout) {
         return {
             restrict: "A",
             link: function(scope, element) {
@@ -1227,7 +1242,7 @@ angular.module("PipelineDesigner", [
                 }
             }
         };
-    });
+    }]);
 
 // Filters for "ClassName, AssemblyName"
 angular.module("PipelineDesigner.filters", []).filter("typename", function () {
@@ -1265,7 +1280,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            ["appId", "pipelineId", "$scope", "pipelineService", "$location", "debugState", "$timeout", "ctrlS", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
                 "use strict";
                 var vm = this;
                 // Init
@@ -1811,7 +1826,7 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
                     // Save, clone, get clone, load clone
                     $scope.savePipeline(null).then(clone).then(getClonePipeline).then(pipelineSaved);
                 };
-            });
+            }]);
 })();
 // Config and Controller for the Pipeline Management UI
 angular.module("PipelineManagement", [
@@ -1820,7 +1835,7 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+	controller("PipelineManagement", ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
 	    var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -1886,12 +1901,12 @@ angular.module("PipelineManagement", [
                 eval(inp); // jshint ignore:line
         };
         vm.close = function () { $uibModalInstance.dismiss("cancel"); };
-    });
+    }]);
 /*jshint laxbreak:true */
 (function() {
 
     angular.module("PipelineDesigner")
-        .controller("QueryStats", function (testParams, result, $uibModalInstance) {
+        .controller("QueryStats", ["testParams", "result", "$uibModalInstance", function (testParams, result, $uibModalInstance) {
                 var vm = this;
                 var success = result;
                 vm.testParameters = testParams.split("\n");
@@ -1909,7 +1924,7 @@ angular.module("PipelineManagement", [
                     $uibModalInstance.dismiss("cancel");
                 };
 
-            }
+            }]
         );
 })();
 if (!String.prototype.endsWith) {
@@ -1934,7 +1949,7 @@ angular.module("EavServices", [
 ]);
 
 angular.module("EavServices")
-    .factory("contentItemsSvc", function($http, entitiesSvc, metadataSvc, svcCreator) {
+    .factory("contentItemsSvc", ["$http", "entitiesSvc", "metadataSvc", "svcCreator", function($http, entitiesSvc, metadataSvc, svcCreator) {
             return function createContentItemsSvc(appId, contentType) {
                 var svc = {};
                 svc.contentType = contentType;
@@ -1959,11 +1974,11 @@ angular.module("EavServices")
 
                 return svc;
             };
-        }
+        }]
     );
 
 angular.module("EavServices")
-    .factory("contentTypeSvc", function ($http, eavConfig, svcCreator) {
+    .factory("contentTypeSvc", ["$http", "eavConfig", "svcCreator", function ($http, eavConfig, svcCreator) {
         return function appSpecificContentTypeSvc(appId, scope) {
             var svc = {};
             svc.scope = scope || eavConfig.contentType.defaultScope;
@@ -2010,10 +2025,10 @@ angular.module("EavServices")
             return svc;
         };
 
-    });
+    }]);
 
 angular.module("EavServices")
-    .factory("contentTypeFieldSvc", function($http, eavConfig, svcCreator, $filter) {
+    .factory("contentTypeFieldSvc", ["$http", "eavConfig", "svcCreator", "$filter", function($http, eavConfig, svcCreator, $filter) {
         return function createFieldsSvc(appId, contentType) {
             // start with a basic service which implement the live-list functionality
             var svc = {};
@@ -2139,7 +2154,7 @@ angular.module("EavServices")
 
             return svc;
         };
-    });
+    }]);
 /* 
  * 
  * Simple service which takes care of ctrl+S keyboard shortcuts. 
@@ -2152,7 +2167,7 @@ angular.module("EavServices")
  */
 
 angular.module("EavServices")
-    .factory("ctrlS", function ($window) {
+    .factory("ctrlS", ["$window", function ($window) {
 
         // Create a capture Ctrl+S and execute action-object
         function createSave(action) {
@@ -2199,7 +2214,7 @@ angular.module("EavServices")
         }
 
         return createSave;
-    });
+    }]);
 /* shared debugState = advancedMode
  * 
  * vm.debug -> shows if in debug mode - bind ng-ifs to this
@@ -2216,7 +2231,7 @@ angular.module("EavServices")
  */
 
 angular.module("EavServices")
-    .factory("debugState", function ($translate, toastr) {
+    .factory("debugState", ["$translate", "toastr", function ($translate, toastr) {
         var svc = {
             on: false
         };
@@ -2237,7 +2252,7 @@ angular.module("EavServices")
         };
 
         return svc;
-    });
+    }]);
 // This service adds CSS classes to body when something is dragged onto the page
 angular.module("EavServices")
     .factory("dragClass", function () {
@@ -2303,7 +2318,7 @@ angular.module("EavAdminUi", ["ng",
     // the correct clean up would be to create an edit-dialogs class or something (todo)
 	// "eavEditEntity"			// the edit-app
 ])
-    .factory("eavAdminDialogs", function ($uibModal, eavConfig, $window,
+    .factory("eavAdminDialogs", ["$uibModal", "eavConfig", "$window", "entitiesSvc", "contentTypeSvc", "appId", function ($uibModal, eavConfig, $window,
         // these are needed just for simple access to some dialogs
         entitiesSvc,    // warning: this only works ATM when called in 2sxc, because it needs the eavEditEntity dependency
         contentTypeSvc,
@@ -2495,7 +2510,7 @@ angular.module("EavAdminUi", ["ng",
 
 
         return svc;
-    })
+    }])
 
 ;
 /*  this file contains various eav-angular services
@@ -2576,7 +2591,7 @@ angular.module("EavServices").service("fileType", function () {
 });
 
 angular.module("EavServices")
-    .factory("historySvc", function($http, svcCreator) { 
+    .factory("historySvc", ["$http", "svcCreator", function($http, svcCreator) { 
         //var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid
@@ -2603,7 +2618,7 @@ angular.module("EavServices")
 
             return svc;
         };
-    });
+    }]);
 /* The main component for language inclusion
  * Ensure the dependencies work, that the url-schema is prepared etc.
  * 
@@ -2611,7 +2626,7 @@ angular.module("EavServices")
 
 (function () {
     angular.module("EavServices")
-        .config(function($translateProvider, languages, $translatePartialLoaderProvider) {
+        .config(["$translateProvider", "languages", "$translatePartialLoaderProvider", function($translateProvider, languages, $translatePartialLoaderProvider) {
             $translateProvider
                 .preferredLanguage(languages.currentLanguage.split("-")[0])
                 .useSanitizeValueStrategy("escapeParameters") // this is very important to allow html in the JSON files
@@ -2623,14 +2638,14 @@ angular.module("EavServices")
             $translatePartialLoaderProvider // these parts are always required
                 .addPart("admin")
                 .addPart("edit");
-        })
+        }])
 
         // ensure that adding parts will load the missing files
-        .run(function($rootScope, $translate) {
+        .run(["$rootScope", "$translate", function($rootScope, $translate) {
             $rootScope.$on("$translatePartialLoaderStructureChanged", function() {
                 $translate.refresh();
             });
-        });
+        }]);
 })();
 // By default, eav-controls assume that all their parameters (appId, etc.) are instantiated by the bootstrapper
 // but the "root" component must get it from the url
@@ -2722,7 +2737,7 @@ angular.module("EavServices")
 
 angular.module("EavServices")
     /// Management actions which are rather advanced metadata kind of actions
-    .factory("metadataSvc", function($http, appId) {
+    .factory("metadataSvc", ["$http", "appId", function($http, appId) {
         var svc = {};
 
         // Find all items assigned to a GUID
@@ -2738,10 +2753,10 @@ angular.module("EavServices")
             });
         };
         return svc;
-    });
+    }]);
 
 angular.module("EavServices")
-    .factory("permissionsSvc", function($http, eavConfig, entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
+    .factory("permissionsSvc", ["$http", "eavConfig", "entitiesSvc", "metadataSvc", "svcCreator", "contentTypeSvc", function($http, eavConfig, entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
         var eavConf = eavConfig;
 
         // Construct a service for this specific targetGuid
@@ -2772,11 +2787,11 @@ angular.module("EavServices")
             };
             return svc;
         };
-    });
+    }]);
 // PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs) {
+    .factory("pipelineService", ["$resource", "$q", "$filter", "eavConfig", "$http", "contentTypeSvc", "metadataSvc", "eavAdminDialogs", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -2950,14 +2965,14 @@ angular.module("EavServices")
         });
 
         return svc;
-    });
+    }]);
 /*  this file contains the svcCreator - a helper to quickly create services
  */
 
 angular.module("EavServices")
     // This is a helper-factory to create services which manage one live list
     // check examples with the permissions-service or the content-type-service how we use it
-    .factory("svcCreator", function (toastr, $translate, $timeout) {
+    .factory("svcCreator", ["toastr", "$translate", "$timeout", function (toastr, $translate, $timeout) {
         var creator = {};
 
         // construct a object which has liveListCache, liveListReload(), liveListReset(),  
@@ -3009,13 +3024,13 @@ angular.module("EavServices")
         };
         return creator;
 
-    })
+    }])
 
 ;
 
 angular.module("EavServices")
     // the config is important to ensure our toaster has a common setup
-    .config(function(toastrConfig) {
+    .config(["toastrConfig", function(toastrConfig) {
         angular.extend(toastrConfig, {
             autoDismiss: false,
             containerId: "toast-container",
@@ -3026,9 +3041,9 @@ angular.module("EavServices")
             preventOpenDuplicates: false,
             target: "body"
         });
-    })
+    }])
 
-    .factory("toastrWithHttpErrorHandling", function (toastr) {
+    .factory("toastrWithHttpErrorHandling", ["toastr", function (toastr) {
         toastr.originalError = toastr.error;
         toastr.error = function errorWithHttpErrorDisplay(messageOrHttpError, title, optionsOverride) {
             var message;
@@ -3043,10 +3058,10 @@ angular.module("EavServices")
             toastr.originalError(message, title, optionsOverride);
         };
         return toastr;
-    })
+    }])
 
     
-    .factory("saveToastr", function (toastr, $translate) {
+    .factory("saveToastr", ["toastr", "$translate", function (toastr, $translate) {
         function saveWithToaster(promise) {
             // todo: replace all this with a single-line calling the promise-toaster below...
             // ? return saveWithToaster(promise, "Message.Saving", "Message.Saved", "Message.ErrorWhileSaving", null, 3000, null);
@@ -3063,9 +3078,9 @@ angular.module("EavServices")
             }
 
             return saveWithToaster;
-    })
+    }])
 
-    .factory("promiseToastr", function (toastrWithHttpErrorHandling, $translate) {
+    .factory("promiseToastr", ["toastrWithHttpErrorHandling", "$translate", function (toastrWithHttpErrorHandling, $translate) {
         function saveWithToaster(promise, keyInfo, keyOk, keyError, durInfo, durOk, durError) {
             var toastr = toastrWithHttpErrorHandling;
             var saving = toastr.info($translate.instant(keyInfo));
@@ -3081,7 +3096,7 @@ angular.module("EavServices")
         }
 
         return saveWithToaster;
-    })
+    }])
 ;
 angular.module("eavTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("content-import-export/content-export.html","\r\n<div class=\"modal-header\">\r\n    <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" icon=\"remove\" ng-click=\"vm.close()\"></button>\r\n    <h3 class=\"modal-title\" translate=\"Content.Export.Title\">cc</h3>\r\n</div>\r\n\r\n<div class=\"modal-body\">\r\n    <div translate=\"Content.Export.Help\"></div>\r\n    <formly-form form=\"vm.form\" model=\"vm.formValues\" fields=\"vm.formFields\">\r\n    </formly-form>\r\n</div>\r\n\r\n<div class=\"modal-footer\">\r\n    <button type=\"button\" class=\"btn btn-primary pull-left\" ng-click=\"vm.exportContent()\" translate=\"Content.Export.Commands.Export\"></button>\r\n</div>");
 $templateCache.put("content-import-export/content-import.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <!-- HEADER -->\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" icon=\"remove\" ng-click=\"vm.close()\"></button>\r\n        <h3 class=\"modal-title\"><span  translate=\"Content.Import.Title\"></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=\"Content.Import.TitleSteps\" translate-values=\"{step: vm.viewStateSelected}\"></span></h3>\r\n    </div>\r\n    <!-- END HEADER -->\r\n\r\n    <div ng-switch=\"vm.viewStateSelected\">\r\n\r\n        <!-- FORM -->\r\n        <div ng-switch-when=\"1\">\r\n            <div class=\"modal-body\">\r\n                <div translate=\"Content.Import.Help\"></div>\r\n                <formly-form form=\"vm.form\" model=\"vm.formValues\" fields=\"vm.formFields\"></formly-form>\r\n                <div class=\"text-warning\" translate=\"Content.Import.Messages.BackupContentBefore\"></div>\r\n            </div>\r\n            <div class=\"modal-footer\">\r\n                <button type=\"button\" class=\"btn btn-primary pull-left\" ng-click=\"vm.evaluateContent()\" ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=\"Content.Import.Commands.Preview\"></button>\r\n            </div>\r\n        </div>\r\n        <!-- END FORM -->\r\n\r\n\r\n        <!-- WAITING -->\r\n        <div ng-switch-when=\"0\">\r\n            <div class=\"modal-body\"> {{\'Content.Import.Messages.WaitingForResponse\' | translate}}\r\n            </div>\r\n        </div>\r\n        <!-- END WAITING -->\r\n\r\n\r\n        <!-- EVALUATION RESULT -->\r\n        <div ng-switch-when=\"2\">\r\n            <div class=\"modal-body\">\r\n                <!-- DETAILS / STATISTICS -->\r\n                <div ng-if=\"vm.evaluationResult.Succeeded\">\r\n                    <h4 translate=\"Content.Import.Evaluation.Detail.Title\" translate-values=\"{filename: vm.formValues.File.filename}\"></h4>\r\n                    <h5 translate=\"Content.Import.Evaluation.Detail.File.Title\"></h5>\r\n                    <ul>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.ElementCount\" translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.LanguageCount\" translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.Attributes\" translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(\', \')}\"></li>\r\n                    </ul>\r\n                    <h5 translate=\"Content.Import.Evaluation.Detail.Entities.Title\"></h5>\r\n                    <ul>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Create\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Update\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Delete\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.AttributesIgnored\" translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(\', \')}\"></li>\r\n                    </ul>\r\n                    <div class=\"text-warning\" translate=\"Content.Import.Messages.ImportCanTakeSomeTime\"></div>\r\n                </div>\r\n                <!-- END DETAILS / STATISTICS -->\r\n                <!-- ERRORS -->\r\n                <div ng-if=\"!vm.evaluationResult.Succeeded\">\r\n                    <h4 translate=\"Content.Import.Evaluation.Error.Title\" translate-values=\"{filename: vm.formValues.File.filename}\"></h4>\r\n                    <ul>\r\n                        <li ng-repeat=\"error in vm.evaluationResult.Detail\">\r\n                            <div><span translate=\"Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}\"></span></div>\r\n                            <div ng-if=\"error.ErrorDetail\"><i translate=\"Content.Import.Evaluation.Error.Detail\" translate-values=\"{detail: error.ErrorDetail}\"></i>\r\n                            </div>\r\n                            <div ng-if=\"error.LineNumber\"><i translate=Content.Import.Evaluation.Error.LineNumber\" translate-values=\"{number: error.LineNumber}\"></i>\r\n                            </div>\r\n                            <div ng-if=\"error.LineDetail\"><i translate=\"Content.Import.Evaluation.Error.LineDetail\" translate-values=\"{detail: error.LineDetail}\"></i>\r\n                            </div>\r\n                        </li>\r\n                    </ul>\r\n                </div>\r\n                <!-- END ERRORS -->\r\n            </div>\r\n            <div class=\"modal-footer\">\r\n                <button type=\"button\" class=\"btn pull-left\" ng-click=\"vm.back()\" icon=\"arrow-left\"></button>\r\n                <button type=\"button\" class=\"btn btn-default pull-left\" ng-click=\"vm.importContent()\" translate=\"Content.Import.Commands.Import\" ng-disabled=\"!vm.evaluationResult.Succeeded\"></button>\r\n            </div>\r\n        </div>\r\n        <!-- END EVALUATION RESULT -->\r\n\r\n\r\n        <!-- IMPORT RESULT -->\r\n        <div ng-switch-when=\"3\">\r\n            <div class=\"modal-body\">\r\n                <span ng-show=\"vm.importResult.Succeeded\" translate=\"Content.Import.Messages.ImportSucceeded\"></span>\r\n                <span ng-hide=\"vm.importResult.Succeeded\" translate=\"Content.Import.Messages.ImportFailed\"></span>\r\n            </div>\r\n        </div>\r\n        <!-- END IMPORT RESULT -->\r\n\r\n        <div ng-if=\"vm.debug.on\">\r\n            <h3>Debug infos</h3>\r\n            <pre>{{vm.formValues | json}}</pre>\r\n        </div>\r\n    </div>\r\n</div>");
