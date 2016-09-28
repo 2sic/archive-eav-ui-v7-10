@@ -15,118 +15,14 @@ var gulp = require("gulp"),
         rootDist: "dist/" // "tmp-gulp/dist/"
     };
 
-// setup admin, exclude pipeline css (later also exclude pipeline js)
-var admin = createConfig("admin", "eavTemplates");
-admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
-
-// setup edit & extended
-var edit = createConfig("edit", "eavEditTemplates");
-
-// pipeline-designer (CSS only)
-var pDesigner = createConfig("admin", "");
-pDesigner.css.files = [admin.cwd + "**/pipeline*.css"];
-pDesigner.css.concat = "pipeline-designer.css";
-
-// extension: gps-field
-var editExtGps = createConfig("edit-extended");
-editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
-editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
-editExtGps.js.concat = "custom-gps.js";
-editExtGps.js.libs = [
-    "bower_components/lodash/dist/lodash.min.js",
-    "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
-    "bower_components/angular-simple-logger/dist/index.js"
-];
-editExtGps.js.autoSort = false;
-
-// part: i18n library
-var i18n = createConfig("i18n", undefined, config.rootDist + "lib/i18n/", "set.js", [
-	"bower_components/angular-translate/angular-translate.min.js",
-	"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
-]);
-i18n.js.autoSort = false;
-i18n.js.uglify = false;
-
-// part: ag-grid library
-var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.js", [
-    "bower_components/ag-grid/dist/ag-grid.min.js",
-]);
-agGrid.css.files = ["bower_components/ag-grid/dist/ag-grid.min.css"];
-agGrid.js.uglify = false;
-
-
-// part: jsPlumb
-var jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.js", [
-    "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
-]);
-jsPlumb.js.uglify = false;
-
-// lib Angular
-var libAng = createConfig("angular", undefined, config.rootDist + "lib/angular/", "set.js", [
-			// the basic files
-            "bower_components/angular/angular.min.js",
-			"bower_components/angular-resource/angular-resource.min.js",
-            "bower_components/angular-animate/angular-animate.min.js",
-            "bower_components/angular-sanitize/angular-sanitize.min.js", // currently testing, needed for ui-select, maybe will remove again
-            "bower_components/oclazyload/dist/oclazyload.min.js",
-
-			// visual effects etc.
-            "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
-            "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
-
-			// i18n files
-			"bower_components/angular-translate/angular-translate.min.js",
-			"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
-
-			// files used by formly and the general edit UI
-			"bower_components/api-check/dist/api-check.min.js",
-			"bower_components/angular-base64-upload/dist/angular-base64-upload.min.js",
-			"bower_components/angular-formly/dist/formly.min.js",
-			"bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js",
-            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.js",
-
-            // testing
-            "bower_components/angular-ui-select/dist/select.min.js",
-
-            // promise-window just to be sure we can use it till all old dialogs have been removed
-			// "bower_components/promise-window/dist/promise-window.min.js",
-
-            // dropzone for uploads
-            "bower_components/dropzone/dist/min/dropzone.min.js",
-
-            // switch for toggle-feature
-            "bower_components/angular-ui-switch/angular-ui-switch.min.js",
-]);
-libAng.css.files = [
-            "bower_components/bootstrap/dist/css/bootstrap.min.css",
-            "bower_components/bootflat-for-2sic/bootflat/css/bootflat.min.css",
-            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
-            "bower_components/angular-ui-switch/angular-ui-switch.min.css",
-
-            // toaster
-            "bower_components/angular-toastr/dist/angular-toastr.css",
-
-            // testing
-            "bower_components/angular-ui-select/dist/select.min.css",
-];
-libAng.js.autoSort = false;
-libAng.js.uglify = false;
-
 
 // register all watches & run them
-gulp.task("watch-all", function () {
-    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
-    gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, css));
-    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, js));
-    gulp.watch(edit.cwd + "**/*", createWatchCallback(edit, css));
+gulp.task("watch-our-code", function () {
+    watchSet(createSetsForOurCode());
+});
 
-    gulp.watch(pDesigner.files, createWatchCallback(pDesigner, css));
-
-    gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
-    gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
-    gulp.watch(agGrid.cwd + "**/*", createWatchCallback(agGrid, js));
-    gulp.watch(libAng.cwd + "**/*", createWatchCallback(libAng, js));
-    //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
+gulp.task("watch-libs", function() { 
+    watchSet(createSetsForLibs());
 });
 
 // test something - add your code here to test it
@@ -157,17 +53,21 @@ function createConfig(key, tmplSetName, altDistPath, altJsName, libFiles) {
         cwd: cwd,
         dist: altDistPath || config.rootDist + key + "/",
         css: {
+            run: true,
+            alsoRunMin: true,
             files: [cwd + "**/*.css"],
+            libs: [],
             concat: "eav-" + key + ".css"
         },
         js: {
+            run: true,
             files: [cwd + "**/*.js", "!" + cwd + "**/*spec.js", "!" + cwd + "**/tests/**"],
             libs: libFiles || [],
             concat: altJsName || "eav-" + key + ".js",
             templates: ["src/" + key + "/**/*.html"],
             templateSetName: tmplSetName,
             autoSort: true,
-            uglify: true
+            alsoRunMin: true
         }
     }
 }
@@ -208,14 +108,13 @@ function packageJs(set) {
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
         // 2016-09-07 2dm re-enabled it, seems to work now...
     // 2016-09-08 2rm had to disable it again, sourcmap generator throws an error
-    if (set.js.uglify)
+    if (set.js.alsoRunMin)
         result = result
                 //.pipe($.sourcemaps.init({ loadMaps: true }))
                 .pipe($.uglify())
                 .on("error", $.util.log)
             // .pipe($.sourcemaps.write("./"))
-            ;
-    result = result.pipe(gulp.dest(set.dist));
+            .pipe(gulp.dest(set.dist));
 
     if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));
 
@@ -227,22 +126,27 @@ function packageCss(set) {
     if (config.debug) console.log("css packaging start: " + set.name);
 
     var result = gulp.src(set.css.files)
-        .pipe($.sort())
+        .pipe($.sort());
         // lint the css - not enabled right now, too many fix-suggestions
         //.pipe($.csslint())
         //.pipe($.csslint.reporter())
+    var libs = gulp.src(set.css.libs);  // don't sort libs
+
+    result = merge(result, libs)
 
         // concat & save concat-only (for debugging)
         .pipe($.concat(set.css.concat))
-        .pipe(gulp.dest(set.dist))
-
-        // minify and save
-        .pipe($.rename({ extname: ".min.css" }))
-        .pipe($.sourcemaps.init())
-        .pipe($.cleanCss({ compatibility: "*", processImportFrom: ['!fonts.googleapis.com'] /* ie9 compatibility */ }))
-        .pipe($.sourcemaps.write("./"))
         .pipe(gulp.dest(set.dist));
-    ;
+
+    if(set.css.alsoRunMin)
+        result
+            // minify and save
+            .pipe($.rename({ extname: ".min.css" }))
+            .pipe($.sourcemaps.init())
+            .pipe($.cleanCss({ compatibility: "*", processImportFrom: ['!fonts.googleapis.com'] /* ie9 compatibility */ }))
+            .pipe($.sourcemaps.write("./"))
+            .pipe(gulp.dest(set.dist));
+        ;
     if (config.debug) console.log($.util.colors.cyan("css packaging done: " + set.name));
     return result;
 }
@@ -273,3 +177,137 @@ function createWatchCallback(set, part) {
 //#endregion
 
 
+
+/// create watch-sets for all our code blocks
+function createSetsForOurCode() {
+    var sets = [];
+    // setup admin, exclude pipeline css (later also exclude pipeline js)
+    var admin = createConfig("admin", "eavTemplates");
+    admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
+    sets.push(admin);
+
+    // setup edit & extended
+    var edit = createConfig("edit", "eavEditTemplates");
+    sets.push(edit);
+
+    // pipeline-designer (CSS only)
+    var pDesigner = createConfig("admin", "");
+    pDesigner.css.files = [admin.cwd + "**/pipeline*.css"];
+    pDesigner.css.concat = "pipeline-designer.css";
+    pDesigner.js.run = false;
+    sets.push(pDesigner);
+
+
+    // extension: gps-field
+    var editExtGps = createConfig("edit-extended");
+    editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
+    editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
+    editExtGps.js.concat = "custom-gps.js";
+    editExtGps.js.libs = [
+        "bower_components/lodash/dist/lodash.min.js",
+        "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
+        "bower_components/angular-simple-logger/dist/angular-simple-logger.js"
+    ];
+    editExtGps.js.autoSort = false;
+    editExtGps.css.run = false;
+    sets.push(editExtGps);
+
+    return sets;
+}
+
+
+/// assemble a list of packages to watch and build - for libraries
+function createSetsForLibs() {
+    var sets = [];
+
+    // part: i18n library
+    var i18n = createConfig("i18n", undefined, config.rootDist + "lib/i18n/", "set.min.js", [
+	    "bower_components/angular-translate/angular-translate.min.js",
+	    "bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
+    ]);
+    i18n.js.autoSort = false;
+    i18n.js.alsoRunMin = false;
+    i18n.css.run = false;
+    sets.push(i18n);
+
+    // part: ag-grid library
+    var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [
+        "bower_components/ag-grid/dist/ag-grid.min.js",
+    ]);
+    agGrid.css.libs = ["bower_components/ag-grid/dist/ag-grid.min.css"];
+    agGrid.css.concat = "ag-grid.min.css";
+    agGrid.css.alsoRunMin = false;
+    agGrid.js.alsoRunMin = false;
+    sets.push(agGrid);
+
+    // part: jsPlumb
+    var jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.min.js", [
+        "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
+    ]);
+    jsPlumb.js.alsoRunMin = false;
+    jsPlumb.css.run = false;
+    sets.push(jsPlumb);
+
+    // lib Angular
+    var libAng = createConfig("angular", undefined, config.rootDist + "lib/angular/", "set.min.js", [
+	    // the basic files
+        "bower_components/angular/angular.min.js",
+	    "bower_components/angular-resource/angular-resource.min.js",
+        "bower_components/angular-animate/angular-animate.min.js",
+        "bower_components/angular-sanitize/angular-sanitize.min.js", // currently testing, needed for ui-select, maybe will remove again
+        "bower_components/oclazyload/dist/oclazyload.min.js",
+
+	    // visual effects etc.
+        "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+        "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
+
+	    // i18n files
+	    "bower_components/angular-translate/angular-translate.min.js",
+	    "bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
+
+	    // files used by formly and the general edit UI
+	    "bower_components/api-check/dist/api-check.min.js",
+	    "bower_components/angular-base64-upload/dist/angular-base64-upload.min.js",
+	    "bower_components/angular-formly/dist/formly.min.js",
+	    "bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js",
+        "bower_components/angular-ui-tree/dist/angular-ui-tree.min.js",
+
+        // testing
+        "bower_components/angular-ui-select/dist/select.min.js",
+
+        // dropzone for uploads
+        "bower_components/dropzone/dist/min/dropzone.min.js",
+
+        // switch for toggle-feature
+        "bower_components/angular-ui-switch/angular-ui-switch.min.js",
+    ]);
+    libAng.css.libs = [
+        "bower_components/bootstrap/dist/css/bootstrap.min.css",
+        "bower_components/bootflat-for-2sic/bootflat/css/bootflat.min.css",
+        "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
+        "bower_components/angular-ui-switch/angular-ui-switch.min.css",
+
+        // toaster
+        "bower_components/angular-toastr/dist/angular-toastr.css",
+
+        // testing
+        "bower_components/angular-ui-select/dist/select.min.css",
+    ];
+    libAng.css.concat = "set.min.css";
+    libAng.css.alsoRunMin = false;
+    libAng.js.autoSort = false;
+    libAng.js.alsoRunMin = false;
+    sets.push(libAng);
+
+    return sets;
+}
+
+/// let gulp watch a series of packs
+function watchSet(setList) {
+    for (var i = 0; i < setList.length; i++) {
+        var x = setList[i];
+        if (x.js.run) gulp.watch(x.cwd + "**/*", createWatchCallback(x, js));
+        if (x.css.run)
+            gulp.watch(x.cwd + "**/*", createWatchCallback(x, css));
+    }
+}
