@@ -16,7 +16,7 @@
     });
     app.config(function (uiGmapGoogleMapApiProvider) {
         uiGmapGoogleMapApiProvider.configure({
-            //    key: 'your api key',
+            key: 'AIzaSyDPhnNKpEg8FmY8nooE7Zwnue6SusxEnHE',
             //v: '3.20', //defaults to latest 3.X anyhow
             //libraries: 'weather,geometry,visualization'
         });
