@@ -54,8 +54,14 @@ var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/"
 agGrid.css.files = ["bower_components/ag-grid/dist/ag-grid.min.css"];
 agGrid.js.uglify = false;
 
-gulp.task("test-agGrid", function() {
-    gulp.watch(agGrid.cwd + "**/*", createWatchCallback(agGrid, js));
+// part: jsPlumb
+var jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.js", [
+    "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
+]);
+jsPlumb.js.uglify = false;
+
+gulp.task("test-jsPlumb", function() {
+    gulp.watch(jsPlumb.cwd + "**/*", createWatchCallback(jsPlumb, js));
 });
 
 // register all watches & run them
