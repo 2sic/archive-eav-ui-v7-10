@@ -40,18 +40,22 @@ editExtGps.js.libs = [
 editExtGps.js.autoSort = false;
 
 // part: i18n library
-var i18n = createConfig("i18n");
-i18n.dist = i18n.dist = config.rootDist + "lib/i18n/";
-i18n.js.concat = "set.js";
-i18n.js.libs = [
+var i18n = createConfig("i18n", undefined, config.rootDist + "lib/i18n/", "set.js", [
 	"bower_components/angular-translate/angular-translate.min.js",
 	"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
-];
+]);
 i18n.js.autoSort = false;
 i18n.js.uglify = false;
 
-gulp.task("test-i18n", function() {
-    gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
+// part: ag-grid library
+var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.js", [
+    "bower_components/ag-grid/dist/ag-grid.min.js",
+]);
+agGrid.css.files = ["bower_components/ag-grid/dist/ag-grid.min.css"];
+agGrid.js.uglify = false;
+
+gulp.task("test-agGrid", function() {
+    gulp.watch(agGrid.cwd + "**/*", createWatchCallback(agGrid, js));
 });
 
 // register all watches & run them
@@ -65,6 +69,7 @@ gulp.task("watch-all", function () {
 
     gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
     gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
+    gulp.watch(agGrid.cwd + "**/*", createWatchCallback(agGrid, js));
     //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
 });
 
@@ -89,20 +94,20 @@ gulp.task("watch-publish-dist-to-2sxc", function() {
 });
 
 //#region basic functions I'll need a lot
-function createConfig(key, tmplSetName) {
+function createConfig(key, tmplSetName, altDistPath, altJsName, libFiles) {
     var cwd = "src/" + key + "/";
     return {
         name: key,
         cwd: cwd,
-        dist: config.rootDist + key + "/",
+        dist: altDistPath || config.rootDist + key + "/",
         css: {
             files: [cwd + "**/*.css"],
             concat: "eav-" + key + ".css"
         },
         js: {
             files: [cwd + "**/*.js", "!" + cwd + "**/*spec.js", "!" + cwd + "**/tests/**"],
-            libs: [],
-            concat: "eav-" + key + ".js",
+            libs: libFiles || [],
+            concat: altJsName || "eav-" + key + ".js",
             templates: ["src/" + key + "/**/*.html"],
             templateSetName: tmplSetName,
             autoSort: true,

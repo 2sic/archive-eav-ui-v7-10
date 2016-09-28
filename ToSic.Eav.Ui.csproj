@@ -152,7 +152,6 @@
     <Content Include="gulpfile.js" />
     <Content Include="js-for-testing\eav4ng.js" />
     <Content Include="js-for-testing\lazy-load-ag-grid-for-angular.js" />
-    <Content Include="grunt-tasks\ag-grid\gruntfile.js" />
     <Content Include="grunt-tasks\icons\gruntfile.js" />
     <Content Include="grunt-tasks\import-languages\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
