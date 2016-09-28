@@ -1,7 +1,7 @@
 
 // contains all the grunt config for importing languages
 
-module.exports = function (grunt) {
+module.exportsDisabled = function (grunt) {
 
     grunt.config.merge({
         languagePacks: {
