@@ -194,7 +194,6 @@
     <Content Include="src\admin\services\metadata.js" />
     <Content Include="src\admin\services\debugState.js" />
     <Content Include="src\edit-extended\fields\custom-gps\custom-gps.css" />
-    <Content Include="grunt-tasks\edit-extended-custom-gps\gruntfile.js" />
     <Content Include="src\edit\custom-fields\eav-custom-fields.js" />
     <Content Include="src\edit\eav-edit.css" />
     <Content Include="src\edit\fields\boolean\boolean-default.css" />

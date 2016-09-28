@@ -33,10 +33,11 @@ editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/field
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
 editExtGps.js.concat = "custom-gps.js";
 editExtGps.js.libs = [
-    "bower_components/lodash/lodash.min.js",
+    "bower_components/lodash/dist/lodash.min.js",
     "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
     "bower_components/angular-simple-logger/dist/index.js"
 ];
+editExtGps.js.autoSort = false;
 
 // register all watches & run them
 gulp.task("watch-all", function () {
@@ -87,7 +88,8 @@ function createConfig(key, tmplSetName) {
             libs: [],
             concat: "eav-" + key + ".js",
             templates: ["src/" + key + "/**/*.html"],
-            templateSetName: tmplSetName
+            templateSetName: tmplSetName,
+            autoSort: true
         }
     }
 }
@@ -96,13 +98,13 @@ function createConfig(key, tmplSetName) {
 function packageJs(set) {
     if (config.debug) console.log("bundling start: " + set.name);
 
-    var js = gulp.src(set.js.files)
-        .pipe($.sort())
-        .pipe($.jshint(jshintConfig))
-        .pipe($.jshint.reporter('jshint-stylish'))
+    var js = gulp.src(set.js.files);
+    if (set.autoSort)
+        js = js.pipe($.sort());
+    js.pipe($.jshint(jshintConfig))
+        .pipe($.jshint.reporter("jshint-stylish"))
         //.pipe($.jshint.reporter('fail'))
-        .pipe($.ngAnnotate())
-    ;
+        .pipe($.ngAnnotate());
 
     var tmpl = set.js.templates ? gulp.src(set.js.templates)
         .pipe($.sort())
@@ -114,11 +116,15 @@ function packageJs(set) {
 
     var libs = gulp.src(set.js.libs);
 
-    var prelib = merge(js, tmpl).pipe($.sort());
+    var prelib = merge(js, tmpl);
+    if (set.autoSort)
+        prelib = prelib.pipe($.sort());
 
-    var result = merge(libs, prelib)
-        .pipe($.sort())
-        .pipe($.concat(set.js.concat))
+    var result = merge(libs, prelib);
+    if (set.autoSort)
+        result = result.pipe($.sort());
+
+    result.pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
         .pipe($.rename({ extname: ".min.js" }))
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
