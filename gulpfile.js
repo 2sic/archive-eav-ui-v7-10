@@ -99,7 +99,7 @@ function packageJs(set) {
     if (config.debug) console.log("bundling start: " + set.name);
 
     var js = gulp.src(set.js.files);
-    if (set.autoSort)
+    if (set.js.autoSort)
         js = js.pipe($.sort());
     js.pipe($.jshint(jshintConfig))
         .pipe($.jshint.reporter("jshint-stylish"))
@@ -117,11 +117,11 @@ function packageJs(set) {
     var libs = gulp.src(set.js.libs);
 
     var prelib = merge(js, tmpl);
-    if (set.autoSort)
+    if (set.js.autoSort)
         prelib = prelib.pipe($.sort());
 
     var result = merge(libs, prelib);
-    if (set.autoSort)
+    if (set.js.autoSort)
         result = result.pipe($.sort());
 
     result.pipe($.concat(set.js.concat))
