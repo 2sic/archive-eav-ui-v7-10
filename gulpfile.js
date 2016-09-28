@@ -54,14 +54,67 @@ var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/"
 agGrid.css.files = ["bower_components/ag-grid/dist/ag-grid.min.css"];
 agGrid.js.uglify = false;
 
+
 // part: jsPlumb
 var jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.js", [
     "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
 ]);
 jsPlumb.js.uglify = false;
 
-gulp.task("test-jsPlumb", function() {
-    gulp.watch(jsPlumb.cwd + "**/*", createWatchCallback(jsPlumb, js));
+// lib Angular
+var libAng = createConfig("angular", undefined, config.rootDist + "lib/angular/", "set.js", [
+			// the basic files
+            "bower_components/angular/angular.min.js",
+			"bower_components/angular-resource/angular-resource.min.js",
+            "bower_components/angular-animate/angular-animate.min.js",
+            "bower_components/angular-sanitize/angular-sanitize.min.js", // currently testing, needed for ui-select, maybe will remove again
+            "bower_components/oclazyload/dist/oclazyload.min.js",
+
+			// visual effects etc.
+            "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+            "bower_components/angular-toastr/dist/angular-toastr.tpls.min.js",
+
+			// i18n files
+			"bower_components/angular-translate/angular-translate.min.js",
+			"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
+
+			// files used by formly and the general edit UI
+			"bower_components/api-check/dist/api-check.min.js",
+			"bower_components/angular-base64-upload/dist/angular-base64-upload.min.js",
+			"bower_components/angular-formly/dist/formly.min.js",
+			"bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js",
+            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.js",
+
+            // testing
+            "bower_components/angular-ui-select/dist/select.min.js",
+
+            // promise-window just to be sure we can use it till all old dialogs have been removed
+			// "bower_components/promise-window/dist/promise-window.min.js",
+
+            // dropzone for uploads
+            "bower_components/dropzone/dist/min/dropzone.min.js",
+
+            // switch for toggle-feature
+            "bower_components/angular-ui-switch/angular-ui-switch.min.js",
+]);
+libAng.css.files = [
+            "bower_components/bootstrap/dist/css/bootstrap.min.css",
+            "bower_components/bootflat-for-2sic/bootflat/css/bootflat.min.css",
+            "bower_components/angular-ui-tree/dist/angular-ui-tree.min.css",
+            "bower_components/angular-ui-switch/angular-ui-switch.min.css",
+
+            // toaster
+            "bower_components/angular-toastr/dist/angular-toastr.css",
+
+            // testing
+            "bower_components/angular-ui-select/dist/select.min.css",
+];
+libAng.js.autoSort = false;
+libAng.js.uglify = false;
+
+
+gulp.task("test-libAng", function() {
+    gulp.watch(libAng.cwd + "**/*", createWatchCallback(libAng, js));
 });
 
 // register all watches & run them
