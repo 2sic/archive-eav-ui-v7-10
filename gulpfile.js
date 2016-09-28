@@ -209,6 +209,7 @@ function createSetsForOurCode() {
         "bower_components/angular-simple-logger/dist/angular-simple-logger.js"
     ];
     editExtGps.js.autoSort = false;
+    editExtGps.js.templateSetName = "customGpsTemplates"; // probably not relevant, but not sure
     editExtGps.css.run = false;
     sets.push(editExtGps);
 
