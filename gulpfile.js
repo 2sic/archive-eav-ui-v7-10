@@ -113,10 +113,6 @@ libAng.js.autoSort = false;
 libAng.js.uglify = false;
 
 
-gulp.task("test-libAng", function() {
-    gulp.watch(libAng.cwd + "**/*", createWatchCallback(libAng, js));
-});
-
 // register all watches & run them
 gulp.task("watch-all", function () {
     gulp.watch(admin.cwd + "**/*", createWatchCallback(admin, js));
@@ -129,6 +125,7 @@ gulp.task("watch-all", function () {
     gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
     gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
     gulp.watch(agGrid.cwd + "**/*", createWatchCallback(agGrid, js));
+    gulp.watch(libAng.cwd + "**/*", createWatchCallback(libAng, js));
     //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
 });
 

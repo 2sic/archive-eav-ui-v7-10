@@ -308,7 +308,6 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="Pages\ngwrapper.cshtml" />
-    <Content Include="grunt-tasks\angular-set\gruntfile.js" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">
