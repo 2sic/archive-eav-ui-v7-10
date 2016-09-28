@@ -21,7 +21,6 @@ admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
 
 // setup edit & extended
 var edit = createConfig("edit", "eavEditTemplates");
-var editExtGps = createConfig("edit-extended");
 
 // pipeline-designer (CSS only)
 var pDesigner = createConfig("admin", "");
@@ -29,6 +28,7 @@ pDesigner.css.files = [admin.cwd + "**/pipeline*.css"];
 pDesigner.css.concat = "pipeline-designer.css";
 
 // extension: gps-field
+var editExtGps = createConfig("edit-extended");
 editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
 editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
 editExtGps.js.concat = "custom-gps.js";
@@ -38,6 +38,21 @@ editExtGps.js.libs = [
     "bower_components/angular-simple-logger/dist/index.js"
 ];
 editExtGps.js.autoSort = false;
+
+// part: i18n library
+var i18n = createConfig("i18n");
+i18n.dist = i18n.dist = config.rootDist + "lib/i18n/";
+i18n.js.concat = "set.js";
+i18n.js.libs = [
+	"bower_components/angular-translate/angular-translate.min.js",
+	"bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
+];
+i18n.js.autoSort = false;
+i18n.js.uglify = false;
+
+gulp.task("test-i18n", function() {
+    gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
+});
 
 // register all watches & run them
 gulp.task("watch-all", function () {
@@ -49,6 +64,7 @@ gulp.task("watch-all", function () {
     gulp.watch(pDesigner.files, createWatchCallback(pDesigner, css));
 
     gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, js));
+    gulp.watch(i18n.cwd + "**/*", createWatchCallback(i18n, js));
     //no css yet: gulp.watch(editExtGps.cwd + "**/*", createWatchCallback(editExtGps, css));
 });
 
@@ -89,7 +105,8 @@ function createConfig(key, tmplSetName) {
             concat: "eav-" + key + ".js",
             templates: ["src/" + key + "/**/*.html"],
             templateSetName: tmplSetName,
-            autoSort: true
+            autoSort: true,
+            uglify: true
         }
     }
 }
@@ -101,7 +118,7 @@ function packageJs(set) {
     var js = gulp.src(set.js.files);
     if (set.js.autoSort)
         js = js.pipe($.sort());
-    js.pipe($.jshint(jshintConfig))
+    js = js.pipe($.jshint(jshintConfig))
         .pipe($.jshint.reporter("jshint-stylish"))
         //.pipe($.jshint.reporter('fail'))
         .pipe($.ngAnnotate());
@@ -124,17 +141,20 @@ function packageJs(set) {
     if (set.js.autoSort)
         result = result.pipe($.sort());
 
-    result.pipe($.concat(set.js.concat))
+    result = result.pipe($.concat(set.js.concat))
         .pipe(gulp.dest(set.dist))
-        .pipe($.rename({ extname: ".min.js" }))
+        .pipe($.rename({ extname: ".min.js" }));
         // 2016-04-23 2dm had to disable source-maps for now, something is buggy inside
         // 2016-09-07 2dm re-enabled it, seems to work now...
-        // 2016-09-08 2rm had to disable it again, sourcmap generator throws an error
-        //.pipe($.sourcemaps.init({ loadMaps: true }))
-            .pipe($.uglify())
-            .on("error", $.util.log)
-        // .pipe($.sourcemaps.write("./"))
-        .pipe(gulp.dest(set.dist));
+    // 2016-09-08 2rm had to disable it again, sourcmap generator throws an error
+    if (set.js.uglify)
+        result = result
+                //.pipe($.sourcemaps.init({ loadMaps: true }))
+                .pipe($.uglify())
+                .on("error", $.util.log)
+            // .pipe($.sourcemaps.write("./"))
+            ;
+    result = result.pipe(gulp.dest(set.dist));
 
     if (config.debug) console.log($.util.colors.cyan("bundling done: " + set.name));
 

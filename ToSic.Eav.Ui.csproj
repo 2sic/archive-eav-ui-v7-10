@@ -156,7 +156,6 @@
     <Content Include="grunt-tasks\icons\gruntfile.js" />
     <Content Include="grunt-tasks\import-languages\gruntfile.js" />
     <Content Include="grunt-tasks\jsplumb-clean\gruntfile.js" />
-    <Content Include="grunt-tasks\i18n\gruntfile.js" />
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
     <None Include="src\admin\app-icons-codes.css-dont-use" />
