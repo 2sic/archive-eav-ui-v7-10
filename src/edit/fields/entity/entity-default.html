@@ -51,6 +51,7 @@
                     <ui-select theme="bootstrap"
                                ng-model="selectedEntity"
                                on-highlight="maybeReload()"
+                               ng-required="false"
                                on-select="addEntity($select.selected.Value)" ui-select-on-open="alertTest()">
                         <ui-select-match placeholder="{{ $select.open ? 'search' : 'FieldType.Entity.Choose' | translate }}">
                             <!--<div ng-bind="$select.selected.Text"></div>-->
