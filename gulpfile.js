@@ -219,6 +219,8 @@ function createSetsForOurCode() {
 
 /// assemble a list of packages to watch and build - for libraries
 function createSetsForLibs() {
+    // todo sometime: add libs again - removed grunt in commit 2016-10-08 which contained thepaths etc.
+
     var sets = [];
 
     // part: i18n library

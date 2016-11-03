@@ -152,7 +152,6 @@
     <Content Include="gulpfile.js" />
     <Content Include="js-for-testing\eav4ng.js" />
     <Content Include="js-for-testing\lazy-load-ag-grid-for-angular.js" />
-    <Content Include="grunt-tasks\icons\gruntfile.js" />
     <Content Include="index.html" />
     <Content Include="src\admin\ag-grid.css" />
     <None Include="src\admin\app-icons-codes.css-dont-use" />
@@ -258,7 +257,6 @@
     <Content Include="src\edit\services\defaultvalue-service.js" />
     <Content Include="src\edit\ml-entities\specs\eav-content-ml.spec.js" />
     <Content Include="src\edit\ml-entities\tests\SpecRunner.html" />
-    <Content Include="gruntfile.js" />
     <Content Include="bower.json" />
     <Content Include="js-for-testing\eav-configuration.js" />
     <Content Include="Global.asax" />
