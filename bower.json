@@ -7,8 +7,8 @@
     "angular-resource": "1.5.8",
     "angular-sanitize": "1.5.8",
     "ocLazyLoad": "1.0.9",
-    "angular-translate": "2.12.1",
-    "angular-translate-loader-partial": "2.12.1",
+    "angular-translate": "2.13.0",
+    "angular-translate-loader-partial": "2.13.0",
     "angular-formly": "8.4.0",
     "angular-formly-templates-bootstrap": "6.3.2",
     "angular-bootstrap": "2.1.4",
@@ -34,7 +34,6 @@
   "private": true,
   "resolutions": {
     "angular": ">=1.4 <1.6",
-    "angular-simple-logger": "0.1.7",
-    "angular-translate": "~2.7.2"
+    "angular-simple-logger": "0.1.7"
   }
 }
