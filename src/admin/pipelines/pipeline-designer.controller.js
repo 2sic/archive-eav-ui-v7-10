@@ -150,7 +150,7 @@
                                 id: "endpointLabel",
                                 location: [0.5, isSource ? -0.5 : 1.5],
                                 label: "Default",
-                                cssClass: isSource ? "endpointSourceLabel" : "endpointTargetLabel",
+                                cssClass: "noselect " + (isSource ? "endpointSourceLabel" : "endpointTargetLabel"),
                                 events: {
                                     dblclick: function(labelOverlay) {
                                         if ($scope.readOnly) return;

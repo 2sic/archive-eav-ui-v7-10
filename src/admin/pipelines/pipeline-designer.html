@@ -10,8 +10,8 @@
                 <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" ng-if="!dataSource.ReadOnly">
                     <span class="glyphicon glyphicon-list-alt"></span>
                 </div>
-                <div class="name" title="Click to edit the Name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br />
-                <div class="description" title="Click to edit the Description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br />
+                <div class="name noselect" title="Click to edit the Name" ng-click="editName(dataSource)">{{dataSource.Name || '(unnamed)'}}</div><br />
+                <div class="description noselect" title="Click to edit the Description" ng-click="editDescription(dataSource)">{{dataSource.Description || '(no description)'}}</div><br />
                 <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
                 <div class="ep" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
                     <span class="glyphicon glyphicon-plus-sign"></span>
