@@ -11,8 +11,15 @@ angular.module("eavFieldTemplates")
             templateUrl: "fields/datetime/datetime-default.html",
             defaultOptions: {
                 templateOptions: {
-                    datepickerOptions: {},
-                    datepickerPopup: "dd.MM.yyyy" // todo check - might need rename with #955
+                    datepickerOptions: {
+                        startingDay: 1
+                    },
+                    datepickerPopup: {
+                        format: "dd.MM.yyyy",
+                        clearText: "ClearTest",
+                        closeText: "DoneTest",
+                        currentText: "TodayTest"
+                    }
                 }
             },
             link: function (scope, el, attrs) {
