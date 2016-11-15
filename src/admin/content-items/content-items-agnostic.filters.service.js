@@ -2,11 +2,11 @@
     'use strict';
 
     angular.module("ContentItemsAppAgnostic")
-        .factory("agGridFilters", function($2sxc) {
+        .factory("agGridFilters", function() {
             return {
-                get: function () {
+                get: function() {
                     if (!window.$2sxc) return {};
-                    var urlFilters = $2sxc.urlParams.get("filters"), filters = null;
+                    var urlFilters = window.$2sxc.urlParams.get("filters"), filters = null;
                     if (!urlFilters) return {};
                     try {
                         filters = JSON.parse(urlFilters);
@@ -38,6 +38,6 @@
                     //    ImageFormat: "w"
                     //}
                 }
-            }
+            };
         });
 }());

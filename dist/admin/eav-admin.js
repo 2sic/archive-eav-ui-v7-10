@@ -671,11 +671,11 @@
     'use strict';
 
     angular.module("ContentItemsAppAgnostic")
-        .factory("agGridFilters", ["$2sxc", function($2sxc) {
+        .factory("agGridFilters", function() {
             return {
-                get: function () {
+                get: function() {
                     if (!window.$2sxc) return {};
-                    var urlFilters = $2sxc.urlParams.get("filters"), filters = null;
+                    var urlFilters = window.$2sxc.urlParams.get("filters"), filters = null;
                     if (!urlFilters) return {};
                     try {
                         filters = JSON.parse(urlFilters);
@@ -707,8 +707,8 @@
                     //    ImageFormat: "w"
                     //}
                 }
-            }
-        }]);
+            };
+        });
 }());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
