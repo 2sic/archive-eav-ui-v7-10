@@ -12,10 +12,18 @@ angular.module("eavFieldTemplates")
             defaultOptions: {
                 templateOptions: {
                     datepickerOptions: {},
-                    datepickerPopup: "dd.MM.yyyy" // todo check - might need rename with #955
+                    datepickerPopup: {
+                        clearText: "ClearTest",
+                        closeText: "DoneTest",
+                        currentText: "TodayTest"
+                    }
                 }
             },
+            controller: ['$scope', '$locale', function($scope, $locale) {
+                $scope.format = $locale.DATETIME_FORMATS.mediumDate;
+            }],
             link: function (scope, el, attrs) {
+
                 // Server delivers value as string, so convert it to UTC date
                 scope.$watch('value', function (value) {
                     if (value && value.Value && !(value.Value instanceof Date)) {

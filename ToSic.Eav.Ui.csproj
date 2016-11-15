@@ -197,6 +197,7 @@
     <Content Include="src\edit-extended\fields\custom-gps\custom-gps.js" />
     <Content Include="src\edit\fields\custom\custom-default.html" />
     <Content Include="src\edit\fields\custom\custom-default.js" />
+    <Content Include="src\edit\fields\datetime\datetime-default.css" />
     <Content Include="src\edit\fields\datetime\datetime-default.html" />
     <Content Include="src\edit\fields\empty\empty-default.js" />
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
