@@ -1,9 +1,9 @@
 ﻿<div>
     <div class="input-group" style="width: 100%">
-        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" uib-datepicker-popup="{{to.datepickerPopup.format}}" close-text="{{to.datepickerPopup.closeText}}" clear-text="{{to.datepickerPopup.clearText}}" current-text="{{to.datepickerPopup.currentText}}" datepicker-options="to.datepickerOptions" />
+        <input class="form-control input-lg" ng-model="value.Value" is-open="to.isOpen" uib-datepicker-popup="{{format}}" close-text="{{to.datepickerPopup.closeText}}" clear-text="{{to.datepickerPopup.clearText}}" current-text="{{to.datepickerPopup.currentText}}" datepicker-options="to.datepickerOptions" />
 
         <span class="input-group-btn" style="vertical-align: top;">
-            <button type="button" class="btn btn-default icon-eav-field-button pull-right"
+            <button type="button" class="btn btn-default icon-eav-field-button pull-right icon-field-button icon-field-button-calendar"
                     ng-disabled="to.disabled"
                     ng-click="to.isOpen = true;">
                 <i class="icon-eav-calendar"></i>
