@@ -10,7 +10,7 @@
         .controller("ContentItemsList", contentItemsListController)
 	;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc) {
+	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
 		/* jshint validthis:true */
 		var vm = angular.extend(this, {
 			debug: debugState,
@@ -26,7 +26,8 @@
 			refresh: setRowData,
 			tryToDelete: tryToDelete,
 			openDuplicate: openDuplicate,
-			close: close
+			close: close,
+            debugFilter: showFilter
 		});
 		var svc;
 
@@ -45,7 +46,7 @@
 				field: "IsPublished",
 				width: 75,
 				suppressSorting: true,
-				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.Published ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.Draft ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip-append-to-body="true" uib-tooltip="{{ (data.Draft ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.Draft.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
+				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.PublishedEntity ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.DraftEntity ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip-append-to-body="true" uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
@@ -86,9 +87,19 @@
 					var bodyWidth = vm.gridOptions.api.gridPanel.eBodyContainer.clientWidth;
 					var viewportWidth = vm.gridOptions.api.gridPanel.eBodyViewport.clientWidth;
 					if (bodyWidth < viewportWidth)
-						setModalWidth(bodyWidth);
+					    setModalWidth(bodyWidth);
+
+				    // try to apply some initial filters...
+					var filterModel = agGridFilters.get();//
+					vm.gridOptions.api.setFilterModel(filterModel);
 				});
 		}
+
+        function showFilter() {
+            var savedModel = vm.gridOptions.api.getFilterModel();
+            console.log("current filter: ", savedModel);
+            alert('check console for filter information');
+        }
 
 		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
 		// $uibModalStack.getTop() might get a wrong modal Instance
@@ -110,7 +121,7 @@
 		// Get/Update Grid Row-Data
 		function setRowData() {
 			var sortModel = {};
-			var filterModel = {};
+		    var filterModel = {};
 			if (vm.gridOptions.api) {
 				sortModel = vm.gridOptions.api.getSortModel();
 				filterModel = vm.gridOptions.api.getFilterModel();

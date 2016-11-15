@@ -6,6 +6,7 @@
     <div class="modal-body">
         <button type="button" class="btn btn-primary btn-square" ng-click="vm.add()"><i icon="plus"></i></button>
 	    <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
+        <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.debugFilter()"><i icon="filter"></i></button>
 
 		<div ag-grid="vm.gridOptions" class="ag-grid-wrapper"></div>
 	    
