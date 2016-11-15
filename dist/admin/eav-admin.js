@@ -700,6 +700,13 @@
                         delete filters.IsMetadata;
                     }
 
+                    // catch simple number filters, convert into ag-grid format
+                    for (var field in filters)
+                        if (filters.hasOwnProperty(field) && typeof filters[field] === "number")
+                            filters[field] = { filter: filters[field], type: 1 };
+                        
+                    
+
                     console.log("will try to apply filter: ", filters);
                     return filters;
                     //{
