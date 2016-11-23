@@ -11,16 +11,16 @@ angular.module("eavFieldTemplates")
             templateUrl: "fields/datetime/datetime-default.html",
             defaultOptions: {
                 templateOptions: {
-                    datepickerOptions: {},
-                    datepickerPopup: {
-                        clearText: "ClearTest",
-                        closeText: "DoneTest",
-                        currentText: "TodayTest"
-                    }
+                    datepickerOptions: {}
                 }
             },
-            controller: ['$scope', '$locale', function($scope, $locale) {
+            controller: ['$scope', '$locale', '$translate', function($scope, $locale, $translate) {
                 $scope.format = $locale.DATETIME_FORMATS.mediumDate;
+                $scope.datepickerPopup = {
+                    clearText: $translate.instant("CalendarPopup.ClearButton"),
+                    closeText: $translate.instant("CalendarPopup.CloseButton"),
+                    currentText: $translate.instant("CalendarPopup.CurrentButton")
+                };
             }],
             link: function (scope, el, attrs) {
 
