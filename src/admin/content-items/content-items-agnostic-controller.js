@@ -52,8 +52,7 @@
 
                     + ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
                     + 'tooltip-append-to-body="true" '
-                    + 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
-                + '<span>xy{{data.DraftEntity.RepositoryId}}</span>',
+                    + 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
