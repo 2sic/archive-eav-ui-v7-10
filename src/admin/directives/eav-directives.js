@@ -25,11 +25,11 @@ angular.module("EavDirectives", [])
             }
         };
     })
-    .directive('showDebugAvailability', function() {
+    .directive('showDebugAvailability', function (eavConfig) {
         return {
             restrict: 'E',
-            template: "<span class=\"low-priority\" uib-tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }}\">"
-                + "&pi;" // "<i icon=\"sunglasses\"></i>"
+            template: "<span class=\"low-priority\" uib-tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }} \n" + eavConfig.versionInfo + "\">"
+                + "&pi;"
                 + "</span><br/>"
         };
     })

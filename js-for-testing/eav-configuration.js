@@ -116,6 +116,8 @@ angular.module("EavConfiguration", [])
             metadataOfApp: 3,
             metadataOfCmsObject: 10,
 
+            versionInfo: "unknown",
+
             contentType: {
                 defaultScope: "2SexyContent" // null 
             },
