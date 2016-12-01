@@ -44,7 +44,7 @@
 			{
 				headerName: "Status",
 				field: "IsPublished",
-				width: 750,
+				width: 75,
 				suppressSorting: true,
 				template: '<span class="glyphicon" '
                     + 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
