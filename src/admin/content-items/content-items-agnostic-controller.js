@@ -44,9 +44,16 @@
 			{
 				headerName: "Status",
 				field: "IsPublished",
-				width: 75,
+				width: 750,
 				suppressSorting: true,
-				template: '<span class="glyphicon" ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.PublishedEntity ? \'DoP\' : \'D\') | translate }}"></span> <span icon="{{ data.DraftEntity ? \'link\' : data.Published ? \'link\' : \'\' }}" tooltip-append-to-body="true" uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId}\' }}\n{{ (data.Published ? \'Content.Publish.HP\' :\'\') | translate }} #{{ data.Published.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
+				template: '<span class="glyphicon" '
+                    + 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
+                    + 'tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.IsPublishedEntity ? \'DoP\' : \'D\') | translate }}"></span>'
+
+                    + ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
+                    + 'tooltip-append-to-body="true" '
+                    + 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>'
+                + '<span>xy{{data.DraftEntity.RepositoryId}}</span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
