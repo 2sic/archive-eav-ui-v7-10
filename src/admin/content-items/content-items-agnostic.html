@@ -5,6 +5,12 @@
     </div>
     <div class="modal-body">
         <button type="button" class="btn btn-primary btn-square" ng-click="vm.add()"><i icon="plus"></i></button>
+        <button type="button"
+                class="btn btn-default btn-square"
+                uib-tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}"
+                ng-click="vm.openExport()">
+            <i icon="export"></i>
+        </button>
 	    <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
         <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.debugFilter()"><i icon="filter"></i></button>
 

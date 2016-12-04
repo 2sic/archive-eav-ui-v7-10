@@ -24,6 +24,7 @@
 			},
 			add: add,
 			refresh: setRowData,
+            openExport: openExport,
 			tryToDelete: tryToDelete,
 			openDuplicate: openDuplicate,
 			close: close,
@@ -119,6 +120,10 @@
 		function add() {
 			eavAdminDialogs.openItemNew(contentType, setRowData);
 		}
+
+        function openExport() {
+            return eavAdminDialogs.openContentExport(appId, contentType, vm.refresh);
+        }
 
 		function openEditDialog(params) {
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
