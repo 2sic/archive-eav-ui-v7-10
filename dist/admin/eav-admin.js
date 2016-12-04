@@ -10,15 +10,19 @@
 }());
 (function () {
 
-    contentExportController.$inject = ["appId", "contentType", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$uibModalInstance", "$filter", "$translate"];
+    contentExportController.$inject = ["appId", "contentType", "itemIds", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$uibModalInstance", "$filter", "$translate"];
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
-    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
+    function contentExportController(appId, contentType, itemIds, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
 
         var vm = this;
 
         vm.formValues = {};
+
+        // check if we were given some IDs to export only that
+        var hasIdList = (Array.isArray(itemIds) && itemIds.length > 0);
+        var cSelection = "Selection";
 
         vm.formFields = [{
             // Content type
@@ -59,16 +63,22 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.RecordExport.Label' | translate",
                 "templateOptions.options": function () {
-                    return [{
+                    var opts = [{
                         "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Blank"),
                         "value": "Blank"
                     }, {
                         "name": $translate.instant("Content.Export.Fields.RecordExport.Options.All"),
                         "value": "All"
                     }];
+                    if (hasIdList)
+                        opts.push({
+                            "name": "todo: selected " + itemIds.length + " items",
+                            "value": cSelection
+                        });
+                    return opts;
                 }
             },
-            defaultValue: "All"
+            defaultValue: hasIdList ? cSelection : "All"
         }, {
             // Language references
             key: "LanguageReferences",
@@ -76,7 +86,7 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.LanguageReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport == "Blank";
+                    return vm.formValues.RecordExport === "Blank";
                 },
                 "templateOptions.options": function () {
                     return [{
@@ -96,7 +106,7 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport == "Blank";
+                    return vm.formValues.RecordExport === "Blank";
                 },
                 "templateOptions.options": function () {
                     return [{
@@ -113,7 +123,7 @@
 
 
         vm.exportContent = function exportContent() {
-            contentExportService.exportContent(vm.formValues);
+            contentExportService.exportContent(vm.formValues, hasIdList && vm.formValues.RecordExport === cSelection ? itemIds : null);
         };
 
         vm.close = function close() {
@@ -130,13 +140,24 @@
 
     function contentExportService($http, eavConfig) {
         var srvc = {
-            exportContent: exportContent,
+            exportContent: exportContent
         };
         return srvc;
 
-        function exportContent(args) {
-            var url = eavConfig.getUrlPrefix("api") + "/eav/ContentExport/ExportContent";
-            window.open(url + "?appId=" + args.AppId + "&language=" + args.Language + "&defaultLanguage=" + args.DefaultLanguage + "&contentType=" + args.ContentType + "&recordExport=" + args.RecordExport + "&resourcesReferences=" + args.ResourcesReferences + "&languageReferences=" + args.LanguageReferences, "_self", "");
+        function exportContent(args, selectedIds) {
+            var url = eavConfig.getUrlPrefix("api") + "/eav/ContentExport/ExportContent",
+                addids = selectedIds ? "&selectedids=" + selectedIds.join() : "",
+                fullUrl = url
+                    + "?appId=" + args.AppId
+                    + "&language=" + args.Language
+                    + "&defaultLanguage=" + args.DefaultLanguage
+                    + "&contentType=" + args.ContentType
+                    + "&recordExport=" + args.RecordExport
+                    + "&resourcesReferences=" + args.ResourcesReferences
+                    + "&languageReferences=" + args.LanguageReferences
+                    + addids;
+
+            window.open(fullUrl, "_blank" /* "_self" */, "");
         }
     }
 }());
@@ -366,7 +387,7 @@
 	angular.module("ContentItemsAppAgnostic", [
         "EavConfiguration",
         "EavAdminUi",
-        "EavServices",
+        "EavServices"
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
         .controller("ContentItemsList", contentItemsListController)
@@ -483,8 +504,30 @@
 			eavAdminDialogs.openItemNew(contentType, setRowData);
 		}
 
-        function openExport() {
-            return eavAdminDialogs.openContentExport(appId, contentType, vm.refresh);
+		function openExport() {
+		    // check if there is a filter attached
+		    var ids = null, 
+                hasFilters = false,
+                mod = vm.gridOptions.api.getFilterModel();
+
+            // check if any filters are applied
+		    for (var prop in mod) 
+		        if (mod.hasOwnProperty(prop)) {
+		            hasFilters = true;
+		            break;
+		        }
+
+		    if (hasFilters) {
+		        ids = [];
+		        vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
+		            ids.push(rowNode.data.Id);
+		        });
+		        if (ids.length === 0)
+		            ids = null;
+		    }
+
+            // open export but DONT do a refresh callback, because it delays working with the table even though this is export only
+		    return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
         }
 
 		function openEditDialog(params) {
@@ -2412,8 +2455,8 @@ angular.module("EavAdminUi", ["ng",
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
             };
 
-            svc.openContentExport = function ocexp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
+            svc.openContentExport = function ocexp(appId, staticName, closeCallback, optionalIds) {
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, itemIds: optionalIds });
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 

@@ -68,8 +68,8 @@ angular.module("EavAdminUi", ["ng",
                 return svc.OpenModal("content-import-export/content-import.html", "ContentImport as vm", "lg", resolve, closeCallback);
             };
 
-            svc.openContentExport = function ocexp(appId, staticName, closeCallback) {
-                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName });
+            svc.openContentExport = function ocexp(appId, staticName, closeCallback, optionalIds) {
+                var resolve = svc.CreateResolve({ appId: appId, contentType: staticName, itemIds: optionalIds });
                 return svc.OpenModal("content-import-export/content-export.html", "ContentExport as vm", "lg", resolve, closeCallback);
             };
 

@@ -3,11 +3,15 @@
     angular.module("ContentExportApp")
         .controller("ContentExport", contentExportController);
 
-    function contentExportController(appId, contentType, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
+    function contentExportController(appId, contentType, itemIds, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
 
         var vm = this;
 
         vm.formValues = {};
+
+        // check if we were given some IDs to export only that
+        var hasIdList = (Array.isArray(itemIds) && itemIds.length > 0);
+        var cSelection = "Selection";
 
         vm.formFields = [{
             // Content type
@@ -48,16 +52,22 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.RecordExport.Label' | translate",
                 "templateOptions.options": function () {
-                    return [{
+                    var opts = [{
                         "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Blank"),
                         "value": "Blank"
                     }, {
                         "name": $translate.instant("Content.Export.Fields.RecordExport.Options.All"),
                         "value": "All"
                     }];
+                    if (hasIdList)
+                        opts.push({
+                            "name": "todo: selected " + itemIds.length + " items",
+                            "value": cSelection
+                        });
+                    return opts;
                 }
             },
-            defaultValue: "All"
+            defaultValue: hasIdList ? cSelection : "All"
         }, {
             // Language references
             key: "LanguageReferences",
@@ -65,7 +75,7 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.LanguageReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport == "Blank";
+                    return vm.formValues.RecordExport === "Blank";
                 },
                 "templateOptions.options": function () {
                     return [{
@@ -85,7 +95,7 @@
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport == "Blank";
+                    return vm.formValues.RecordExport === "Blank";
                 },
                 "templateOptions.options": function () {
                     return [{
@@ -102,7 +112,7 @@
 
 
         vm.exportContent = function exportContent() {
-            contentExportService.exportContent(vm.formValues);
+            contentExportService.exportContent(vm.formValues, hasIdList && vm.formValues.RecordExport === cSelection ? itemIds : null);
         };
 
         vm.close = function close() {

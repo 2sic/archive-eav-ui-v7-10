@@ -4,7 +4,7 @@
 	angular.module("ContentItemsAppAgnostic", [
         "EavConfiguration",
         "EavAdminUi",
-        "EavServices",
+        "EavServices"
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
         .controller("ContentItemsList", contentItemsListController)
@@ -121,8 +121,30 @@
 			eavAdminDialogs.openItemNew(contentType, setRowData);
 		}
 
-        function openExport() {
-            return eavAdminDialogs.openContentExport(appId, contentType, vm.refresh);
+		function openExport() {
+		    // check if there is a filter attached
+		    var ids = null, 
+                hasFilters = false,
+                mod = vm.gridOptions.api.getFilterModel();
+
+            // check if any filters are applied
+		    for (var prop in mod) 
+		        if (mod.hasOwnProperty(prop)) {
+		            hasFilters = true;
+		            break;
+		        }
+
+		    if (hasFilters) {
+		        ids = [];
+		        vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
+		            ids.push(rowNode.data.Id);
+		        });
+		        if (ids.length === 0)
+		            ids = null;
+		    }
+
+            // open export but DONT do a refresh callback, because it delays working with the table even though this is export only
+		    return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
         }
 
 		function openEditDialog(params) {
