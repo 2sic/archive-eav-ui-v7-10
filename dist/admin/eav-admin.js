@@ -72,7 +72,7 @@
                     }];
                     if (hasIdList)
                         opts.push({
-                            "name": "todo: selected " + itemIds.length + " items",
+                            "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Selection", { count: itemIds.length }), // "todo: selected " + itemIds.length + " items",
                             "value": cSelection
                         });
                     return opts;
