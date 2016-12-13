@@ -8,6 +8,9 @@
                     if (!window.$2sxc) return {};
                     var urlFilters = window.$2sxc.urlParams.get("filters"), filters = null;
                     if (!urlFilters) return {};
+                    if (urlFilters.charAt(urlFilters.length - 1) === "=") 
+                        urlFilters = atob(urlFilters);
+                    
                     try {
                         filters = JSON.parse(urlFilters);
                         console.log("found filters for this list:", filters);
