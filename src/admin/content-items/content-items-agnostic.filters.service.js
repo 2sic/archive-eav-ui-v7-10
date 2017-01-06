@@ -8,6 +8,8 @@
                     if (!window.$2sxc) return {};
                     var urlFilters = window.$2sxc.urlParams.get("filters"), filters = null;
                     if (!urlFilters) return {};
+
+                    // special decode if parameter was passed as base64 - this is necessary for strings containing the "+" character
                     if (urlFilters.charAt(urlFilters.length - 1) === "=") 
                         urlFilters = atob(urlFilters);
                     
