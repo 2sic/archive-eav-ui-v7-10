@@ -12,8 +12,10 @@ angular.module("EavServices")
 
             svc = angular.extend(svc, svcCreator.implementLiveList(svc.retrieveContentTypes));
 
-            svc.getDetails = function getDetails(contentTypeName) {
-                return $http.get("eav/contenttype/GetSingle", { params: { "appid": svc.appId, "contentTypeStaticName": contentTypeName } });
+            svc.getDetails = function getDetails(contentTypeName, config) {
+                return $http.get("eav/contenttype/GetSingle", angular.extend({}, config, {
+                    params: { "appid": svc.appId, "contentTypeStaticName": contentTypeName }
+                }));
             };
 
             svc.newItem = function newItem() {

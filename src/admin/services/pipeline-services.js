@@ -1,7 +1,7 @@
 ﻿// PipelineService provides an interface to the Server Backend storing Pipelines and their Pipeline Parts
 
 angular.module("EavServices")
-    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs) {
+    .factory("pipelineService", function ($resource, $q, $filter, eavConfig, $http, contentTypeSvc, metadataSvc, eavAdminDialogs, appId) {
         "use strict";
         var svc = {};
         // Web API Service
@@ -130,15 +130,28 @@ angular.module("EavServices")
                     var success = result.data;
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);
-                    else { // Create new Entity
-                        var items = [{
-                                ContentTypeName: contentTypeName,
-                                Metadata: {
-                                    TargetType: assignmentObjectTypeId,
-                                    KeyType: "guid",
-                                    Key: keyGuid
-                                }}];
-                        eavAdminDialogs.openEditItems(items);
+                    else { // Check if the type exists, and if yes, create new Entity
+
+                        contentTypeSvc(appId, "System").getDetails(contentTypeName, { ignoreErrors: true })
+                            .success(function() {
+                                var items = [
+                                    {
+                                        ContentTypeName: contentTypeName,
+                                        Metadata: {
+                                            TargetType: assignmentObjectTypeId,
+                                            KeyType: "guid",
+                                            Key: keyGuid
+                                        }
+                                    }
+                                ];
+                                eavAdminDialogs.openEditItems(items);
+                            })
+                            .error(function() {
+                                alert("Server reports error - this usually means that this data-source doesn't have any configuration");
+                            });
+
+
+
                     }
                 });
             }
@@ -154,15 +167,6 @@ angular.module("EavServices")
             setAppId: function (newAppId) {
                 svc.appId = newAppId;
             },
-
-            // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
-            // Init some Content Types, currently only used for getPipelineUrl('new', ...)
-            //initContentTypes: function initContentTypes() {
-            //    return contentTypeSvc(svc.appId).getDetails("DataPipeline").then(function (result) {
-            //        svc.dataPipelineAttributeSetId = result.data.Id; // 2016-02-14 previously AttributeSetId;
-            //    });
-            //},
-
 
             // Get all Pipelines of current App
             getPipelines: function () {
