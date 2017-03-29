@@ -198,7 +198,7 @@
 				            alert($translate.instant("LangMenu.CopyNotPossible"));
 				        else {
 				            var value = vm.fieldModel.getVsWithLanguage(languageKey).Value;
-				            if (vs === null || vs === undefined)
+                            if (value === null || value === undefined)
 				                console.log($scope.options.key + ": Can't copy value from " + languageKey + ' because that value does not exist.');
 				            else
 				                $scope.value.Value = value;
