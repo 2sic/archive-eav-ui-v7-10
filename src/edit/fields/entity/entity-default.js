@@ -16,8 +16,6 @@ angular.module("eavFieldTemplates")
             wrapper: wrappers,
             controller: "FieldTemplate-EntityCtrl"
         });
-
-
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc) {
         var contentType, lastContentType;
@@ -45,12 +43,9 @@ angular.module("eavFieldTemplates")
 
         // add an just-picked entity to the selected list
         $scope.addEntity = function (item) {
-            if (!item) item = $scope.selectedEntity; // if not provided by ui-select, use the property which was set by the old select
-            if (item !== null) {
-                $scope.chosenEntities.push(item);
-                $scope.selectedEntity = null;
-                //$timeout(function () { $scope.selectedEntity = null; });
-            }
+            if (item === null) return false;
+            $scope.chosenEntities.push(item);
+            $scope.selectedEntity = null;
         };
 
         // open the dialog for a new item
@@ -61,9 +56,9 @@ angular.module("eavFieldTemplates")
 
                 $scope.maybeReload(true).then(function () {
                     $scope.chosenEntities.push(Object.keys(result.data)[0]);
+                    setDirty();
                 });
             }
-
             eavAdminDialogs.openItemNew(contentType.resolve(), reloadAfterAdd);
         };
 
@@ -115,10 +110,7 @@ angular.module("eavFieldTemplates")
         // remove needs the index --> don't name "remove" - causes problems
         $scope.removeSlot = function(itemGuid, index) {
             $scope.chosenEntities.splice(index, 1);
-        };
-
-        $scope.alertTest = function () {
-            alert("test");
+            setDirty();
         };
 
         $scope.deleteItemInSlot = function (itemGuid, index) {
@@ -129,7 +121,7 @@ angular.module("eavFieldTemplates")
 
             var entities = $filter("filter")($scope.availableEntities, { Value: itemGuid });
             var id = entities[0].Id;
-            console.log(entities);
+
             entitiesSvc.tryDeleteAndAskForce(contentType.resolve(), id, entities[0].Text).then(function () {
                 $scope.chosenEntities.splice(index, 1);
                 $scope.maybeReload(true);
@@ -146,8 +138,9 @@ angular.module("eavFieldTemplates")
             return eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
         };
 
-
-
+        function setDirty() {
+            $scope.form.$setDirty()
+        }
 
         activate();
     })
@@ -160,12 +153,12 @@ angular.module("eavFieldTemplates")
                 if (!ngModel) return;
 
                 ngModel.$validators.required = function (modelValue, viewValue) {
+                    var value;
 
-                    if (!scope.$parent.$parent.to.required)
-                        return true;
-                    var value = modelValue || viewValue;
-                    if (!value || !Array.isArray(value))
-                        return true;
+                    if (!scope.$parent.$parent.to.required) return true;
+
+                    value = modelValue || viewValue;
+                    if (!value || !Array.isArray(value)) return true;
                     return value.length > 0;
                 };
 
