@@ -2,8 +2,6 @@
 using System.Web.Http;
 using System.Web.Routing;
 using Microsoft.Practices.Unity;
-using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
 
 namespace ToSic.Eav.ManagementUI
 {
