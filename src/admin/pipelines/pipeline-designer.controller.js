@@ -486,7 +486,7 @@
                 };
 
                 // Query the Pipeline
-                $scope.queryPipeline = function() {
+                $scope.queryPipeline = function (saveFirst) {
                     var query = function() {
                         // Query pipelineService for the result...
                         toastr.info("Running Query ...");
@@ -541,7 +541,11 @@
                     };
 
                     // Ensure the Pipeline is saved
-                    $scope.savePipeline().then(query);
+                    // 2017-05-03 2dm disabed previous save for now!
+                    if (saveFirst)
+                        $scope.savePipeline().then(query);
+                    else
+                        query();
                 };
 
                 // Clone the Pipeline

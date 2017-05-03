@@ -25,9 +25,20 @@
                 <a href="http://2sxc.org/help" class="btn btn-info btn-xs pull-right" target="_blank"><span class="glyphicon glyphicon-question-sign"></span> Help</a>
             </div>
             <div class="panel-body">
-                <button type="button" class="btn btn-primary btn-block" title="Query the Data of this Pipeline" ng-click="queryPipeline()">
-                    <span class="glyphicon glyphicon-play"></span> Query
-                </button>
+                <div class="btn-group" role="group" style="width: 100%">
+                    <button type="button" class="btn btn-primary btn-block" 
+                            title="Query the Data of this Pipeline. Note that it doesn't save changes - so if you have unexpected behaviour after rewiring - save first" 
+                            ng-click="queryPipeline(save)"
+                            style="width:65%">
+                        <span class="glyphicon glyphicon-play"></span> Query
+                    </button>
+                    <button type="button" class="btn btn-primary btn-block" title="Save & Query" 
+                            ng-click="queryPipeline(true)"
+                            style="width:35%; margin-top:4px">
+                        <span icon="ok"></span> &amp;
+                        <span class="glyphicon glyphicon-play"></span>
+                    </button>
+                </div>
 
                 <select class="form-control" ng-model="addDataSourceType" ng-disabled="readOnly" ng-change="addDataSource()" ng-options="d.ClassName for d in pipelineData.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
                     <option value="">-- Add DataSource --</option>
