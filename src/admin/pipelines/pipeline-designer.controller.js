@@ -14,11 +14,12 @@
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
-            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q) {
+            function (appId, pipelineId, $scope, pipelineService, $location, debugState, $timeout, ctrlS, $filter, toastrWithHttpErrorHandling, eavAdminDialogs, $log, eavConfig, $q, getUrlParamMustRefactor) {
                 "use strict";
                 var vm = this;
                 // Init
                 vm.debug = debugState;
+                vm.warnings = [];
                 var toastr = toastrWithHttpErrorHandling;
                 var waitMsg = toastr.info("This shouldn't take long", "Please wait...");
 
@@ -63,6 +64,8 @@
                             toastr.info($scope.readOnly ? "This pipeline is read only" : "You can now design the Pipeline. \nNote that there are still a few UI bugs.\nVisit 2sxc.org/help for more.",
                                 "Ready", { autoDismiss: true });
                         }
+
+                        refreshWarnings($scope.pipelineData, vm);
                     }, function(reason) {
                         toastr.error(reason, "Loading Pipeline failed");
                     });
@@ -460,6 +463,7 @@
                 var pipelineSaved = function(success) {
                     // Update PipelineData with data retrieved from the Server
                     $scope.pipelineData.Pipeline = success.Pipeline;
+                    $scope.pipelineData.TestParameters = success.TestParameters;
                     $scope.PipelineEntityId = success.Pipeline.EntityId /*EntityId*/;
                     $location.search("PipelineId", success.Pipeline.EntityId /*EntityId*/);
                     $scope.readOnly = !success.Pipeline.AllowEdit;
@@ -472,6 +476,7 @@
                     // Reset jsPlumb, re-Init Connections
                     $scope.jsPlumbInstance.reset();
                     $scope.connectionsInitialized = false;
+                    refreshWarnings($scope.pipelineData, vm);
                 };
                 // #endregion
 
@@ -484,6 +489,28 @@
                 $scope.toogleDebug = function() {
                     $scope.debug = !$scope.debug;
                 };
+
+                // check if there are special warnings the developer should know
+                // typically when the test-module-id is different from the one we're currently
+                // working on, or if no test-module-id is provided
+                // note: this should actually be external code, and injected later on
+                // reason is that it's actually testing for a 2sxc-variable mid
+                function refreshWarnings(pipelineData, vm) {
+                    var regex = /^\[module:moduleid\]=([0-9]*)$/gmi; // capture the mod-id
+                    var testParams, testMid;
+                    var warnings = vm.warnings = [];
+                    try { // catch various not-initialized errors
+                        testParams = pipelineData.Pipeline.TestParameters;
+                        var matches = regex.exec(testParams);
+                        if (!matches || matches.length === 0)
+                            warnings.push("Your test values has no moduleid specified. You probably want to check your test-values.");
+                        testMid = matches[1];
+                        var urlMid = getUrlParamMustRefactor("mid");
+                        if (testMid !== urlMid)
+                            warnings.push("Your test moduleid (" + testMid + ") is different from the current moduleid (" + urlMid + "). You probably want to check your test-values.");
+                    }
+                    catch(ex) {}
+                }
 
                 // Query the Pipeline
                 $scope.queryPipeline = function (saveFirst) {

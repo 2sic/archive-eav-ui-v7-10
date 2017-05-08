@@ -26,15 +26,15 @@
             </div>
             <div class="panel-body">
                 <div class="btn-group" role="group" style="width: 100%">
-                    <button type="button" class="btn btn-primary btn-block" 
-                            title="Query the Data of this Pipeline. Note that it doesn't save changes - so if you have unexpected behaviour after rewiring - save first" 
+                    <button type="button" class="btn btn-primary btn-block"
+                            title="Query the Data of this Pipeline. Note that it doesn't save changes - so if you have unexpected behaviour after rewiring - save first"
                             ng-click="queryPipeline(save)"
-                            style="width:65%">
+                            style="width: 65%">
                         <span class="glyphicon glyphicon-play"></span> Query
                     </button>
-                    <button type="button" class="btn btn-primary btn-block" title="Save & Query" 
+                    <button type="button" class="btn btn-primary btn-block" title="Save & Query"
                             ng-click="queryPipeline(true)"
-                            style="width:35%; margin-top:4px">
+                            style="width: 35%; margin-top: 4px">
                         <span icon="ok"></span> &amp;
                         <span class="glyphicon glyphicon-play"></span>
                     </button>
@@ -49,6 +49,16 @@
                     <span icon="ok"></span> Save
                 </button>
                 <br/>
+
+                <!-- show warnings if detected -->
+                <div ng-if="vm.warnings.length">
+                    <div><strong>Warnings</strong></div>
+                    <ol>
+                        <li ng-repeat="warn in vm.warnings">{{warn}}</li>
+                    </ol>
+                    This often leads to unexpected results.
+                    <br />
+                </div>
                 <br/>
                 <button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><span class="glyphicon glyphicon-info-sign"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
                 <button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><span class="glyphicon glyphicon-repeat"></span> Repaint</button>

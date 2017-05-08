@@ -34,6 +34,12 @@
         .factory("$uibModalInstance", function () {
             return null;
         })
+
+        // helper, currently only used by pipeline designer, to get url parameter
+        // will provide a get-url-param command
+        .factory("getUrlParamMustRefactor", function() {
+                return getParameterByName;
+        })
     //#endregion
     ;
 
