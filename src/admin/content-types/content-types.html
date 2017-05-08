@@ -9,7 +9,7 @@
 
         <span class="btn-group" ng-if="vm.debug.on">
             <button title="{{ 'General.Buttons.Refresh' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
-            <button title="todo" type="button" class="btn btn-warning btn-icon" ng-click="vm.createGhost()"><i class="icon-eav-ghost"></i></button>
+            <button title="todo" type="button" class="btn btn-warning btn-icon" ng-click="vm.createGhost()"><i class="eav-icon-ghost"></i></button>
             <button title="{{ 'ContentTypes.Buttons.ChangeScope' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.changeScope()"><i icon="record"></i></button>
             <button title="{{ 'General.Buttons.System' | translate }}" type="button" class="btn btn-warning btn-square" ng-click="vm.liveEval()"><i icon="flash"></i></button>
         </span>
@@ -33,16 +33,16 @@
                     <span class="text-nowrap hide-overflow-text" style="max-width: 400px" uib-tooltip="{{item.Label}} ({{item.Name}})">{{item.Label}} <span ng-if="item.Name != item.Label">({{item.Name}})</span></span>
                 </td>
                 <td class="clickable" style="text-align: right">
-                    <div class="badge pull-right badge-primary hover-pair" stop-event="click" ng-click="vm.addItem(item.StaticName)"><span class="hover-default">{{item.Items}}</span><span class="hover-hover icon-eav-plus"></span></div></td>
+                    <div class="badge pull-right badge-primary hover-pair" stop-event="click" ng-click="vm.addItem(item.StaticName)"><span class="hover-default">{{item.Items}}</span><span class="hover-hover eav-icon-plus"></span></div></td>
                 <td class="clickable">
                     <div class="text-nowrap hide-overflow-text" style="max-width: 500px" uib-tooltip="{{item.Description}}">{{item.Description}}</div>
                 </td>
                 <td stop-event="click">
                     <button ng-if="!item.UsesSharedDef" type="button" class="btn btn-xs" style="width: 60px" ng-click="vm.editFields(item)">
-                        <i class="icon-eav-fields"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
+                        <i class="eav-icon-fields"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
                     <button ng-if="item.UsesSharedDef" uib-tooltip="{{ 'ContentTypes.Messages.SharedDefinition' | translate:item }}" type="button" class="btn btn-default btn-xs" style="width: 60px">
-                        <i class="icon-eav-ghost"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
+                        <i class="eav-icon-ghost"></i>&nbsp;<span style="width: 22px; text-align: right">{{item.Fields}}</span>
                     </button>
                 </td>
 
@@ -52,7 +52,7 @@
                             <i icon="heart{{ (item.UsesSharedDef ? '-empty' : '') }}"></i>
                         </button>
                         <button uib-tooltip="{{ 'General.Buttons.Metadata' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.createOrEditMetadata(item)">
-                            <i class="icon-eav-tag"></i>
+                            <i class="eav-icon-tag"></i>
                         </button>
                         <button uib-tooltip="{{ 'ContentTypes.Buttons.Export' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openExport(item)">
                             <i icon="export"></i>

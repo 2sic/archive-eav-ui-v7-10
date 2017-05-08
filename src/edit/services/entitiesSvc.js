@@ -54,7 +54,7 @@
                         else {
                             // if delete failed, ask to force-delete in a toaster
                             var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: itemTitle, id: id }) + "<br/>"
-                                + "<button type='button' id='del' class='btn btn-default' ><i class= 'icon-eav-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
+                                + "<button type='button' id='del' class='btn btn-default' ><i class= 'eav-icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
                                 + "</div>";
 
                             toastr.warning(msg, {

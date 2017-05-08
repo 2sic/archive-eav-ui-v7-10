@@ -11,8 +11,8 @@
                 </thead>
                 <tr ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item" >
                     <td ui-tree-handle>
-                        <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="icon-eav-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
-                        <i title="" class="icon-eav-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
+                        <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                        <i title="" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
                     </td>
                     <td ui-tree-handle>
                         <span class="eav-entityselect-item-title" title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
@@ -21,18 +21,18 @@
                         <ul class="eav-entityselect-item-actions">
                             <li>
                                 <a title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)" ng-show="to.settings.merged.EnableEdit" data-nodrag>
-                                    <i class="icon-eav-pencil"></i>
+                                    <i class="eav-icon-pencil"></i>
                                 </a>
                             </li>
                             <li>
                                 <a title="{{ 'FieldType.Entity.Remove' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove" ng-show="to.settings.merged.EnableRemove" data-nodrag>
-                                    <i ng-class="{ 'icon-eav-minus-circled': to.settings.merged.AllowMultiValue, 'icon-eav-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
+                                    <i ng-class="{ 'eav-icon-minus-circled': to.settings.merged.AllowMultiValue, 'eav-icon-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
                                 </a>
                             </li>
                             <li>
-                                <!-- todo: i18n, code in action, icon-eav-visiblity/alignment -->
+                                <!-- todo: i18n, code in action, eav-icon-visiblity/alignment -->
                                 <a title="{{ 'FieldType.Entity.Delete' | translate }}" ng-click="deleteItemInSlot(item, $index)" class="eav-entityselect-item-remove" ng-show="to.settings.merged.EnableDelete" data-nodrag>
-                                    <i class="icon-eav-cancel"></i>
+                                    <i class="eav-icon-cancel"></i>
                                 </a>
                             </li>
                         </ul>
@@ -72,7 +72,7 @@
             <button ng-if="to.settings.merged.EnableCreate && to.settings.merged.EntityType !== '' && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
                     class="eav-entityselect-action-create icon-field-button"
                     ng-click="openNewEntityDialog()">
-                <i class="icon-eav-plus"></i>
+                <i class="eav-icon-plus"></i>
             </button>
         </div>
 

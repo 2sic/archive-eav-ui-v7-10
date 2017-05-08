@@ -541,7 +541,6 @@
                     };
 
                     // Ensure the Pipeline is saved
-                    // 2017-05-03 2dm disabed previous save for now!
                     if (saveFirst)
                         $scope.savePipeline().then(query);
                     else

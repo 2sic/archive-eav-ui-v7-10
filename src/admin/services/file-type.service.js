@@ -5,7 +5,7 @@
  */
 angular.module("EavServices").service("fileType", function () {
     var svc = {};
-    svc.iconPrefix = "icon-eav-";
+    svc.iconPrefix = "eav-icon-";
     svc.defaultIcon = "file";
     svc.checkImgRegEx = /(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?/i;
     svc.extensions = {
