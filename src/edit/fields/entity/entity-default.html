@@ -3,13 +3,14 @@
         <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
             <table ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false" class="eav-entityselect-table" style="table-layout: fixed;">
                 <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
                 </thead>
-                <tr ng-repeat="item in chosenEntities track by $id(item)" ui-tree-node class="eav-entityselect-item" >
+                <!-- important note - track by $index very important for multiple null-values in list -->
+                <tr ng-repeat="item in chosenEntities track by $index" ui-tree-node class="eav-entityselect-item" >
                     <td ui-tree-handle>
                         <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
                         <i title="" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>

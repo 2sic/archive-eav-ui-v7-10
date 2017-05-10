@@ -27,10 +27,16 @@ angular.module("eavFieldTemplates")
 
             // of no real data-model exists yet for this value (list of chosen entities), then create a blank
             if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
+                // todo: enhance this to allow multiple initial values, ATM it can only add one
                 $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
 
             // create short names for template
-            $scope.chosenEntities = $scope.model[$scope.options.key].Values[0].Value;
+            var valList = $scope.model[$scope.options.key].Values[0].Value;
+            //var showList = new [];
+            //for (var i = 0; i < valList.length; i++)
+            //    showList.push({ "title": valList[i] || "null", realId: valList[i], tempId: i });
+
+            $scope.chosenEntities = valList;
             $scope.selectedEntity = null;
 
             // Initialize entities
@@ -42,10 +48,11 @@ angular.module("eavFieldTemplates")
         }
 
         // add an just-picked entity to the selected list
-        $scope.addEntity = function (item) {
+        $scope.addEntity = function(item) {
             if (item === null) return false;
             $scope.chosenEntities.push(item);
             $scope.selectedEntity = null;
+            return true;
         };
 
         // open the dialog for a new item
