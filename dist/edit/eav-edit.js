@@ -60,7 +60,8 @@ angular.module("eavFieldTemplates",
         "disablevisually",
         "eavLocalization",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("fieldWrappersWithPreview", [
@@ -71,7 +72,8 @@ angular.module("eavFieldTemplates",
         "eavLocalization",
         "preview-default",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("defaultFieldWrappersNoFloat", [
@@ -82,7 +84,8 @@ angular.module("eavFieldTemplates",
         "eavLocalization",
         //"preview-default",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("fieldWrappersNoLabel", [
@@ -94,7 +97,8 @@ angular.module("eavFieldTemplates",
         //"preview-default",
         "responsive",
         "no-label-space",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 ;
 /* 
@@ -1044,10 +1048,11 @@ angular.module("eavFieldTemplates")
                         // test to discover focused for floating labels
 	                    onBlur: 'to.focused=false',
 	                    onFocus: 'to.focused=true',
-	                    focused: false
+                        focused: false,
+                        debug: debugState.on
 	                },
 	                className: "type-" + e.Type.toLowerCase() + " input-" + fieldType + " field-" + e.StaticName.toLowerCase(),
-	                hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
+	                //hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 	                expressionProperties: {
 	                    // Needed for dynamic update of the disabled property
 	                    'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
@@ -1936,6 +1941,7 @@ $templateCache.put("wrappers/eav-label-inside.html","<label for=\"{{id}}\" class
 $templateCache.put("wrappers/eav-label.html","<div>\r\n    <!-- just fyi: the ng-class adds a \"float-away\" if the notes are shown or if the field has content -->\r\n    <div>\r\n        <div class=\"inside\" ng-include=\"\'wrappers/eav-label-inside.html\'\"></div>\r\n        <div ng-if=\"to.showDescription\" class=\"info-wrapper\">\r\n            <p class=\"bg-info\" style=\"padding: 5px;\" ng-bind-html=\"to.description\">\r\n            </p>\r\n        </div>\r\n\r\n        <div ng-show=\"!(to.collapseField && to.enableCollapseField)\">\r\n            <formly-transclude></formly-transclude>\r\n        </div>\r\n\r\n        <div ng-if=\"debug.on\">\r\n            Field-Debug: {{fc}}\r\n        </div>\r\n    </div>\r\n</div>");
 $templateCache.put("wrappers/field-group.html","<div>\r\n    <div class=\"form-ci-subtitle unhide-area\" ng-click=\"toggle()\">\r\n        <span style=\"position: relative\">\r\n            <i class=\"eav-icon-side-marker decoration\"></i>\r\n            <span ng-if=\"to.collapseGroup\" class=\"decoration state eav-icon-plus-circled low-priority collapse-fieldgroup-button\"></span>\r\n            <span ng-if=\"!to.collapseGroup\" class=\"decoration state eav-icon-minus-circled low-priority collapse-fieldgroup-button hide-till-mouseover\"></span>\r\n        </span>\r\n        {{to.label}}\r\n    </div>\r\n    <div ng-if=\"!to.collapseGroup\" style=\"padding: 5px;\" ng-bind-html=\"to.description\">\r\n    </div>\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/float-label.html","<div class=\"wrap-float-label\"\r\n     ng-class=\"[\r\n     {\'float-disabled\': value.Value || (fc[0] || fc).$modelValue || to.showDescription || to.focused || ( (fc[0] || fc).$invalid && (fc[0] || fc).$touched ) },\r\n     {focused: to.focused},\r\n     {\'ng-touched\': (fc[0] || fc).$touched},\r\n     {\'ng-invalid\' : (fc[0] || fc).$invalid}\r\n     ]\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
+$templateCache.put("wrappers/hidden.html","<div ng-show=\"{{to.settings.All.VisibleInEditUI || to.debug}}\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/no-label-space.html","<div class=\"no-label-space\">\r\n    <formly-transclude></formly-transclude>\r\n</div>");
 $templateCache.put("wrappers/preview-default.html","<div class=\"preview-default\">\r\n    <div class=\"preview-area\"></div>\r\n    <div>\r\n        <formly-transclude></formly-transclude>\r\n    </div>\r\n</div>");
 $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <div class=\"responsive-optional\" >\r\n        <div ng-include=\"\'wrappers/eav-label-inside.html\'\"></div>\r\n    </div>\r\n    <div class=\"responsive-priority\">\r\n        <formly-transclude></formly-transclude>\r\n    </div>\r\n</div>");}]);
@@ -2005,6 +2011,18 @@ $templateCache.put("wrappers/responsive.html","<div class=\"clearfix\">\r\n    <
             formlyConfigProvider.setWrapper({
                 name: 'float-label',
                 templateUrl: "wrappers/float-label.html"
+            });
+        }]);
+})();
+
+(function() {
+	"use strict";
+
+    angular.module("eavFieldTemplates")
+        .config(["formlyConfigProvider", function(formlyConfigProvider) {
+            formlyConfigProvider.setWrapper({
+                name: 'hiddenIfNeeded',
+                templateUrl: "wrappers/hidden.html"
             });
         }]);
 })();

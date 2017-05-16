@@ -24,7 +24,8 @@ angular.module("eavFieldTemplates",
         "disablevisually",
         "eavLocalization",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("fieldWrappersWithPreview", [
@@ -35,7 +36,8 @@ angular.module("eavFieldTemplates",
         "eavLocalization",
         "preview-default",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("defaultFieldWrappersNoFloat", [
@@ -46,7 +48,8 @@ angular.module("eavFieldTemplates",
         "eavLocalization",
         //"preview-default",
         "responsive",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 
     .constant("fieldWrappersNoLabel", [
@@ -58,6 +61,7 @@ angular.module("eavFieldTemplates",
         //"preview-default",
         "responsive",
         "no-label-space",
-        "collapsible"
+        "collapsible",
+        "hiddenIfNeeded"
     ])
 ;
