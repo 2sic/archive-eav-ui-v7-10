@@ -142,10 +142,11 @@
                         // test to discover focused for floating labels
 	                    onBlur: 'to.focused=false',
 	                    onFocus: 'to.focused=true',
-	                    focused: false
+                        focused: false,
+                        debug: debugState.on
 	                },
 	                className: "type-" + e.Type.toLowerCase() + " input-" + fieldType + " field-" + e.StaticName.toLowerCase(),
-	                hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
+	                //hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
 	                expressionProperties: {
 	                    // Needed for dynamic update of the disabled property
 	                    'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding

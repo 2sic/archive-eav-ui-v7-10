@@ -188,6 +188,8 @@
     <Content Include="src\edit\fields\_eav-field-templates.js" />
     <Content Include="src\edit\services\custom-inputtypes-service.js" />
     <Content Include="src\edit\services\fieldMask-service.js" />
+    <Content Include="src\edit\wrappers\hidden.html" />
+    <Content Include="src\edit\wrappers\hidden.js" />
     <Content Include="src\edit\wrappers\eav-label-inside.html" />
     <Content Include="src\edit\wrappers\no-label-space.html" />
     <Content Include="src\edit\wrappers\no-label-space.js" />
