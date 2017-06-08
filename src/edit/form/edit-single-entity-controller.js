@@ -112,8 +112,12 @@
 	        var lastGroupHeadingId = null; 
 	        angular.forEach(result.data, function (e, i) {
 
+                // make sure there is a definition object for the "All" settings
 	            if (e.Metadata.All === undefined)
 	                e.Metadata.All = {};
+
+	            if (e.Metadata.All.VisibleInEditUI !== false) // for null or undefined
+	                e.Metadata.All.VisibleInEditUI = true;
 
 	            vm.initCustomJavaScript(e);
 

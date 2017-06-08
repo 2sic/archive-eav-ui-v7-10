@@ -234,9 +234,10 @@ angular.module("eavFieldTemplates")
                 $scope.to.settings.merged = {};
 
             // of no real data-model exists yet for this value (list of chosen entities), then create a blank
-            if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "")
-                // todo: enhance this to allow multiple initial values, ATM it can only add one
-                $scope.model[$scope.options.key] = { Values: [{ Value: eavDefaultValueService($scope.options), Dimensions: {} }] };
+            if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "") {
+                var initVal = eavDefaultValueService($scope.options);   // note: works for simple entries as well as multiple, then it has to be an array though
+                $scope.model[$scope.options.key] = { Values: [{ Value: initVal, Dimensions: {} }]};
+            }
 
             // create short names for template
             var valList = $scope.model[$scope.options.key].Values[0].Value;
@@ -1018,8 +1019,12 @@ angular.module("eavFieldTemplates")
 	        var lastGroupHeadingId = null; 
 	        angular.forEach(result.data, function (e, i) {
 
+                // make sure there is a definition object for the "All" settings
 	            if (e.Metadata.All === undefined)
 	                e.Metadata.All = {};
+
+	            if (e.Metadata.All.VisibleInEditUI !== false) // for null or undefined
+	                e.Metadata.All.VisibleInEditUI = true;
 
 	            vm.initCustomJavaScript(e);
 
