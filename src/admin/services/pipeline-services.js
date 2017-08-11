@@ -8,9 +8,9 @@ angular.module("EavServices")
         svc.pipelineResource = $resource("eav/PipelineDesigner/:action");
         svc.entitiesResource = $resource("eav/Entities/:action");
 
-        // 2016-02-18 2dm - not needed?
-        // svc.dataPipelineAttributeSetId = 0;
         svc.appId = 0;
+
+        console.log("ok");
 
         // Get the Definition of a DataSource
         svc.getDataSourceDefinitionProperty = function (model, dataSource) {
@@ -29,7 +29,7 @@ angular.module("EavServices")
                 Description: eavConfig.pipelineDesigner.outDataSource.description,
                 EntityGuid: "Out",
                 PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
-                VisualDesignerData: eavConfig.pipelineDesigner.outDataSource.visualDesignerData,
+                VisualDesignerData: eavConfig.pipelineDesigner.outDataSource.visualDesignerData, 
                 ReadOnly: true
             });
 
@@ -37,6 +37,7 @@ angular.module("EavServices")
             angular.forEach(model.DataSources, function(dataSource) {
                 dataSource.Definition = function() { return svc.getDataSourceDefinitionProperty(model, dataSource); };
                 dataSource.ReadOnly = dataSource.ReadOnly || !model.Pipeline.AllowEdit;
+                dataSource.VisualDesignerData = dataSource.VisualDesignerData || { Top: 50, Left: 50 }; // in case server returns null, use a default setting
             });
         };
 
@@ -82,7 +83,7 @@ angular.module("EavServices")
             // Ensure Model has all DataSources and they're linked to their Definition-Object
             postProcessDataSources: function(model) {
                 // stop Post-Process if the model already contains the Out-DataSource
-                if ($filter("filter")(model.DataSources, function(d) { return d.EntityGuid == "Out"; })[0])
+                if ($filter("filter")(model.DataSources, function(d) { return d.EntityGuid === "Out"; })[0])
                     return;
 
                 postProcessDataSources(model);
