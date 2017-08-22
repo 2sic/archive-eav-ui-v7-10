@@ -18,14 +18,14 @@
             default: './../2SexyContent/Web',
             evoq: '../TestWebsites/Evoq 9.1.0',
         };
-        
+
         gulp.task('watch', () => watchSets(createSetsForOurCode()));
         gulp.task('develop', ['watch'], () => watchPublish(dests.default));
         gulp.task('develop:evoq', ['watch'], () => watchPublish(dests.evoq));
         gulp.task('watch-libs', () => watchSets(createSetsForLibs()));
 
         function watchPublish(dest) {
-            return gulp.watch('dist/**/*')
+            return $.watch('dist/**/*')
                 .pipe(gulp.dest(dest + autopublishTarget));
         }
     })();
@@ -58,25 +58,25 @@
 
     function packageJs(set) {
         if (config.debug) console.log(`bundling start: ${set.name}`);
-        var js = gulp.src(set.js.files);
+        let js = gulp.src(set.js.files);
         if (set.js.autoSort)
             js = js.pipe($.sort());
         js = js.pipe($.jshint(packageJSON.jshintConfig))
             .pipe($.jshint.reporter('jshint-stylish'))
             .pipe($.ngAnnotate());
 
-        var tmpl = set.js.templates ? gulp.src(set.js.templates)
+        const tmpl = !set.js.templates ? null : gulp.src(set.js.templates)
             .pipe($.sort())
             .pipe($.angularTemplatecache('templates.js', {
                 standalone: true,
                 module: set.js.templateSetName
-            })) : null;
+            }));
 
-        var libs = gulp.src(set.js.libs);
-        var prelib = merge(js, tmpl);
+        const libs = gulp.src(set.js.libs);
+        let prelib = merge(js, tmpl);
         if (set.js.autoSort) prelib = prelib.pipe($.sort());
 
-        var result = merge(libs, prelib);
+        let result = merge(libs, prelib);
         if (set.js.autoSort) result = result.pipe($.sort());
 
         result = result.pipe($.concat(set.js.concat))
@@ -118,10 +118,9 @@
     // assemble a function which will call the desired set - this is a helper for the watch-sequence. 
     function createWatchCallback(set, part) {
         if (config.debug) console.log("creating watcher callback for " + set.name);
-        var run = function (event) {
-            if (config.debug) console.log("File " + event.path + " was " + event.type + ", running tasks on set " + set.name);
-            var call = (part === js) ? packageJs : packageCss;
-            call(set);
+        const run = ev => {
+            if (config.debug) console.log(`File ${ev.path} was ${ev.type}, running tasks on set ${set.name}`);
+            (part === 'js' ? packageJs : packageCss)(set);
             console.log("finished '" + set.name + "'" + new Date());
         }
         if (config.autostart) run({ path: '[none]', type: 'autostart' });
@@ -130,51 +129,45 @@
 
     function createSetsForOurCode() {
         const sets = [];
-        const admin = createConfig("admin", "eavTemplates");
-        admin.css.files.push("!" + admin.cwd + "**/pipeline*.css");
+        const admin = createConfig('admin', 'eavTemplates');
+        admin.css.files.push(`!${admin.cwd}**/pipeline*.css`);
         sets.push(admin);
 
         // setup edit & extended
-        var edit = createConfig("edit", "eavEditTemplates");
+        var edit = createConfig('edit', 'eavEditTemplates');
         sets.push(edit);
 
         // pipeline-designer (CSS only)
-        var pDesigner = createConfig("admin", "");
-        pDesigner.css.files = [admin.cwd + "**/pipeline*.css"];
-        pDesigner.css.concat = "pipeline-designer.css";
+        var pDesigner = createConfig('admin', '');
+        pDesigner.css.files = [`${admin.cwd}**/pipeline*.css`];
+        pDesigner.css.concat = 'pipeline-designer.css';
         pDesigner.js.run = false;
         sets.push(pDesigner);
 
-
         // extension: gps-field
-        var editExtGps = createConfig("edit-extended");
-        editExtGps.cwd = editExtGps.cwd.replace("/edit-extended/", "/edit-extended/fields/custom-gps/");
-        editExtGps.dist = editExtGps.dist.replace("/edit-extended/", "/edit/extensions/field-custom-gps/");
-        editExtGps.js.concat = "custom-gps.js";
+        const editExtGps = createConfig('edit-extended');
+        editExtGps.cwd = editExtGps.cwd.replace('/edit-extended/', '/edit-extended/fields/custom-gps/');
+        editExtGps.dist = editExtGps.dist.replace('/edit-extended/', '/edit/extensions/field-custom-gps/');
+        editExtGps.js.concat = 'custom-gps.js';
         editExtGps.js.libs = [
-            "bower_components/lodash/dist/lodash.min.js",
-            "bower_components/angular-google-maps/dist/angular-google-maps.min.js",
-            "bower_components/angular-simple-logger/dist/angular-simple-logger.js"
+            'bower_components/lodash/dist/lodash.min.js',
+            'bower_components/angular-google-maps/dist/angular-google-maps.min.js',
+            'bower_components/angular-simple-logger/dist/angular-simple-logger.js'
         ];
         editExtGps.js.autoSort = false;
-        editExtGps.js.templateSetName = "customGpsTemplates"; // probably not relevant, but not sure
+        editExtGps.js.templateSetName = 'customGpsTemplates'; // probably not relevant, but not sure
         editExtGps.css.run = false;
         sets.push(editExtGps);
 
         return sets;
     }
 
-
-    /// assemble a list of packages to watch and build - for libraries
     function createSetsForLibs() {
         // todo sometime: add libs again - removed grunt in commit 2016-10-08 which contained thepaths etc.
-
-        var sets = [];
-
-        // part: i18n library
-        var i18n = createConfig("i18n", undefined, config.rootDist + "lib/i18n/", "set.min.js", [
-            "bower_components/angular-translate/angular-translate.min.js",
-            "bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js",
+        const sets = [];
+        const i18n = createConfig('i18n', undefined, `${config.rootDist}lib/i18n/`, 'set.min.js', [
+            'bower_components/angular-translate/angular-translate.min.js',
+            'bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
         ]);
         i18n.js.autoSort = false;
         i18n.js.alsoRunMin = false;
@@ -182,7 +175,7 @@
         sets.push(i18n);
 
         // part: ag-grid library
-        var agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [
+        const agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [
             "bower_components/ag-grid/dist/ag-grid.min.js",
         ]);
         agGrid.css.libs = ["bower_components/ag-grid/dist/ag-grid.min.css"];
@@ -191,7 +184,7 @@
         agGrid.js.alsoRunMin = false;
         sets.push(agGrid);
 
-        var jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.min.js", [
+        const jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.min.js", [
             "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
         ]);
         jsPlumb.js.alsoRunMin = false;

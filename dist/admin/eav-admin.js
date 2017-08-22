@@ -2439,7 +2439,7 @@ angular.module("EavServices")
  *  
  * How to use
  * 1. you must already include all js files in your main app - so the controllers you'll need must be preloaded
- * 2. Your main app must also  declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
+ * 2. Your main app must also declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
  * 3. your main app must also need this ['EavAdminUI']
  * 4. your controller must require eavAdminDialogs
  * 5. Then you can call such a dialog
@@ -2523,9 +2523,7 @@ angular.module("EavAdminUi", ["ng",
                     });
             };
 
-
             //#endregion
-        
             //#region Item - new, edit
             svc.openItemNew = function oin(contentTypeName, closeCallback) {
                 return svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback);
@@ -2641,9 +2639,8 @@ angular.module("EavAdminUi", ["ng",
                 var contAs = foundAs > 0 ?
                     controller.substring(foundAs + 4)
                     : null;
-                if (foundAs > 0)
-                    controller = controller.substring(0, foundAs);
 
+                if (foundAs > 0) controller = controller.substring(0, foundAs);
                 var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: templateUrl,

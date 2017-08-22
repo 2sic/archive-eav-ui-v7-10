@@ -34,6 +34,18 @@
 
             // load all data
             vm.loadAll();
+            vm.versioningOptions = getVersioningOptions();
+        }
+
+        function getVersioningOptions() {
+            var req = $2sxc.urlParams.get('versioningRequirements');
+            switch (req) {
+                case 'Disabled': return {};
+                case 'DraftOptional': return { show: true, hide: true, branch: true };
+                case 'DraftRecommended': return { show: true, hide: true, branch: true, draftRecommendet: true };
+                case 'DraftRequired': return { branch: true };
+            };
+            throw 'invalid versioning requiremenets: ' + req.toString();
         }
 
         // clean-up call when the dialog is closed
@@ -51,15 +63,14 @@
         vm.registerEditControl = function (control) {
             vm.registeredControls.push(control);
         };
-
         //#region load / save
 
         // load all data
-        vm.loadAll = function() {
+        vm.loadAll = function () {
             entitiesSvc.getManyForEditing(appId, $scope.itemList)
-                .then(function(result) {
+                .then(function (result) {
                     vm.items = result.data;
-                    angular.forEach(vm.items, function(v, i) {
+                    angular.forEach(vm.items, function (v, i) {
 
                         // If the entity is null, it does not exist yet. Create a new one
                         if (!vm.items[i].Entity && !!vm.items[i].Header.ContentTypeName)
@@ -69,7 +80,6 @@
 
                         //// load more content-type metadata to show
                         //vm.items[i].ContentType = contentTypeSvc.getDetails(vm.items[i].Header.ContentTypeName);
-
                         // set slot value - must be inverte for boolean-switch
                         var grp = vm.items[i].Header.Group;
                         vm.items[i].slotIsUsed = (grp === null || grp === undefined || grp.SlotIsEmpty !== true);
@@ -79,11 +89,14 @@
                     vm.publishMode = vm.items[0].Entity.IsBranch
                         ? "branch" // it's a branch, so it must have been saved as a draft-branch
                         : vm.items[0].Entity.IsPublished ? "show" : "hide";
+                    
+                    // if publis mode is prohibited, revert to default
+                    if (!vm.versioningOptions[vm.publishMode]) vm.publishMode = Object.keys(vm.versioningOptions)[0];
                     return result;
-                }).then(function(result) {
+                }).then(function (result) {
                     angular.forEach(vm.items, function (v, i) {
                         // load more content-type metadata to show
-                        ctSvc.getDetails(vm.items[i].Header.ContentTypeName).then(function(ct) {
+                        ctSvc.getDetails(vm.items[i].Header.ContentTypeName).then(function (ct) {
                             if (ct.data && ct.data.Metadata && ct.data.Metadata.EditInstructions)
                                 vm.itemsHelp[i] = $sce.trustAsHtml(ct.data.Metadata.EditInstructions);
                         });
@@ -91,31 +104,31 @@
                 });
         };
 
-        vm.showFormErrors = function() {
-                var errors = vm.formErrors();
-                var msgs = [], msgTemplate = $translate.instant("Message.FieldErrorList");
-                for (var set = 0; set < errors.length; set++) {
-                    if (errors[set].required) {
-                        var req = errors[set].required.map(function (itm) { return { field: itm.$name, error: "required" }; });
-                        msgs = msgs.concat(req);
-                    }
+        vm.showFormErrors = function () {
+            var errors = vm.formErrors();
+            var msgs = [], msgTemplate = $translate.instant("Message.FieldErrorList");
+            for (var set = 0; set < errors.length; set++) {
+                if (errors[set].required) {
+                    var req = errors[set].required.map(function (itm) { return { field: itm.$name, error: "required" }; });
+                    msgs = msgs.concat(req);
                 }
-                var nice = msgs.map(function (err) {
-                    var specs = err.field.split("_");
+            }
+            var nice = msgs.map(function (err) {
+                var specs = err.field.split("_");
 
-                    return msgTemplate.replace("{form}", specs[1])
-                        .replace("{field}", specs[3])
-                        .replace("{error}", err.error);
-                });
+                return msgTemplate.replace("{form}", specs[1])
+                    .replace("{field}", specs[3])
+                    .replace("{error}", err.error);
+            });
             var msg = nice.join("<br/>");
             return toastr.error($translate.instant("Message.CantSaveInvalid").replace("{0}", msg),
-                $translate.instant("Message.Error"), { allowHtml: true }); 
+                $translate.instant("Message.Error"), { allowHtml: true });
         };
 
         // the save-call
         vm.save = function (close) {
             // check if saving is allowed
-            if (!vm.isValid()) 
+            if (!vm.isValid())
                 return vm.showFormErrors();
 
             if (vm.isWorking > 0)
@@ -165,7 +178,7 @@
         // check if dirty
         $scope.state.isDirty = function () {
             var dirty = false;
-            angular.forEach(vm.registeredControls, function(e) {
+            angular.forEach(vm.registeredControls, function (e) {
                 if (e.isDirty())
                     dirty = true;
             });
@@ -173,8 +186,8 @@
         };
 
         // set to not-dirty (pristine)
-        $scope.state.setPristine = function() {
-            angular.forEach(vm.registeredControls, function(e) {
+        $scope.state.setPristine = function () {
+            angular.forEach(vm.registeredControls, function (e) {
                 e.setPristine();
             });
         };
@@ -198,7 +211,7 @@
 
         // handle maybe-leave
         vm.maybeLeave = {
-            save: function() { vm.save(true); },
+            save: function () { vm.save(true); },
             quit: $scope.close,
             handleClick: function (event) {
                 clog('handleClick', event);
@@ -215,7 +228,7 @@
                     return;
                 var template = "<div>"  // note: this variable must be inside this method, to ensure that translate is pre-loaded before we call it
                     + $translate.instant("Errors.UnsavedChanges") + "<br>"
-                    + "<button type='button' id='save' class='btn btn-primary' ><i class='eav-icon-ok'></i>" +  $translate.instant("General.Buttons.Save") + "</button> &nbsp;"
+                    + "<button type='button' id='save' class='btn btn-primary' ><i class='eav-icon-ok'></i>" + $translate.instant("General.Buttons.Save") + "</button> &nbsp;"
                     + "<button type='button' id='quit' class='btn btn-default' ><i class= 'eav-icon-cancel'></i>" + $translate.instant("General.Buttons.NotSave") + "</button>"
                     + "</div>";
                 if (vm.dialog && vm.dialog.isOpened)
@@ -230,7 +243,7 @@
                 e.preventDefault();
             }
         };
-        
+
         $scope.$on("modal.closing", vm.maybeLeave.ask);
 
 

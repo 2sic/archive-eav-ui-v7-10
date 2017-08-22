@@ -4,7 +4,7 @@
 	"use strict";
 
 	var app = angular.module("eavEditEntity"); 
-
+	
 	// The controller for the main form directive
 	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
 
@@ -46,7 +46,6 @@
 		                //if (e.InputType && eavConfig.formly.inputTypeReplacementMap[e.InputType]) 
 		                //    e.InputType = eavConfig.formly.inputTypeReplacementMap[e.InputType];
 
-
 		                // review type and get additional configs!
 		                e.InputType = vm.getType(e);
 		                eavConfig.formly.inputTypeReconfig(e);  // provide custom overrides etc. if necessary
@@ -60,8 +59,6 @@
 		            promiseToLoad.then(function(dependencyResult) {
 		                vm.registerAllFieldsFromReturnedDefinition(result);
 		            });
-
-
 		        });
 		};
 
@@ -104,8 +101,6 @@
 	                console.log(ex);
 	            }
 	        }
-
-
 	    };
 
 	    vm.registerAllFieldsFromReturnedDefinition = function raffrd(result) {
@@ -125,9 +120,7 @@
 
 	            // always remember the last heading so all the following fields know to look there for collapse-setting
 	            var isFieldHeading = (fieldType === "empty-default");
-	            if (isFieldHeading)
-	                lastGroupHeadingId = i;
-
+	            if (isFieldHeading) lastGroupHeadingId = i;
 
 	            var nextField = {
 	                key: e.StaticName,
@@ -185,11 +178,8 @@
 	        });
 	    };
 
-
 	    // Load existing entity if defined
-		if (vm.entity !== null)
-		    loadContentType();
-
+		if (vm.entity !== null) loadContentType();
 
 	    // Returns the field type for an attribute configuration
 		vm.getType = function (attributeConfiguration) {
@@ -230,7 +220,4 @@
 		    return (inputType);
 		};
 	});
-    
-	
-
 })();

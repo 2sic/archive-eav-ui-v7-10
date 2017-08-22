@@ -6,7 +6,6 @@
 
 	// The controller for the main form directive
 	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr) {
-
 	    var vm = this;
 	    vm.itemList = items;
 
@@ -18,7 +17,7 @@
 	            alert($translate.instant("Errors.UnclearError"));
 	        }
 	    };
-
+		
 	    vm.state = {
 	        isDirty: function() {
 	            throw $translate.instant("Errors.InnerControlMustOverride");
@@ -38,5 +37,4 @@
 	        return null;
 	    });
 	});
-
 })();
