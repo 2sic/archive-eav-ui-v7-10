@@ -1,9 +1,9 @@
 ﻿(() => {
     'use strict';
 
-    const gulp = require("gulp");
-    const $ = require("gulp-load-plugins")({ lazy: false });
-    const merge = require("merge-stream");
+    const gulp = require('gulp');
+    const $ = require('gulp-load-plugins')({ lazy: false });
+    const merge = require('merge-stream');
     const packageJSON = require('./package');
     const config = {
         debug: true,
@@ -59,8 +59,7 @@
     function packageJs(set) {
         if (config.debug) console.log(`bundling start: ${set.name}`);
         let js = gulp.src(set.js.files);
-        if (set.js.autoSort)
-            js = js.pipe($.sort());
+        if (set.js.autoSort) js = js.pipe($.sort());
         js = js.pipe($.jshint(packageJSON.jshintConfig))
             .pipe($.jshint.reporter('jshint-stylish'))
             .pipe($.ngAnnotate());
@@ -82,11 +81,11 @@
         result = result.pipe($.concat(set.js.concat))
             .pipe(gulp.dest(set.dist))
             .pipe($.rename({ extname: '.min.js' }));
-        if (set.js.alsoRunMin)
-            result = result
-                .pipe($.uglify())
-                .on('error', $.util.log)
-                .pipe(gulp.dest(set.dist));
+
+        if (set.js.alsoRunMin) result = result
+            .pipe($.uglify())
+            .on('error', $.util.log)
+            .pipe(gulp.dest(set.dist));
 
         if (config.debug) console.log($.util.colors.cyan(`bundling done: ${set.name}`));
 
@@ -122,7 +121,7 @@
             if (config.debug) console.log(`File ${ev.path} was ${ev.type}, running tasks on set ${set.name}`);
             (part === 'js' ? packageJs : packageCss)(set);
             console.log("finished '" + set.name + "'" + new Date());
-        }
+        };
         if (config.autostart) run({ path: '[none]', type: 'autostart' });
         return run;
     }
@@ -138,7 +137,7 @@
         sets.push(edit);
 
         // pipeline-designer (CSS only)
-        var pDesigner = createConfig('admin', '');
+        const pDesigner = createConfig('admin', '');
         pDesigner.css.files = [`${admin.cwd}**/pipeline*.css`];
         pDesigner.css.concat = 'pipeline-designer.css';
         pDesigner.js.run = false;

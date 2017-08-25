@@ -2,7 +2,7 @@
 (function () {
     angular.module("ContentTypesApp")
         .controller("FieldList", contentTypeFieldListController)
-    ;
+        ;
 
     /// The controller to manage the fields-list
     function contentTypeFieldListController(appId, contentTypeFieldSvc, contentType, $uibModalInstance, $uibModal, eavAdminDialogs, $filter, $translate, eavConfig, $scope) {
@@ -18,7 +18,7 @@
 
         vm.orderList = function () {
             var orderList = [];
-            vm.items.map(function (e,i) {
+            vm.items.map(function (e, i) {
                 orderList.push(e.Id);
             });
             return orderList;
@@ -44,7 +44,7 @@
                 controllerAs: "vm",
                 size: "lg",
                 resolve: {
-                    svc: function() { return svc; }
+                    svc: function () { return svc; }
                 }
             });
         };
@@ -57,14 +57,14 @@
                 controllerAs: "vm",
                 size: "lg",
                 resolve: {
-                    svc: function() { return svc; },
-                    item: function() { return item; }
+                    svc: function () { return svc; },
+                    item: function () { return item; }
                 }
             });
 
         };
 
-        vm.inputTypeTooltip = function(inputType) {
+        vm.inputTypeTooltip = function (inputType) {
             if (inputType !== "unknown")
                 return inputType;
 
@@ -77,19 +77,19 @@
         vm.setTitle = svc.setTitle;
 
         vm.tryToDelete = function tryToDelete(item) {
-            if (item.IsTitle) 
-                return $translate(["General.Messages.CantDelete", "General.Terms.Title"], {target:"{0}"}).then(function (translations) {
+            if (item.IsTitle)
+                return $translate(["General.Messages.CantDelete", "General.Terms.Title"], { target: "{0}" }).then(function (translations) {
                     alert(translations["General.Messages.CantDelete"].replace("{0}", translations["General.Terms.Title"]));
                 });
 
-            return $translate("General.Questions.Delete", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
+            return $translate("General.Questions.Delete", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function (msg) {
                 if (confirm(msg))
                     svc.delete(item);
             });
         };
 
         vm.rename = function rename(item) {
-            $translate("General.Questions.Rename", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function(msg) {
+            $translate("General.Questions.Rename", { target: "'" + item.StaticName + "' (" + item.Id + ")" }).then(function (msg) {
                 var newName = prompt(msg);
                 if (newName)
                     svc.rename(item, newName);
@@ -99,7 +99,8 @@
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
             // assemble an array of 2 items for editing
-            var items = [vm.createItemDefinition(item, "All"),
+            var items = [
+                vm.createItemDefinition(item, "All"),
                 vm.createItemDefinition(item, metadataType),
                 vm.createItemDefinition(item, item.InputType)
             ];
@@ -107,7 +108,7 @@
         };
 
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
-            var title = metadataType === "All" ? $translate.instant("DataType.All.Title") : metadataType; 
+            var title = metadataType === "All" ? $translate.instant("DataType.All.Title") : metadataType;
             return item.Metadata[metadataType] !== undefined
                 ? { EntityId: item.Metadata[metadataType].Id, Title: title }  // if defined, return the entity-number to edit
                 : {
@@ -119,7 +120,7 @@
                     },
                     Title: title,
                     Prefill: { Name: item.StaticName }
-                };      
+                };
         };
     }
 

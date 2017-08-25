@@ -30,22 +30,21 @@
         // the activate-command, to intialize everything. Must be called later, when all methods have been attached
         function activate() {
             // bind ctrl+S
-            vm.saveShortcut = ctrlS(function () { vm.save(); });
+            vm.saveShortcut = ctrlS(vm.save);
 
             // load all data
             vm.loadAll();
             vm.versioningOptions = getVersioningOptions();
         }
-
+        
         function getVersioningOptions() {
-            var req = $2sxc.urlParams.get('versioningRequirements');
+            var req = $2sxc.urlParams.get('versioningRequirements') || '';
             switch (req) {
-                case 'Disabled': return {};
+                case '':
                 case 'DraftOptional': return { show: true, hide: true, branch: true };
-                case 'DraftRecommended': return { show: true, hide: true, branch: true, draftRecommendet: true };
-                case 'DraftRequired': return { branch: true };
-            };
-            throw 'invalid versioning requiremenets: ' + req.toString();
+                case 'DraftRequired': return { branch: true, hide: true };
+                default: throw 'invalid versioning requiremenets: ' + req.toString();
+            }
         }
 
         // clean-up call when the dialog is closed
@@ -89,7 +88,7 @@
                     vm.publishMode = vm.items[0].Entity.IsBranch
                         ? "branch" // it's a branch, so it must have been saved as a draft-branch
                         : vm.items[0].Entity.IsPublished ? "show" : "hide";
-                    
+
                     // if publis mode is prohibited, revert to default
                     if (!vm.versioningOptions[vm.publishMode]) vm.publishMode = Object.keys(vm.versioningOptions)[0];
                     return result;
@@ -136,7 +135,7 @@
 
             // save
             vm.isWorking++;
-            saveToastr(entitiesSvc.saveMany(appId, vm.items)).then(function (result) {
+            saveToastr(entitiesSvc.saveMany(appId, vm.items, $scope.partOfPage)).then(function (result) {
                 $scope.state.setPristine();
                 if (close) {
                     vm.allowCloseWithoutAsking = true;
@@ -259,7 +258,4 @@
         activate();
 
     });
-
-
-
 })();

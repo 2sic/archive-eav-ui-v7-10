@@ -3,7 +3,7 @@
     "use strict";
 
     var app = angular.module("eavEditEntity");
-
+    
     app.directive("eavEditEntities", function () {
         return {
             templateUrl: "form/edit-many-entities.html",
@@ -12,7 +12,8 @@
                 itemList: "=",
                 afterSaveEvent: "=",
                 state: "=",
-                close: "="
+                close: "=",
+                partOfPage: "="
             },
             controller: "EditEntities",
             controllerAs: "vm"
