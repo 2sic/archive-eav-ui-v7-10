@@ -7,12 +7,10 @@
 
     // The controller for the main form directive
     app.controller("EditEntities", function editEntityCtrl(appId, $http, $scope, entitiesSvc, contentTypeSvc, $sce, toastr, saveToastr, $translate, debugState, ctrlS) {
-        //#region detailled logging if necessary
         var detailedLogging = false;
         var clog = detailedLogging
             ? function () { for (var i = 0; i < arguments.length; i++) console.log(arguments[i]); }
             : function () { };
-        //#endregion
 
         var vm = this;
         vm.debug = debugState;
