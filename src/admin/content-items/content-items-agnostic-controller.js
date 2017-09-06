@@ -2,13 +2,13 @@
 	'use strict';
 
 	angular.module("ContentItemsAppAgnostic", [
-        "EavConfiguration",
-        "EavAdminUi",
-        "EavServices"
+		"EavConfiguration",
+		"EavAdminUi",
+		"EavServices"
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
-        .controller("ContentItemsList", contentItemsListController)
-	;
+		.controller("ContentItemsList", contentItemsListController)
+		;
 
 	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
 		/* jshint validthis:true */
@@ -24,11 +24,11 @@
 			},
 			add: add,
 			refresh: setRowData,
-            openExport: openExport,
+			openExport: openExport,
 			tryToDelete: tryToDelete,
 			openDuplicate: openDuplicate,
 			close: close,
-            debugFilter: showFilter
+			debugFilter: showFilter
 		});
 		var svc;
 
@@ -48,12 +48,12 @@
 				width: 75,
 				suppressSorting: true,
 				template: '<span class="glyphicon" '
-                    + 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
-                    + 'tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.IsPublishedEntity ? \'DoP\' : \'D\') | translate }}"></span>'
+				+ 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
+				+ 'tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.IsPublishedEntity ? \'DoP\' : \'D\') | translate }}"></span>'
 
-                    + ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
-                    + 'tooltip-append-to-body="true" '
-                    + 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
+				+ ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
+				+ 'tooltip-append-to-body="true" '
+				+ 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
@@ -71,11 +71,11 @@
 				suppressSorting: true,
 				suppressMenu: true,
 				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Copy\' | translate }}">'
-                    + '<i icon="duplicate"></i>'
-                    + '</button> '
-                    + '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
-                    + '<i icon="remove"></i> '
-                    + '</button>'
+				+ '<i icon="duplicate"></i>'
+				+ '</button> '
+				+ '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
+				+ '<i icon="remove"></i> '
+				+ '</button>'
 			}
 		];
 
@@ -94,19 +94,19 @@
 					var bodyWidth = vm.gridOptions.api.gridPanel.eBodyContainer.clientWidth;
 					var viewportWidth = vm.gridOptions.api.gridPanel.eBodyViewport.clientWidth;
 					if (bodyWidth < viewportWidth)
-					    setModalWidth(bodyWidth);
+						setModalWidth(bodyWidth);
 
-				    // try to apply some initial filters...
+					// try to apply some initial filters...
 					var filterModel = agGridFilters.get();//
 					vm.gridOptions.api.setFilterModel(filterModel);
 				});
 		}
 
-        function showFilter() {
-            var savedModel = vm.gridOptions.api.getFilterModel();
-            console.log("current filter: ", savedModel);
-            alert('check console for filter information');
-        }
+		function showFilter() {
+			var savedModel = vm.gridOptions.api.getFilterModel();
+			console.log("current filter: ", savedModel);
+			alert('check console for filter information');
+		}
 
 		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
 		// $uibModalStack.getTop() might get a wrong modal Instance
@@ -122,30 +122,30 @@
 		}
 
 		function openExport() {
-		    // check if there is a filter attached
-		    var ids = null, 
-                hasFilters = false,
-                mod = vm.gridOptions.api.getFilterModel();
+			// check if there is a filter attached
+			var ids = null,
+				hasFilters = false,
+				mod = vm.gridOptions.api.getFilterModel();
 
-            // check if any filters are applied
-		    for (var prop in mod) 
-		        if (mod.hasOwnProperty(prop)) {
-		            hasFilters = true;
-		            break;
-		        }
+			// check if any filters are applied
+			for (var prop in mod)
+				if (mod.hasOwnProperty(prop)) {
+					hasFilters = true;
+					break;
+				}
 
-		    if (hasFilters) {
-		        ids = [];
-		        vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
-		            ids.push(rowNode.data.Id);
-		        });
-		        if (ids.length === 0)
-		            ids = null;
-		    }
+			if (hasFilters) {
+				ids = [];
+				vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
+					ids.push(rowNode.data.Id);
+				});
+				if (ids.length === 0)
+					ids = null;
+			}
 
-            // open export but DONT do a refresh callback, because it delays working with the table even though this is export only
-		    return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
-        }
+			// open export but DONT do a refresh callback, because it delays working with the table even though this is export only
+			return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
+		}
 
 		function openEditDialog(params) {
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
@@ -154,7 +154,7 @@
 		// Get/Update Grid Row-Data
 		function setRowData() {
 			var sortModel = {};
-		    var filterModel = {};
+			var filterModel = {};
 			if (vm.gridOptions.api) {
 				sortModel = vm.gridOptions.api.getSortModel();
 				filterModel = vm.gridOptions.api.getFilterModel();
@@ -278,7 +278,7 @@
 			var encodedValue = htmlEncode(params.value.join(", "));
 			var result = '<span title="' + encodedValue + '">';
 			if (params.colDef.allowMultiValue)
-			    result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
+				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
 			result += encodedValue + '</span>';
 
 			return result;
@@ -287,19 +287,19 @@
 
 		function tryToDelete(item) {
 
-		    entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item.Title).then(setRowData);
+			entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item.Title).then(setRowData);
 
-            // todo: i18n
-		    //var msg = $translate.instant("General.Questions.DeleteEntity", { title: item.Title, id: item.RepositoryId });
+			// todo: i18n
+			//var msg = $translate.instant("General.Questions.DeleteEntity", { title: item.Title, id: item.RepositoryId });
 			//if (confirm(msg))
 			//    svc.delete(item.RepositoryId, false)
-            //        .then(function (result) {
+			//        .then(function (result) {
 			//            //if (result.status >= 200 && result.status < 300) {
 			//            //    setRowData();
 			//            //    return;
 			//            //}
 
-            //            //// if delete failed, ask to force-delete in a toaster
+			//            //// if delete failed, ask to force-delete in a toaster
 			//            //var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: item.Title, id: item.RepositoryId}) + "<br/>"
 			//            //    + "<button type='button' id='del' class='btn btn-default' ><i class= 'eav-icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
 			//            //    + "</div>";
@@ -308,7 +308,7 @@
 			//            //        allowHtml: true,
 			//            //        timeOut: 5000,
 			//            //        onShown: function (toast) {
-            //            //            // this checks for the click on the button in the toaster
+			//            //            // this checks for the click on the button in the toaster
 			//            //            toast.el[0].onclick = function(event) {
 			//            //                var target = event.target || event.srcElement;
 			//            //                if (target.id === "del")
@@ -323,12 +323,10 @@
 		}
 
 		function openDuplicate(item) {
-			var items = [
-		        {
-		        	ContentTypeName: contentType,
-		        	DuplicateEntity: item.Id
-		        }
-			];
+			var items = [{
+				ContentTypeName: contentType,
+				DuplicateEntity: item.Id
+			}];
 			eavAdminDialogs.openEditItems(items, svc.liveListReload);
 		}
 
@@ -336,5 +334,4 @@
 			$uibModalInstance.dismiss("cancel");
 		}
 	}
-
 }());

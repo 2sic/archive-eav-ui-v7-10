@@ -385,13 +385,13 @@
 
 	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$uibModalInstance", "$uibModalStack", "$q", "$translate", "entitiesSvc", "agGridFilters"];
 	angular.module("ContentItemsAppAgnostic", [
-        "EavConfiguration",
-        "EavAdminUi",
-        "EavServices"
+		"EavConfiguration",
+		"EavAdminUi",
+		"EavServices"
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
-        .controller("ContentItemsList", contentItemsListController)
-	;
+		.controller("ContentItemsList", contentItemsListController)
+		;
 
 	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
 		/* jshint validthis:true */
@@ -407,11 +407,11 @@
 			},
 			add: add,
 			refresh: setRowData,
-            openExport: openExport,
+			openExport: openExport,
 			tryToDelete: tryToDelete,
 			openDuplicate: openDuplicate,
 			close: close,
-            debugFilter: showFilter
+			debugFilter: showFilter
 		});
 		var svc;
 
@@ -431,12 +431,12 @@
 				width: 75,
 				suppressSorting: true,
 				template: '<span class="glyphicon" '
-                    + 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
-                    + 'tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.IsPublishedEntity ? \'DoP\' : \'D\') | translate }}"></span>'
+				+ 'ng-class="{\'glyphicon-eye-open\': data.IsPublished, \'glyphicon-eye-close\' : !data.IsPublished}" '
+				+ 'tooltip-append-to-body="true" uib-tooltip="{{ \'Content.Publish.\' + (data.IsPublished ? \'PnV\': data.IsPublishedEntity ? \'DoP\' : \'D\') | translate }}"></span>'
 
-                    + ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
-                    + 'tooltip-append-to-body="true" '
-                    + 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
+				+ ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
+				+ 'tooltip-append-to-body="true" '
+				+ 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
@@ -454,11 +454,11 @@
 				suppressSorting: true,
 				suppressMenu: true,
 				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Copy\' | translate }}">'
-                    + '<i icon="duplicate"></i>'
-                    + '</button> '
-                    + '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
-                    + '<i icon="remove"></i> '
-                    + '</button>'
+				+ '<i icon="duplicate"></i>'
+				+ '</button> '
+				+ '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
+				+ '<i icon="remove"></i> '
+				+ '</button>'
 			}
 		];
 
@@ -477,19 +477,19 @@
 					var bodyWidth = vm.gridOptions.api.gridPanel.eBodyContainer.clientWidth;
 					var viewportWidth = vm.gridOptions.api.gridPanel.eBodyViewport.clientWidth;
 					if (bodyWidth < viewportWidth)
-					    setModalWidth(bodyWidth);
+						setModalWidth(bodyWidth);
 
-				    // try to apply some initial filters...
+					// try to apply some initial filters...
 					var filterModel = agGridFilters.get();//
 					vm.gridOptions.api.setFilterModel(filterModel);
 				});
 		}
 
-        function showFilter() {
-            var savedModel = vm.gridOptions.api.getFilterModel();
-            console.log("current filter: ", savedModel);
-            alert('check console for filter information');
-        }
+		function showFilter() {
+			var savedModel = vm.gridOptions.api.getFilterModel();
+			console.log("current filter: ", savedModel);
+			alert('check console for filter information');
+		}
 
 		// set width of outer angular-ui-modal. This is a quick and dirty solution because there's no official way to do this.
 		// $uibModalStack.getTop() might get a wrong modal Instance
@@ -505,30 +505,30 @@
 		}
 
 		function openExport() {
-		    // check if there is a filter attached
-		    var ids = null, 
-                hasFilters = false,
-                mod = vm.gridOptions.api.getFilterModel();
+			// check if there is a filter attached
+			var ids = null,
+				hasFilters = false,
+				mod = vm.gridOptions.api.getFilterModel();
 
-            // check if any filters are applied
-		    for (var prop in mod) 
-		        if (mod.hasOwnProperty(prop)) {
-		            hasFilters = true;
-		            break;
-		        }
+			// check if any filters are applied
+			for (var prop in mod)
+				if (mod.hasOwnProperty(prop)) {
+					hasFilters = true;
+					break;
+				}
 
-		    if (hasFilters) {
-		        ids = [];
-		        vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
-		            ids.push(rowNode.data.Id);
-		        });
-		        if (ids.length === 0)
-		            ids = null;
-		    }
+			if (hasFilters) {
+				ids = [];
+				vm.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode) {
+					ids.push(rowNode.data.Id);
+				});
+				if (ids.length === 0)
+					ids = null;
+			}
 
-            // open export but DONT do a refresh callback, because it delays working with the table even though this is export only
-		    return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
-        }
+			// open export but DONT do a refresh callback, because it delays working with the table even though this is export only
+			return eavAdminDialogs.openContentExport(appId, contentType, null, ids);
+		}
 
 		function openEditDialog(params) {
 			eavAdminDialogs.openItemEditWithEntityId(params.data.Id, setRowData);
@@ -537,7 +537,7 @@
 		// Get/Update Grid Row-Data
 		function setRowData() {
 			var sortModel = {};
-		    var filterModel = {};
+			var filterModel = {};
 			if (vm.gridOptions.api) {
 				sortModel = vm.gridOptions.api.getSortModel();
 				filterModel = vm.gridOptions.api.getFilterModel();
@@ -661,7 +661,7 @@
 			var encodedValue = htmlEncode(params.value.join(", "));
 			var result = '<span title="' + encodedValue + '">';
 			if (params.colDef.allowMultiValue)
-			    result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
+				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
 			result += encodedValue + '</span>';
 
 			return result;
@@ -670,19 +670,19 @@
 
 		function tryToDelete(item) {
 
-		    entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item.Title).then(setRowData);
+			entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item.Title).then(setRowData);
 
-            // todo: i18n
-		    //var msg = $translate.instant("General.Questions.DeleteEntity", { title: item.Title, id: item.RepositoryId });
+			// todo: i18n
+			//var msg = $translate.instant("General.Questions.DeleteEntity", { title: item.Title, id: item.RepositoryId });
 			//if (confirm(msg))
 			//    svc.delete(item.RepositoryId, false)
-            //        .then(function (result) {
+			//        .then(function (result) {
 			//            //if (result.status >= 200 && result.status < 300) {
 			//            //    setRowData();
 			//            //    return;
 			//            //}
 
-            //            //// if delete failed, ask to force-delete in a toaster
+			//            //// if delete failed, ask to force-delete in a toaster
 			//            //var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: item.Title, id: item.RepositoryId}) + "<br/>"
 			//            //    + "<button type='button' id='del' class='btn btn-default' ><i class= 'eav-icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
 			//            //    + "</div>";
@@ -691,7 +691,7 @@
 			//            //        allowHtml: true,
 			//            //        timeOut: 5000,
 			//            //        onShown: function (toast) {
-            //            //            // this checks for the click on the button in the toaster
+			//            //            // this checks for the click on the button in the toaster
 			//            //            toast.el[0].onclick = function(event) {
 			//            //                var target = event.target || event.srcElement;
 			//            //                if (target.id === "del")
@@ -706,12 +706,10 @@
 		}
 
 		function openDuplicate(item) {
-			var items = [
-		        {
-		        	ContentTypeName: contentType,
-		        	DuplicateEntity: item.Id
-		        }
-			];
+			var items = [{
+				ContentTypeName: contentType,
+				DuplicateEntity: item.Id
+			}];
 			eavAdminDialogs.openEditItems(items, svc.liveListReload);
 		}
 
@@ -719,7 +717,6 @@
 			$uibModalInstance.dismiss("cancel");
 		}
 	}
-
 }());
 (function () {
     'use strict';
@@ -805,7 +802,6 @@
         };
 
         vm.refresh = svc.liveListReload;
-
         vm.items = svc.liveList();
 
         vm.dynamicColumns = [];
@@ -830,13 +826,10 @@
                 }
             ];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
-
         };
 
         vm.close = function () { $uibModalInstance.dismiss("cancel"); };
-
     }
-
 } ());
 (function () { // TN: this is a helper construct, research iife or read https://github.com/johnpapa/angularjs-styleguide#iife
 
@@ -986,16 +979,15 @@
             return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
 
-
         //#region metadata for this type - new 2016-09-07
 
-        // Edit / Add metadata to a specific fields
+        // Edit / Add metadata to a specific field
         vm.createOrEditMetadata = function createOrEditMetadata(item) {
             // assemble an array of items for editing
             var items = [vm.createItemDefinition(item, "ContentType")];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };
-
+        
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             var title = "ContentType Metadata"; // todo: i18n
             return item.Metadata  // check if it already has metadata
@@ -1011,13 +1003,8 @@
                     Prefill: { Label: item.Name, Description: item.Description }
                 };
         };
-
-
         //#endregion
-
     }
-
-
 }());
 (function() {
 
@@ -1337,27 +1324,27 @@ angular.module("EavDirectives", [])
 
 } ());
 angular.module("PipelineDesigner", [
-        "PipelineDesigner.filters",
-        "ngResource",
-        "EavConfiguration",
-        "EavServices",
-        "eavTemplates",
-        "eavNgSvcs",
-        "EavAdminUi",
-        "eavEditEntity"
-    ])
+    "PipelineDesigner.filters",
+    "ngResource",
+    "EavConfiguration",
+    "EavServices",
+    "eavTemplates",
+    "eavNgSvcs",
+    "EavAdminUi",
+    "eavEditEntity"
+])
 
-// datasource directive makes an element a DataSource with jsPlumb
-    .directive("datasource", ["$timeout", function($timeout) {
+    // datasource directive makes an element a DataSource with jsPlumb
+    .directive('datasource', ["$timeout", function ($timeout) {
         return {
-            restrict: "A",
-            link: function(scope, element) {
+            restrict: 'A',
+            link: function (scope, element) {
                 // make this a DataSource when the DOM is ready
-                $timeout(function() {
+                $timeout(function () {
                     scope.makeDataSource(scope.dataSource, element);
                 });
                 if (scope.$last === true) {
-                    $timeout(function() {
+                    $timeout(function () {
                         scope.$emit("ngRepeatFinished");
                     });
                 }
@@ -1367,23 +1354,23 @@ angular.module("PipelineDesigner", [
 
 // Filters for "ClassName, AssemblyName"
 angular.module("PipelineDesigner.filters", []).filter("typename", function () {
-	return function (input, format) {
-		var globalParts = input.match(/[^,\s]+/g);
+    return function (input, format) {
+        var globalParts = input.match(/[^,\s]+/g);
 
-		switch (format) {
-			case "classFullName":
-				if (globalParts)
-				    return globalParts[0];
-			    break;
-			case "className":
-				if (globalParts) {
-					var classFullName = globalParts[0].match(/[^\.]+/g);
-					return classFullName[classFullName.length - 1];
-				}
-		}
+        switch (format) {
+            case "classFullName":
+                if (globalParts)
+                    return globalParts[0];
+                break;
+            case "className":
+                if (globalParts) {
+                    var classFullName = globalParts[0].match(/[^\.]+/g);
+                    return classFullName[classFullName.length - 1];
+                }
+        }
 
-		return input;
-	};
+        return input;
+    };
 });
 // AngularJS Controller for the >>>> Pipeline Designer
 
@@ -1986,43 +1973,43 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
-	    var vm = this;
+    controller("PipelineManagement", ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+        var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
 
-	    pipelineService.setAppId(appId);
+        pipelineService.setAppId(appId);
 
         // 2016-02-18 2dm - probably not needed
-	    // pipelineService.initContentTypes();
+        // pipelineService.initContentTypes();
 
-	    // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
-	    // Make URL-Provider available to the scope
-	    // vm.getPipelineUrl = pipelineService.getPipelineUrl;
+        // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
+        // Make URL-Provider available to the scope
+        // vm.getPipelineUrl = pipelineService.getPipelineUrl;
 
-	    // Refresh List of Pipelines
-	    vm.refresh = function () {
-	        vm.pipelines = pipelineService.getPipelines(appId);
-	    };
-	    vm.refresh();
+        // Refresh List of Pipelines
+        vm.refresh = function () {
+            vm.pipelines = pipelineService.getPipelines(appId);
+        };
+        vm.refresh();
 
-	    // Delete a Pipeline
-        vm.delete = function(pipeline) {
+        // Delete a Pipeline
+        vm.delete = function (pipeline) {
             if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
                 return;
 
-            pipelineService.deletePipeline(pipeline.Id).then(function() {
+            pipelineService.deletePipeline(pipeline.Id).then(function () {
                 vm.refresh();
-            }, function(reason) {
+            }, function (reason) {
                 alert(reason);
             });
         };
 
-	    // Clone a Pipeline
-        vm.clone = function(pipeline) {
-            pipelineService.clonePipeline(pipeline.Id).then(function() {
+        // Clone a Pipeline
+        vm.clone = function (pipeline) {
+            pipelineService.clonePipeline(pipeline.Id).then(function () {
                 vm.refresh();
-            }, function(reason) {
+            }, function (reason) {
                 alert(reason);
             });
         };
@@ -2033,15 +2020,15 @@ angular.module("PipelineManagement", [
 
         vm.add = function add() {
             var items = [{
-                    ContentTypeName: "DataPipeline",
-                    Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
-                }];
+                ContentTypeName: "DataPipeline",
+                Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
+            }];
             eavAdminDialogs.openEditItems(items, vm.refresh);
         };
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
-        }; 
+        };
 
         vm.design = function design(item) {
             return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);
@@ -2099,34 +2086,32 @@ angular.module("EavServices", [
     "toastr"
 ]);
 
-angular.module("EavServices")
-    .factory("contentItemsSvc", ["$http", "entitiesSvc", "metadataSvc", "svcCreator", function($http, entitiesSvc, metadataSvc, svcCreator) {
-            return function createContentItemsSvc(appId, contentType) {
-                var svc = {};
-                svc.contentType = contentType;
+angular.module('EavServices')
+    .factory('contentItemsSvc', ["$http", "entitiesSvc", "metadataSvc", "svcCreator", function ($http, entitiesSvc, metadataSvc, svcCreator) {
+        return function (appId, contentType) {
+            var svc = {};
+            svc.contentType = contentType;
+            svc.appId = appId;
 
-                svc.appId = appId;
-
-                svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
-                    return $http.get("eav/entities/GetAllOfTypeForAdmin", { params: { appId: svc.appId, contentType: svc.contentType } });
-                }));
-                
-                // delete, then reload
-                svc.delete = function del(id, tryForce) {
-                    return entitiesSvc.delete(svc.contentType, id, tryForce); // for now must work with get :( - delete doesn't work well in dnn
-                        //.then(svc.liveListReload, null);
+            svc = angular.extend(svc, svcCreator.implementLiveList(function getAll() {
+                return $http.get('eav/entities/GetAllOfTypeForAdmin', { params: { appId: svc.appId, contentType: svc.contentType } });
+            }));
+            
+            // delete, then reload
+            svc.delete = function (id, tryForce) {
+                return entitiesSvc.delete(svc.contentType, id, tryForce);
+                //.then(svc.liveListReload, null);
                 //});
-                };
-
-                // todo: should use the ContentTypeService instead
-                svc.getColumns = function getColumns() {
-                    return $http.get("eav/contenttype/getfields/", { params: { "appid": svc.appId, "staticName": svc.contentType } });
-                };
-
-                return svc;
             };
-        }]
-    );
+            
+            // todo: should use the ContentTypeService instead
+            svc.getColumns = function () {
+                return $http.get("eav/contenttype/getfields/", { params: { appid: svc.appId, staticName: svc.contentType } });
+            };
+
+            return svc;
+        };
+    }]);
 
 angular.module("EavServices")
     .factory("contentTypeSvc", ["$http", "eavConfig", "svcCreator", function ($http, eavConfig, svcCreator) {
@@ -2437,7 +2422,7 @@ angular.module("EavServices")
  * 2. .error (optional) 
  * 3. .notify (optional)
  * 4. .close (optional) --> this one is attached to all events if no primary handler is defined 
- *  
+ * 
  * How to use
  * 1. you must already include all js files in your main app - so the controllers you'll need must be preloaded
  * 2. Your main app must also declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
@@ -2445,7 +2430,6 @@ angular.module("EavServices")
  * 4. your controller must require eavAdminDialogs
  * 5. Then you can call such a dialog
  */
-
 
 // Todo
 // 1. Import / Export
@@ -2501,12 +2485,11 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
 
         //#region ContentType dialogs
-
         svc.openContentTypeEdit = function octe(item, closeCallback) {
             var resolve = svc.CreateResolve({ item: item });
             return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "", resolve, closeCallback);
         };
-        
+
         svc.openContentTypeFields = function octf(item, closeCallback) {
             var resolve = svc.CreateResolve({ contentType: item });
             return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
@@ -2518,9 +2501,10 @@ angular.module("EavAdminUi", ["ng",
                 .then(function (result) {
                     var ctName = result.data[0].Header.ContentTypeName;
                     var svcForThis = contentTypeSvc(appId); // note: won't specify scope to fallback
-                    return svcForThis.getDetails(ctName).then(function (result2) {
-                        return svc.openContentTypeFields(result2.data, closeCallback);
-                    });
+                    return svcForThis.getDetails(ctName)
+                        .then(function (result2) {
+                            return svc.openContentTypeFields(result2.data, closeCallback);
+                        });
                 });
         };
 
@@ -2529,7 +2513,7 @@ angular.module("EavAdminUi", ["ng",
         svc.openItemNew = function oin(contentTypeName, closeCallback) {
             return svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback, { partOfPage: false });
         };
-        
+
         svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
             return svc.openEditItems([{ EntityId: entityId }], closeCallback, { partOfPage: false });
         };
@@ -2614,7 +2598,6 @@ angular.module("EavAdminUi", ["ng",
         };
         //#endregion
 
-
         //#region Internal helpers
         svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
             if (typeof (callbacks) === "undefined")
@@ -2635,7 +2618,7 @@ angular.module("EavAdminUi", ["ng",
             });
             return svc._attachCallbacks(modalInstance, callbacks);
         };
-        
+
         svc.OpenModal = function openModal(templateUrl, controller, size, resolveValues, callbacks) {
             var foundAs = controller.indexOf(" as ");
             var contAs = foundAs > 0 ?
@@ -2668,8 +2651,6 @@ angular.module("EavAdminUi", ["ng",
             return function () { return value; };
         };
         //#endregion
-
-
         return svc;
     }])
 

@@ -5,43 +5,43 @@ angular.module("PipelineManagement", [
     "eavNgSvcs",
     "EavAdminUi"
 ]).
-	controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
-	    var vm = this;
+    controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+        var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
 
-	    pipelineService.setAppId(appId);
+        pipelineService.setAppId(appId);
 
         // 2016-02-18 2dm - probably not needed
-	    // pipelineService.initContentTypes();
+        // pipelineService.initContentTypes();
 
-	    // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
-	    // Make URL-Provider available to the scope
-	    // vm.getPipelineUrl = pipelineService.getPipelineUrl;
+        // 2016-01-14 2dm - commenting out completely, as the getPipelineUrl is probably not used any more
+        // Make URL-Provider available to the scope
+        // vm.getPipelineUrl = pipelineService.getPipelineUrl;
 
-	    // Refresh List of Pipelines
-	    vm.refresh = function () {
-	        vm.pipelines = pipelineService.getPipelines(appId);
-	    };
-	    vm.refresh();
+        // Refresh List of Pipelines
+        vm.refresh = function () {
+            vm.pipelines = pipelineService.getPipelines(appId);
+        };
+        vm.refresh();
 
-	    // Delete a Pipeline
-        vm.delete = function(pipeline) {
+        // Delete a Pipeline
+        vm.delete = function (pipeline) {
             if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
                 return;
 
-            pipelineService.deletePipeline(pipeline.Id).then(function() {
+            pipelineService.deletePipeline(pipeline.Id).then(function () {
                 vm.refresh();
-            }, function(reason) {
+            }, function (reason) {
                 alert(reason);
             });
         };
 
-	    // Clone a Pipeline
-        vm.clone = function(pipeline) {
-            pipelineService.clonePipeline(pipeline.Id).then(function() {
+        // Clone a Pipeline
+        vm.clone = function (pipeline) {
+            pipelineService.clonePipeline(pipeline.Id).then(function () {
                 vm.refresh();
-            }, function(reason) {
+            }, function (reason) {
                 alert(reason);
             });
         };
@@ -52,15 +52,15 @@ angular.module("PipelineManagement", [
 
         vm.add = function add() {
             var items = [{
-                    ContentTypeName: "DataPipeline",
-                    Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
-                }];
+                ContentTypeName: "DataPipeline",
+                Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
+            }];
             eavAdminDialogs.openEditItems(items, vm.refresh);
         };
 
         vm.edit = function edit(item) {
             eavAdminDialogs.openItemEditWithEntityId(item.Id, vm.refresh);
-        }; 
+        };
 
         vm.design = function design(item) {
             return eavAdminDialogs.editPipeline(vm.appId, item.Id, vm.refresh);

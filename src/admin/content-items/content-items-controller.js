@@ -26,7 +26,6 @@
         };
 
         vm.refresh = svc.liveListReload;
-
         vm.items = svc.liveList();
 
         vm.dynamicColumns = [];
@@ -51,11 +50,8 @@
                 }
             ];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
-
         };
 
         vm.close = function () { $uibModalInstance.dismiss("cancel"); };
-
     }
-
 } ());

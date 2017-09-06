@@ -12,7 +12,7 @@
  * 2. .error (optional) 
  * 3. .notify (optional)
  * 4. .close (optional) --> this one is attached to all events if no primary handler is defined 
- *  
+ * 
  * How to use
  * 1. you must already include all js files in your main app - so the controllers you'll need must be preloaded
  * 2. Your main app must also declare the other apps as dependencies, so angular.module('yourname', ['dialog 1', 'diolag 2'])
@@ -20,7 +20,6 @@
  * 4. your controller must require eavAdminDialogs
  * 5. Then you can call such a dialog
  */
-
 
 // Todo
 // 1. Import / Export
@@ -76,12 +75,11 @@ angular.module("EavAdminUi", ["ng",
         //#endregion
 
         //#region ContentType dialogs
-
         svc.openContentTypeEdit = function octe(item, closeCallback) {
             var resolve = svc.CreateResolve({ item: item });
             return svc.OpenModal("content-types/content-types-edit.html", "Edit as vm", "", resolve, closeCallback);
         };
-        
+
         svc.openContentTypeFields = function octf(item, closeCallback) {
             var resolve = svc.CreateResolve({ contentType: item });
             return svc.OpenModal("content-types/content-types-fields.html", "FieldList as vm", "xlg", resolve, closeCallback);
@@ -93,9 +91,10 @@ angular.module("EavAdminUi", ["ng",
                 .then(function (result) {
                     var ctName = result.data[0].Header.ContentTypeName;
                     var svcForThis = contentTypeSvc(appId); // note: won't specify scope to fallback
-                    return svcForThis.getDetails(ctName).then(function (result2) {
-                        return svc.openContentTypeFields(result2.data, closeCallback);
-                    });
+                    return svcForThis.getDetails(ctName)
+                        .then(function (result2) {
+                            return svc.openContentTypeFields(result2.data, closeCallback);
+                        });
                 });
         };
 
@@ -104,7 +103,7 @@ angular.module("EavAdminUi", ["ng",
         svc.openItemNew = function oin(contentTypeName, closeCallback) {
             return svc.openEditItems([{ ContentTypeName: contentTypeName }], closeCallback, { partOfPage: false });
         };
-        
+
         svc.openItemEditWithEntityId = function oie(entityId, closeCallback) {
             return svc.openEditItems([{ EntityId: entityId }], closeCallback, { partOfPage: false });
         };
@@ -189,7 +188,6 @@ angular.module("EavAdminUi", ["ng",
         };
         //#endregion
 
-
         //#region Internal helpers
         svc._attachCallbacks = function attachCallbacks(promise, callbacks) {
             if (typeof (callbacks) === "undefined")
@@ -210,7 +208,7 @@ angular.module("EavAdminUi", ["ng",
             });
             return svc._attachCallbacks(modalInstance, callbacks);
         };
-        
+
         svc.OpenModal = function openModal(templateUrl, controller, size, resolveValues, callbacks) {
             var foundAs = controller.indexOf(" as ");
             var contAs = foundAs > 0 ?
@@ -243,8 +241,6 @@ angular.module("EavAdminUi", ["ng",
             return function () { return value; };
         };
         //#endregion
-
-
         return svc;
     })
 

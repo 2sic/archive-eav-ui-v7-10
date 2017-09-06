@@ -632,19 +632,16 @@ angular.module("eavFieldTemplates")
 
 /* global angular */
 (function () {
-    /* jshint laxbreak:true*/
     "use strict";
 
     var app = angular.module("eavEditEntity");
 
     // The controller for the main form directive
     app.controller("EditEntities", ["appId", "$http", "$scope", "entitiesSvc", "contentTypeSvc", "$sce", "toastr", "saveToastr", "$translate", "debugState", "ctrlS", function editEntityCtrl(appId, $http, $scope, entitiesSvc, contentTypeSvc, $sce, toastr, saveToastr, $translate, debugState, ctrlS) {
-        //#region detailled logging if necessary
         var detailedLogging = false;
         var clog = detailedLogging
             ? function () { for (var i = 0; i < arguments.length; i++) console.log(arguments[i]); }
             : function () { };
-        //#endregion
 
         var vm = this;
         vm.debug = debugState;
@@ -668,7 +665,7 @@ angular.module("eavFieldTemplates")
             vm.loadAll();
             vm.versioningOptions = getVersioningOptions();
         }
-        
+
         function getVersioningOptions() {
             var req = $2sxc.urlParams.get('versioningRequirements') || '';
             switch (req) {
@@ -767,17 +764,18 @@ angular.module("eavFieldTemplates")
 
             // save
             vm.isWorking++;
-            saveToastr(entitiesSvc.saveMany(appId, vm.items, $scope.partOfPage)).then(function (result) {
-                $scope.state.setPristine();
-                if (close) {
-                    vm.allowCloseWithoutAsking = true;
-                    vm.afterSaveEvent(result);
-                }
-                vm.enableDraft = true;  // after saving, we can re-save as draft
-                vm.isWorking--;
-            }, function errorWhileSaving() {
-                vm.isWorking--;
-            });
+            saveToastr(entitiesSvc.saveMany(appId, vm.items, $scope.partOfPage))
+                .then(function (result) {
+                    $scope.state.setPristine();
+                    if (close) {
+                        vm.allowCloseWithoutAsking = true;
+                        vm.afterSaveEvent(result);
+                    }
+                    vm.enableDraft = true;  // after saving, we can re-save as draft
+                    vm.isWorking--;
+                }, function errorWhileSaving() {
+                    vm.isWorking--;
+                });
             return null;
         };
 
@@ -1725,7 +1723,6 @@ function enhanceEntity(entity) {
             };
             
             svc.saveMany = function (appId, items, partOfPage) {
-                console.log(items);
 
                 // first clean up unnecessary nodes - just to make sure we don't miss-read the JSONs transferred
                 var removeTempValue = function (value, key) { delete value._currentValue; };

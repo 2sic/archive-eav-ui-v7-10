@@ -1,6 +1,5 @@
 ﻿/* global angular */
 (function () {
-    /* jshint laxbreak:true*/
     "use strict";
 
     var app = angular.module("eavEditEntity");
@@ -34,7 +33,7 @@
             vm.loadAll();
             vm.versioningOptions = getVersioningOptions();
         }
-        
+
         function getVersioningOptions() {
             var req = $2sxc.urlParams.get('versioningRequirements') || '';
             switch (req) {
@@ -133,17 +132,18 @@
 
             // save
             vm.isWorking++;
-            saveToastr(entitiesSvc.saveMany(appId, vm.items, $scope.partOfPage)).then(function (result) {
-                $scope.state.setPristine();
-                if (close) {
-                    vm.allowCloseWithoutAsking = true;
-                    vm.afterSaveEvent(result);
-                }
-                vm.enableDraft = true;  // after saving, we can re-save as draft
-                vm.isWorking--;
-            }, function errorWhileSaving() {
-                vm.isWorking--;
-            });
+            saveToastr(entitiesSvc.saveMany(appId, vm.items, $scope.partOfPage))
+                .then(function (result) {
+                    $scope.state.setPristine();
+                    if (close) {
+                        vm.allowCloseWithoutAsking = true;
+                        vm.afterSaveEvent(result);
+                    }
+                    vm.enableDraft = true;  // after saving, we can re-save as draft
+                    vm.isWorking--;
+                }, function errorWhileSaving() {
+                    vm.isWorking--;
+                });
             return null;
         };
 

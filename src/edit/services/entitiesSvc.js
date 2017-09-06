@@ -14,7 +14,6 @@
             };
             
             svc.saveMany = function (appId, items, partOfPage) {
-                console.log(items);
 
                 // first clean up unnecessary nodes - just to make sure we don't miss-read the JSONs transferred
                 var removeTempValue = function (value, key) { delete value._currentValue; };

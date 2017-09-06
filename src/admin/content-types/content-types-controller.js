@@ -82,16 +82,15 @@
             return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
 
-
         //#region metadata for this type - new 2016-09-07
 
-        // Edit / Add metadata to a specific fields
+        // Edit / Add metadata to a specific field
         vm.createOrEditMetadata = function createOrEditMetadata(item) {
             // assemble an array of items for editing
             var items = [vm.createItemDefinition(item, "ContentType")];
             eavAdminDialogs.openEditItems(items, svc.liveListReload);
         };
-
+        
         vm.createItemDefinition = function createItemDefinition(item, metadataType) {
             var title = "ContentType Metadata"; // todo: i18n
             return item.Metadata  // check if it already has metadata
@@ -107,11 +106,6 @@
                     Prefill: { Label: item.Name, Description: item.Description }
                 };
         };
-
-
         //#endregion
-
     }
-
-
 }());

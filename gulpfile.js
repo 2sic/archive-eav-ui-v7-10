@@ -93,18 +93,18 @@
     }
 
     function packageCss(set) {
-        if (config.debug) console.log("css packaging start: " + set.name);
+        if (config.debug) console.log(`css packaging start: ${set.name}`);
 
         let result = gulp.src(set.css.files)
             .pipe($.sort());
         const libs = gulp.src(set.css.libs); // don't sort libs
-
+        
         result = merge(result, libs)
             .pipe($.concat(set.css.concat))
             .pipe(gulp.dest(set.dist));
 
         if (set.css.alsoRunMin) result // minify and save
-            .pipe($.rename({ extname: ".min.css" }))
+            .pipe($.rename({ extname: '.min.css' }))
             .pipe($.sourcemaps.init())
             .pipe($.cleanCss({ compatibility: "*", processImportFrom: ['!fonts.googleapis.com'] })) // ie9 compatibility
             .pipe($.sourcemaps.write("./"))
@@ -116,7 +116,7 @@
 
     // assemble a function which will call the desired set - this is a helper for the watch-sequence. 
     function createWatchCallback(set, part) {
-        if (config.debug) console.log("creating watcher callback for " + set.name);
+        if (config.debug) console.log(`creating watcher callback for ${set.name}`);
         const run = ev => {
             if (config.debug) console.log(`File ${ev.path} was ${ev.type}, running tasks on set ${set.name}`);
             (part === 'js' ? packageJs : packageCss)(set);
@@ -160,7 +160,7 @@
 
         return sets;
     }
-
+    
     function createSetsForLibs() {
         // todo sometime: add libs again - removed grunt in commit 2016-10-08 which contained thepaths etc.
         const sets = [];
@@ -172,7 +172,7 @@
         i18n.js.alsoRunMin = false;
         i18n.css.run = false;
         sets.push(i18n);
-
+        
         // part: ag-grid library
         const agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [
             "bower_components/ag-grid/dist/ag-grid.min.js",
@@ -183,14 +183,14 @@
         agGrid.js.alsoRunMin = false;
         sets.push(agGrid);
 
-        const jsPlumb = createConfig("jsPlumb", undefined, config.rootDist + "lib/pipeline/", "set.min.js", [
-            "bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js"
+        const jsPlumb = createConfig("jsPlumb", undefined, `${config.rootDist}lib/pipeline/`, 'set.min.js', [
+            'bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js'
         ]);
         jsPlumb.js.alsoRunMin = false;
         jsPlumb.css.run = false;
         sets.push(jsPlumb);
 
-        const libAng = createConfig("angular", undefined, config.rootDist + "lib/angular/", "set.min.js", [
+        const libAng = createConfig("angular", undefined, `${config.rootDist}lib/angular/`, "set.min.js", [
             "bower_components/angular/angular.min.js",
             "bower_components/angular-resource/angular-resource.min.js",
             "bower_components/angular-animate/angular-animate.min.js",
