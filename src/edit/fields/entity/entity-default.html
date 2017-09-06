@@ -48,7 +48,7 @@
             <div class="eav-entityselect-action-addexisting"
                  ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
                 <div class="eav-entityselect-selector-wrapper">
-                    <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close Close Close Close Close Close Close Close Close Close Close Close Close Close Close Close Close</div>
+                    <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close</div>
                     <ui-select theme="bootstrap"
                                ng-model="selectedEntity"
                                on-highlight="maybeReload()"
@@ -75,6 +75,10 @@
                     ng-click="openNewEntityDialog()">
                 <i class="eav-icon-plus"></i>
             </button>
+        </div>
+        
+        <div ng-if="debug.on">
+            debug: <span ng-click="insertNull()">add null-item</span>
         </div>
 
         <!-- test - want to re-align how two add-scenarios work; ideally side-by side

@@ -17,7 +17,7 @@ angular.module("eavFieldTemplates")
             controller: "FieldTemplate-EntityCtrl"
         });
     })
-    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc) {
+    .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc, debugState) {
         var contentType, lastContentType;
 
         function activate() {
@@ -47,6 +47,8 @@ angular.module("eavFieldTemplates")
 
             $scope.availableEntities = [];
         }
+
+        $scope.debug = debugState;
 
         // add an just-picked entity to the selected list
         $scope.addEntity = function(item) {
@@ -144,6 +146,10 @@ angular.module("eavFieldTemplates")
             var id = entities[0].Id;
 
             return eavAdminDialogs.openItemEditWithEntityId(id, $scope.getAvailableEntities);
+        };
+
+        $scope.insertNull = function() {
+            $scope.chosenEntities.push(null);
         };
 
         function setDirty() {

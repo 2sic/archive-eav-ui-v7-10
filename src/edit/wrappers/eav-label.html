@@ -10,8 +10,9 @@
         <div ng-show="!(to.collapseField && to.enableCollapseField)">
             <formly-transclude></formly-transclude>
         </div>
-
-        <div ng-if="debug.on">
+        
+        <!-- special debug layer, only enable during advanced debugging, usually never needed -->
+        <div ng-if="false && debug.on">
             Field-Debug: {{fc}}
         </div>
     </div>
