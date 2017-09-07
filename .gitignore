@@ -165,3 +165,4 @@ Testing/Bin
 /.grunt/
 /bower_components/
 tmp/*
+.vs/

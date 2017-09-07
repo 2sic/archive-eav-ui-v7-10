@@ -35,12 +35,12 @@
         }
 
         function getVersioningOptions() {
-            var req = $2sxc.urlParams.get('versioningRequirements') || '';
+            var req = $2sxc.urlParams.get("publishing") || "";
             switch (req) {
-                case '':
-                case 'DraftOptional': return { show: true, hide: true, branch: true };
-                case 'DraftRequired': return { branch: true, hide: true };
-                default: throw 'invalid versioning requiremenets: ' + req.toString();
+                case "":
+                case "DraftOptional": return { show: true, hide: true, branch: true };
+                case "DraftRequired": return { branch: true, hide: true };
+                default: throw "invalid versioning requiremenets: " + req.toString();
             }
         }
 
@@ -211,11 +211,11 @@
             save: function () { vm.save(true); },
             quit: $scope.close,
             handleClick: function (event) {
-                clog('handleClick', event);
+                clog("handleClick", event);
                 var target = event.target || event.srcElement;
                 if (target.nodeName === "I") target = target.parentNode;
                 if (target.id === "save" || target.id === "quit") {
-                    clog('for ' + target.id);
+                    clog("for " + target.id);
                     vm.allowCloseWithoutAsking = true;
                     vm.maybeLeave[target.id]();
                 }
