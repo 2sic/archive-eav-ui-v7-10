@@ -8,7 +8,7 @@
         <button icon="plus" ng-click="vm.add()" class="btn btn-primary btn-square"></button>
 
         <!-- Table of content types for editing -->
-        <table ui-tree="vm.treeOptions" data-drag-enabled="vm.dragEnabled" ui-tree-nodes ng-model="vm.items" class="table table-hover table-manage-eav">
+        <table ui-tree="vm.treeOptions" data-drag-enabled="vm.dragEnabled" ui-tree-nodes ng-model="vm.items" class="table table-hover table-manage-eav eav-admin-field-list">
             <thead>
                 <tr>
                     <th class="mini-btn-1"></th>
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="item in vm.items track by $id(item)" ui-tree-node class="clickable-row" ng-click="vm.createOrEditMetadata(item, item.Type)">
+                <tr ng-repeat="item in vm.items track by $id(item)" ui-tree-node class="clickable-row" ng-click="vm.createOrEditMetadata(item, item.Type)" ng-class="[ 'type-' + item.Type.toLowerCase(), 'subtype-' + item.InputType.substring(item.InputType.indexOf('-') + 1, 100)]">
                     <td ui-tree-handle><i class="glyphicon glyphicon-sort"></i></td>
                     <td stop-event="click">
                         <button type="button" class="btn btn-xs btn-square" ng-style="(item.IsTitle ? '' : 'color: transparent !important')" ng-click="vm.setTitle(item)">
