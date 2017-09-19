@@ -5,10 +5,11 @@
 	var app = angular.module("eavEditEntity");
 
 	// The controller for the main form directive
-	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr, partOfPage) {
+	app.controller("EditEntityWrapperCtrl", function editEntityCtrl($q, $http, $scope, items, $uibModalInstance, $window, $translate, toastr, partOfPage, publishing) {
 		var vm = this;
 		
-		vm.partOfPage = partOfPage;
+        vm.partOfPage = partOfPage;
+	    vm.publishing = publishing;
 		vm.itemList = items;
 
 	    // this is the callback after saving - needed to close everything

@@ -13,7 +13,8 @@
                 afterSaveEvent: "=",
                 state: "=",
                 close: "=",
-                partOfPage: "="
+                partOfPage: "=",
+                publishing: "="
             },
             controller: "EditEntities",
             controllerAs: "vm"

@@ -35,6 +35,8 @@
         }
 
         function getVersioningOptions() {
+            if (!$scope.partOfPage)
+                return { show: true, hide: true, branch: true };
             var req = $2sxc.urlParams.get("publishing") || "";
             switch (req) {
                 case "":
