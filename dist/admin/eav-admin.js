@@ -1263,9 +1263,9 @@ angular.module("EavDirectives", [])
             }
         };
     })
-    .directive('stopEvent', function() {
+    .directive("stopEvent", function() {
         return {
-            restrict: 'A',
+            restrict: "A",
             link: function(scope, element, attr) {
                 if (attr && attr.stopEvent)
                     element.bind(attr.stopEvent, function(e) {
@@ -1274,12 +1274,32 @@ angular.module("EavDirectives", [])
             }
         };
     })
-    .directive('showDebugAvailability', ["eavConfig", function (eavConfig) {
+    .directive("showDebugAvailability", ["eavConfig", function (eavConfig) {
         return {
-            restrict: 'E',
-            template: "<span class=\"low-priority\" uib-tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }} \n" + eavConfig.versionInfo + "\">"
+            restrict: "E",
+            scope: {},
+            template: "<span class=\"debug-indicator low-priority\" ng-class='{ \"debug-enabled\": debugState.on }' "
+            + "uib-tooltip=\"{{ 'AdvancedMode.Info.Available' | translate }} \n" + eavConfig.versionInfo + "\" "
+            + "ng-click='askForLogging()'>"
                 + "&pi;"
-                + "</span><br/>"
+            + "</span><br/>",
+            controller: ["$scope", "debugState", function ($scope, debugState) {
+                $scope.debugState = debugState;
+
+                function askLogging() {
+                    var duration = prompt("enable extended logging for a few minutes? type in duration below: ", 1);
+                    if (duration === null || duration === undefined) return;
+                    debugState.enableExtendedLogging(duration).then(function (res) {
+                        console.log(res.data);
+                    });
+                }
+
+
+                $scope.askForLogging = function () {
+                    if (!debugState.on) return;
+                    askLogging();
+                };
+            }]
         };
     }])
 
@@ -2369,7 +2389,7 @@ angular.module("EavServices")
  */
 
 angular.module("EavServices")
-    .factory("debugState", ["$translate", "toastr", function ($translate, toastr) {
+    .factory("debugState", ["$translate", "toastr", "$http", function ($translate, toastr, $http) {
         var svc = {
             on: false
         };
@@ -2387,6 +2407,10 @@ angular.module("EavServices")
                 svc.toggle();
                 e.alreadySwitchedDebugState = true;
             }
+        };
+
+        svc.enableExtendedLogging = function(duration) {
+            return $http.get("app-sys/system/extendedlogging", { params: { "duration": duration } });
         };
 
         return svc;

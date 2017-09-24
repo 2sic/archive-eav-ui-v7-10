@@ -14,7 +14,7 @@
  */
 
 angular.module("EavServices")
-    .factory("debugState", function ($translate, toastr) {
+    .factory("debugState", function ($translate, toastr, $http) {
         var svc = {
             on: false
         };
@@ -32,6 +32,10 @@ angular.module("EavServices")
                 svc.toggle();
                 e.alreadySwitchedDebugState = true;
             }
+        };
+
+        svc.enableExtendedLogging = function(duration) {
+            return $http.get("app-sys/system/extendedlogging", { params: { "duration": duration } });
         };
 
         return svc;
