@@ -25,14 +25,12 @@
 // 1. Import / Export
 // 2. Pipeline Designer
 
-// var contentItemsModule = $eavOnlyHelpers.urlParams.get("oldgrid") ? "ContentItemsApp" : "ContentItemsAppAgnostic";
-
 angular.module("EavAdminUi", ["ng",
     "ui.bootstrap",         // for the $uibModal etc.
     "EavServices",
     "eavTemplates",         // Provides all cached templates
     "PermissionsApp",       // Permissions dialogs to manage permissions
-    "ContentItemsAppAgnostic", // contentItemsModule,      // Content-items dialog - not working atm?
+    "ContentItemsAppAgnostic", 
     "PipelineManagement",   // Manage pipelines
     "ContentImportApp",
     "ContentExportApp",

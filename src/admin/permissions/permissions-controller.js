@@ -23,7 +23,7 @@
         vm.refresh = svc.liveListReload;
         
         vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?"))
+            if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?")) // todo: probably change .Title to ._Title
                 svc.delete(item.Id);
         };
 

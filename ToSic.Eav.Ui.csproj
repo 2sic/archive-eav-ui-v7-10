@@ -34,6 +34,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -243,8 +244,6 @@
     </Content>
     <Content Include="src\admin\content-items\content-edit-controller.js" />
     <Content Include="src\admin\content-items\content-edit.html" />
-    <Content Include="src\admin\content-items\content-items-controller.js" />
-    <Content Include="src\admin\content-items\content-items.html" />
     <Content Include="src\admin\content-items\history-controller.js" />
     <Content Include="src\admin\content-items\history-details.html" />
     <Content Include="src\admin\content-items\history.html" />

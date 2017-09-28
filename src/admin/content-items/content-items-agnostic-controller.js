@@ -58,10 +58,10 @@
 			},
 			{
 				headerName: "Title",
-				field: "Title",
+				field: "_Title",
 				width: 216,
 				cellClass: "clickable",
-				template: '<span tooltip-append-to-body="true" uib-tooltip="{{data.Title}}" ng-bind="data.Title + \' \' + ((!data.Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
+				template: '<span tooltip-append-to-body="true" uib-tooltip="{{data._Title}}" ng-bind="data._Title + \' \' + ((!data._Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
 				filter: 'text',
 				onCellClicked: openEditDialog
 			},
@@ -226,7 +226,7 @@
 				return null;
 
 			return rawValue.map(function (item) {
-				return item.Title;
+				return item._Title;
 			});
 		}
 
@@ -286,40 +286,7 @@
 		// #endregion
 
 		function tryToDelete(item) {
-
-			entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item.Title).then(setRowData);
-
-			// todo: i18n
-			//var msg = $translate.instant("General.Questions.DeleteEntity", { title: item.Title, id: item.RepositoryId });
-			//if (confirm(msg))
-			//    svc.delete(item.RepositoryId, false)
-			//        .then(function (result) {
-			//            //if (result.status >= 200 && result.status < 300) {
-			//            //    setRowData();
-			//            //    return;
-			//            //}
-
-			//            //// if delete failed, ask to force-delete in a toaster
-			//            //var msg = "<div>" + $translate.instant("General.Questions.ForceDelete", { title: item.Title, id: item.RepositoryId}) + "<br/>"
-			//            //    + "<button type='button' id='del' class='btn btn-default' ><i class= 'eav-icon-ok'></i>" + $translate.instant("General.Buttons.ForceDelete") + "</button>"
-			//            //    + "</div>";
-
-			//            //toastr.warning(msg, {
-			//            //        allowHtml: true,
-			//            //        timeOut: 5000,
-			//            //        onShown: function (toast) {
-			//            //            // this checks for the click on the button in the toaster
-			//            //            toast.el[0].onclick = function(event) {
-			//            //                var target = event.target || event.srcElement;
-			//            //                if (target.id === "del")
-			//            //                    svc.delete(item.RepositoryId, true)
-			//            //                        .then(setRowData);
-			//            //            };
-			//            //        }
-
-
-			//            //    });
-			//        });
+			entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item._Title).then(setRowData);
 		}
 
 		function openDuplicate(item) {
