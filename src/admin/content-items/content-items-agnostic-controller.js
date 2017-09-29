@@ -37,7 +37,7 @@
 				headerName: "ID",
 				field: "Id",
 				width: 50,
-				template: '<span tooltip-append-to-body="true" uib-tooltip="Id: {{data.Id}}\nRepoId: {{data.RepositoryId}}\nGuid: {{data.Guid}}" ng-bind="data.Id"></span>',
+				template: '<span tooltip-append-to-body="true" uib-tooltip="Id: {{data.Id}}\nRepoId: {{data._RepositoryId}}\nGuid: {{data.Guid}}" ng-bind="data.Id"></span>',
 				cellClass: "clickable",
 				filter: 'number',
 				onCellClicked: openEditDialog
@@ -53,12 +53,12 @@
 
 				+ ' <span icon="{{ data.DraftEntity || data.PublishedEntity ? \'link\' : \'\' }}" '
 				+ 'tooltip-append-to-body="true" '
-				+ 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity.RepositoryId }\' }} {{ data.DraftEntity.RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity.RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
+				+ 'uib-tooltip="{{ (data.DraftEntity ? \'Content.Publish.HD\' :\'\') | translate:\'{ id: data.DraftEntity._RepositoryId }\' }} {{ data.DraftEntity._RepositoryId }}\n{{ (data.PublishedEntity ? \'Content.Publish.HP\' :\'\') | translate }} {{ data.PublishedEntity._RepositoryId }}"></span> <span ng-if="data.Metadata" tooltip-append-to-body="true" uib-tooltip="Metadata for type {{ data.Metadata.TargetType}}, id {{ data.Metadata.KeyNumber }}{{ data.Metadata.KeyString }}{{ data.Metadata.KeyGuid }}" icon="tag"></span>',
 				valueGetter: valueGetterStatusField
 			},
 			{
 				headerName: "Title",
-				field: "_Title",
+				field: "_Title", 
 				width: 216,
 				cellClass: "clickable",
 				template: '<span tooltip-append-to-body="true" uib-tooltip="{{data._Title}}" ng-bind="data._Title + \' \' + ((!data._Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
@@ -286,7 +286,7 @@
 		// #endregion
 
 		function tryToDelete(item) {
-			entitiesSvc.tryDeleteAndAskForce(contentType, item.RepositoryId, item._Title).then(setRowData);
+			entitiesSvc.tryDeleteAndAskForce(contentType, item._RepositoryId, item._Title).then(setRowData);
 		}
 
 		function openDuplicate(item) {
