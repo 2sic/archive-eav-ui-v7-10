@@ -379,7 +379,7 @@
                         return;
                     }
 
-                    pipelineService.editDataSourcePart(dataSource);
+                    pipelineService.editDataSourcePart(dataSource, $scope.pipelineData.InstalledDataSources);
 
                 };
 
