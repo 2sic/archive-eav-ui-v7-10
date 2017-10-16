@@ -12,7 +12,10 @@
                 <i class="eav-icon-toggle-off" ng-class=" p.slotIsUsed ? 'eav-icon-toggle-on' : 'eav-icon-toggle-off' " ng-click="p.slotIsUsed = !p.slotIsUsed" uib-tooltip="{{'EditEntity.SlotUsed' + p.slotIsUsed | translate}}"></i>
             </span>
         </div>
-        <div ng-if="vm.itemsHelp[$index]" ng-bind-html="vm.itemsHelp[$index]"></div>
+        <!-- i18n help text -->
+        <div ng-if="vm.typeI18n[$index]" ng-bind-html="vm.typeI18n[$index] + '.Metadata.EditInstructions' | translate"></div>
+        <!-- builtin help text -->
+        <div ng-if="!vm.typeI18n[$index] && vm.itemsHelp[$index]" ng-bind-html="vm.itemsHelp[$index]"></div>
         <eav-edit-entity-form entity="p.Entity" header="p.Header" register-edit-control="vm.registerEditControl" ng-hide="p.collapse"></eav-edit-entity-form>
     </div>
     <div>

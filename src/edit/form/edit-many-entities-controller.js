@@ -20,6 +20,7 @@
         vm.willPublish = false;     // default is won't publish, but will usually be overridden
         vm.publishMode = "hide";    // has 3 modes: show, hide, branch (where branch is a hidden, linked clone)
         vm.enableDraft = false;
+        vm.typeI18n = [];
 
         var ctSvc = contentTypeSvc(appId);
 
@@ -95,8 +96,16 @@
                     angular.forEach(vm.items, function (v, i) {
                         // load more content-type metadata to show
                         ctSvc.getDetails(vm.items[i].Header.ContentTypeName).then(function (ct) {
-                            if (ct.data && ct.data.Metadata && ct.data.Metadata.EditInstructions)
-                                vm.itemsHelp[i] = $sce.trustAsHtml(ct.data.Metadata.EditInstructions);
+                            if (ct.data) {
+                                // first, check for i18n
+                                if (ct.data.I18nKey) {
+                                    console.log("has i18n");
+                                    vm.typeI18n[i] = "ContentTypes." + ct.data.I18nKey;
+                                }
+                                // otherwise, check for included instructions
+                                if (ct.data.Metadata && ct.data.Metadata.EditInstructions)
+                                    vm.itemsHelp[i] = $sce.trustAsHtml(ct.data.Metadata.EditInstructions);
+                            }
                         });
                     });
                 });

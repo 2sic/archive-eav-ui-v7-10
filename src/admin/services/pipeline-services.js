@@ -138,7 +138,7 @@ angular.module("EavServices")
                     else { // Check if the type exists, and if yes, create new Entity
 
                         contentTypeSvc(appId, "System").getDetails(contentTypeName, { ignoreErrors: true })
-                            .success(function() {
+                            .then(function() {
                                 var items = [
                                     {
                                         ContentTypeName: contentTypeName,
@@ -150,8 +150,8 @@ angular.module("EavServices")
                                     }
                                 ];
                                 eavAdminDialogs.openEditItems(items);
-                            })
-                            .error(function() {
+                            },
+                            function () {
                                 alert("Server reports error - this usually means that this data-source doesn't have any configuration");
                             });
 

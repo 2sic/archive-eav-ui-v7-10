@@ -1,6 +1,6 @@
 
 angular.module("EavServices")
-    .factory("contentTypeSvc", function ($http, eavConfig, svcCreator) {
+    .factory("contentTypeSvc", function ($http, eavConfig, svcCreator, $translatePartialLoader, $translate) {
         return function appSpecificContentTypeSvc(appId, scope) {
             var svc = {};
             svc.scope = scope || eavConfig.contentType.defaultScope;
@@ -15,7 +15,17 @@ angular.module("EavServices")
             svc.getDetails = function getDetails(contentTypeName, config) {
                 return $http.get("eav/contenttype/GetSingle", angular.extend({}, config, {
                     params: { "appid": svc.appId, "contentTypeStaticName": contentTypeName }
-                }));
+                }))
+                    .then(function (promise) {
+                        // check if definition asks for external i18n, then add to loader
+                        if (promise && promise.data && promise.data.I18nKey) {
+                            //console.log("found need for i18n");
+                            $translatePartialLoader.addPart("content-types/" + promise.data.I18nKey);
+                            //console.log("test", $translate.instant("Content.Export.Fields.Language.Options.All"));
+                            //console.log("test2", $translate.instant("ContentTypes.config tosic.eav.datasources.sqldatasource.Metadata.Label"));
+                        }
+                        return promise;
+                    });
             };
 
             svc.newItem = function newItem() {
