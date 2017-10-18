@@ -19,10 +19,7 @@ angular.module("EavServices")
                     .then(function (promise) {
                         // check if definition asks for external i18n, then add to loader
                         if (promise && promise.data && promise.data.I18nKey) {
-                            //console.log("found need for i18n");
                             $translatePartialLoader.addPart("content-types/" + promise.data.I18nKey);
-                            //console.log("test", $translate.instant("Content.Export.Fields.Language.Options.All"));
-                            //console.log("test2", $translate.instant("ContentTypes.config tosic.eav.datasources.sqldatasource.Metadata.Label"));
                         }
                         return promise;
                     });

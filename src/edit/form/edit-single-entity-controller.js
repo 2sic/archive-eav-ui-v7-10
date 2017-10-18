@@ -6,7 +6,10 @@
 	var app = angular.module("eavEditEntity"); 
 	
 	// The controller for the main form directive
-	app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope, formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
+    app.controller("EditEntityFormCtrl", function editEntityCtrl(appId, $http, $scope,
+        $rootScope, // needed to handle translation-loading events
+        $translate,  // needed to translate i18n on labels etc.
+        formlyConfig, contentTypeFieldSvc, $sce, debugState, customInputTypes, eavConfig, $injector) {
 
 		var vm = this;
 		vm.editInDefaultLanguageFirst = function () {
@@ -104,8 +107,9 @@
 	    };
 
 	    vm.registerAllFieldsFromReturnedDefinition = function raffrd(result) {
-	        var lastGroupHeadingId = null; 
-	        angular.forEach(result.data, function (e, i) {
+	        var lastGroupHeadingId = null,
+	            rawFields = result.data;
+	        angular.forEach(rawFields, function (e, i) {
 
                 // make sure there is a definition object for the "All" settings
 	            if (e.Metadata.All === undefined)
@@ -124,10 +128,11 @@
 
 	            var nextField = {
 	                key: e.StaticName,
-	                type: fieldType,
+                    type: fieldType,
 	                templateOptions: {
 	                    required: !!e.Metadata.All.Required,
 	                    label: e.Metadata.All.Name === undefined ? e.StaticName : e.Metadata.All.Name,
+	                    // i18nKey: e.I18nKey ? e.I18nKey + ".Attributes." + e.StaticName : null, // optional translation key, if resources are provided in i18n
 	                    description: $sce.trustAsHtml(e.Metadata.All.Notes),
 	                    settings: e.Metadata,
 	                    header: $scope.header,
@@ -142,8 +147,8 @@
                         focused: false,
                         debug: debugState.on
 	                },
-	                className: "type-" + e.Type.toLowerCase() + " input-" + fieldType + " field-" + e.StaticName.toLowerCase(),
-	                //hide: (e.Metadata.All.VisibleInEditUI === false ? !debugState.on : false),
+                    className: "type-" + e.Type.toLowerCase() + " input-" + fieldType + " field-" + e.StaticName.toLowerCase(),
+	                
 	                expressionProperties: {
 	                    // Needed for dynamic update of the disabled property
 	                    'templateOptions.disabled': 'options.templateOptions.disabled' // doesn't set anything, just here to ensure formly causes update-binding
@@ -172,11 +177,36 @@
                             }
                         }
 	                ]
-	            };
+                };
 
 	            vm.formFields.push(nextField);
-	        });
+            });
+	        try {
+	            translateFieldsIfNecessary(rawFields[0].I18nKey, vm.formFields);
+            }
+            catch(e) { /* ignore */ }
 	    };
+
+        /**
+         * translate all content-type labels - if there is a key to do so
+         * @param {any} i18nKey
+         * @param {any} fieldList
+         */
+        function translateFieldsIfNecessary(i18nKey, fieldList) {
+            if (!i18nKey) return;
+            var rootKey = "ContentTypes." + i18nKey + ".Attributes.";
+            $translate.refresh().then(function () {
+                angular.forEach(fieldList, function(nextField, i) {
+                    var fieldKey = rootKey + nextField.key,
+                        lblKey = fieldKey + ".Label",
+                        descKey = fieldKey + ".Description";
+                    var transLbl = $translate.instant(lblKey),
+                        transDesc = $translate.instant(descKey);
+                    if (transLbl !== lblKey) nextField.templateOptions.label = transLbl;
+                    if (transDesc !== descKey) nextField.templateOptions.description = $sce.trustAsHtml(transDesc);
+                });
+            });
+        }
 
 	    // Load existing entity if defined
 		if (vm.entity !== null) loadContentType();

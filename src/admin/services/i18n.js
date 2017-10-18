@@ -21,7 +21,7 @@
 
         // ensure that adding parts will load the missing files
         .run(function($rootScope, $translate) {
-            $rootScope.$on("$translatePartialLoaderStructureChanged", function() {
+            $rootScope.$on("$translatePartialLoaderStructureChanged", function () {
                 $translate.refresh();
             });
         });
