@@ -181,31 +181,32 @@
 
 	            vm.formFields.push(nextField);
             });
-	        try {
-	            translateFieldsIfNecessary(rawFields[0].I18nKey, vm.formFields);
-            }
-            catch(e) { /* ignore */ }
+	        translateFieldsIfNecessary(rawFields, vm.formFields);
 	    };
 
         /**
          * translate all content-type labels - if there is a key to do so
-         * @param {any} i18nKey
-         * @param {any} fieldList
          */
-        function translateFieldsIfNecessary(i18nKey, fieldList) {
-            if (!i18nKey) return;
-            var rootKey = "ContentTypes." + i18nKey + ".Attributes.";
-            $translate.refresh().then(function () {
-                angular.forEach(fieldList, function(nextField, i) {
-                    var fieldKey = rootKey + nextField.key,
-                        lblKey = fieldKey + ".Label",
-                        descKey = fieldKey + ".Description";
-                    var transLbl = $translate.instant(lblKey),
-                        transDesc = $translate.instant(descKey);
-                    if (transLbl !== lblKey) nextField.templateOptions.label = transLbl;
-                    if (transDesc !== descKey) nextField.templateOptions.description = $sce.trustAsHtml(transDesc);
+        function translateFieldsIfNecessary(rawFields, fieldList) {
+            try {
+                var i18nKey = rawFields[0].I18nKey;
+                if (!i18nKey) return;
+                var rootKey = "ContentTypes." + i18nKey + ".Attributes.";
+                // this must happen in a refresh-promise, as the resources are lazy-loaded
+                $translate.refresh().then(function() {
+                    angular.forEach(fieldList,
+                        function(field, i) {
+                            var fieldKey = rootKey + field.key,
+                                keylbl = fieldKey + ".Label",
+                                keyDsc = fieldKey + ".Description",
+                                txtLbl = $translate.instant(keylbl),
+                                txtDsc = $translate.instant(keyDsc);
+                            if (txtLbl !== keylbl) field.templateOptions.label = txtLbl;
+                            if (txtDsc !== keyDsc) field.templateOptions.description = $sce.trustAsHtml(txtDsc);
+                        });
                 });
-            });
+            }
+            catch (e) { /* ignore */ }
         }
 
 	    // Load existing entity if defined

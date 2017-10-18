@@ -98,18 +98,45 @@
                         ctSvc.getDetails(vm.items[i].Header.ContentTypeName).then(function (ct) {
                             if (ct.data) {
                                 // first, check for i18n
+
                                 if (ct.data.I18nKey) {
                                     console.log("has i18n");
                                     vm.typeI18n[i] = "ContentTypes." + ct.data.I18nKey;
                                 }
-                                // otherwise, check for included instructions
+                                // check for included instructions
                                 if (ct.data.Metadata && ct.data.Metadata.EditInstructions)
                                     vm.itemsHelp[i] = $sce.trustAsHtml(ct.data.Metadata.EditInstructions);
+                                translateIfNecessary(ct.data, i);
                             }
                         });
                     });
                 });
         };
+
+        /**
+         * translate all content-type labels - if there is a key to do so
+         */
+        function translateIfNecessary(data, index) {
+            try {
+                var i18nKey = data.I18nKey;
+                if (!i18nKey) return;
+                var rootKey = "ContentTypes." + i18nKey + ".Metadata";
+                // this must happen in a refresh-promise, as the resources are lazy-loaded
+                $translate.refresh().then(function () {
+                    var keylbl = rootKey + ".Label",
+                        //keyDsc = rootKey + ".Description",
+                        keyEdt = rootKey + ".EditInstructions",
+                        txtLbl = $translate.instant(keylbl),
+                        //txtDsc = $translate.instant(keyDsc),
+                        txtEdt = $translate.instant(keyEdt);
+                    if (txtLbl !== keylbl) vm.items[index].Header.Title = txtLbl;
+                    //if (txtLbl !== keylbl) vm.items[index].Header.??? = txtDsc;
+                    if (txtEdt !== keyEdt) vm.itemsHelp[index] = $sce.trustAsHtml(txtEdt);
+                });
+            }
+            catch (e) { /* ignore */ }
+        }
+
 
         vm.showFormErrors = function () {
             var errors = vm.formErrors();
