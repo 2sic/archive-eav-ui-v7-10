@@ -71,6 +71,7 @@
 	    background: white;
 	    opacity: 0.8;
 	    z-index: 100;
+	    padding-top:25px;
 		display: none;
 	}
 
@@ -92,6 +93,13 @@
 		font-size: large;
 	}
 
+    .dataSource .show-hover-inline {
+        display: none;
+    }
+
+    .dataSource:hover .show-hover-inline {
+        display: inline-block;
+    }
 
     /* show all hidden elements */
     .dataSource:hover .configure,
