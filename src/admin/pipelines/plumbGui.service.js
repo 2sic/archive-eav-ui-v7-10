@@ -27,29 +27,30 @@
             var plumbGui = {
                 dataSrcIdPrefix: "dataSource_",
                 connectionsInitialized: false
-                //setReadOnly: function(newRo) { readOnly = newRo; }
             };
 
 
             // the definition of source endpoints (the small blue ones)
-            plumbGui.sourceEndpoint = {
+            plumbGui.buildSourceEndpoint = function () {return {
                 paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
                 cssClass: "sourceEndpoint",
                 maxConnections: -1,
                 isSource: true,
                 anchor: ["Continuous", { faces: ["top"] }],
                 overlays: getEndpointOverlays(true, queryDef.readOnly)
-            };
+            }};
 
             // the definition of target endpoints (will appear when the user drags a connection) 
-            plumbGui.targetEndpoint = {
-                paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                cssClass: "targetEndpoint",
-                maxConnections: 1,
-                isTarget: true,
-                anchor: ["Continuous", { faces: ["bottom"] }],
-                overlays: getEndpointOverlays(false, queryDef.readOnly),
-                dropOptions: { hoverClass: "hover", activeClass: "active" }
+            plumbGui.buildTargetEndpoint = function() {
+                return {
+                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+                    cssClass: "targetEndpoint",
+                    maxConnections: 1,
+                    isTarget: true,
+                    anchor: ["Continuous", { faces: ["bottom"] }],
+                    overlays: getEndpointOverlays(false, queryDef.readOnly),
+                    dropOptions: { hoverClass: "hover", activeClass: "active" }
+                }
             };
 
             // this will retrieve the dataSource info-object for a DOM element
@@ -102,13 +103,13 @@
                             dataSource.EntityGuid === "Out" // Endpoints on Out-DataSource must be always enabled
                 };
                 var endPoint = plumbGui.instance.addEndpoint(element,
-                    (isIn ? plumbGui.targetEndpoint : plumbGui.sourceEndpoint),
+                    (isIn ? plumbGui.buildTargetEndpoint() : plumbGui.buildSourceEndpoint()),
                     params);
                 endPoint.getOverlay("endpointLabel").setLabel(name);
             };
 
-            plumbGui.initWirings = function(streamWiring) {
-                angular.forEach(streamWiring,
+            plumbGui.initWirings = function () {
+                angular.forEach(queryDef.data.Pipeline.StreamWiring,
                     function(wire) {
                         // read connections from Pipeline
                         var sourceElementId = plumbGui.dataSrcIdPrefix + wire.From;
@@ -165,7 +166,6 @@
 
 
             plumbGui.buildInstance = function() {
-                jsPlumb = window.jsPlumb; // re-set global variable, as now it's initialized & ready
                 plumbGui.instance = jsPlumb.getInstance(instanceTemplate);
 
                 // If connection on Out-DataSource was removed, remove custom Endpoint
@@ -227,6 +227,12 @@
                     }
                 });
             };
+
+            // init new jsPlumb Instance
+            window.jsPlumb.ready(function () {
+                jsPlumb = window.jsPlumb; // re-set local short-name, as now it's initialized & ready
+                plumbGui.buildInstance();// can't do this before jsplumb is ready...
+            });
 
             return plumbGui;
 
