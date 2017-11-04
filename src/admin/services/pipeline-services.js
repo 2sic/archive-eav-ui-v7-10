@@ -80,6 +80,7 @@ angular.module("EavServices")
 
                 return deferred.promise;
             },
+
             // Ensure Model has all DataSources and they're linked to their Definition-Object
             postProcessDataSources: function(model) {
                 // stop Post-Process if the model already contains the Out-DataSource
@@ -88,6 +89,7 @@ angular.module("EavServices")
 
                 postProcessDataSources(model);
             },
+
             // Get a JSON for a DataSource with Definition-Property
             getNewDataSource: function(model, dataSourceBase) {
                 return {

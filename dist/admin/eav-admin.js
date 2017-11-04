@@ -1291,6 +1291,22 @@ angular.module("PipelineDesigner")
 (function () {
     /*jshint laxbreak:true */
 
+    var editName = function (dataSource) {
+        if (dataSource.ReadOnly) return;
+
+        var newName = prompt("Rename DataSource", dataSource.Name);
+        if (newName && newName.trim())
+            dataSource.Name = newName.trim();
+    };
+
+    // Edit Description of a DataSource
+    var editDescription = function (dataSource) {
+        if (dataSource.ReadOnly) return;
+
+        var newDescription = prompt("Edit Description", dataSource.Description);
+        if (newDescription && newDescription.trim())
+            dataSource.Description = newDescription.trim();
+    };
     // helper method because we don't have jQuery any more to find the offset
     function getElementOffset(element) {
         var de = document.documentElement;
@@ -1299,6 +1315,8 @@ angular.module("PipelineDesigner")
         var left = box.left + window.pageXOffset - de.clientLeft;
         return { top: top, left: left };
     }
+
+
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
@@ -1355,57 +1373,6 @@ angular.module("PipelineDesigner")
                 // init new jsPlumb Instance
                 jsPlumb.ready(function () {
                     plumbGui.buildInstance();// can't do this before jsplumb is ready...
-
-                    // If connection on Out-DataSource was removed, remove custom Endpoint
-                    plumbGui.instance.bind("connectionDetached", function(info) {
-                        if (info.targetId === plumbGui.dataSrcIdPrefix + "Out") {
-                            var element = angular.element(info.target);
-                            var fixedEndpoints = plumbGui.findDataSourceOfElement(element).dataSource.Definition().In;
-                            var label = info.targetEndpoint.getOverlay("endpointLabel").label;
-                            if (fixedEndpoints.indexOf(label) === -1) {
-                                $timeout(function() {
-                                    plumbGui.instance.deleteEndpoint(info.targetEndpoint);
-                                });
-                            }
-                        }
-                    });
-
-                    // If a new connection is created, ask for a name of the In-Stream
-                    plumbGui.instance.bind("connection", function(info) {
-                        if (!$scope.connectionsInitialized) return;
-
-                        // Repeat until a valid Stream-Name is provided by the user
-                        var repeatCount = 0;
-                        var endpointHandling = function(endpoint) {
-                            var label = endpoint.getOverlay("endpointLabel").getLabel();
-                            if (label === labelPrompt && info.targetEndpoint.id !== endpoint.id && angular.element(endpoint.canvas).hasClass("targetEndpoint"))
-                                targetEndpointHavingSameLabel = endpoint;
-                        };
-                        while (true) {
-                            repeatCount++;
-
-                            var promptMessage = "Please name the Stream";
-                            if (repeatCount > 1)
-                                promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
-
-                            var endpointLabel = info.targetEndpoint.getOverlay("endpointLabel");
-                            var labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
-                            if (labelPrompt)
-                                endpointLabel.setLabel(labelPrompt);
-                            else
-                                continue;
-
-                            // Check if any other Target-Endpoint has the same Stream-Name (Label)
-                            var endpoints = plumbGui.instance.getEndpoints(info.target.id);
-                            var targetEndpointHavingSameLabel = null;
-
-                            angular.forEach(endpoints, endpointHandling);
-                            if (targetEndpointHavingSameLabel)
-                                continue;
-
-                            break;
-                        }
-                    });
                 });
 
 
@@ -1451,9 +1418,8 @@ angular.module("PipelineDesigner")
                 };
 
                 // Initialize jsPlumb Connections once after all DataSources were created in the DOM
-                $scope.connectionsInitialized = false;
                 $scope.$on("ngRepeatFinished", function() {
-                    if ($scope.connectionsInitialized) return;
+                    if (plumbGui.connectionsInitialized) return;
 
                     // suspend drawing and initialise
                     plumbGui.instance.batch(function() {
@@ -1461,7 +1427,7 @@ angular.module("PipelineDesigner")
                     });
                     $scope.repaint(); // repaint so continuous connections are aligned correctly
 
-                    $scope.connectionsInitialized = true;
+                    plumbGui.connectionsInitialized = true;
                 });
 
 
@@ -1469,43 +1435,46 @@ angular.module("PipelineDesigner")
                 var initNewPipeline = function () {
                     var templateForNew = eavConfig.pipelineDesigner.defaultPipeline.dataSources;
                     angular.forEach(templateForNew, function(dataSource) {
-                        $scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, false, dataSource.entityGuid);
+                        queryDef.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, dataSource.entityGuid);
                     });
 
                     // Wait until all DataSources were created
                     var initWiringsListener = $scope.$on("ngRepeatFinished", function() {
-                        $scope.connectionsInitialized = false;
+                        plumbGui.connectionsInitialized = false;
                         plumbGui.initWirings(eavConfig.pipelineDesigner.defaultPipeline.streamWiring);
-                        $scope.connectionsInitialized = true;
+                        plumbGui.connectionsInitialized = true;
 
                         initWiringsListener(); // unbind the Listener
                     });
                 };
 
+
+
+                vm.addSelectedDataSource = function() {
+                    var partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+                    $scope.addDataSourceType = null; // reset dropdown
+                    queryDef.addDataSource(partAssemblyAndType);
+                    $scope.savePipeline();
+
+                }
+
                 // Add new DataSource
-                $scope.addDataSource = function(partAssemblyAndType, visualDesignerData, autoSave, entityGuid) {
-                    if (!partAssemblyAndType) {
-                        partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
-                        $scope.addDataSourceType = null;
-                    }
-                    if (!visualDesignerData)
-                        visualDesignerData = { Top: 100, Left: 100 };
+                //$scope.addDataSource = function(partAssemblyAndType, visualDesignerData, entityGuid) {
+                //    if (!visualDesignerData)
+                //        visualDesignerData = { Top: 100, Left: 100 };
 
-                    var newDataSource = {
-                        VisualDesignerData: visualDesignerData,
-                        Name: $filter("typename")(partAssemblyAndType, "className"),
-                        Description: "",
-                        PartAssemblyAndType: partAssemblyAndType,
-                        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
-                    };
-                    // Extend it with a Property to it's Definition
-                    newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource(queryDef.data, newDataSource));
+                //    var newDataSource = {
+                //        VisualDesignerData: visualDesignerData,
+                //        Name: $filter("typename")(partAssemblyAndType, "className"),
+                //        Description: "",
+                //        PartAssemblyAndType: partAssemblyAndType,
+                //        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
+                //    };
+                //    // Extend it with a Property to it's Definition
+                //    newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource(queryDef.data, newDataSource));
 
-                    queryDef.data.DataSources.push(newDataSource);
-
-                    if (autoSave !== false)
-                        $scope.savePipeline();
-                };
+                //    queryDef.data.DataSources.push(newDataSource);
+                //};
 
                 // Delete a DataSource
                 $scope.remove = function(index) {
@@ -1535,19 +1504,14 @@ angular.module("PipelineDesigner")
                     if (dataSource.ReadOnly) return;
 
                     // Ensure dataSource Entity is saved
-                    if (!dataSourceIsPersisted(dataSource)) {
+                    if (!queryDef.dataSourceIsPersisted(dataSource)) {
                         $scope.savePipeline();
                         return;
                     }
 
                     pipelineService.editDataSourcePart(dataSource, queryDef.data.InstalledDataSources);
-
                 };
 
-                // Test wether a DataSource is persisted on the Server
-                var dataSourceIsPersisted = function(dataSource) {
-                    return dataSource.EntityGuid.indexOf("unsaved") === -1;
-                };
 
                 // Show/Hide Endpoint Overlays
                 $scope.showEndpointOverlays = true;
@@ -1568,7 +1532,7 @@ angular.module("PipelineDesigner")
                         vm.saveShortcut.unbind();
                         eavAdminDialogs.openEditItems([{ EntityId: queryDef.id }], function() {
                             pipelineService.getPipeline(queryDef.id)
-                                .then(pipelineSaved)
+                                .then(resetPlumbAndWarnings)
                                 .then(vm.saveShortcut.rebind);
                         });
 
@@ -1578,53 +1542,30 @@ angular.module("PipelineDesigner")
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                vm.savePipeline = $scope.savePipeline = function (successHandler) {
+                vm.savePipeline = $scope.savePipeline = function savePipeline() {
                     var waitMsg = toastr.info("This shouldn't take long", "Saving...");
-                    queryDef.readOnly = true;
 
                     plumbGui.pushPlumbConfigToQueryDef(plumbGui.instance);
 
-                    var deferred = $q.defer();
-
-                    if (typeof successHandler === "undefined") // set default success Handler
-                        successHandler = pipelineSaved;
-
-                    queryDef.save(successHandler);
-
-                    return deferred.promise;
+                    return queryDef.save(/*resetPlumbAndWarnings*/).then(resetPlumbAndWarnings);
                 };
 
                 // Handle Pipeline Saved, success contains the updated Pipeline Data
-                var pipelineSaved = function(success) {
-                    // Update PipelineData with data retrieved from the Server
-                    queryDef.data.Pipeline = success.Pipeline;
-                    queryDef.data.TestParameters = success.TestParameters;
-                    queryDef.id = success.Pipeline.EntityId;
-                    $location.search("PipelineId", success.Pipeline.EntityId);
-                    queryDef.readOnly = !success.Pipeline.AllowEdit;
-                    queryDef.data.DataSources = success.DataSources;
-                    pipelineService.postProcessDataSources(queryDef.data);
-
-                    toastr.clear();
-                    toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded", "Saved", { autoDismiss: true });
-
+                var resetPlumbAndWarnings = function(promise) {
                     // Reset jsPlumb, re-Init Connections
                     plumbGui.instance.reset();
-                    $scope.connectionsInitialized = false;
+                    plumbGui.connectionsInitialized = false;
                     refreshWarnings(queryDef.data, vm);
+                    return promise;
                 };
 
                 // #endregion
 
                 // Repaint jsPlumb
-                $scope.repaint = function() {
-                    plumbGui.instance.repaintEverything();
-                };
+                $scope.repaint = function() { plumbGui.instance.repaintEverything(); };
 
                 // Show/Hide Debug info
-                $scope.toogleDebug = function() {
-                    $scope.debug = !$scope.debug;
-                };
+                $scope.toogleDebug = function() { $scope.debug = !$scope.debug; };
 
                 // check if there are special warnings the developer should know
                 // typically when the test-module-id is different from the one we're currently
@@ -1662,7 +1603,7 @@ angular.module("PipelineDesigner")
                             eavAdminDialogs.OpenModal("pipelines/query-stats.html", "QueryStats as vm", "lg", resolve);
 
                             $timeout(function() {
-                                showEntityCountOnStreams(success);
+                                plumbGui.putEntityCountOnConnection(success);
                             });
                             $log.debug(success);
                         }, function(reason) {
@@ -1670,38 +1611,6 @@ angular.module("PipelineDesigner")
                         });
                     };
 
-
-                    var showEntityCountOnStreams = function(result) {
-                        angular.forEach(result.Streams, function(stream) {
-                            // Find jsPlumb Connection for the current Stream
-                            var sourceElementId = plumbGui.dataSrcIdPrefix + stream.Source;
-                            var targetElementId = plumbGui.dataSrcIdPrefix + stream.Target;
-                            if (stream.Target === "00000000-0000-0000-0000-000000000000")
-                                targetElementId = plumbGui.dataSrcIdPrefix + "Out";
-
-                            var fromUuid = sourceElementId + "_out_" + stream.SourceOut;
-                            var toUuid = targetElementId + "_in_" + stream.TargetIn;
-
-                            var sEndp = plumbGui.instance.getEndpoint(fromUuid);
-                            var streamFound = false;
-                            if (sEndp) {
-                                angular.forEach(sEndp.connections, function(connection) {
-                                    if (connection.endpoints[1].getUuid() === toUuid) {
-                                        // when connection found, update it's label with the Entities-Count
-                                        connection.setLabel({
-                                            label: stream.Count.toString(),
-                                            cssClass: "streamEntitiesCount"
-                                        });
-                                        streamFound = true;
-                                        return;
-                                    }
-                                });
-                            }
-
-                            if (!streamFound)
-                                $log.error("Stream not found", stream, sEndp);
-                        });
-                    };
 
                     // Ensure the Pipeline is saved
                     if (saveFirst)
@@ -1711,26 +1620,6 @@ angular.module("PipelineDesigner")
                 };
 
         }]);
-
-
-    // temp: extracted pure functions
-
-    var editName = function (dataSource) {
-        if (dataSource.ReadOnly) return;
-
-        var newName = prompt("Rename DataSource", dataSource.Name);
-        if (newName && newName.trim())
-            dataSource.Name = newName.trim();
-    };
-
-    // Edit Description of a DataSource
-    var editDescription = function (dataSource) {
-        if (dataSource.ReadOnly) return;
-
-        var newDescription = prompt("Edit Description", dataSource.Description);
-        if (newDescription && newDescription.trim())
-            dataSource.Description = newDescription.trim();
-    };
 })();
 // Filters for "ClassName, AssemblyName"
 angular.module("PipelineDesigner.filters", []).filter("typename", function () {
@@ -1830,92 +1719,114 @@ angular.module("PipelineManagement", [
 (function () {
     var jsPlumb;    // needed, as we'll fill it later with the window value
 
+    var instanceTemplate = {
+        Connector: ["Bezier", { curviness: 70 }],
+        HoverPaintStyle: {
+            lineWidth: 4,
+            strokeStyle: "#216477",
+            outlineWidth: 2,
+            outlineColor: "white"
+        },
+        PaintStyle: {
+            lineWidth: 4,
+            strokeStyle: "#61B7CF",
+            joinstyle: "round",
+            outlineColor: "white",
+            outlineWidth: 2
+        },
+        Container: "pipelineContainer"
+    };
 
-    angular.module("PipelineDesigner")
-        .factory("plumbGui",
-            ["queryDef", "$filter", "$log", function(queryDef, $filter, $log) {
-                //var readOnly = true;
 
-                var plumbGui = {
-                    dataSrcIdPrefix: "dataSource_"
-                    //setReadOnly: function(newRo) { readOnly = newRo; }
-                };
+    angular.module("PipelineDesigner").factory("plumbGui",
+        ["queryDef", "$filter", "$log", "$timeout", function(queryDef, $filter, $log, $timeout) {
+
+            var plumbGui = {
+                dataSrcIdPrefix: "dataSource_",
+                connectionsInitialized: false
+                //setReadOnly: function(newRo) { readOnly = newRo; }
+            };
 
 
-                // the definition of source endpoints (the small blue ones)
-                plumbGui.sourceEndpoint = {
-                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                    cssClass: "sourceEndpoint",
-                    maxConnections: -1,
-                    isSource: true,
-                    anchor: ["Continuous", { faces: ["top"] }],
-                    overlays: getEndpointOverlays(true, queryDef.readOnly)
-                };
+            // the definition of source endpoints (the small blue ones)
+            plumbGui.sourceEndpoint = {
+                paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+                cssClass: "sourceEndpoint",
+                maxConnections: -1,
+                isSource: true,
+                anchor: ["Continuous", { faces: ["top"] }],
+                overlays: getEndpointOverlays(true, queryDef.readOnly)
+            };
 
-                // the definition of target endpoints (will appear when the user drags a connection) 
-                plumbGui.targetEndpoint = {
-                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                    cssClass: "targetEndpoint",
-                    maxConnections: 1,
-                    isTarget: true,
-                    anchor: ["Continuous", { faces: ["bottom"] }],
-                    overlays: getEndpointOverlays(false, queryDef.readOnly),
-                    dropOptions: { hoverClass: "hover", activeClass: "active" }
-                };
+            // the definition of target endpoints (will appear when the user drags a connection) 
+            plumbGui.targetEndpoint = {
+                paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+                cssClass: "targetEndpoint",
+                maxConnections: 1,
+                isTarget: true,
+                anchor: ["Continuous", { faces: ["bottom"] }],
+                overlays: getEndpointOverlays(false, queryDef.readOnly),
+                dropOptions: { hoverClass: "hover", activeClass: "active" }
+            };
 
-                // this will retrieve the dataSource info-object for a DOM element
-                plumbGui.findDataSourceOfElement = function fdsog(element) {
-                    var guid = element.attributes.guid.value;
-                    var list = queryDef.data.DataSources;
-                    var found = $filter("filter")(list, { EntityGuid: guid })[0];
-                    return found;
-                };
+            // this will retrieve the dataSource info-object for a DOM element
+            plumbGui.findDataSourceOfElement = function fdsog(element) {
+                var guid = element.attributes.guid.value;
+                var list = queryDef.data.DataSources;
+                var found = $filter("filter")(list, { EntityGuid: guid })[0];
+                return found;
+            };
 
-                // Sync jsPlumb Connections and StreamsOut to the pipelineData-Object
-                plumbGui.pushPlumbConfigToQueryDef = function() {
-                    var connectionInfos = [];
-                    angular.forEach(plumbGui.instance.getAllConnections(),
-                        function(connection) {
-                            connectionInfos.push({
-                                From: connection.sourceId.substr(plumbGui.dataSrcIdPrefix.length),
-                                Out: connection.endpoints[0].getOverlay("endpointLabel").label,
-                                To: connection.targetId.substr(plumbGui.dataSrcIdPrefix.length),
-                                In: connection.endpoints[1].getOverlay("endpointLabel").label
-                            });
+            // Sync jsPlumb Connections and StreamsOut to the pipelineData-Object
+            plumbGui.pushPlumbConfigToQueryDef = function() {
+                var connectionInfos = [];
+                angular.forEach(plumbGui.instance.getAllConnections(),
+                    function(connection) {
+                        connectionInfos.push({
+                            From: connection.sourceId.substr(plumbGui.dataSrcIdPrefix.length),
+                            Out: connection.endpoints[0].getOverlay("endpointLabel").label,
+                            To: connection.targetId.substr(plumbGui.dataSrcIdPrefix.length),
+                            In: connection.endpoints[1].getOverlay("endpointLabel").label
                         });
-                    queryDef.data.Pipeline.StreamWiring = connectionInfos;
+                    });
+                queryDef.data.Pipeline.StreamWiring = connectionInfos;
 
-                    var streamsOut = [];
-                    plumbGui.instance.selectEndpoints({ target: plumbGui.dataSrcIdPrefix + "Out" }).each(
-                        function(endpoint) {
-                            streamsOut.push(endpoint.getOverlay("endpointLabel").label);
-                        });
-                    queryDef.data.Pipeline.StreamsOut = streamsOut.join(",");
+                var streamsOut = [];
+                plumbGui.instance.selectEndpoints({ target: plumbGui.dataSrcIdPrefix + "Out" }).each(
+                    function(endpoint) {
+                        streamsOut.push(endpoint.getOverlay("endpointLabel").label);
+                    });
+                queryDef.data.Pipeline.StreamsOut = streamsOut.join(",");
+            };
+
+
+            // Add a jsPlumb Endpoint to an Element
+            plumbGui.addEndpoint = function(element, name, isIn) {
+                if (!element.length) {
+                    $log.error({ message: "Element not found", selector: element.selector });
+                    return;
+                }
+                console.log(element);
+
+                var dataSource = plumbGui.findDataSourceOfElement(element[0]);
+
+                var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
+                // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
+                var params = {
+                    uuid: uuid,
+                    enabled:
+                        !dataSource.ReadOnly ||
+                            dataSource.EntityGuid === "Out" // Endpoints on Out-DataSource must be always enabled
                 };
+                var endPoint = plumbGui.instance.addEndpoint(element,
+                    (isIn ? plumbGui.targetEndpoint : plumbGui.sourceEndpoint),
+                    params);
+                endPoint.getOverlay("endpointLabel").setLabel(name);
+            };
 
-
-                // Add a jsPlumb Endpoint to an Element
-                plumbGui.addEndpoint = function (element, name, isIn) {
-                    if (!element.length) {
-                        $log.error({ message: "Element not found", selector: element.selector });
-                        return;
-                    }
-                    console.log(element);
-
-                    var dataSource = plumbGui.findDataSourceOfElement(element[0]);
-
-                    var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
-                    // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
-                    var params = {
-                        uuid: uuid,
-                        enabled: !dataSource.ReadOnly || dataSource.EntityGuid === "Out" // Endpoints on Out-DataSource must be always enabled
-                    };
-                    var endPoint = plumbGui.instance.addEndpoint(element, (isIn ? plumbGui.targetEndpoint : plumbGui.sourceEndpoint), params);
-                    endPoint.getOverlay("endpointLabel").setLabel(name);
-                };
-
-                plumbGui.initWirings = function (streamWiring) {
-                    angular.forEach(streamWiring, function (wire) {
+            plumbGui.initWirings = function(streamWiring) {
+                angular.forEach(streamWiring,
+                    function(wire) {
                         // read connections from Pipeline
                         var sourceElementId = plumbGui.dataSrcIdPrefix + wire.From;
                         var fromUuid = sourceElementId + "_out_" + wire.Out;
@@ -1934,35 +1845,109 @@ angular.module("PipelineManagement", [
                             $log.error({ message: "Connection failed", from: fromUuid, to: toUuid });
                         }
                     });
-                };
+            };
 
-                var instanceTemplate = {
-                    Connector: ["Bezier", { curviness: 70 }],
-                    HoverPaintStyle: {
-                        lineWidth: 4,
-                        strokeStyle: "#216477",
-                        outlineWidth: 2,
-                        outlineColor: "white"
-                    },
-                    PaintStyle: {
-                        lineWidth: 4,
-                        strokeStyle: "#61B7CF",
-                        joinstyle: "round",
-                        outlineColor: "white",
-                        outlineWidth: 2
-                    },
-                    Container: "pipelineContainer"
-                };
+            plumbGui.putEntityCountOnConnection = function (result) {
+                angular.forEach(result.Streams, function (stream) {
+                    // Find jsPlumb Connection for the current Stream
+                    var sourceElementId = plumbGui.dataSrcIdPrefix + stream.Source;
+                    var targetElementId = plumbGui.dataSrcIdPrefix + stream.Target;
+                    if (stream.Target === "00000000-0000-0000-0000-000000000000")
+                        targetElementId = plumbGui.dataSrcIdPrefix + "Out";
+
+                    var fromUuid = sourceElementId + "_out_" + stream.SourceOut;
+                    var toUuid = targetElementId + "_in_" + stream.TargetIn;
+
+                    var sEndp = plumbGui.instance.getEndpoint(fromUuid);
+                    var streamFound = false;
+                    if (sEndp) {
+                        angular.forEach(sEndp.connections, function (connection) {
+                            if (connection.endpoints[1].getUuid() === toUuid) {
+                                // when connection found, update it's label with the Entities-Count
+                                connection.setLabel({
+                                    label: stream.Count.toString(),
+                                    cssClass: "streamEntitiesCount"
+                                });
+                                streamFound = true;
+                                return;
+                            }
+                        });
+                    }
+
+                    if (!streamFound)
+                        $log.error("Stream not found", stream, sEndp);
+                });
+            };
 
 
-                plumbGui.buildInstance = function () {
-                    jsPlumb = window.jsPlumb; // re-set global variable, as now it's initialized & ready
-                    plumbGui.instance = jsPlumb.getInstance(instanceTemplate);
-                };
 
-                return plumbGui;
+            plumbGui.buildInstance = function() {
+                jsPlumb = window.jsPlumb; // re-set global variable, as now it's initialized & ready
+                plumbGui.instance = jsPlumb.getInstance(instanceTemplate);
 
-            }]);
+                // If connection on Out-DataSource was removed, remove custom Endpoint
+                plumbGui.instance.bind("connectionDetached",
+                    function(info) {
+                        if (info.targetId === plumbGui.dataSrcIdPrefix + "Out") {
+                            var element = angular.element(info.target);
+                            var fixedEndpoints = plumbGui.findDataSourceOfElement(element).dataSource.Definition().In;
+                            var label = info.targetEndpoint.getOverlay("endpointLabel").label;
+                            if (fixedEndpoints.indexOf(label) === -1) {
+                                $timeout(function() {
+                                    plumbGui.instance.deleteEndpoint(info.targetEndpoint);
+                                });
+                            }
+                        }
+                    });
+
+
+                // If a new connection is created, ask for a name of the In-Stream
+                plumbGui.instance.bind("connection", function (info) {
+                    if (!plumbGui.connectionsInitialized) return;
+
+                    // Repeat until a valid Stream-Name is provided by the user
+                    var repeatCount = 0;
+                    var labelPrompt,
+                        targetEndpointHavingSameLabel;
+
+                    var endpointHandling = function (endpoint) {
+                        var label = endpoint.getOverlay("endpointLabel").getLabel();
+                        if (label === labelPrompt &&
+                            info.targetEndpoint.id !== endpoint.id &&
+                            angular.element(endpoint.canvas).hasClass("targetEndpoint"))
+                            targetEndpointHavingSameLabel = endpoint;
+                    };
+
+                    while (true) {
+                        repeatCount++;
+
+                        var promptMessage = "Please name the Stream";
+                        if (repeatCount > 1)
+                            promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
+
+                        var endpointLabel = info.targetEndpoint.getOverlay("endpointLabel");
+                        labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
+                        if (labelPrompt)
+                            endpointLabel.setLabel(labelPrompt);
+                        else
+                            continue;
+
+                        // Check if any other Target-Endpoint has the same Stream-Name (Label)
+                        var endpoints = plumbGui.instance.getEndpoints(info.target.id);
+                        targetEndpointHavingSameLabel = null; // reset...
+
+                        angular.forEach(endpoints, endpointHandling);
+                        if (targetEndpointHavingSameLabel)
+                            continue;
+
+                        break;
+                    }
+                });
+            };
+
+            return plumbGui;
+
+        }]);
 
 
     // #region jsPlumb Endpoint Definitions
@@ -1993,36 +1978,81 @@ angular.module("PipelineManagement", [
 
 (function() {
 
-    angular.module("PipelineDesigner")
-        /*
-         shared data state across various components
-        */
-        .factory("queryDef",
-        ["pipelineId", "pipelineService", "$q", function (pipelineId, pipelineService, $q) {
-            var deferred = $q.defer();
+    /*
+        shared data state across various components
+    */
+    angular.module("PipelineDesigner").factory("queryDef",
+        ["pipelineId", "pipelineService", "$q", "$location", "toastr", "$filter", function(pipelineId, pipelineService, $q, $location, toastr, $filter) {
 
-                var queryDef = {
-                    id: pipelineId, // injected from URL
-                    dsCount: 0,
-                    readOnly: true,
-                    data: null,
-                    save: function (successHandler) {
-                        pipelineService.savePipeline(queryDef.data.Pipeline, queryDef.data.DataSources)
-                            .then(successHandler,
-                                function (reason) {
-                                    toastr.error(reason, "Save Pipeline failed");
-                                    queryDef.readOnly = false;
-                                    deferred.reject();
-                                })
-                            .then(function () {
-                                deferred.resolve();
+            var queryDef = {
+                id: pipelineId, // injected from URL
+                dsCount: 0,
+                readOnly: true,
+                data: null,
+
+
+                // Test wether a DataSource is persisted on the Server
+                dataSourceIsPersisted: function (dataSource) {
+                    return dataSource.EntityGuid.indexOf("unsaved") === -1;
+                },
+
+                addDataSource: function (partAssemblyAndType, visualDesignerData, entityGuid) {
+                    if (!visualDesignerData)
+                        visualDesignerData = { Top: 100, Left: 100 };
+
+                    var newDataSource = {
+                        VisualDesignerData: visualDesignerData,
+                        Name: $filter("typename")(partAssemblyAndType, "className"),
+                        Description: "",
+                        PartAssemblyAndType: partAssemblyAndType,
+                        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
+                    };
+                    // Extend it with a Property to it's Definition
+                    newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource(queryDef.data, newDataSource));
+
+                    queryDef.data.DataSources.push(newDataSource);
+                },
+
+                // save the current query
+                save: function(/*successHandler*/) {
+                    //var deferred = $q.defer();
+                    queryDef.readOnly = true;
+
+                    return pipelineService.savePipeline(queryDef.data.Pipeline, queryDef.data.DataSources)
+                        .then(function(success) {
+                                // Update PipelineData with data retrieved from the Server
+                                queryDef.data.Pipeline = success.Pipeline;
+                                queryDef.data.TestParameters = success.TestParameters;
+                                queryDef.id = success.Pipeline.EntityId;
+                                $location.search("PipelineId", success.Pipeline.EntityId);
+                                queryDef.readOnly = !success.Pipeline.AllowEdit;
+                                queryDef.data.DataSources = success.DataSources;
+                                pipelineService.postProcessDataSources(queryDef.data);
+
+                                // communicate to the user...
+                                toastr.clear();
+                                toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded",
+                                    "Saved",
+                                    { autoDismiss: true });
+
+                                // successHandler(/*success*/);
+                            },
+                            function(reason) {
+                                toastr.error(reason, "Save Pipeline failed");
+                                queryDef.readOnly = false;
+                                deferred.reject();
                             });
-                    }
+                    //    .then(function() {
+                    //        deferred.resolve();
+                    //    });
+
+                    //return deferred;
                 }
+            }
 
 
-                return queryDef;
-            }]);
+            return queryDef;
+        }]);
 
 
 })();
@@ -3015,6 +3045,7 @@ angular.module("EavServices")
 
                 return deferred.promise;
             },
+
             // Ensure Model has all DataSources and they're linked to their Definition-Object
             postProcessDataSources: function(model) {
                 // stop Post-Process if the model already contains the Out-DataSource
@@ -3023,6 +3054,7 @@ angular.module("EavServices")
 
                 postProcessDataSources(model);
             },
+
             // Get a JSON for a DataSource with Definition-Property
             getNewDataSource: function(model, dataSourceBase) {
                 return {
@@ -3264,6 +3296,6 @@ $templateCache.put("content-types/content-types-fields-add.html","<div class=\"m
 $templateCache.put("content-types/content-types-fields.html","<div>\r\n\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-subtle btn-square pull-right\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        <h3 class=\"modal-title\" translate=\"Fields.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n        <button icon=\"plus\" ng-click=\"vm.add()\" class=\"btn btn-primary btn-square\"></button>\r\n\r\n        <!-- Table of content types for editing -->\r\n        <table ui-tree=\"vm.treeOptions\" data-drag-enabled=\"vm.dragEnabled\" ui-tree-nodes ng-model=\"vm.items\" class=\"table table-hover table-manage-eav eav-admin-field-list\">\r\n            <thead>\r\n                <tr>\r\n                    <th class=\"mini-btn-1\"></th>\r\n                    <th translate=\"Fields.Table.Title\" class=\"mini-btn-1\"></th>\r\n                    <th translate=\"Fields.Table.Name\" style=\"width: 35%\"></th>\r\n                    <th translate=\"Fields.Table.DataType\" style=\"width: 20%\"></th>\r\n                    <th translate=\"Fields.Table.InputType\" style=\"width: 20%\"></th>\r\n                    <th translate=\"Fields.Table.Label\" style=\"width: 30%\"></th>\r\n                    <th translate=\"Fields.Table.Notes\" style=\"width: 50%\"></th>\r\n                    <!--<th translate=\"Fields.Table.Sort\" class=\"mini-btn-2\"></th>-->\r\n                    <th translate=\"Fields.Table.Action\" class=\"mini-btn-2\"></th>\r\n                </tr>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"item in vm.items track by $id(item)\" ui-tree-node class=\"clickable-row\" ng-click=\"vm.createOrEditMetadata(item, item.Type)\" ng-class=\"[ \'type-\' + item.Type.toLowerCase(), \'subtype-\' + item.InputType.substring(item.InputType.indexOf(\'-\') + 1, 100)]\">\r\n                    <td ui-tree-handle><i class=\"glyphicon glyphicon-sort\"></i></td>\r\n                    <td stop-event=\"click\">\r\n                        <button type=\"button\" class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? \'\' : \'color: transparent !important\')\" ng-click=\"vm.setTitle(item)\">\r\n                            <i icon=\"{{item.IsTitle ? \'star\' : \'star-empty\'}}\"></i>\r\n                        </button>\r\n                    </td>\r\n                    <td class=\"clickable\"><span uib-tooltip=\"{{ \'Id: \' + item.Id}}\">{{item.StaticName}}</span></td>\r\n                    <td class=\"text-nowrap clickable\">\r\n                        {{item.Type}}\r\n                    </td>\r\n                    <td class=\"text-nowrap InputType\" stop-event=\"click\">\r\n                        <span class=\"clickable\" uib-tooltip=\"{{ vm.inputTypeTooltip(item.InputType) }}\" ng-click=\"vm.edit(item)\">\r\n                            <i icon=\"pencil\"></i>\r\n                            {{item.InputType.substring(item.InputType.indexOf(\'-\') + 1, 100)}}\r\n                        </span>\r\n                    </td>\r\n                    <td class=\"text-nowrap clickable\">\r\n                        {{item.Metadata.All.Name}}\r\n                    </td>\r\n                    <!--<td>-</td>-->\r\n                    <td class=\"text-nowrap clickable\">\r\n                        <div class=\"hide-overflow-text\">\r\n                            {{item.Metadata.All.Notes}}\r\n                        </div>\r\n                    </td>\r\n\r\n                    <!--<td class=\"text-nowrap\" stop-event=\"click\">\r\n                        <button icon=\"arrow-up\" type=\"button\" class=\"btn btn-xs btn-square\" ng-disabled=\"$first\" ng-click=\"vm.moveUp(item)\"></button>\r\n                        <button icon=\"arrow-down\" type=\"button\" class=\"btn btn-xs btn-square\" ng-disabled=\"$last\" ng-click=\"vm.moveDown(item)\"></button>\r\n                    </td>-->\r\n                    <td stop-event=\"click\">\r\n                        <button icon=\"cog\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.rename(item)\"></button>\r\n                        <button icon=\"remove\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                    </td>\r\n                </tr>\r\n                <tr ng-if=\"!vm.items.length\">\r\n                    <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n\r\n        <!--Ordered  {{vm.orderList()}} Test-->\r\n    </div>\r\n\r\n\r\n</div>");
 $templateCache.put("content-types/content-types.html","<div ng-controller=\"List as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <div class=\"modal-header\">\r\n        <h3 class=\"modal-title\" translate=\"ContentTypes.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n        <!-- Buttons on top -->\r\n        <button title=\"{{ \'General.Buttons.Add\' | translate }}\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.edit()\"><i icon=\"plus\"></i></button>\r\n\r\n\r\n        <span class=\"btn-group\" ng-if=\"vm.debug.on\">\r\n            <button title=\"{{ \'General.Buttons.Refresh\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n            <button title=\"todo\" type=\"button\" class=\"btn btn-warning btn-icon\" ng-click=\"vm.createGhost()\"><i class=\"eav-icon-ghost\"></i></button>\r\n            <button title=\"{{ \'ContentTypes.Buttons.ChangeScope\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.changeScope()\"><i icon=\"record\"></i></button>\r\n            <button title=\"{{ \'General.Buttons.System\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.liveEval()\"><i icon=\"flash\"></i></button>\r\n        </span>\r\n        <!-- Table of content types for editing -->\r\n        <table class=\"table table-hover\" style=\"table-layout: fixed; width: 100%\">\r\n            <thead>\r\n            <tr>\r\n                <!--<th translate=\"ContentTypes.TypesTable.Items\" class=\"col-id\"></th>-->\r\n                <th translate=\"ContentTypes.TypesTable.Name\" style=\"width: 50%\"></th>\r\n                <th class=\"mini-btn-1\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Description\" style=\"width: 50%\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Fields\" class=\"mini-btn-2\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Actions\" class=\"mini-btn-5\"></th>\r\n                <th class=\"mini-btn-1\"> </th>\r\n            </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr ng-if=\"vm.items.isLoaded\" ng-repeat=\"item in vm.items | orderBy:\'Name\'\" class=\"clickable-row\" ng-click=\"vm.editItems(item)\">\r\n                <!--<td style=\"text-align: center\" class=\"clickable\"> {{item.Items}} </td>-->\r\n                <td class=\"clickable\">\r\n                    <span class=\"text-nowrap hide-overflow-text\" style=\"max-width: 400px\" uib-tooltip=\"{{item.Label}} ({{item.Name}})\">{{item.Label}} <span ng-if=\"item.Name != item.Label\">({{item.Name}})</span></span>\r\n                </td>\r\n                <td class=\"clickable\" style=\"text-align: right\">\r\n                    <div class=\"badge pull-right badge-primary hover-pair\" stop-event=\"click\" ng-click=\"vm.addItem(item.StaticName)\"><span class=\"hover-default\">{{item.Items}}</span><span class=\"hover-hover eav-icon-plus\"></span></div></td>\r\n                <td class=\"clickable\">\r\n                    <div class=\"text-nowrap hide-overflow-text\" style=\"max-width: 500px\" uib-tooltip=\"{{item.Description}}\">{{item.Description}}</div>\r\n                </td>\r\n                <td stop-event=\"click\">\r\n                    <button ng-if=\"!item.UsesSharedDef\" type=\"button\" class=\"btn btn-xs\" style=\"width: 60px\" ng-click=\"vm.editFields(item)\">\r\n                        <i class=\"eav-icon-fields\"></i>&nbsp;<span style=\"width: 22px; text-align: right\">{{item.Fields}}</span>\r\n                    </button>\r\n                    <button ng-if=\"item.UsesSharedDef\" uib-tooltip=\"{{ \'ContentTypes.Messages.SharedDefinition\' | translate:item }}\" type=\"button\" class=\"btn btn-default btn-xs\" style=\"width: 60px\">\r\n                        <i class=\"eav-icon-ghost\"></i>&nbsp;<span style=\"width: 22px; text-align: right\">{{item.Fields}}</span>\r\n                    </button>\r\n                </td>\r\n\r\n                <td class=\"text-nowrap\" stop-event=\"click\">\r\n                    <span class=\"btn-group\">\r\n                        <button uib-tooltip=\"{{ \'General.Buttons.Rename\' | translate }} - {{  \'ContentTypes.Messages.Type\' + (item.UsesSharedDef ? \'Shared\' : \'Own\')  | translate:item }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.edit(item)\">\r\n                            <i icon=\"heart{{ (item.UsesSharedDef ? \'-empty\' : \'\') }}\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'General.Buttons.Metadata\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.createOrEditMetadata(item)\">\r\n                            <i class=\"eav-icon-tag\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'ContentTypes.Buttons.Export\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.openExport(item)\">\r\n                            <i icon=\"export\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'ContentTypes.Buttons.Import\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.openImport(item)\">\r\n                            <i icon=\"import\"></i>\r\n                        </button>\r\n                        <button type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.permissions(item)\" ng-if=\"vm.isGuid(item.StaticName)\">\r\n                            <i icon=\"user\"></i>\r\n                        </button>\r\n                    </span>\r\n                </td>\r\n                <td stop-event=\"click\">\r\n                    <button icon=\"remove\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                </td>\r\n            </tr>\r\n            <tr ng-if=\"!vm.items.length\">\r\n                <td colspan=\"100\">{{ \'General.Messages.Loading\' | translate }} / {{ \'General.Messages.NothingFound\' | translate }}</td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n        <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n    </div>\r\n    <div ng-if=\"vm.debug.on\">\r\n\r\n        <h3>Notes / Debug / ToDo</h3>\r\n        <ol>\r\n            <li>get validators to work on all dialogs</li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n");
 $templateCache.put("permissions/permissions.html","    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square pull-right\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        <h3 class=\"modal-title\" translate=\"Permissions.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n\r\n        <button type=\"button\" class=\"btn btn-primar btn-square\" ng-click=\"vm.add()\"><i icon=\"plus\"></i></button>\r\n        <button ng-if=\"vm.debug.on\" type=\"button\" class=\"btn btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n\r\n        <table class=\"table table-striped table-hover table-manage-eav\">\r\n            <thead>\r\n            <tr>\r\n                <th translate=\"Permissions.Table.Id\" style=\"width: 60px\"></th>\r\n                <th translate=\"Permissions.Table.Name\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Condition\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Grant\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Actions\" style=\"width: 40px\"></th>\r\n            </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr ng-repeat=\"item in vm.items | orderBy:\'Title\'\" class=\"clickable-row\" ng-click=\"vm.edit(item)\">\r\n                <td class=\"clickable\">{{item.Id}}</td>\r\n                <td class=\"clickable\">{{item.Title}}</td>\r\n                <td class=\"clickable\">{{item.Condition}}</td>\r\n                <td class=\"clickable\">{{item.Grant}}</td>\r\n                <td class=\"text-nowrap\" stop-event=\"click\">\r\n                    <button icon=\"remove\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                </td>\r\n            </tr>\r\n            <tr ng-if=\"!vm.items.length\">\r\n                <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>");
-$templateCache.put("pipelines/pipeline-designer.html","<div class=\"ng-cloak\">\r\n    <div ng-controller=\"PipelineDesignerController as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n        <div id=\"pipelineContainer\">\r\n            <div ng-repeat=\"dataSource in queryDef.data.DataSources\"\r\n                 datasource\r\n                 guid=\"{{dataSource.EntityGuid}}\"\r\n                 id=\"dataSource_{{dataSource.EntityGuid}}\"\r\n                 class=\"dataSource\"\r\n                 ng-attr-style=\"top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px\">\r\n                <div class=\"configure\" ng-click=\"configureDataSource(dataSource)\" title=\"Configure this DataSource\" ng-if=\"!dataSource.ReadOnly\">\r\n                    <span class=\"glyphicon glyphicon-list-alt\"></span>\r\n                </div>\r\n                <div class=\"name noselect\" title=\"Click to edit the Name\" ng-click=\"editName(dataSource)\">{{dataSource.Name || \'(unnamed)\'}}</div><br />\r\n                <div class=\"description noselect\" title=\"Click to edit the Description\" ng-click=\"editDescription(dataSource)\">{{dataSource.Description || \'(no description)\'}}</div><br />\r\n                <div class=\"typename\" ng-attr-title=\"{{dataSource.PartAssemblyAndType}}\">Type: {{dataSource.PartAssemblyAndType | typename: \'className\'}}</div>\r\n                <div class=\"ep\" title=\"Drag a new Out-Connection from here\" ng-if=\"!dataSource.ReadOnly\">\r\n                    <span class=\"glyphicon glyphicon-plus-sign\"></span>\r\n                </div>\r\n                <div class=\"delete glyphicon glyphicon-remove\" title=\"Delete this DataSource\" ng-click=\"remove($index)\" ng-if=\"!dataSource.ReadOnly\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"actions panel panel-default\">\r\n            <div class=\"panel-heading\">\r\n                <span class=\"pull-left\">Actions</span>\r\n                <a href=\"http://2sxc.org/help\" class=\"btn btn-info btn-xs pull-right\" target=\"_blank\"><span class=\"glyphicon glyphicon-question-sign\"></span> Help</a>\r\n            </div>\r\n            <div class=\"panel-body\">\r\n                <div class=\"btn-group\" role=\"group\" style=\"width: 100%\">\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\"\r\n                            title=\"Query the Data of this Pipeline. Note that it doesn\'t save changes - so if you have unexpected behaviour after rewiring - save first\"\r\n                            ng-click=\"queryPipeline(save)\"\r\n                            style=\"width: 65%\">\r\n                        <span class=\"glyphicon glyphicon-play\"></span> Query\r\n                    </button>\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\" title=\"Save & Query\"\r\n                            ng-click=\"queryPipeline(true)\"\r\n                            style=\"width: 35%; margin-top: 4px\">\r\n                        <span icon=\"ok\"></span> &amp;\r\n                        <span class=\"glyphicon glyphicon-play\"></span>\r\n                    </button>\r\n                </div>\r\n\r\n                <select class=\"form-control\" ng-model=\"addDataSourceType\" ng-disabled=\"queryDef.readOnly\" ng-change=\"addDataSource()\" ng-options=\"d.ClassName for d in queryDef.data.InstalledDataSources | filter: {allowNew: \'!false\'} | orderBy: \'ClassName\'\">\r\n                    <option value=\"\">-- Add DataSource --</option>\r\n                </select>\r\n                <button type=\"button\" class=\"btn btn-default btn-block\" ng-click=\"editPipelineEntity()\"><span class=\"glyphicon glyphicon-pencil\"></span> Test Parameters</button>\r\n                <button type=\"button\" class=\"btn btn-primary btn-block\" ng-disabled=\"queryDef.readOnly\" ng-click=\"savePipeline()\">\r\n                    <span icon=\"ok\"></span> Save\r\n                </button>\r\n                <br/>\r\n\r\n                <!-- show warnings if detected -->\r\n                <div ng-if=\"vm.warnings.length\">\r\n                    <div><strong>Warnings</strong></div>\r\n                    <ol>\r\n                        <li ng-repeat=\"warn in vm.warnings\">{{warn}}</li>\r\n                    </ol>\r\n                    <br />\r\n                </div>\r\n                <br/>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"toggleEndpointOverlays()\"><span class=\"glyphicon glyphicon-info-sign\"></span> {{showEndpointOverlays ? \'Hide\' : \'Show\' }} Overlays</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"repaint()\"><span class=\"glyphicon glyphicon-repeat\"></span> Repaint</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-if=\"vm.debug.on\" ng-click=\"toogleDebug()\"><span class=\"glyphicon glyphicon-info-sign\"></span> {{debug ? \'Hide\' : \'Show\'}} Debug Info</button>\r\n\r\n                <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n            </div>\r\n        </div>\r\n        <toaster-container></toaster-container>\r\n        <pre ng-if=\"debug\">{{queryDef.data | json}}</pre>\r\n    </div>\r\n</div>\r\n");
+$templateCache.put("pipelines/pipeline-designer.html","<div class=\"ng-cloak\">\r\n    <div ng-controller=\"PipelineDesignerController as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n        <div id=\"pipelineContainer\">\r\n            <div ng-repeat=\"dataSource in queryDef.data.DataSources\"\r\n                 datasource\r\n                 guid=\"{{dataSource.EntityGuid}}\"\r\n                 id=\"dataSource_{{dataSource.EntityGuid}}\"\r\n                 class=\"dataSource\"\r\n                 ng-attr-style=\"top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px\">\r\n                <div class=\"configure\" ng-click=\"configureDataSource(dataSource)\" title=\"Configure this DataSource\" ng-if=\"!dataSource.ReadOnly\">\r\n                    <span class=\"glyphicon glyphicon-list-alt\"></span>\r\n                </div>\r\n                <div class=\"name noselect\" title=\"Click to edit the Name\" ng-click=\"editName(dataSource)\">{{dataSource.Name || \'(unnamed)\'}}</div><br />\r\n                <div class=\"description noselect\" title=\"Click to edit the Description\" ng-click=\"editDescription(dataSource)\">{{dataSource.Description || \'(no description)\'}}</div><br />\r\n                <div class=\"typename\" ng-attr-title=\"{{dataSource.PartAssemblyAndType}}\">Type: {{dataSource.PartAssemblyAndType | typename: \'className\'}}</div>\r\n                <div class=\"ep\" title=\"Drag a new Out-Connection from here\" ng-if=\"!dataSource.ReadOnly\">\r\n                    <span class=\"glyphicon glyphicon-plus-sign\"></span>\r\n                </div>\r\n                <div class=\"delete glyphicon glyphicon-remove\" title=\"Delete this DataSource\" ng-click=\"remove($index)\" ng-if=\"!dataSource.ReadOnly\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"actions panel panel-default\">\r\n            <div class=\"panel-heading\">\r\n                <span class=\"pull-left\">Actions</span>\r\n                <a href=\"http://2sxc.org/help\" class=\"btn btn-info btn-xs pull-right\" target=\"_blank\"><span class=\"glyphicon glyphicon-question-sign\"></span> Help</a>\r\n            </div>\r\n            <div class=\"panel-body\">\r\n                <div class=\"btn-group\" role=\"group\" style=\"width: 100%\">\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\"\r\n                            title=\"Query the Data of this Pipeline. Note that it doesn\'t save changes - so if you have unexpected behaviour after rewiring - save first\"\r\n                            ng-click=\"queryPipeline(save)\"\r\n                            style=\"width: 65%\">\r\n                        <span class=\"glyphicon glyphicon-play\"></span> Query\r\n                    </button>\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\" title=\"Save & Query\"\r\n                            ng-click=\"queryPipeline(true)\"\r\n                            style=\"width: 35%; margin-top: 4px\">\r\n                        <span icon=\"ok\"></span> &amp;\r\n                        <span class=\"glyphicon glyphicon-play\"></span>\r\n                    </button>\r\n                </div>\r\n\r\n                <select class=\"form-control\" ng-model=\"addDataSourceType\" ng-disabled=\"queryDef.readOnly\" ng-change=\"vm.addSelectedDataSource()\" ng-options=\"d.ClassName for d in queryDef.data.InstalledDataSources | filter: {allowNew: \'!false\'} | orderBy: \'ClassName\'\">\r\n                    <option value=\"\">-- Add DataSource --</option>\r\n                </select>\r\n                <button type=\"button\" class=\"btn btn-default btn-block\" ng-click=\"editPipelineEntity()\"><span class=\"glyphicon glyphicon-pencil\"></span> Test Parameters</button>\r\n                <button type=\"button\" class=\"btn btn-primary btn-block\" ng-disabled=\"queryDef.readOnly\" ng-click=\"savePipeline()\">\r\n                    <span icon=\"ok\"></span> Save\r\n                </button>\r\n                <br/>\r\n\r\n                <!-- show warnings if detected -->\r\n                <div ng-if=\"vm.warnings.length\">\r\n                    <div><strong>Warnings</strong></div>\r\n                    <ol>\r\n                        <li ng-repeat=\"warn in vm.warnings\">{{warn}}</li>\r\n                    </ol>\r\n                    <br />\r\n                </div>\r\n                <br/>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"toggleEndpointOverlays()\"><span class=\"glyphicon glyphicon-info-sign\"></span> {{showEndpointOverlays ? \'Hide\' : \'Show\' }} Overlays</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"repaint()\"><span class=\"glyphicon glyphicon-repeat\"></span> Repaint</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-if=\"vm.debug.on\" ng-click=\"toogleDebug()\"><span class=\"glyphicon glyphicon-info-sign\"></span> {{debug ? \'Hide\' : \'Show\'}} Debug Info</button>\r\n\r\n                <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n            </div>\r\n        </div>\r\n        <toaster-container></toaster-container>\r\n        <pre ng-if=\"debug\">{{queryDef.data | json}}</pre>\r\n    </div>\r\n</div>\r\n");
 $templateCache.put("pipelines/pipelines.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <div class=\"modal-header\">\r\n        <h3 class=\"modal-title\" translate=\"Pipeline.Manage.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body ng-cloak\">\r\n        <div translate=\"Pipeline.Manage.Intro\"></div>\r\n        <div>\r\n            <button icon=\"plus\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.add()\"></button>\r\n            <span class=\"btn-group\" ng-if=\"vm.debug.on\">\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.liveEval()\"><i icon=\"flash\"></i></button>\r\n            </span>\r\n            <table class=\"table table-hover table-manage-eav\">\r\n                <thead>\r\n                <tr>\r\n                    <th translate=\"Pipeline.Manage.Table.Id\" class=\"col-id\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Name\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Description\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Actions\" class=\"mini-btn-4\"></th>\r\n                </tr>\r\n                </thead>\r\n                <tbody>\r\n                <tr ng-repeat=\"pipeline in vm.pipelines | orderBy:\'Name\'\" class=\"clickable-row\" ng-click=\"vm.design(pipeline)\">\r\n                    <td class=\"clickable\">{{pipeline.Id}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Name}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Description}}</td>\r\n                    <td class=\"text-nowrap mini-btn-4\" stop-event=\'click\'>\r\n                        <span class=\"btn-group\">\r\n                            <button title=\"{{ \'General.Buttons.Edit\' | translate }}\" class=\"btn btn-xs\" ng-click=\"vm.edit(pipeline)\"><i icon=\"cog\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Copy\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.clone(pipeline)\"><i icon=\"duplicate\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Permissions\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.permissions(pipeline)\"><i icon=\"user\"></i></button>\r\n                        </span>\r\n                        <button title=\"{{ \'General.Buttons.Delete\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.delete(pipeline)\"><i icon=\"remove\"></i></button>\r\n                    </td>\r\n                </tr>\r\n                <tr ng-if=\"!vm.pipelines.length\">\r\n                    <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n                </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n\r\n        <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n    </div>\r\n\r\n</div>");
 $templateCache.put("pipelines/query-stats.html","<div class=\"modal-header\">\r\n    <button icon=\"remove\" class=\"btn pull-right\" type=\"button\" ng-click=\"vm.close()\"></button>\r\n    <h3 class=\"modal-title\" translate=\"Pipeline.Stats.Title\"></h3>\r\n</div>\r\n\r\n<div class=\"modal-body\">\r\n    <div translate=\"Pipeline.Stats.Intro\"></div>\r\n\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.ParamTitle\"></h3>\r\n        <div translate=\"Pipeline.Stats.ExecutedIn\" translate-values=\"{ ms: vm.timeUsed, ticks: vm.ticksUsed }\"></div>\r\n        <div>\r\n            <ul>\r\n                <li ng-repeat=\"param in vm.testParameters\">{{param}}</li>\r\n            </ul>\r\n        </div>\r\n    </div>\r\n\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.QueryTitle\"></h3>\r\n        <pre>{{vm.result | json}}</pre>\r\n    </div>\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.SourcesAndStreamsTitle\"></h3>\r\n        <h4 translate=\"Pipeline.Stats.Sources.Title\"></h4>\r\n        <table>\r\n            <tr>\r\n                <th translate=\"Pipeline.Stats.Sources.Guid\"></th>\r\n                <th translate=\"Pipeline.Stats.Sources.Type\"></th>\r\n                <th translate=\"Pipeline.Stats.Sources.Config\"></th>\r\n            </tr>\r\n            <tr ng-repeat=\"s in vm.sources\">\r\n                <td uib-tooltip=\"{{s}}\"><pre>{{s.Guid.substring(0, 13)}}...</pre></td>\r\n                <td>{{s.Type}}</td>\r\n                <td uib-tooltip=\"{{s.Configuration}}\">\r\n                    <ol>\r\n                        <li ng-repeat=\"(key, value) in s.Configuration\"><b>{{key}}</b>=<em>{{value}}</em></li>\r\n                    </ol>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n        <h4 translate=\"Pipeline.Stats.Streams.Title\"></h4>\r\n        <table>\r\n            <tr>\r\n                <th translate=\"Pipeline.Stats.Streams.Source\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Target\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Items\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Error\"></th>\r\n            </tr>\r\n            <tr ng-repeat=\"sr in vm.streams\">\r\n                <td><pre>{{sr.Source.substring(0, 13) + \":\" + sr.SourceOut}}</pre></td>\r\n                <td><pre>{{sr.Target.substring(0, 13) + \":\" + sr.TargetIn}}</pre></td>\r\n                <td><span>{{sr.Count}}</span></td>\r\n                <td><span>{{sr.Error}}</span></td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</div>");}]);

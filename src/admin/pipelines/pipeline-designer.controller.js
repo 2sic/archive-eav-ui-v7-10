@@ -3,6 +3,22 @@
 (function () {
     /*jshint laxbreak:true */
 
+    var editName = function (dataSource) {
+        if (dataSource.ReadOnly) return;
+
+        var newName = prompt("Rename DataSource", dataSource.Name);
+        if (newName && newName.trim())
+            dataSource.Name = newName.trim();
+    };
+
+    // Edit Description of a DataSource
+    var editDescription = function (dataSource) {
+        if (dataSource.ReadOnly) return;
+
+        var newDescription = prompt("Edit Description", dataSource.Description);
+        if (newDescription && newDescription.trim())
+            dataSource.Description = newDescription.trim();
+    };
     // helper method because we don't have jQuery any more to find the offset
     function getElementOffset(element) {
         var de = document.documentElement;
@@ -11,6 +27,8 @@
         var left = box.left + window.pageXOffset - de.clientLeft;
         return { top: top, left: left };
     }
+
+
 
     angular.module("PipelineDesigner")
         .controller("PipelineDesignerController",
@@ -67,57 +85,6 @@
                 // init new jsPlumb Instance
                 jsPlumb.ready(function () {
                     plumbGui.buildInstance();// can't do this before jsplumb is ready...
-
-                    // If connection on Out-DataSource was removed, remove custom Endpoint
-                    plumbGui.instance.bind("connectionDetached", function(info) {
-                        if (info.targetId === plumbGui.dataSrcIdPrefix + "Out") {
-                            var element = angular.element(info.target);
-                            var fixedEndpoints = plumbGui.findDataSourceOfElement(element).dataSource.Definition().In;
-                            var label = info.targetEndpoint.getOverlay("endpointLabel").label;
-                            if (fixedEndpoints.indexOf(label) === -1) {
-                                $timeout(function() {
-                                    plumbGui.instance.deleteEndpoint(info.targetEndpoint);
-                                });
-                            }
-                        }
-                    });
-
-                    // If a new connection is created, ask for a name of the In-Stream
-                    plumbGui.instance.bind("connection", function(info) {
-                        if (!$scope.connectionsInitialized) return;
-
-                        // Repeat until a valid Stream-Name is provided by the user
-                        var repeatCount = 0;
-                        var endpointHandling = function(endpoint) {
-                            var label = endpoint.getOverlay("endpointLabel").getLabel();
-                            if (label === labelPrompt && info.targetEndpoint.id !== endpoint.id && angular.element(endpoint.canvas).hasClass("targetEndpoint"))
-                                targetEndpointHavingSameLabel = endpoint;
-                        };
-                        while (true) {
-                            repeatCount++;
-
-                            var promptMessage = "Please name the Stream";
-                            if (repeatCount > 1)
-                                promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
-
-                            var endpointLabel = info.targetEndpoint.getOverlay("endpointLabel");
-                            var labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
-                            if (labelPrompt)
-                                endpointLabel.setLabel(labelPrompt);
-                            else
-                                continue;
-
-                            // Check if any other Target-Endpoint has the same Stream-Name (Label)
-                            var endpoints = plumbGui.instance.getEndpoints(info.target.id);
-                            var targetEndpointHavingSameLabel = null;
-
-                            angular.forEach(endpoints, endpointHandling);
-                            if (targetEndpointHavingSameLabel)
-                                continue;
-
-                            break;
-                        }
-                    });
                 });
 
 
@@ -163,9 +130,8 @@
                 };
 
                 // Initialize jsPlumb Connections once after all DataSources were created in the DOM
-                $scope.connectionsInitialized = false;
                 $scope.$on("ngRepeatFinished", function() {
-                    if ($scope.connectionsInitialized) return;
+                    if (plumbGui.connectionsInitialized) return;
 
                     // suspend drawing and initialise
                     plumbGui.instance.batch(function() {
@@ -173,7 +139,7 @@
                     });
                     $scope.repaint(); // repaint so continuous connections are aligned correctly
 
-                    $scope.connectionsInitialized = true;
+                    plumbGui.connectionsInitialized = true;
                 });
 
 
@@ -181,43 +147,46 @@
                 var initNewPipeline = function () {
                     var templateForNew = eavConfig.pipelineDesigner.defaultPipeline.dataSources;
                     angular.forEach(templateForNew, function(dataSource) {
-                        $scope.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, false, dataSource.entityGuid);
+                        queryDef.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, dataSource.entityGuid);
                     });
 
                     // Wait until all DataSources were created
                     var initWiringsListener = $scope.$on("ngRepeatFinished", function() {
-                        $scope.connectionsInitialized = false;
+                        plumbGui.connectionsInitialized = false;
                         plumbGui.initWirings(eavConfig.pipelineDesigner.defaultPipeline.streamWiring);
-                        $scope.connectionsInitialized = true;
+                        plumbGui.connectionsInitialized = true;
 
                         initWiringsListener(); // unbind the Listener
                     });
                 };
 
+
+
+                vm.addSelectedDataSource = function() {
+                    var partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+                    $scope.addDataSourceType = null; // reset dropdown
+                    queryDef.addDataSource(partAssemblyAndType);
+                    $scope.savePipeline();
+
+                }
+
                 // Add new DataSource
-                $scope.addDataSource = function(partAssemblyAndType, visualDesignerData, autoSave, entityGuid) {
-                    if (!partAssemblyAndType) {
-                        partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
-                        $scope.addDataSourceType = null;
-                    }
-                    if (!visualDesignerData)
-                        visualDesignerData = { Top: 100, Left: 100 };
+                //$scope.addDataSource = function(partAssemblyAndType, visualDesignerData, entityGuid) {
+                //    if (!visualDesignerData)
+                //        visualDesignerData = { Top: 100, Left: 100 };
 
-                    var newDataSource = {
-                        VisualDesignerData: visualDesignerData,
-                        Name: $filter("typename")(partAssemblyAndType, "className"),
-                        Description: "",
-                        PartAssemblyAndType: partAssemblyAndType,
-                        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
-                    };
-                    // Extend it with a Property to it's Definition
-                    newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource(queryDef.data, newDataSource));
+                //    var newDataSource = {
+                //        VisualDesignerData: visualDesignerData,
+                //        Name: $filter("typename")(partAssemblyAndType, "className"),
+                //        Description: "",
+                //        PartAssemblyAndType: partAssemblyAndType,
+                //        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
+                //    };
+                //    // Extend it with a Property to it's Definition
+                //    newDataSource = angular.extend(newDataSource, pipelineService.getNewDataSource(queryDef.data, newDataSource));
 
-                    queryDef.data.DataSources.push(newDataSource);
-
-                    if (autoSave !== false)
-                        $scope.savePipeline();
-                };
+                //    queryDef.data.DataSources.push(newDataSource);
+                //};
 
                 // Delete a DataSource
                 $scope.remove = function(index) {
@@ -247,19 +216,14 @@
                     if (dataSource.ReadOnly) return;
 
                     // Ensure dataSource Entity is saved
-                    if (!dataSourceIsPersisted(dataSource)) {
+                    if (!queryDef.dataSourceIsPersisted(dataSource)) {
                         $scope.savePipeline();
                         return;
                     }
 
                     pipelineService.editDataSourcePart(dataSource, queryDef.data.InstalledDataSources);
-
                 };
 
-                // Test wether a DataSource is persisted on the Server
-                var dataSourceIsPersisted = function(dataSource) {
-                    return dataSource.EntityGuid.indexOf("unsaved") === -1;
-                };
 
                 // Show/Hide Endpoint Overlays
                 $scope.showEndpointOverlays = true;
@@ -280,7 +244,7 @@
                         vm.saveShortcut.unbind();
                         eavAdminDialogs.openEditItems([{ EntityId: queryDef.id }], function() {
                             pipelineService.getPipeline(queryDef.id)
-                                .then(pipelineSaved)
+                                .then(resetPlumbAndWarnings)
                                 .then(vm.saveShortcut.rebind);
                         });
 
@@ -290,53 +254,30 @@
                 // #region Save Pipeline
                 // Save Pipeline
                 // returns a Promise about the saving state
-                vm.savePipeline = $scope.savePipeline = function (successHandler) {
+                vm.savePipeline = $scope.savePipeline = function savePipeline() {
                     var waitMsg = toastr.info("This shouldn't take long", "Saving...");
-                    queryDef.readOnly = true;
 
                     plumbGui.pushPlumbConfigToQueryDef(plumbGui.instance);
 
-                    var deferred = $q.defer();
-
-                    if (typeof successHandler === "undefined") // set default success Handler
-                        successHandler = pipelineSaved;
-
-                    queryDef.save(successHandler);
-
-                    return deferred.promise;
+                    return queryDef.save(/*resetPlumbAndWarnings*/).then(resetPlumbAndWarnings);
                 };
 
                 // Handle Pipeline Saved, success contains the updated Pipeline Data
-                var pipelineSaved = function(success) {
-                    // Update PipelineData with data retrieved from the Server
-                    queryDef.data.Pipeline = success.Pipeline;
-                    queryDef.data.TestParameters = success.TestParameters;
-                    queryDef.id = success.Pipeline.EntityId;
-                    $location.search("PipelineId", success.Pipeline.EntityId);
-                    queryDef.readOnly = !success.Pipeline.AllowEdit;
-                    queryDef.data.DataSources = success.DataSources;
-                    pipelineService.postProcessDataSources(queryDef.data);
-
-                    toastr.clear();
-                    toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded", "Saved", { autoDismiss: true });
-
+                var resetPlumbAndWarnings = function(promise) {
                     // Reset jsPlumb, re-Init Connections
                     plumbGui.instance.reset();
-                    $scope.connectionsInitialized = false;
+                    plumbGui.connectionsInitialized = false;
                     refreshWarnings(queryDef.data, vm);
+                    return promise;
                 };
 
                 // #endregion
 
                 // Repaint jsPlumb
-                $scope.repaint = function() {
-                    plumbGui.instance.repaintEverything();
-                };
+                $scope.repaint = function() { plumbGui.instance.repaintEverything(); };
 
                 // Show/Hide Debug info
-                $scope.toogleDebug = function() {
-                    $scope.debug = !$scope.debug;
-                };
+                $scope.toogleDebug = function() { $scope.debug = !$scope.debug; };
 
                 // check if there are special warnings the developer should know
                 // typically when the test-module-id is different from the one we're currently
@@ -374,7 +315,7 @@
                             eavAdminDialogs.OpenModal("pipelines/query-stats.html", "QueryStats as vm", "lg", resolve);
 
                             $timeout(function() {
-                                showEntityCountOnStreams(success);
+                                plumbGui.putEntityCountOnConnection(success);
                             });
                             $log.debug(success);
                         }, function(reason) {
@@ -382,38 +323,6 @@
                         });
                     };
 
-
-                    var showEntityCountOnStreams = function(result) {
-                        angular.forEach(result.Streams, function(stream) {
-                            // Find jsPlumb Connection for the current Stream
-                            var sourceElementId = plumbGui.dataSrcIdPrefix + stream.Source;
-                            var targetElementId = plumbGui.dataSrcIdPrefix + stream.Target;
-                            if (stream.Target === "00000000-0000-0000-0000-000000000000")
-                                targetElementId = plumbGui.dataSrcIdPrefix + "Out";
-
-                            var fromUuid = sourceElementId + "_out_" + stream.SourceOut;
-                            var toUuid = targetElementId + "_in_" + stream.TargetIn;
-
-                            var sEndp = plumbGui.instance.getEndpoint(fromUuid);
-                            var streamFound = false;
-                            if (sEndp) {
-                                angular.forEach(sEndp.connections, function(connection) {
-                                    if (connection.endpoints[1].getUuid() === toUuid) {
-                                        // when connection found, update it's label with the Entities-Count
-                                        connection.setLabel({
-                                            label: stream.Count.toString(),
-                                            cssClass: "streamEntitiesCount"
-                                        });
-                                        streamFound = true;
-                                        return;
-                                    }
-                                });
-                            }
-
-                            if (!streamFound)
-                                $log.error("Stream not found", stream, sEndp);
-                        });
-                    };
 
                     // Ensure the Pipeline is saved
                     if (saveFirst)
@@ -423,24 +332,4 @@
                 };
 
         });
-
-
-    // temp: extracted pure functions
-
-    var editName = function (dataSource) {
-        if (dataSource.ReadOnly) return;
-
-        var newName = prompt("Rename DataSource", dataSource.Name);
-        if (newName && newName.trim())
-            dataSource.Name = newName.trim();
-    };
-
-    // Edit Description of a DataSource
-    var editDescription = function (dataSource) {
-        if (dataSource.ReadOnly) return;
-
-        var newDescription = prompt("Edit Description", dataSource.Description);
-        if (newDescription && newDescription.trim())
-            dataSource.Description = newDescription.trim();
-    };
 })();
