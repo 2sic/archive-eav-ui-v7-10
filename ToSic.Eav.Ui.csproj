@@ -154,6 +154,10 @@
     <Content Include="src\admin\eav-admin.css" />
     <Content Include=".bowerrc" />
     <None Include="src\admin\icons.css.excluded" />
+    <Content Include="src\admin\pipelines\query-definition.service.js" />
+    <Content Include="src\admin\pipelines\plumbGui.service.js" />
+    <Content Include="src\admin\pipelines\datasource.directive.js" />
+    <Content Include="src\admin\pipelines\pipeline-designer.filters.js" />
     <Content Include="src\admin\pipelines\query-stats.controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
     <Content Include="src\admin\polyfills\string.endswith.js" />
@@ -254,7 +258,7 @@
     <Content Include="src\admin\content-types\content-types.html" />
     <Content Include="src\admin\permissions\permissions-controller.js" />
     <Content Include="src\admin\permissions\permissions.html" />
-    <Content Include="src\admin\pipelines\pipeline-designer.app.js" />
+    <Content Include="src\admin\pipelines\app.js" />
     <Content Include="src\admin\pipelines\pipeline-designer.controller.js" />
     <Content Include="src\admin\pipelines\pipeline-designer.css" />
     <Content Include="src\admin\pipelines\pipeline-designer.html" />

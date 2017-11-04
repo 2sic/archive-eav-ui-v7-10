@@ -1,0 +1,11 @@
+angular.module("PipelineDesigner",
+    [
+        "PipelineDesigner.filters",
+        "ngResource",
+        "EavConfiguration",
+        "EavServices",
+        "eavTemplates",
+        "eavNgSvcs",
+        "EavAdminUi",
+        "eavEditEntity"
+    ]);
