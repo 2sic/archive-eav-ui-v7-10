@@ -214,7 +214,7 @@
                     plumbGui.connectionsInitialized = false;
                     refreshWarnings(queryDef.data, vm);
                     return promise;
-                };
+                }
 
 
                 // Save Pipeline

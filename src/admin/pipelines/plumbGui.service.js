@@ -31,14 +31,16 @@
 
 
             // the definition of source endpoints (the small blue ones)
-            plumbGui.buildSourceEndpoint = function () {return {
-                paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                cssClass: "sourceEndpoint",
-                maxConnections: -1,
-                isSource: true,
-                anchor: ["Continuous", { faces: ["top"] }],
-                overlays: getEndpointOverlays(true, queryDef.readOnly)
-            }};
+            plumbGui.buildSourceEndpoint = function() {
+                return {
+                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
+                    cssClass: "sourceEndpoint",
+                    maxConnections: -1,
+                    isSource: true,
+                    anchor: ["Continuous", { faces: ["top"] }],
+                    overlays: getEndpointOverlays(true, queryDef.readOnly)
+                };
+            };
 
             // the definition of target endpoints (will appear when the user drags a connection) 
             plumbGui.buildTargetEndpoint = function() {
@@ -50,7 +52,7 @@
                     anchor: ["Continuous", { faces: ["bottom"] }],
                     overlays: getEndpointOverlays(false, queryDef.readOnly),
                     dropOptions: { hoverClass: "hover", activeClass: "active" }
-                }
+                };
             };
 
             // this will retrieve the dataSource info-object for a DOM element
@@ -95,7 +97,6 @@
                 var dataSource = plumbGui.findDataSourceOfElement(element[0]);
 
                 var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
-                // old - using jQuery - var uuid = element.attr("id") + (isIn ? "_in_" : "_out_") + name;
                 var params = {
                     uuid: uuid,
                     enabled:
@@ -245,7 +246,8 @@
             [
                 "Label", {
                     id: "endpointLabel",
-                    location: [0.5, isSource ? -0.5 : 1.5],
+                    //location: [0.5, isSource ? -0.5 : 1.5],
+                    location: [0.5, isSource ? 0 : 1],
                     label: "Default",
                     cssClass: "noselect " + (isSource ? "endpointSourceLabel" : "endpointTargetLabel"),
                     events: {
