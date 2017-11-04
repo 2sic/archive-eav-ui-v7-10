@@ -18,7 +18,10 @@
                     {{dataSource.Description}}
                     <span class="show-hover-inline glyphicon glyphicon-pencil"></span>
                 </div><br />
-                <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}</div>
+                <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">
+                    Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
+                    Primary Type: (todo!) {{ queryDef.data.InstalledDataSources | filter: {PartAssemblyAndType: dataSource.PartAssemblyAndType} }}
+                </div>
                 <div class="ep " title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
                     <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
