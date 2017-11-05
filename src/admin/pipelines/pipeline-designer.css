@@ -24,8 +24,8 @@
 	-moz-box-shadow: 2px 2px 19px #aaa;
 	-moz-border-radius: 0.5em;
 	/* border-radius: 0.5em; */
-    border-top-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-left-radius: 0.8em;
+    border-bottom-right-radius: 0.8em;
 	filter: alpha(opacity=80);
 	text-align: center;
 	z-index: 20;
@@ -78,16 +78,22 @@
 	.dataSource .delete {
 		display: none;
 		position: absolute;
-		top: 0;
-		right: 0;
-		width: 16px;
-		height: 16px;
+	    color: #aaaaaa;
+	    left: 0;
+		top: 32px;
+		/*right: 0;*/
 	}
 
 	.dataSource .configure {
 	    display: none;
 		position: absolute;
 		top: 0;
+		left: 0;
+	}
+
+	.dataSource .type-info {
+		position: absolute;
+		top: 10px;
 		left: 0;
 		padding: 3px;
 		font-size: large;
@@ -103,11 +109,11 @@
 
     /* show all hidden elements */
     .dataSource:hover .configure,
-	.dataSource:hover .delete, 
+    .dataSource:hover .delete,
     .dataSource:hover .typename,
-    .dataSource:hover .ep {
-		display: block;
-	}
+    .dataSource:hover .add-endpoint {
+        display: block;
+    }
 
 
 .sourceEndpoint:after, .targetEndpoint:after {
@@ -183,22 +189,21 @@
 	text-align: center;
 }
 
-.ep {
-	position: absolute;
-	bottom: 35%;
-	right: 5px;
-	width: 1em;
-	height: 1em;
-	cursor: pointer;
-	font-size: large;
-	color: orange;
+.add-endpoint {
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+    font-size: large;
+    color: orange;
     display: none
 }
 
-.ep:hover {
-	color: #D98D00;
+.add-endpoint:hover {
+    color: #D98D00;
 }
-
 
 .noselect {
     cursor: default;

@@ -8,24 +8,24 @@
                  class="dataSource"
                  ng-attr-style="top: {{dataSource.VisualDesignerData.Top}}px; left: {{dataSource.VisualDesignerData.Left}}px">
                 <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" ng-if="!dataSource.ReadOnly">
-                    <span class="glyphicon glyphicon-cog"></span>
+                    <i class="eav-icon-settings"></i>
                 </div>
+                <i class="type-info {{vm.typeInfo(dataSource).icon}}" title="{{vm.typeInfo(dataSource).notes}}"></i>
                 <div class="name noselect" title="Click to edit the Name" ng-click="editName(dataSource)">
                     {{dataSource.Name || '(unnamed)'}}
-                    <span class="show-hover-inline glyphicon glyphicon-pencil"></span>
+                    <span class="show-hover-inline eav-icon-pencil"></span>
                 </div><br />
                 <div class="description noselect" title="Click to edit the Description" ng-click="editDescription(dataSource)">
                     {{dataSource.Description}}
-                    <span class="show-hover-inline glyphicon glyphicon-pencil"></span>
+                    <span class="show-hover-inline eav-icon-pencil"></span>
                 </div><br />
                 <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">
                     Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
-                    Primary Type: (todo!) {{ queryDef.data.InstalledDataSources | filter: {PartAssemblyAndType: dataSource.PartAssemblyAndType} }}
                 </div>
-                <div class="ep " title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                <div class="add-endpoint" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
+                    <i class="new-connection eav-icon-up-dir"></i>
                 </div>
-                <div class="delete glyphicon glyphicon-remove" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
+                <div class="delete eav-icon-cancel" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
             </div>
         </div>
         <div class="actions panel panel-default">

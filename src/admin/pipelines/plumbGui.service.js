@@ -165,6 +165,47 @@
             };
 
 
+            plumbGui.makeSource = function(dataSource, element, dragHandler) {
+                // suspend drawing and initialise
+                plumbGui.instance.batch(function() {
+
+                    // make DataSources draggable. Must happen before makeSource()!
+                    if (!queryDef.readOnly) {
+                        plumbGui.instance.draggable(element,
+                            {
+                                grid: [20, 20],
+                                drag: dragHandler
+                            });
+                    }
+
+                    // Add Out- and In-Endpoints from Definition
+                    var dataSourceDefinition = dataSource.Definition();
+                    if (dataSourceDefinition) {
+                        // Add Out-Endpoints
+                        angular.forEach(dataSourceDefinition.Out,
+                            function(name) {
+                                plumbGui.addEndpoint(element, name, false);
+                            });
+                        // Add In-Endpoints
+                        angular.forEach(dataSourceDefinition.In,
+                            function(name) {
+                                plumbGui.addEndpoint(element, name, true);
+                            });
+                        // make the DataSource a Target for new Endpoints (if .In is an Array)
+                        if (dataSourceDefinition.In) {
+                            var targetEndpointUnlimited = plumbGui.buildTargetEndpoint();
+                            targetEndpointUnlimited.maxConnections = -1;
+                            plumbGui.instance.makeTarget(element, targetEndpointUnlimited);
+                        }
+
+                        plumbGui.instance.makeSource(element,
+                            plumbGui.buildSourceEndpoint(),
+                            { filter: ".add-endpoint .new-connection" });
+                    }
+                });
+            };
+
+
 
             plumbGui.buildInstance = function() {
                 plumbGui.instance = jsPlumb.getInstance(instanceTemplate);

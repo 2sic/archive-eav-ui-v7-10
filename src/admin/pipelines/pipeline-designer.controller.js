@@ -81,47 +81,13 @@
 
 
                 // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
-                $scope.makeDataSource = function(dataSource, element) {
-                    // suspend drawing and initialise
-                    plumbGui.instance.batch(function() {
-
-                        // make DataSources draggable. Must happen before makeSource()!
-                        if (!queryDef.readOnly) {
-                            plumbGui.instance.draggable(element,
-                                {
-                                    grid: [20, 20],
-                                    drag: $scope.dataSourceDrag
-                                });
-                        }
-
-                        // Add Out- and In-Endpoints from Definition
-                        var dataSourceDefinition = dataSource.Definition();
-                        if (dataSourceDefinition) {
-                            // Add Out-Endpoints
-                            angular.forEach(dataSourceDefinition.Out,
-                                function(name) {
-                                    plumbGui.addEndpoint(element, name, false);
-                                });
-                            // Add In-Endpoints
-                            angular.forEach(dataSourceDefinition.In,
-                                function(name) {
-                                    plumbGui.addEndpoint(element, name, true);
-                                });
-                            // make the DataSource a Target for new Endpoints (if .In is an Array)
-                            if (dataSourceDefinition.In) {
-                                var targetEndpointUnlimited = plumbGui.buildTargetEndpoint();
-                                targetEndpointUnlimited.maxConnections = -1;
-                                plumbGui.instance.makeTarget(element, targetEndpointUnlimited);
-                            }
-
-                            plumbGui.instance.makeSource(element,
-                                plumbGui.buildSourceEndpoint(),
-                                { filter: ".ep .glyphicon" });
-                        }
-                    });
+                $scope.makeDataSource = function (dataSource, element) {
+                    plumbGui.makeSource(dataSource, element, $scope.dataSourceDrag);
 
                     queryDef.dsCount++;
                 };
+
+
 
                 // Initialize jsPlumb Connections once after all DataSources were created in the DOM
                 $scope.$on("ngRepeatFinished",
@@ -296,5 +262,37 @@
                         runQuery();
                 };
 
+                var guiTypes = {},
+                    iconPref = "eav-icon-";
+                function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: iconPref + icon, notes: notes }; }
+
+                addGuiType("Unknown", "circle", "unknown type");
+                addGuiType("Filter", "filter", "filter data - usually returning less items than came in");
+                addGuiType("Logic", "shuffle", "logic operations - usually choosing between different streams");
+                addGuiType("Lookup", "eye", "lookup operation - usually looking for other data based on a criteria"); // todo
+                addGuiType("Modify", "star-half-alt", "modify data - usually changing, adding or removing values"); // todo
+                addGuiType("Security", "user", "security - usually limit what the user sees based on his identity"); 
+                addGuiType("Sort", "align-left", "sort the items"); // todo
+                addGuiType("Source", "export", "source of new data - usually SQL, CSV or similar");
+                addGuiType("Target", "dot-circled", "target - usually just a destination of data");
+
+                vm.typeInfo = function(dataSource) {
+                    // maybe we already retrieved it before...
+                    if (dataSource.guiTypeInfo) return dataSource.guiTypeInfo;
+
+                    var typeInfo = null;
+                    // try to find the type on the source
+                    var found = $filter("filter")(queryDef.data.InstalledDataSources,
+                        { PartAssemblyAndType: dataSource.PartAssemblyAndType });
+                    if (found && found.length) {
+                        var primType = found[0].PrimaryType;
+                        typeInfo = Object.assign({}, primType ? guiTypes[primType] : guiTypes.Unknown);
+                        if (found[0].Icon) typeInfo.icon = iconPref + found[0].Icon;
+                    }
+                    if (!typeInfo) typeInfo = guiTypes.Unknown;
+
+                    dataSource.guiTypeInfo = typeInfo;
+                    return typeInfo;
+                };
             });
 })();
