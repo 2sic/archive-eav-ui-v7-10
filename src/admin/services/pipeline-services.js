@@ -68,7 +68,8 @@ angular.module("EavServices")
                         ClassName: eavConfig.pipelineDesigner.outDataSource.className,
                         In: eavConfig.pipelineDesigner.outDataSource.in,
                         Out: null,
-                        allowNew: false
+                        allowNew: false,
+                        PrimaryType: "Target"
                     });
 
                     postProcessDataSources(model);

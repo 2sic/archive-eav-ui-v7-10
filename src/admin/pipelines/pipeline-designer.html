@@ -31,7 +31,7 @@
         <div class="actions panel panel-default">
             <div class="panel-heading">
                 <span class="pull-left">Actions</span>
-                <a href="http://2sxc.org/help" class="btn btn-info btn-xs pull-right" target="_blank"><span class="glyphicon glyphicon-question-sign"></span> Help</a>
+                <a href="http://2sxc.org/help" class="btn btn-info btn-xs pull-right" target="_blank"><i class="eav-icon-info-circled"></i> Help</a>
             </div>
             <div class="panel-body">
                 <div class="btn-group" role="group" style="width: 100%">
@@ -52,9 +52,9 @@
                 <select class="form-control" ng-model="addDataSourceType" ng-disabled="queryDef.readOnly" ng-change="vm.addSelectedDataSource()" ng-options="d.ClassName for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
                     <option value="">-- Add DataSource --</option>
                 </select>
-                <button type="button" class="btn btn-default btn-block" ng-click="editPipelineEntity()"><span class="glyphicon glyphicon-pencil"></span> Test Parameters</button>
+                <button type="button" class="btn btn-default btn-block" ng-click="editPipelineEntity()"><span class="eav-icon-pencil"></span> Test Parameters</button>
                 <button type="button" class="btn btn-primary btn-block" ng-disabled="queryDef.readOnly" ng-click="savePipeline()">
-                    <span icon="ok"></span> Save
+                    <i class="eav-icon-ok"></i> Save
                 </button>
                 <br/>
 
@@ -67,9 +67,9 @@
                     <br />
                 </div>
                 <br/>
-                <button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><span class="glyphicon glyphicon-info-sign"></span> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
-                <button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><span class="glyphicon glyphicon-repeat"></span> Repaint</button>
-                <button type="button" class="btn btn-info btn-xs" ng-if="vm.debug.on" ng-click="toogleDebug()"><span class="glyphicon glyphicon-info-sign"></span> {{debug ? 'Hide' : 'Show'}} Debug Info</button>
+                <button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><i class="eav-icon-info-circled"></i> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
+                <button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><i class="eav-icon-reload"></i> Repaint</button>
+                <button type="button" class="btn btn-info btn-xs" ng-if="vm.debug.on" ng-click="toogleDebug()"><i class="eav-icon-info-circled"></i> {{debug ? 'Hide' : 'Show'}} Debug Info</button>
 
                 <show-debug-availability class="pull-right"></show-debug-availability>
             </div>
