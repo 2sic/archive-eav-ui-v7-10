@@ -170,13 +170,12 @@
                 plumbGui.instance.batch(function() {
 
                     // make DataSources draggable. Must happen before makeSource()!
-                    if (!queryDef.readOnly) {
+                    if (!queryDef.readOnly)
                         plumbGui.instance.draggable(element,
                             {
                                 grid: [20, 20],
                                 drag: dragHandler
                             });
-                    }
 
                     // Add Out- and In-Endpoints from Definition
                     var dataSourceDefinition = dataSource.Definition();
@@ -197,9 +196,11 @@
                             targetEndpointUnlimited.maxConnections = -1;
                             plumbGui.instance.makeTarget(element, targetEndpointUnlimited);
                         }
-                        
-                        plumbGui.instance.makeSource(element, plumbGui.buildSourceEndpoint(),
-                            { filter: ".add-endpoint .new-connection" });
+
+                        if (dataSourceDefinition.DynamicOut)
+                            plumbGui.instance.makeSource(element,
+                                plumbGui.buildSourceEndpoint(),
+                                { filter: ".add-endpoint .new-connection" });
                     }
                 });
             };

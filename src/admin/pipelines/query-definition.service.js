@@ -1,6 +1,8 @@
 
 (function() {
 
+    var guiTypes = buildGuiTypes();
+
     /*
         shared data state across various components
     */
@@ -95,12 +97,53 @@
                                 toastr.error(reason, "Save Pipeline failed");
                                 queryDef.readOnly = false;
                             });
+                },
+
+                dsTypeInfo: function (dataSource) {
+                    // maybe we already retrieved it before...
+                    if (dataSource.guiTypeInfo) return dataSource.guiTypeInfo;
+
+                    var typeInfo = null;
+                    // try to find the type on the source
+                    var found = $filter("filter")(queryDef.data.InstalledDataSources,
+                        { PartAssemblyAndType: dataSource.PartAssemblyAndType });
+                    if (found && found.length) {
+                        var primType = found[0].PrimaryType;
+                        typeInfo = Object.assign({}, primType ? guiTypes[primType] : guiTypes.Unknown);
+                        if (found[0].Icon) typeInfo.icon = guiTypes.iconPrefix + found[0].Icon;
+                        if (found[0].DynamicOut) typeInfo.dynamicOut = true;
+                    }
+                    if (!typeInfo) typeInfo = guiTypes.Unknown;
+
+                    dataSource.guiTypeInfo = typeInfo;
+                    return typeInfo;
                 }
             };
 
 
             return queryDef;
         });
+
+function buildGuiTypes() {
+    var guiTypes = {},
+        iconPref = "eav-icon-";
+
+    function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: iconPref + icon, notes: notes }; }
+
+    addGuiType("Unknown", "circle", "unknown type");
+    addGuiType("Cache", "history", "caching of data");
+    addGuiType("Filter", "filter", "filter data - usually returning less items than came in");
+    addGuiType("Logic", "shuffle", "logic operations - usually choosing between different streams");
+    addGuiType("Lookup", "search", "lookup operation - usually looking for other data based on a criteria");
+    addGuiType("Modify", "star-half-alt", "modify data - usually changing, adding or removing values"); // tod  o
+    addGuiType("Security", "user", "security - usually limit what the user sees based on his identity");
+    addGuiType("Sort", "sort-alt-up", "sort the items");
+    addGuiType("Source", "export", "source of new data - usually SQL, CSV or similar");
+    addGuiType("Target", "target", "target - usually just a destination of data");
+
+    guiTypes.iconPrefix = iconPref;
+    return guiTypes;
+}
 
 
 })();

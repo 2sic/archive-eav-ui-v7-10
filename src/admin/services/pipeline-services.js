@@ -14,7 +14,9 @@ angular.module("EavServices")
 
         // Get the Definition of a DataSource
         svc.getDataSourceDefinitionProperty = function (model, dataSource) {
-        	var definition = $filter("filter")(model.InstalledDataSources, function (d) { return d.PartAssemblyAndType === dataSource.PartAssemblyAndType; })[0];
+        	var definition = $filter("filter")(model.InstalledDataSources, function(d) {
+	            return d.PartAssemblyAndType === dataSource.PartAssemblyAndType;
+	        })[0];
         	if (!definition)
         		throw "DataSource Definition not found: " + dataSource.PartAssemblyAndType;
         	return definition;
@@ -69,8 +71,9 @@ angular.module("EavServices")
                         In: eavConfig.pipelineDesigner.outDataSource.in,
                         Out: null,
                         allowNew: false,
-                        PrimaryType: "Target"
-                    });
+                        PrimaryType: "Target",
+                        DynamicOut: false
+                });
 
                     postProcessDataSources(model);
 

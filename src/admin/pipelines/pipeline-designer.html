@@ -20,7 +20,8 @@
                 <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">
                     Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
                 </div>
-                <div class="add-endpoint" title="Drag a new Out-Connection from here" ng-if="!dataSource.ReadOnly">
+                <div class="add-endpoint" title="Drag a new Out-Connection from here" 
+                     ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut">
                     <i class="new-connection eav-icon-up-dir"></i>
                 </div>
                 <div class="delete eav-icon-cancel" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
