@@ -153,7 +153,6 @@
     <Content Include="src\admin\directives\eav-directives.js" />
     <Content Include="src\admin\eav-admin.css" />
     <Content Include=".bowerrc" />
-    <None Include="src\admin\icons.css.excluded" />
     <Content Include="src\admin\pipelines\query-definition.service.js" />
     <Content Include="src\admin\pipelines\plumbGui.service.js" />
     <Content Include="src\admin\pipelines\datasource.directive.js" />

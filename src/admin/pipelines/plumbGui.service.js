@@ -197,9 +197,8 @@
                             targetEndpointUnlimited.maxConnections = -1;
                             plumbGui.instance.makeTarget(element, targetEndpointUnlimited);
                         }
-
-                        plumbGui.instance.makeSource(element,
-                            plumbGui.buildSourceEndpoint(),
+                        
+                        plumbGui.instance.makeSource(element, plumbGui.buildSourceEndpoint(),
                             { filter: ".add-endpoint .new-connection" });
                     }
                 });
