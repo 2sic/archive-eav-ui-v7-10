@@ -68,8 +68,8 @@
                         queryDef.addDataSource(dataSource.partAssemblyAndType, dataSource.visualDesignerData, dataSource.entityGuid);
                     });
 
-                    // testing...
-                    queryDef.data.Pipeline = { StreamWiring: eavConfig.pipelineDesigner.defaultPipeline.streamWiring };
+                    // attach template wiring
+                    queryDef.data.Pipeline.StreamWiring = eavConfig.pipelineDesigner.defaultPipeline.streamWiring;
                 },
 
                 // save the current query and reload entire definition as returned from server
@@ -99,9 +99,11 @@
                             });
                 },
 
+                _typeInfos: {},
                 dsTypeInfo: function (dataSource) {
                     // maybe we already retrieved it before...
-                    if (dataSource.guiTypeInfo) return dataSource.guiTypeInfo;
+                    var cacheKey = dataSource.EntityGuid;
+                    if (queryDef._typeInfos[cacheKey]) return queryDef._typeInfos[cacheKey];
 
                     var typeInfo = null;
                     // try to find the type on the source
@@ -115,7 +117,7 @@
                     }
                     if (!typeInfo) typeInfo = guiTypes.Unknown;
 
-                    dataSource.guiTypeInfo = typeInfo;
+                    queryDef._typeInfos[cacheKey] = typeInfo;
                     return typeInfo;
                 }
             };

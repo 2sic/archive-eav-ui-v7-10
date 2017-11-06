@@ -137,7 +137,8 @@
                     // Find jsPlumb Connection for the current Stream
                     var sourceElementId = plumbGui.dataSrcIdPrefix + stream.Source;
                     var targetElementId = plumbGui.dataSrcIdPrefix + stream.Target;
-                    if (stream.Target === "00000000-0000-0000-0000-000000000000")
+                    if (stream.Target === "00000000-0000-0000-0000-000000000000"
+                        || stream.Target === queryDef.data.Pipeline.EntityGuid)
                         targetElementId = plumbGui.dataSrcIdPrefix + "Out";
 
                     var fromUuid = sourceElementId + "_out_" + stream.SourceOut;

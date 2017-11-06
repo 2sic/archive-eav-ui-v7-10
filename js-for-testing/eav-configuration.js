@@ -98,7 +98,7 @@ angular.module("EavConfiguration", [])
                         {
                             entityGuid: "unsaved1",
                             partAssemblyAndType: "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
-                            visualDesignerData: { Top: 300, Left: 440 }
+                            visualDesignerData: { Top: 300, Left: 440, Width: 400 }
                         }
                     ],
                     streamWiring: [
