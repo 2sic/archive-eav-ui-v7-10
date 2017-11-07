@@ -24,7 +24,10 @@
                      ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut">
                     <i class="new-connection eav-icon-up-dir"></i>
                 </div>
-                <div class="delete eav-icon-cancel" title="Delete this DataSource" ng-click="remove($index)" ng-if="!dataSource.ReadOnly"></div>
+                <div class="delete eav-icon-cancel" title="delete this" ng-click="vm.remove($index)" ng-if="!dataSource.ReadOnly"></div>
+                <a class="help eav-icon-help-circled" title="help for this data source" 
+                   href="{{vm.typeInfo(dataSource).helpLink}}" target="_blank"
+                   ng-if="vm.typeInfo(dataSource).helpLink"></a>
             </div>
         </div>
         <div class="actions panel panel-default">

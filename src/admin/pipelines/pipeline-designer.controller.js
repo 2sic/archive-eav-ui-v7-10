@@ -109,12 +109,19 @@
                 };
 
                 // Delete a DataSource
-                $scope.remove = function(index) {
+                vm.remove = function(index) {
                     var dataSource = queryDef.data.DataSources[index];
                     if (!confirm("Delete DataSource \"" + (dataSource.Name || "(unnamed)") + "\"?")) return;
                     var elementId = plumbGui.dataSrcIdPrefix + dataSource.EntityGuid;
                     plumbGui.instance.selectEndpoints({ element: elementId }).remove();
                     queryDef.data.DataSources.splice(index, 1);
+                };
+
+                vm.help = function(index) {
+                    var dataSource = queryDef.data.DataSources[index],
+                        ti = queryDef.dsTypeInfo(dataSource),
+                        help = ti.helpLink;
+                    return (help) ? help : null; //"javascript:alert('no help found')";
                 };
 
                 // Edit name & description of a DataSource

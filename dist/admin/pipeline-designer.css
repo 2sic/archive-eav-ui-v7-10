@@ -79,9 +79,17 @@
 		display: none;
 		position: absolute;
 	    color: #aaaaaa;
-	    left: 0;
+	    right: 0;
 		top: 32px;
 	}
+
+    .dataSource .help {
+        display: none;
+        position: absolute;
+        color: #aaaaaa;
+        left: 0;
+        top: 32px;
+    }
 
 	.dataSource .configure {
 	    display: none;
@@ -109,6 +117,7 @@
     /* show all hidden elements */
     .dataSource:hover .configure,
     .dataSource:hover .delete,
+    .dataSource:hover .help,
     .dataSource:hover .typename,
     .dataSource:hover .add-endpoint {
         display: block;

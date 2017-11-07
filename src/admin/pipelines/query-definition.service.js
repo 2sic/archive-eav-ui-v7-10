@@ -110,10 +110,11 @@
                     var found = $filter("filter")(queryDef.data.InstalledDataSources,
                         { PartAssemblyAndType: dataSource.PartAssemblyAndType });
                     if (found && found.length) {
-                        var primType = found[0].PrimaryType;
+                        var def = found[0], primType = def.PrimaryType;
                         typeInfo = Object.assign({}, primType ? guiTypes[primType] : guiTypes.Unknown);
-                        if (found[0].Icon) typeInfo.icon = guiTypes.iconPrefix + found[0].Icon;
-                        if (found[0].DynamicOut) typeInfo.dynamicOut = true;
+                        if (def.Icon) typeInfo.icon = guiTypes.iconPrefix + def.Icon;
+                        if (def.DynamicOut) typeInfo.dynamicOut = true;
+                        if (def.HelpLink) typeInfo.helpLink = def.HelpLink;
                     }
                     if (!typeInfo) typeInfo = guiTypes.Unknown;
 
