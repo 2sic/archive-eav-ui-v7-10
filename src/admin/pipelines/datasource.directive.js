@@ -8,7 +8,7 @@ angular.module("PipelineDesigner")
             link: function (scope, element) {
                 // make this a DataSource when the DOM is ready
                 $timeout(function () {
-                    scope.makeDataSource(scope.dataSource, element);
+                    scope.makeDataSource(scope.set.ds/*.dataSource*/, element);
                 });
                 if (scope.$last === true) {
                     $timeout(function () {

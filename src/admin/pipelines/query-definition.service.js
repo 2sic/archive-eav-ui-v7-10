@@ -9,6 +9,8 @@
     angular.module("PipelineDesigner").factory("queryDef",
         function (pipelineId, pipelineService, $q, $location, toastr, $filter, eavConfig) {
 
+            var setCache;
+
             var queryDef = {
                 id: pipelineId, // injected from URL
                 dsCount: 0,
@@ -115,11 +117,27 @@
                         if (def.Icon) typeInfo.icon = guiTypes.iconPrefix + def.Icon;
                         if (def.DynamicOut) typeInfo.dynamicOut = true;
                         if (def.HelpLink) typeInfo.helpLink = def.HelpLink;
+                        if (def.EnableConfig) typeInfo.config = def.EnableConfig;
                     }
                     if (!typeInfo) typeInfo = guiTypes.Unknown;
 
                     queryDef._typeInfos[cacheKey] = typeInfo;
                     return typeInfo;
+                },
+
+                dataSourcesWithTypeInfo: function () {
+                    if (!queryDef.data) return null;
+                    //return queryDef.data.DataSources;
+
+                    if (setCache && setCache.length === queryDef.data.DataSources.length) return setCache;
+                    setCache = queryDef.data.DataSources.map(function(dataSource) {
+                        //return {
+                        //    ds: dataSource
+                        //}; //
+                        return { ds: dataSource, ti: queryDef.dsTypeInfo(dataSource) };
+                    });
+                    console.log(setCache);
+                    return setCache;
                 }
             };
 

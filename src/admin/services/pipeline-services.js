@@ -10,8 +10,6 @@ angular.module("EavServices")
 
         svc.appId = 0;
 
-        console.log("ok");
-
         // Get the Definition of a DataSource
         svc.getDataSourceDefinitionProperty = function (model, dataSource) {
         	var definition = $filter("filter")(model.InstalledDataSources, function(d) {
