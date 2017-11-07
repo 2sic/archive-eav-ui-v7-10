@@ -1,33 +1,33 @@
 ﻿<div class="ng-cloak">
     <div ng-controller="PipelineDesignerController as vm" ng-click="vm.debug.autoEnableAsNeeded($event)">
         <div id="pipelineContainer">
-            <div ng-repeat="set in queryDef.dataSourcesWithTypeInfo()" x="queryDef.data.DataSources"
+            <div ng-repeat="dataSource in queryDef.data.DataSources"
                  datasource
-                 guid="{{set.ds.EntityGuid}}"
-                 id="dataSource_{{set.ds.EntityGuid}}"
+                 guid="{{dataSource.EntityGuid}}"
+                 id="dataSource_{{dataSource.EntityGuid}}"
                  class="dataSource"
-                 ng-attr-style="{{ 'top: ' + set.ds.VisualDesignerData.Top +'px; left: ' + set.ds.VisualDesignerData.Left + 'px; ' + (set.ds.VisualDesignerData.Width ? 'min-width: ' + set.ds.VisualDesignerData.Width + 'px' : '') }}">
-                <div class="configure" ng-click="configureDataSource(set.ds)" title="Configure this DataSource" ng-if="!set.ds.ReadOnly">
+                 ng-attr-style="{{ 'top: ' + dataSource.VisualDesignerData.Top +'px; left: ' + dataSource.VisualDesignerData.Left + 'px; ' + (dataSource.VisualDesignerData.Width ? 'min-width: ' + dataSource.VisualDesignerData.Width + 'px' : '') }}">
+                <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" ng-if="!dataSource.ReadOnly">
                     <i class="eav-icon-settings"></i>
                 </div>
-                <i class="type-info {{set.ti.icon}}" title="{{set.ti.notes}}"></i>
-                <div class="name noselect" title="Click to edit the Name" ng-click="editName(set.ds)">
-                    {{set.ds.Name || '(no name)'}}<i class="show-hover-inline eav-icon-pencil"></i>
+                <i class="type-info {{vm.typeInfo(dataSource).icon}}" title="{{vm.typeInfo(dataSource).notes}}"></i>
+                <div class="name noselect" title="Click to edit the Name" ng-click="editName(dataSource)">
+                    {{dataSource.Name || '(no name)'}}<i class="show-hover-inline eav-icon-pencil"></i>
                 </div><br />
-                <div class="description noselect" title="Click to edit the Description" ng-click="editDescription(set.ds)">
-                    {{set.ds.Description}}<i class="show-hover-inline eav-icon-pencil"></i>
+                <div class="description noselect" title="Click to edit the Description" ng-click="editDescription(dataSource)">
+                    {{dataSource.Description}}<i class="show-hover-inline eav-icon-pencil"></i>
                 </div><br />
-                <div class="typename" ng-attr-title="{{set.ds.PartAssemblyAndType}}">
-                    Type: {{set.ds.PartAssemblyAndType | typename: 'className'}}
+                <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">
+                    Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
                 </div>
                 <div class="add-endpoint" title="Drag a new Out-Connection from here" 
-                     ng-if="!set.ds.ReadOnly && set.ti.dynamicOut">
+                     ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut">
                     <i class="new-connection eav-icon-up-dir"></i>
                 </div>
-                <div class="delete eav-icon-cancel" title="delete this" ng-click="vm.remove($index)" ng-if="!set.ds.ReadOnly"></div>
+                <div class="delete eav-icon-cancel" title="delete this" ng-click="vm.remove($index)" ng-if="!dataSource.ReadOnly"></div>
                 <a class="help eav-icon-help-circled" title="help for this data source" 
-                   href="{{set.ti.helpLink}}" target="_blank"
-                   ng-if="set.ti.helpLink"></a>
+                   href="{{vm.typeInfo(dataSource).helpLink}}" target="_blank"
+                   ng-if="vm.typeInfo(dataSource).helpLink"></a>
             </div>
         </div>
         <div class="actions panel panel-default">
