@@ -62,8 +62,7 @@
                 pipelineService.setAppId(appId);
 
                 // fully re-initialize a query (at start, or later re-load)
-                vm.reInitQuery = function()
-                {
+                vm.reInitQuery = function() {
                     // Get Data from PipelineService (Web API)
                     var waitMsg = toastr.info("This shouldn't take long", "Loading...");
                     return queryDef.loadQuery()
@@ -73,8 +72,8 @@
                             },
                             function(reason) {
                                 toastr.error(reason, "Loading query failed");
-                            });                    
-                }
+                            });
+                };
 
                 function activate() {
                     // add ctrl+s to save
@@ -168,7 +167,7 @@
                             function (success) {
                                 console.log("testing", success);
                                 vm.reInitQuery()
-                                    .then(resetPlumbAndWarnings)    // reset jsplumb
+                                    .then(resetPlumbAndWarnings) // reset jsplumb
                                     .then(vm.saveShortcut.rebind);// re-enable ctrl+s
                             });
 
