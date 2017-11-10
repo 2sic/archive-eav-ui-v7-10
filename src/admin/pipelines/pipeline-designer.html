@@ -7,7 +7,8 @@
                  id="dataSource_{{dataSource.EntityGuid}}"
                  class="dataSource"
                  ng-attr-style="{{ 'top: ' + dataSource.VisualDesignerData.Top +'px; left: ' + dataSource.VisualDesignerData.Left + 'px; ' + (dataSource.VisualDesignerData.Width ? 'min-width: ' + dataSource.VisualDesignerData.Width + 'px' : '') }}">
-                <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" ng-if="!dataSource.ReadOnly">
+                <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" 
+                     ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).config">
                     <i class="eav-icon-settings"></i>
                 </div>
                 <i class="type-info {{vm.typeInfo(dataSource).icon}}" title="{{vm.typeInfo(dataSource).notes}}"></i>

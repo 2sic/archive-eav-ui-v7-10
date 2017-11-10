@@ -139,7 +139,7 @@ function buildGuiTypes() {
     addGuiType("Unknown", "circle", "unknown type");
     addGuiType("Cache", "history", "caching of data");
     addGuiType("Filter", "filter", "filter data - usually returning less items than came in");
-    addGuiType("Logic", "shuffle", "logic operations - usually choosing between different streams");
+    addGuiType("Logic", "fork", "logic operations - usually choosing between different streams");
     addGuiType("Lookup", "search", "lookup operation - usually looking for other data based on a criteria");
     addGuiType("Modify", "star-half-alt", "modify data - usually changing, adding or removing values"); // tod  o
     addGuiType("Security", "user", "security - usually limit what the user sees based on his identity");
