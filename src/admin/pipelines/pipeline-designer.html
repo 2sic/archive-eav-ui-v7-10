@@ -72,6 +72,12 @@
                     </ol>
                     <br />
                 </div>
+                
+                <!-- show description if available -->
+                <div ng-if="queryDef.data.Pipeline.Description">
+                    <div><strong>Query Description</strong></div>
+                    <div>{{queryDef.data.Pipeline.Description}}</div>
+                </div>
                 <br/>
                 <button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><i class="eav-icon-info-circled"></i> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
                 <button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><i class="eav-icon-reload"></i> Repaint</button>

@@ -131,10 +131,11 @@
         });
 
 function buildGuiTypes() {
-    var guiTypes = {},
-        iconPref = "eav-icon-";
+    var guiTypes = {
+        iconPref: "eav-icon-"
+    };
 
-    function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: iconPref + icon, notes: notes }; }
+    function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: guiTypes.iconPref + icon, notes: notes }; }
 
     addGuiType("Unknown", "circle", "unknown type");
     addGuiType("Cache", "history", "caching of data");
@@ -147,7 +148,6 @@ function buildGuiTypes() {
     addGuiType("Source", "export", "source of new data - usually SQL, CSV or similar");
     addGuiType("Target", "target", "target - usually just a destination of data");
 
-    guiTypes.iconPrefix = iconPref;
     return guiTypes;
 }
 
