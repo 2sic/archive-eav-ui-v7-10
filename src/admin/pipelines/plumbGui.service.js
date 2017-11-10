@@ -92,7 +92,7 @@
                     $log.error({ message: "Element not found", selector: element.selector });
                     return;
                 }
-                console.log(element);
+                //console.log(element);
 
                 var dataSource = plumbGui.findDataSourceOfElement(element[0]);
 

@@ -22,14 +22,15 @@ angular.module("EavServices")
 
         // todo refactor: why do we have 2 methods with same name?
         // Extend Pipeline-Model retrieved from the Server
-        var postProcessDataSources = function(model) {
+        var postProcessDataSources = function (model) {
+            var outDs = eavConfig.pipelineDesigner.outDataSource;
             // Append Out-DataSource for the UI
             model.DataSources.push({
-                Name: eavConfig.pipelineDesigner.outDataSource.name,
-                Description: eavConfig.pipelineDesigner.outDataSource.description,
+                Name: outDs.name,
+                Description: outDs.description,
                 EntityGuid: "Out",
-                PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
-                VisualDesignerData: eavConfig.pipelineDesigner.outDataSource.visualDesignerData, 
+                PartAssemblyAndType: outDs.className,
+                VisualDesignerData: outDs.visualDesignerData, 
                 ReadOnly: true
             });
 
@@ -47,11 +48,11 @@ angular.module("EavServices")
             getPipeline: function(pipelineEntityId) {
                 var deferred = $q.defer();
 
-                var getPipeline = svc.pipelineResource.get({ action: "GetPipeline", id: pipelineEntityId, appId: svc.appId });
+                var httpGetPipe = svc.pipelineResource.get({ action: "GetPipeline", id: pipelineEntityId, appId: svc.appId });
                 var getInstalledDataSources = svc.pipelineResource.query({ action: "GetInstalledDataSources" });
 
                 // Join and modify retrieved Data
-                $q.all([getPipeline.$promise, getInstalledDataSources.$promise]).then(function(results) {
+                $q.all([httpGetPipe.$promise, getInstalledDataSources.$promise]).then(function(results) {
                     var model = JSON.parse(angular.toJson(results[0])); // workaround to remove AngularJS Promise from the result-Objects
                     model.InstalledDataSources = JSON.parse(angular.toJson(results[1]));
 
@@ -62,11 +63,12 @@ angular.module("EavServices")
                         };
                     }
 
+                    var outDs = eavConfig.pipelineDesigner.outDataSource;
                     // Add Out-DataSource for the UI
                     model.InstalledDataSources.push({
-                        PartAssemblyAndType: eavConfig.pipelineDesigner.outDataSource.className,
-                        ClassName: eavConfig.pipelineDesigner.outDataSource.className,
-                        In: eavConfig.pipelineDesigner.outDataSource.in,
+                        PartAssemblyAndType: outDs.className,
+                        Name: outDs.name || outDs.className,
+                        In: outDs.in,
                         Out: null,
                         allowNew: false,
                         PrimaryType: "Target",

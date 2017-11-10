@@ -21,13 +21,13 @@
                     return dataSource.EntityGuid.indexOf("unsaved") === -1;
                 },
 
-                addDataSource: function(partAssemblyAndType, visualDesignerData, entityGuid) {
+                addDataSource: function(partAssemblyAndType, visualDesignerData, entityGuid, name) {
                     if (!visualDesignerData)
                         visualDesignerData = { Top: 100, Left: 100 };
 
                     var newDataSource = {
                         VisualDesignerData: visualDesignerData,
-                        Name: $filter("typename")(partAssemblyAndType, "className"),
+                        Name: name || $filter("typename")(partAssemblyAndType, "className"),
                         Description: "",
                         PartAssemblyAndType: partAssemblyAndType,
                         EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)

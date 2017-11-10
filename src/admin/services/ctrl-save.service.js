@@ -20,32 +20,33 @@ angular.module("EavServices")
                 _isbound: false,
 
                 // this will be called on each keydown, will check if it was a ctrl+S
-                detectCtrlSAndExcecute: function(e) {
+                detectCtrlSAndExcecute: function (e) {
+                    if (!save._isbound) return null; // special, in case unbinding didn't work 100% (can happen)
                     if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
                         if (save._action === null)
                             return console.log("can't do anything on ctrl+S, no action registered");
                         e.preventDefault();
                         save._action();
                     }
+                    return null;
                 },
 
-                bind: function bind(action) {
-                    save._action = action;
+                bind: function(eventAction) {
+                    save._action = eventAction;
                     save._isbound = true;
                     save._event = $window.addEventListener("keydown", save.detectCtrlSAndExcecute, false);
-
                 },
 
-                unbind: function unbind() {
+                unbind: function() {
                     $window.removeEventListener("keydown", save.detectCtrlSAndExcecute);
                     save._isbound = false;
                 },
 
                 // re-attach Ctrl+S if it had already been attached previously
-                rebind: function rebind() {
+                rebind: function() {
                     if (save._action === null)
                         throw "can't rebind, as it was never initially bound";
-                    if (!save._isbound)
+                    if (save._isbound)
                         throw "can't rebind, as it's still bound";
                     save.bind(save._action);
                 }

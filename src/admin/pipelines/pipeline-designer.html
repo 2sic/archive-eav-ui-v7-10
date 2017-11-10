@@ -51,7 +51,10 @@
                     </button>
                 </div>
 
-                <select class="form-control" ng-model="addDataSourceType" ng-disabled="queryDef.readOnly" ng-change="vm.addSelectedDataSource()" ng-options="d.ClassName for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'ClassName'">
+                <select class="form-control" ng-model="addDataSourceType" 
+                        ng-disabled="queryDef.readOnly" 
+                        ng-change="vm.addSelectedDataSource()" 
+                        ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'Name'">
                     <option value="">-- Add DataSource --</option>
                 </select>
                 <button type="button" class="btn btn-default btn-block" ng-click="editPipelineEntity()"><i class="eav-icon-pencil"></i> Test Parameters</button>

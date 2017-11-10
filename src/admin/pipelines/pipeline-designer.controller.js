@@ -61,20 +61,25 @@
                 $scope.queryDef = queryDef;
                 pipelineService.setAppId(appId);
 
-                function activate() {
-                    // add ctrl+s to save
-                    vm.saveShortcut = ctrlS(function() { vm.savePipeline(); });
-
+                // fully re-initialize a query (at start, or later re-load)
+                vm.reInitQuery = function()
+                {
                     // Get Data from PipelineService (Web API)
                     var waitMsg = toastr.info("This shouldn't take long", "Loading...");
-                    queryDef.loadQuery()
+                    return queryDef.loadQuery()
                         .then(function() {
                                 toastr.clear(waitMsg);
                                 refreshWarnings(queryDef.data, vm);
                             },
                             function(reason) {
                                 toastr.error(reason, "Loading query failed");
-                            });
+                            });                    
+                }
+
+                function activate() {
+                    // add ctrl+s to save
+                    vm.saveShortcut = ctrlS(function() { vm.savePipeline(); }); 
+                    vm.reInitQuery();
                 }
 
                 activate();
@@ -83,8 +88,7 @@
                 // make a DataSource with Endpoints, called by the datasource-Directive (which uses a $timeout)
                 $scope.makeDataSource = function (dataSource, element) {
                     plumbGui.makeSource(dataSource, element, $scope.dataSourceDrag);
-
-                    queryDef.dsCount++;
+                    queryDef.dsCount++; // unclear what this is for, probably to name/number new sources
                 };
 
 
@@ -103,8 +107,8 @@
 
                 vm.addSelectedDataSource = function() {
                     var partAssemblyAndType = $scope.addDataSourceType.PartAssemblyAndType;
+                    queryDef.addDataSource(partAssemblyAndType, null, null, $scope.addDataSourceType.Name);
                     $scope.addDataSourceType = null; // reset dropdown
-                    queryDef.addDataSource(partAssemblyAndType);
                     $scope.savePipeline();
                 };
 
@@ -115,13 +119,6 @@
                     var elementId = plumbGui.dataSrcIdPrefix + dataSource.EntityGuid;
                     plumbGui.instance.selectEndpoints({ element: elementId }).remove();
                     queryDef.data.DataSources.splice(index, 1);
-                };
-
-                vm.help = function(index) {
-                    var dataSource = queryDef.data.DataSources[index],
-                        ti = queryDef.dsTypeInfo(dataSource),
-                        help = ti.helpLink;
-                    return (help) ? help : null; //"javascript:alert('no help found')";
                 };
 
                 // Edit name & description of a DataSource
@@ -143,12 +140,10 @@
                     if (dataSource.ReadOnly) return;
 
                     // Ensure dataSource Entity is saved
-                    if (!queryDef.dataSourceIsPersisted(dataSource)) {
+                    if (!queryDef.dataSourceIsPersisted(dataSource)) 
                         $scope.savePipeline();
-                        return;
-                    }
-
-                    pipelineService.editDataSourcePart(dataSource, queryDef.data.InstalledDataSources);
+                    else
+                        pipelineService.editDataSourcePart(dataSource, queryDef.data.InstalledDataSources);
                 };
 
 
@@ -168,12 +163,13 @@
                 $scope.editPipelineEntity = function() {
                     // save Pipeline, then open Edit Dialog
                     $scope.savePipeline().then(function() {
-                        vm.saveShortcut.unbind();
+                        vm.saveShortcut.unbind();// disable ctrl+s
                         eavAdminDialogs.openEditItems([{ EntityId: queryDef.id }],
-                            function() {
-                                pipelineService.getPipeline(queryDef.id)
-                                    .then(resetPlumbAndWarnings)
-                                    .then(vm.saveShortcut.rebind);
+                            function (success) {
+                                console.log("testing", success);
+                                vm.reInitQuery()
+                                    .then(resetPlumbAndWarnings)    // reset jsplumb
+                                    .then(vm.saveShortcut.rebind);// re-enable ctrl+s
                             });
 
                     });
@@ -195,7 +191,8 @@
                 vm.savePipeline = $scope.savePipeline = function savePipeline() {
                     toastr.info("This shouldn't take long", "Saving...");
                     plumbGui.pushPlumbConfigToQueryDef(plumbGui.instance);
-                    return queryDef.save().then(resetPlumbAndWarnings);
+                    return queryDef.save()
+                        .then(resetPlumbAndWarnings);
                 };
 
 
