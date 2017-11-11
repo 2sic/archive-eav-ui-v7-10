@@ -58,11 +58,24 @@
                         ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'Name'">
                     <option value="">-- Add DataSource --</option>
                 </select>
-                <button type="button" class="btn btn-default btn-block" ng-click="editPipelineEntity()"><i class="eav-icon-pencil"></i> Test Parameters</button>
                 <button type="button" class="btn btn-primary btn-block" ng-disabled="queryDef.readOnly" ng-click="savePipeline()">
                     <i class="eav-icon-ok"></i> Save
                 </button>
                 <br/>
+                
+                <!-- test parameters -->
+                <div>
+                    <div>
+                        <strong>Test Parameters</strong>
+                        <i class="eav-icon-pencil" ng-click="editPipelineEntity()"></i>
+                    </div>
+                    <div><ul><li ng-repeat="param in queryDef.data.Pipeline.TestParameters.split('\n')">
+                                {{param}}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
 
                 <!-- show warnings if detected -->
                 <div ng-if="vm.warnings.length">

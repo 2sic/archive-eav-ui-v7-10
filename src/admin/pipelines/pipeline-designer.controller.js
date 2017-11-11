@@ -217,7 +217,7 @@
                         var matches = regex.exec(testParams);
                         if (!matches || matches.length === 0)
                             warnings.push(
-                                "Your test values has no moduleid specified. You probably want to check your test-values.");
+                                "Your test values has no moduleid specified. You probably want to check your test-parameters.");
                         testMid = matches[1];
                         var urlMid = getUrlParamMustRefactor("mid");
                         if (testMid !== urlMid)
