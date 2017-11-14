@@ -159,7 +159,8 @@
     <Content Include="src\admin\pipelines\pipeline-designer.filters.js" />
     <Content Include="src\admin\pipelines\query-stats.controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
-    <Content Include="src\admin\polyfills\string.endswith.js" />
+    <Content Include="src\admin\_polyfills\object.assign.js" />
+    <Content Include="src\admin\_polyfills\string.endswith.js" />
     <Content Include="src\admin\services\ctrl-save.service.js" />
     <Content Include="src\admin\services\drag-body-class.js" />
     <Content Include="src\admin\services\file-type.service.js" />
