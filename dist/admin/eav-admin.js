@@ -1708,11 +1708,12 @@ angular.module('PipelineManagement', [
         ],
         uuidColorMap = {},
         maxCols = lineColors.length - 1;
-    function resetLineCount() { lineCount = 0; }
+
     function nextLinePaintStyle(uuid) {
         return uuidColorMap[uuid]
             || (uuidColorMap[uuid] = Object.assign({}, linePaintDefault, { strokeStyle: lineColors[lineCount++ % maxCols] }));
     }
+    //function resetLineCount() { lineCount = 0; }
 
     console.log(nextLinePaintStyle());
     
@@ -1724,7 +1725,7 @@ angular.module('PipelineManagement', [
             outlineWidth: 2,
             outlineColor: 'white'
         },
-        PaintStyle: nextLinePaintStyle("dummy"),// linePaintDefault,
+        PaintStyle: nextLinePaintStyle("dummy"),
         Container: 'pipelineContainer'
     };
 
@@ -1836,7 +1837,6 @@ angular.module('PipelineManagement', [
                         try {
                             plumbGui.instance.connect({
                                 uuids: [fromUuid, toUuid],
-                                //PaintStyle: nextLinePaintStyle(),// { strokeWidth: 15, stroke: 'rgba(0, 243,230,18)' }
                                 paintStyle: nextLinePaintStyle(fromUuid)
                             });
                         } catch (e) {
@@ -1858,22 +1858,22 @@ angular.module('PipelineManagement', [
                     var toUuid = targetElementId + '_in_' + stream.TargetIn;
 
                     var sEndp = plumbGui.instance.getEndpoint(fromUuid);
-                    var streamFound = false;
-                    if (sEndp) {
-                        angular.forEach(sEndp.connections, function (connection) {
-                            if (connection.endpoints[1].getUuid() === toUuid) {
-                                // when connection found, update it's label with the Entities-Count
-                                connection.setLabel({
-                                    label: stream.Count.toString(),
-                                    cssClass: 'streamEntitiesCount'
-                                });
-                                streamFound = true;
-                                return;
-                            }
-                        });
-                    }
+                    //var streamFound = false;
+                    if (sEndp)
+                        angular.forEach(sEndp.connections,
+                            function(connection) {
+                                if (connection.endpoints[1].getUuid() === toUuid) {
+                                    // when connection found, update it's label with the Entities-Count
+                                    connection.setLabel({
+                                        label: stream.Count.toString(),
+                                        cssClass: 'streamEntitiesCount'
+                                    });
+                                    //streamFound = true;
+                                    return;
+                                }
+                            });
 
-                    // only when debugging
+                    // only for debugging
                     //if (!streamFound)
                     //    $log.error('Stream not found', stream, sEndp);
                 });
