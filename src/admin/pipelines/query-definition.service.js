@@ -6,7 +6,7 @@
     /*
         shared data state across various components
     */
-    angular.module("PipelineDesigner").factory("queryDef",
+    angular.module('PipelineDesigner').factory('queryDef',
         function (pipelineId, pipelineService, $q, $location, toastr, $filter, eavConfig) {
 
             var queryDef = {
@@ -18,7 +18,7 @@
 
                 // Test wether a DataSource is persisted on the Server
                 dataSourceIsPersisted: function(dataSource) {
-                    return dataSource.EntityGuid.indexOf("unsaved") === -1;
+                    return dataSource.EntityGuid.indexOf('unsaved') === -1;
                 },
 
                 addDataSource: function(partAssemblyAndType, visualDesignerData, entityGuid, name) {
@@ -27,10 +27,10 @@
 
                     var newDataSource = {
                         VisualDesignerData: visualDesignerData,
-                        Name: name || $filter("typename")(partAssemblyAndType, "className"),
-                        Description: "",
+                        Name: name || $filter('typename')(partAssemblyAndType, 'className'),
+                        Description: '',
                         PartAssemblyAndType: partAssemblyAndType,
-                        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
+                        EntityGuid: entityGuid || 'unsaved' + (queryDef.dsCount + 1)
                     };
                     // Extend it with a Property to it's Definition
                     newDataSource = angular.extend(newDataSource,
@@ -52,9 +52,9 @@
                                 // if read only, show message
                                 queryDef.readOnly = !success.Pipeline.AllowEdit;
                                 toastr.info(queryDef.readOnly
-                                    ? "This pipeline is read only"
-                                    : "You can now design the Pipeline. \nVisit 2sxc.org/help for more.",
-                                    "Ready",
+                                    ? 'This pipeline is read only'
+                                    : 'You can now design the Pipeline. \nVisit 2sxc.org/help for more.',
+                                    'Ready',
                                     { autoDismiss: true });
                             }
                         });
@@ -82,19 +82,19 @@
                                 queryDef.data.Pipeline = success.Pipeline;
                                 queryDef.data.TestParameters = success.TestParameters;
                                 queryDef.id = success.Pipeline.EntityId;
-                                $location.search("PipelineId", success.Pipeline.EntityId);
+                                $location.search('PipelineId', success.Pipeline.EntityId);
                                 queryDef.readOnly = !success.Pipeline.AllowEdit;
                                 queryDef.data.DataSources = success.DataSources;
                                 pipelineService.postProcessDataSources(queryDef.data);
 
                                 // communicate to the user...
                                 toastr.clear();
-                                toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded",
-                                    "Saved", { autoDismiss: true });
+                                toastr.success('Pipeline ' + success.Pipeline.EntityId + ' saved and loaded',
+                                    'Saved', { autoDismiss: true });
 
                             },
                             function(reason) {
-                                toastr.error(reason, "Save Pipeline failed");
+                                toastr.error(reason, 'Save Pipeline failed');
                                 queryDef.readOnly = false;
                             });
                 },
@@ -107,7 +107,7 @@
 
                     var typeInfo = null;
                     // try to find the type on the source
-                    var found = $filter("filter")(queryDef.data.InstalledDataSources,
+                    var found = $filter('filter')(queryDef.data.InstalledDataSources,
                         { PartAssemblyAndType: dataSource.PartAssemblyAndType });
                     if (found && found.length) {
                         var def = found[0], primType = def.PrimaryType;
@@ -132,21 +132,21 @@
 
 function buildGuiTypes() {
     var guiTypes = {
-        iconPrefix: "eav-icon-"
+        iconPrefix: 'eav-icon-'
     };
 
     function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: guiTypes.iconPrefix + icon, notes: notes }; }
 
-    addGuiType("Unknown", "circle", "unknown type");
-    addGuiType("Cache", "history", "caching of data");
-    addGuiType("Filter", "filter", "filter data - usually returning less items than came in");
-    addGuiType("Logic", "fork", "logic operations - usually choosing between different streams");
-    addGuiType("Lookup", "search", "lookup operation - usually looking for other data based on a criteria");
-    addGuiType("Modify", "star-half-alt", "modify data - usually changing, adding or removing values"); // tod  o
-    addGuiType("Security", "user", "security - usually limit what the user sees based on his identity");
-    addGuiType("Sort", "sort-alt-up", "sort the items");
-    addGuiType("Source", "export", "source of new data - usually SQL, CSV or similar");
-    addGuiType("Target", "target", "target - usually just a destination of data");
+    addGuiType('Unknown', 'circle', 'unknown type');
+    addGuiType('Cache', 'history', 'caching of data');
+    addGuiType('Filter', 'filter', 'filter data - usually returning less items than came in');
+    addGuiType('Logic', 'fork', 'logic operations - usually choosing between different streams');
+    addGuiType('Lookup', 'search', 'lookup operation - usually looking for other data based on a criteria');
+    addGuiType('Modify', 'star-half-alt', 'modify data - usually changing, adding or removing values'); // tod  o
+    addGuiType('Security', 'user', 'security - usually limit what the user sees based on his identity');
+    addGuiType('Sort', 'sort-alt-up', 'sort the items');
+    addGuiType('Source', 'export', 'source of new data - usually SQL, CSV or similar');
+    addGuiType('Target', 'target', 'target - usually just a destination of data');
 
     return guiTypes;
 }

@@ -1,11 +1,11 @@
 ﻿// Config and Controller for the Pipeline Management UI
-angular.module("PipelineManagement", [
-    "EavServices",
-    "EavConfiguration",
-    "eavNgSvcs",
-    "EavAdminUi"
+angular.module('PipelineManagement', [
+    'EavServices',
+    'EavConfiguration',
+    'eavNgSvcs',
+    'EavAdminUi'
 ]).
-    controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+    controller('PipelineManagement', function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
         var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -20,7 +20,7 @@ angular.module("PipelineManagement", [
 
         // Delete a Pipeline
         vm.delete = function (pipeline) {
-            if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
+            if (!confirm('Delete Pipeline "' + pipeline.Name + '" (' + pipeline.Id + ')?'))
                 return;
 
             pipelineService.deletePipeline(pipeline.Id).then(function () {
@@ -45,7 +45,7 @@ angular.module("PipelineManagement", [
 
         vm.add = function add() {
             var items = [{
-                ContentTypeName: "DataPipeline",
+                ContentTypeName: 'DataPipeline',
                 Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
             }];
             eavAdminDialogs.openEditItems(items, vm.refresh);
@@ -63,5 +63,5 @@ angular.module("PipelineManagement", [
             if (inp)
                 eval(inp); // jshint ignore:line
         };
-        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss('cancel'); };
     });

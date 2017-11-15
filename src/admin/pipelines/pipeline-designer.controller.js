@@ -6,7 +6,7 @@
     var editName = function(dataSource) {
         if (dataSource.ReadOnly) return;
 
-        var newName = prompt("Rename DataSource", dataSource.Name);
+        var newName = prompt('Rename DataSource', dataSource.Name);
         if (newName && newName.trim())
             dataSource.Name = newName.trim();
     };
@@ -15,7 +15,7 @@
     var editDescription = function(dataSource) {
         if (dataSource.ReadOnly) return;
 
-        var newDescription = prompt("Edit Description", dataSource.Description);
+        var newDescription = prompt('Edit Description', dataSource.Description);
         if (newDescription && newDescription.trim())
             dataSource.Description = newDescription.trim();
     };
@@ -30,8 +30,8 @@
     }
 
 
-    angular.module("PipelineDesigner")
-        .controller("PipelineDesignerController",
+    angular.module('PipelineDesigner')
+        .controller('PipelineDesignerController',
             function(appId,
                 pipelineId,
                 $scope,
@@ -51,7 +51,7 @@
                 plumbGui) {
 
 
-                "use strict";
+                'use strict';
                 // Init
                 var vm = this;
                 vm.debug = debugState;
@@ -64,14 +64,14 @@
                 // fully re-initialize a query (at start, or later re-load)
                 vm.reInitQuery = function() {
                     // Get Data from PipelineService (Web API)
-                    var waitMsg = toastr.info("This shouldn't take long", "Loading...");
+                    var waitMsg = toastr.info("This shouldn't take long", 'Loading...');
                     return queryDef.loadQuery()
                         .then(function() {
                                 toastr.clear(waitMsg);
                                 refreshWarnings(queryDef.data, vm);
                             },
                             function(reason) {
-                                toastr.error(reason, "Loading query failed");
+                                toastr.error(reason, 'Loading query failed');
                             });
                 };
 
@@ -93,7 +93,7 @@
 
 
                 // Initialize jsPlumb Connections once after all DataSources were created in the DOM
-                $scope.$on("ngRepeatFinished",
+                $scope.$on('ngRepeatFinished',
                     function() {
                         if (plumbGui.connectionsInitialized) return;
 
@@ -114,7 +114,7 @@
                 // Delete a DataSource
                 vm.remove = function(index) {
                     var dataSource = queryDef.data.DataSources[index];
-                    if (!confirm("Delete DataSource \"" + (dataSource.Name || "(unnamed)") + "\"?")) return;
+                    if (!confirm('Delete DataSource "' + (dataSource.Name || '(unnamed)') + '"?')) return;
                     var elementId = plumbGui.dataSrcIdPrefix + dataSource.EntityGuid;
                     plumbGui.instance.selectEndpoints({ element: elementId }).remove();
                     queryDef.data.DataSources.splice(index, 1);
@@ -165,7 +165,7 @@
                         vm.saveShortcut.unbind();// disable ctrl+s
                         eavAdminDialogs.openEditItems([{ EntityId: queryDef.id }],
                             function (success) {
-                                console.log("testing", success);
+                                console.log('testing', success);
                                 vm.reInitQuery()
                                     .then(resetPlumbAndWarnings) // reset jsplumb
                                     .then(vm.saveShortcut.rebind);// re-enable ctrl+s
@@ -188,7 +188,7 @@
                 // Save Pipeline
                 // returns a Promise about the saving state
                 vm.savePipeline = $scope.savePipeline = function savePipeline() {
-                    toastr.info("This shouldn't take long", "Saving...");
+                    toastr.info("This shouldn't take long", 'Saving...');
                     plumbGui.pushPlumbConfigToQueryDef(plumbGui.instance);
                     return queryDef.save()
                         .then(resetPlumbAndWarnings);
@@ -217,15 +217,15 @@
                         var matches = regex.exec(testParams);
                         if (!matches || matches.length === 0)
                             warnings.push(
-                                "Your test values has no moduleid specified. You probably want to check your test-parameters.");
+                                'Your test values has no moduleid specified. You probably want to check your test-parameters.');
                         testMid = matches[1];
-                        var urlMid = getUrlParamMustRefactor("mid");
+                        var urlMid = getUrlParamMustRefactor('mid');
                         if (testMid !== urlMid)
-                            warnings.push("Your test moduleid (" +
+                            warnings.push('Your test moduleid (' +
                                 testMid +
-                                ") is different from the current moduleid (" +
+                                ') is different from the current moduleid (' +
                                 urlMid +
-                                "). You probably want to check your test-values.");
+                                '). You probably want to check your test-values.');
                     } catch (ex) { }
                 }
 
@@ -233,7 +233,7 @@
                 $scope.queryPipeline = function(saveFirst) {
                     function runQuery() {
                         // Query pipelineService for the result...
-                        toastr.info("Running Query ...");
+                        toastr.info('Running Query ...');
 
                         pipelineService.queryPipeline(queryDef.id).then(function(success) {
                                 // Show Result in a UI-Dialog
@@ -243,9 +243,9 @@
                                     testParams: queryDef.data.Pipeline.TestParameters,
                                     result: success
                                 });
-                                eavAdminDialogs.OpenModal("pipelines/query-stats.html",
-                                    "QueryStats as vm",
-                                    "lg",
+                                eavAdminDialogs.OpenModal('pipelines/query-stats.html',
+                                    'QueryStats as vm',
+                                    'lg',
                                     resolve);
 
                                 $timeout(function() {
@@ -254,7 +254,7 @@
                                 $log.debug(success);
                             },
                             function(reason) {
-                                toastr.error(reason, "Query failed");
+                                toastr.error(reason, 'Query failed');
                             });
                     }
 
