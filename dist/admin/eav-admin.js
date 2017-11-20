@@ -427,13 +427,13 @@ if (!String.prototype.endsWith) {
 	'use strict';
 
 	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$uibModalInstance", "$uibModalStack", "$q", "$translate", "entitiesSvc", "agGridFilters"];
-	angular.module("ContentItemsAppAgnostic", [
-		"EavConfiguration",
-		"EavAdminUi",
-		"EavServices"
+	angular.module('ContentItemsAppAgnostic', [
+		'EavConfiguration',
+		'EavAdminUi',
+		'EavServices'
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
-		.controller("ContentItemsList", contentItemsListController)
+		.controller('ContentItemsList', contentItemsListController)
 		;
 
 	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
@@ -460,17 +460,17 @@ if (!String.prototype.endsWith) {
 
 		var staticColumns = [
 			{
-				headerName: "ID",
-				field: "Id",
+				headerName: 'ID',
+				field: 'Id',
 				width: 50,
 				template: '<span tooltip-append-to-body="true" uib-tooltip="Id: {{data.Id}}\nRepoId: {{data._RepositoryId}}\nGuid: {{data.Guid}}" ng-bind="data.Id"></span>',
-				cellClass: "clickable",
+				cellClass: 'clickable',
 				filter: 'number',
 				onCellClicked: openEditDialog
 			},
 			{
-				headerName: "Status",
-				field: "IsPublished",
+				headerName: 'Status',
+				field: 'IsPublished',
 				width: 75,
 				suppressSorting: true,
 				template: '<span class="glyphicon" '
@@ -483,16 +483,16 @@ if (!String.prototype.endsWith) {
 				valueGetter: valueGetterStatusField
 			},
 			{
-				headerName: "Title",
-				field: "_Title", 
+				headerName: 'Title',
+				field: '_Title', 
 				width: 216,
-				cellClass: "clickable",
+				cellClass: 'clickable',
 				template: '<span tooltip-append-to-body="true" uib-tooltip="{{data._Title}}" ng-bind="data._Title + \' \' + ((!data._Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
 				filter: 'text',
 				onCellClicked: openEditDialog
 			},
 			{
-				headerName: "",
+				headerName: '',
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
@@ -530,7 +530,7 @@ if (!String.prototype.endsWith) {
 
 		function showFilter() {
 			var savedModel = vm.gridOptions.api.getFilterModel();
-			console.log("current filter: ", savedModel);
+			console.log('current filter: ', savedModel);
 			alert('check console for filter information');
 		}
 
@@ -540,7 +540,7 @@ if (!String.prototype.endsWith) {
 		function setModalWidth(width) {
 			var modalDomEl = $uibModalStack.getTop().value.modalDomEl;
 			var modalDialog = modalDomEl.children();
-			modalDialog.css("width", (width + 47) + "px");	// add some pixels for padding and scrollbars
+			modalDialog.css('width', (width + 47) + 'px');	// add some pixels for padding and scrollbars
 		}
 
 		function add() {
@@ -613,7 +613,7 @@ if (!String.prototype.endsWith) {
 
 
 				switch (eavAttribute.Type) {
-					case "Entity":
+					case 'Entity':
 						try {
 							colDef.allowMultiValue = eavAttribute.Metadata.Entity.AllowMultiValue;
 						} catch (e) {
@@ -623,7 +623,7 @@ if (!String.prototype.endsWith) {
 						colDef.cellRenderer = cellRendererEntity;
 						colDef.valueGetter = valueGetterEntityField;
 						break;
-					case "DateTime":
+					case 'DateTime':
 						try {
 							colDef.useTimePicker = eavAttribute.Metadata.DateTime.UseTimePicker;
 						} catch (e) {
@@ -631,10 +631,10 @@ if (!String.prototype.endsWith) {
 						}
 						colDef.valueGetter = valueGetterDateTime;
 						break;
-					case "Boolean":
+					case 'Boolean':
 						colDef.valueGetter = valueGetterBoolean;
 						break;
-					case "Number":
+					case 'Number':
 						colDef.filter = 'number';
 						break;
 				}
@@ -652,14 +652,14 @@ if (!String.prototype.endsWith) {
 				return null;
 
 			return rawValue.map(function (item) {
-				return item._Title;
+				return item.Title;
 			});
 		}
 
 		function valueGetterStatusField(params) {
 			return [
-				params.data.IsPublished ? "is published" : "is not published",
-				params.data.Metadata ? "is metadata" : "is not metadata"
+				params.data.IsPublished ? 'is published' : 'is not published',
+				params.data.Metadata ? 'is metadata' : 'is not metadata'
 			];
 		}
 
@@ -674,14 +674,14 @@ if (!String.prototype.endsWith) {
 
 		function valueGetterBoolean(params) {
 			var rawValue = params.data[params.colDef.field];
-			if (typeof rawValue != "boolean")
+			if (typeof rawValue != 'boolean')
 				return null;
 
 			return rawValue.toString();
 		}
 
 		function cellRendererDefault(params) {
-			if (typeof (params.value) != "string" || params.value === null)
+			if (typeof (params.value) != 'string' || params.value === null)
 				return params.value;
 
 			var encodedValue = htmlEncode(params.value);
@@ -689,7 +689,7 @@ if (!String.prototype.endsWith) {
 		}
 
 		function cellRendererDefaultFilter(params) {
-			return cellRendererDefault(params) || "(empty)";
+			return cellRendererDefault(params) || '(empty)';
 		}
 
 		// htmlencode strings (source: http://stackoverflow.com/a/7124052)
@@ -701,7 +701,7 @@ if (!String.prototype.endsWith) {
 			if (!Array.isArray(params.value))
 				return null;
 
-			var encodedValue = htmlEncode(params.value.join(", "));
+			var encodedValue = htmlEncode(params.value.join(', '));
 			var result = '<span title="' + encodedValue + '">';
 			if (params.colDef.allowMultiValue)
 				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
@@ -724,7 +724,7 @@ if (!String.prototype.endsWith) {
 		}
 
 		function close() {
-			$uibModalInstance.dismiss("cancel");
+			$uibModalInstance.dismiss('cancel');
 		}
 	}
 }());
