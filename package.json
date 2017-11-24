@@ -1,13 +1,13 @@
 {
   "name": "tosic.eav",
   "description": "ToSic EAV - the Entity Attribute Value system with amazing capabilities powering 2sxc",
-  "version": "3.0.0",
+  "version": "4.5.0",
   "keywords": [
     "eav",
     "2sxc"
   ],
   "homepage": "http://github.com/2sic/eav",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "author": {
     "name": "Daniel Mettler",
     "email": "info@2sxc.org",
@@ -23,7 +23,6 @@
   "bugs": {
     "url": "https://github.com/2sic/eav/issues"
   },
-  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
@@ -34,6 +33,8 @@
     "gulp-clean-css": "2.0.3",
     "gulp-concat": "2.6.0",
     "gulp-csslint": "0.2.2",
+    "gulp-debug": "3.1.0",
+    "gulp-flatten": "0.3.1",
     "gulp-htmlmin": "1.3.0",
     "gulp-if": "2.0.0",
     "gulp-jshint": "2.0.0",
@@ -52,5 +53,7 @@
   },
   "jshintConfig": {
     "laxbreak": true
+  },
+  "dependencies": {
   }
 }

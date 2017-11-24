@@ -183,6 +183,8 @@
     <Content Include="src\edit\fields\entity\entity-default.js" />
     <Content Include="src\edit\fields\string\string-contenttype.html" />
     <Content Include="src\edit\fields\string\string-contenttype.js" />
+    <Content Include="src\edit\fields\string\string-dropdown.css" />
+    <Content Include="src\edit\fields\string\string-dropdown.html" />
     <Content Include="src\edit\fields\string\string-url-path.js" />
     <Content Include="src\edit\fields\string\string-dropdown.js" />
     <Content Include="src\edit\fields\string\string-default.js" />
@@ -303,6 +305,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\string\System.%40string-dropdown.json" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

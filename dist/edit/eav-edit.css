@@ -318,6 +318,7 @@ table.eav-entityselect-table tr.eav-entityselect-item td { padding-top: 2px; pad
     color:black;
     border:none;
     background:none;
+    cursor:pointer;
 }
 .input-string-dropdown-wrapper .freetext-toggle.active { }
 .input-string-dropdown-wrapper { width: 100%; }

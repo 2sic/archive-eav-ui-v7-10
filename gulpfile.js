@@ -12,24 +12,47 @@
         rootDist: 'dist/',
     };
 
-    return (() => {
-        const autopublishTarget = '/DesktopModules/ToSIC_SexyContent/dist';
-        const dests = {
-            default: './../2SexyContent/Web',
-            evoq: '../TestWebsites/Evoq 9.1.0',
-        };
+    const autopublishTarget = '/DesktopModules/ToSIC_SexyContent/dist';
+    const dests = {
+        default: './../2SexyContent/Web',
+        evoq: '../TestWebsites/Evoq 9.1.0',
+    };
 
+    return (() => {
+
+        gulp.task('copyAll', () => copyAll(dests.default));
         gulp.task('watch', () => watchSets(createSetsForOurCode()));
         gulp.task('develop', ['watch'], () => watchPublish(dests.default));
         gulp.task('develop:evoq', ['watch'], () => watchPublish(dests.evoq));
         gulp.task('watch-libs', () => watchSets(createSetsForLibs()));
 
         function watchPublish(dest) {
-            return $.watch('dist/**/*')
+            return $.watch([
+                        'dist/**/*',
+                        'dist/.**/*'
+                    ],
+                    {
+                        ignoreInitial: false,
+                        dot: true
+                    }
+                )
+                .pipe($.debug())
                 .pipe(gulp.dest(dest + autopublishTarget));
         }
+
+
     })();
 
+    function copyAll(dest) {
+        gulp.src([
+                'dist/**/*', 'dist/.**/*'
+            ],
+            {
+                dot: true
+            }).pipe($.debug())
+            .pipe(gulp.dest(dest + autopublishTarget))
+            ;
+    }
     function createConfig(key, tmplSetName, altDistPath, altJsName, libFiles) {
         const cwd = `src/${key}/`;
         return {
@@ -52,6 +75,10 @@
                 templateSetName: tmplSetName,
                 autoSort: true,
                 alsoRunMin: true
+            },
+            json: {
+                run: false,
+                files: [`${cwd}**/*.json`, `!${cwd}**/*spec.json`, `!${cwd}**/tests*`],
             }
         };
     }
@@ -92,6 +119,17 @@
         return result;
     }
 
+    function packageJsonTypes(set) {
+        if (config.debug) console.log(`json start: ${set.name}`);
+        gulp.src(set.json.files)
+            .pipe($.flatten())
+            .pipe(gulp.dest(set.dist + ".data/contenttypes/"));
+        //json.pipe(gulp.dest(function (file) {
+        //    file.path = file.base + path.basename(file.path);
+        //    return set.dist + '.data/contenttypes';
+        //}));
+    }
+
     function packageCss(set) {
         if (config.debug) console.log(`css packaging start: ${set.name}`);
 
@@ -119,7 +157,11 @@
         if (config.debug) console.log(`creating watcher callback for ${set.name}`);
         const run = ev => {
             if (config.debug) console.log(`File ${ev.path} was ${ev.type}, running tasks on set ${set.name}`);
-            (part === 'js' ? packageJs : packageCss)(set);
+            (part === 'js'
+                ? packageJs
+                : part === 'json'
+                    ? packageJsonTypes
+                    : packageCss)(set);
             console.log("finished '" + set.name + "'" + new Date());
         };
         if (config.autostart) run({ path: '[none]', type: 'autostart' });
@@ -129,11 +171,12 @@
     function createSetsForOurCode() {
         const sets = [];
         const admin = createConfig('admin', 'eavTemplates');
-        admin.css.files.push(`!${admin.cwd}**/pipeline*.css`);
+        admin.css.files.push(`!${admin.cwd}*pipeline*.css`);
         sets.push(admin);
 
         // setup edit & extended
         var edit = createConfig('edit', 'eavEditTemplates');
+        edit.json.run = true;
         sets.push(edit);
 
         // pipeline-designer (CSS only)
@@ -229,6 +272,7 @@
     function watchSets(setList) {
         setList.forEach(set => {
             if (set.js.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'js'));
+            if (set.json.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'json'));
             if (set.css.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'css'));
         });
     }
