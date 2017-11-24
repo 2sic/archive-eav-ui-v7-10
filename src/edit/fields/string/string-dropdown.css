@@ -1,7 +1,8 @@
 ﻿.input-string-dropdown-wrapper .freetext-toggle {
     width:30px;
-    text-indent:-9999px;
+    color:black;
     border:none;
+    background:none;
 }
-.input-string-dropdown-wrapper .freetext-toggle.active { background:blue; }
+.input-string-dropdown-wrapper .freetext-toggle.active { }
 .input-string-dropdown-wrapper { width: 100%; }
