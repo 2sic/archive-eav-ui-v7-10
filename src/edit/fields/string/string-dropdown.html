@@ -1,0 +1,7 @@
+﻿<div class="input-string-dropdown-wrapper input-group">
+    <select ng-show="!freeTextMode" class="form-control input-material material" ng-model="value.Value"></select>
+    <input ng-show="freeTextMode" class="form-control input-material material" ng-model="value.Value" formly-skip-ng-model-attrs-manipulator type="text">
+    <span ng-show="to.settings.merged.EnableTextEntry" class="freetext-toggle input-group-addon" ng-class="{'active': freeTextMode}" ng-click="freeTextMode = !freeTextMode">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </span>
+</div>

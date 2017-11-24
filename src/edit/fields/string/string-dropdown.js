@@ -7,10 +7,10 @@ angular.module("eavFieldTemplates")
 
         formlyConfigProvider.setType({
             name: "string-dropdown",
-            template: "<select class=\"form-control input-material material\" ng-model=\"value.Value\"></select>",
+            templateUrl: "fields/string/string-dropdown.html",
             wrapper: defaultFieldWrappers,
             defaultOptions: function defaultOptions(options) {
-
+                
                 // DropDown field: Convert string configuration for dropdown values to object, which will be bound to the select
                 if (options.templateOptions.settings && options.templateOptions.settings.merged && options.templateOptions.settings.merged.DropdownValues) {
                     var o = options.templateOptions.settings.merged.DropdownValues;
@@ -24,7 +24,7 @@ angular.module("eavFieldTemplates")
                     });
                     options.templateOptions.options = o;
                 }
-
+                
                 function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
 
                 var ngOptions = options.templateOptions.ngOptions || "option[to.valueProp || 'value'] as option[to.labelProp || 'name'] group by option[to.groupProp || 'group'] for option in to.options";
@@ -34,6 +34,16 @@ angular.module("eavFieldTemplates")
                     })
                 };
 
-            }
+            },
+            controller: "FieldTemplate-String-DropDown"
         });
+    }).controller("FieldTemplate-String-DropDown", function ($scope, $timeout) { //, $http, $filter, $translate, $uibModal, eavAdminDialogs, eavDefaultValueService) {
+        
+        $timeout(function () {
+            $scope.freeTextMode = false;
+            if ($scope.to.settings.merged.EnableTextEntry && $scope.value && $scope.value.Value) {
+                if ($scope.to.options.filter(function (e) { return e.value == $scope.value.Value; }).length === 0)
+                    $scope.freeTextMode = true;
+            }
+        }, 1);
     });
