@@ -20,7 +20,7 @@
 
     return (() => {
 
-        gulp.task('copyAll', () => copyAll(dests.default));
+        gulp.task('copy-all-with.data', () => copyAll(dests.default));
         gulp.task('watch', () => watchSets(createSetsForOurCode()));
         gulp.task('develop', ['watch'], () => watchPublish(dests.default));
         gulp.task('develop:evoq', ['watch'], () => watchPublish(dests.evoq));
@@ -29,7 +29,7 @@
         function watchPublish(dest) {
             return $.watch([
                         'dist/**/*',
-                        'dist/.**/*'
+                        'dist/.**/*' // note: this one should get .data folders, but it's not working
                     ],
                     {
                         ignoreInitial: false,
@@ -39,8 +39,6 @@
                 .pipe($.debug())
                 .pipe(gulp.dest(dest + autopublishTarget));
         }
-
-
     })();
 
     function copyAll(dest) {
@@ -124,10 +122,6 @@
         gulp.src(set.json.files)
             .pipe($.flatten())
             .pipe(gulp.dest(set.dist + ".data/contenttypes/"));
-        //json.pipe(gulp.dest(function (file) {
-        //    file.path = file.base + path.basename(file.path);
-        //    return set.dist + '.data/contenttypes';
-        //}));
     }
 
     function packageCss(set) {
@@ -207,14 +201,16 @@
     function createSetsForLibs() {
         // todo sometime: add libs again - removed grunt in commit 2016-10-08 which contained thepaths etc.
         const sets = [];
-        const i18n = createConfig('i18n', undefined, `${config.rootDist}lib/i18n/`, 'set.min.js', [
-            'bower_components/angular-translate/angular-translate.min.js',
-            'bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
-        ]);
-        i18n.js.autoSort = false;
-        i18n.js.alsoRunMin = false;
-        i18n.css.run = false;
-        sets.push(i18n);
+
+        // 2017-11-25 2dm disabled this, as angular-translate is in the angular pack - I think this isn't used any more!
+        //const i18n = createConfig('i18n', undefined, `${config.rootDist}lib/i18n/`, 'set.min.js', [
+        //    'bower_components/angular-translate/angular-translate.min.js',
+        //    'bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
+        //]);
+        //i18n.js.autoSort = false;
+        //i18n.js.alsoRunMin = false;
+        //i18n.css.run = false;
+        //sets.push(i18n);
         
         // part: ag-grid library
         const agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [

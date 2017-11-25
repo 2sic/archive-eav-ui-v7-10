@@ -296,9 +296,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\edit-extended\fields\string-url\" />
     <Folder Include="src\edit\ml-entities\specs\helpers\" />
-    <Folder Include="src\i18n\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
