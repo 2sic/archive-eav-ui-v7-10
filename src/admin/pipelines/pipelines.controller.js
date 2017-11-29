@@ -68,4 +68,46 @@ angular.module('PipelineManagement', [
                 eval(inp); // jshint ignore:line
         };
         vm.close = function () { $uibModalInstance.dismiss('cancel'); };
+
+
+        //#region import-form
+
+        var viewStates = {
+            Default: 1,
+            Waiting: 2,
+            Imported: 3
+        };
+
+        var importQuery = vm.importQuery = {
+            show: false,
+            formValues: {},
+            formFields: [
+                {
+                    // File
+                    key: "File",
+                    type: "file",
+                    templateOptions: {
+                        required: true
+                    },
+                    expressionProperties: {
+                        "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
+                    }
+                }
+            ],
+            viewState: viewStates.Default,
+            save: function() {
+                importQuery.viewState = viewStates.Waiting;
+                return pipelineService.importQuery(importQuery.formValues).then(function() {
+                    vm.refresh();
+                    importQuery.viewState = viewStates.Imported;
+                });
+            },
+            reset: function() {
+                importQuery.viewState = viewStates.Default;
+                importQuery.show = false;
+            }
+        };
+        
+
+        //#endregion
     });
