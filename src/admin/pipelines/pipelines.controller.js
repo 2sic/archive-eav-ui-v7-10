@@ -5,7 +5,7 @@ angular.module('PipelineManagement', [
     'eavNgSvcs',
     'EavAdminUi'
 ]).
-    controller('PipelineManagement', function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+    controller('PipelineManagement', function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig, contentExportService) {
         var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -41,6 +41,10 @@ angular.module('PipelineManagement', [
 
         vm.permissions = function (item) {
             return eavAdminDialogs.openPermissionsForGuid(appId, item.Guid);
+        };
+
+        vm.export = function (item) {
+            return contentExportService.exportEntity(appId, item.Id, 'Query', true);
         };
 
         vm.add = function add() {

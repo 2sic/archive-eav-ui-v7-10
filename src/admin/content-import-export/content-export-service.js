@@ -7,7 +7,8 @@
     function contentExportService($http, eavConfig) {
         return {
             exportContent: exportContent,
-            exportJson: exportJson
+            exportJson: exportJson,
+            exportEntity: exportEntity
         };
 
         function exportContent(args, selectedIds) {
@@ -34,5 +35,17 @@
 
             window.open(url, '_blank', '');
         }
+
+        function exportEntity(appId, id, prefix, metadata) {
+            var url = eavConfig.getUrlPrefix('api')
+                + '/eav/ContentExport/DownloadEntityAsJson'
+                + '?appId=' + appId
+                + '&id=' + id
+                + '&prefix=' + prefix
+                + '&withMetadata=' + metadata;
+
+            window.open(url, '_blank', '');
+        }
+
     }
 }());

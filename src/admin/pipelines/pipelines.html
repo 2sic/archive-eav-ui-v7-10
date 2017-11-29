@@ -29,6 +29,12 @@
                             <button title="{{ 'General.Buttons.Edit' | translate }}" class="btn btn-xs" ng-click="vm.edit(pipeline)"><i icon="cog"></i></button>
                             <button title="{{ 'General.Buttons.Copy' | translate }}" type="button" class="btn btn-xs" ng-click="vm.clone(pipeline)"><i icon="duplicate"></i></button>
                             <button title="{{ 'General.Buttons.Permissions' | translate }}" type="button" class="btn btn-xs" ng-click="vm.permissions(pipeline)"><i icon="user"></i></button>
+                            <button title="{{ 'General.Buttons.Export' | translate }}" 
+                                    type="button" 
+                                    class="btn btn-xs btn-warning" 
+                                    ng-click="vm.export(pipeline)"
+                                    ng-if="vm.debug.on"><i icon="export"></i>
+                            </button>
                         </span>
                         <button title="{{ 'General.Buttons.Delete' | translate }}" type="button" class="btn btn-xs" ng-click="vm.delete(pipeline)"><i icon="remove"></i></button>
                     </td>
