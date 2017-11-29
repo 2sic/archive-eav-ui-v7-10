@@ -1,0 +1,89 @@
+﻿<div class="eav-entityselect">
+    <div>
+        <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
+            <table ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false" class="eav-entityselect-table" style="table-layout: fixed;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <!-- important note - track by $index very important for multiple null-values in list -->
+                <tr ng-repeat="item in chosenEntities track by $index" ui-tree-node class="eav-entityselect-item" >
+                    <td ui-tree-handle>
+                        <i title="{{ 'FieldType.Entity.DragMove' | translate }}" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="to.settings.Entity.AllowMultiValue"></i>
+                        <i title="" class="eav-icon-link pull-left eav-entityselect-icon" ng-show="!to.settings.Entity.AllowMultiValue"></i>
+                    </td>
+                    <td ui-tree-handle>
+                        <span class="eav-entityselect-item-title" title="{{getEntityText(item) + ' (' + item + ')'}}">{{getEntityText(item)}}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <ul class="eav-entityselect-item-actions">
+                            <li>
+                                <a title="{{ 'FieldType.Entity.Edit' | translate }}" ng-click="edit(item, index)" ng-show="to.settings.merged.EnableEdit" data-nodrag>
+                                    <i class="eav-icon-pencil"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a title="{{ 'FieldType.Entity.Remove' | translate }}" ng-click="removeSlot(item, $index)" class="eav-entityselect-item-remove" ng-show="to.settings.merged.EnableRemove" data-nodrag>
+                                    <i ng-class="{ 'eav-icon-minus-circled': to.settings.merged.AllowMultiValue, 'eav-icon-down-dir': !to.settings.merged.AllowMultiValue  }"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <!-- todo: i18n, code in action, eav-icon-visiblity/alignment -->
+                                <a title="{{ 'FieldType.Entity.Delete' | translate }}" ng-click="deleteItemInSlot(item, $index)" class="eav-entityselect-item-remove" ng-show="to.settings.merged.EnableDelete" data-nodrag>
+                                    <i class="eav-icon-cancel"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="eav-entityselect-actions" ng-class="{ 'no-add': (!to.settings.merged.AllowMultiValue && chosenEntities.length > 0) }">
+
+            <!-- pick existing entity -->
+            <div class="eav-entityselect-action-addexisting"
+                 ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
+                <div class="eav-entityselect-selector-wrapper">
+                    <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close</div>
+                    <ui-select theme="bootstrap"
+                               ng-model="selectedEntity"
+                               on-highlight="maybeReload()"
+                               ng-required="false"
+                               on-select="addEntity($select.selected.Value)">
+                        <ui-select-match placeholder="{{ $select.open ? 'search' : 'FieldType.Entity.Choose' | translate }}">
+                            <!--<div ng-bind="$select.selected.Text"></div>-->
+                            {{ 'FieldType.Entity.Choose' | translate }}
+                        </ui-select-match>
+                        <ui-select-choices ng-style="{opacity: $select.open ? 1 : 0 }"  repeat="item in availableEntities | filter: { Text : $select.search } track by item.Value"
+                                           refresh="maybeReload()"
+                                           refresh-delay="0"
+                                           minimum-input-length="0"
+                                           ui-disable-choice="chosenEntities.indexOf(item.Value) != -1">
+                            <span ng-bind="item.Text"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+
+            <!-- create new entity to add to this list -->
+            <button ng-if="to.settings.merged.EnableCreate && to.settings.merged.EntityType !== '' && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
+                    class="eav-entityselect-action-create icon-field-button"
+                    ng-click="openNewEntityDialog()">
+                <i class="eav-icon-plus"></i>
+            </button>
+        </div>
+        
+        <div ng-if="debug.on">
+            debug: <span ng-click="insertNull()">add null-item</span>
+        </div>
+
+        <!-- test - want to re-align how two add-scenarios work; ideally side-by side
+        <div class="subtle-till-mouseover"
+             ng-show="(to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)) || (to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))">
+        </div>-->
+    </div>
+</div>
