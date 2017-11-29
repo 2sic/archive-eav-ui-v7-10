@@ -199,7 +199,7 @@
 
         // 2017-11-29 - disabled adding to list, as it always caused non-relevant changes when building
         // must re-enable needed
-        if (!exportGps)
+        if (exportGps)
             sets.push(editExtGps);
 
         return sets;
