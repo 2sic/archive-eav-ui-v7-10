@@ -179,6 +179,9 @@
     <Content Include="src\edit\fields\datetime\datetime-default.html" />
     <Content Include="src\edit\fields\empty\empty-default.js" />
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
+    <Content Include="src\edit\fields\entity\entity-query.css" />
+    <Content Include="src\edit\fields\entity\entity-query.html" />
+    <Content Include="src\edit\fields\entity\entity-query.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
     <Content Include="src\edit\fields\entity\entity-default.js" />
     <Content Include="src\edit\fields\string\string-contenttype.html" />
