@@ -33,13 +33,17 @@ angular.module("eavFieldTemplates")
         
         // ajax call to get the entities
         $scope.getAvailableEntities = function () {
+            if (!$scope.to.settings.merged.Query)
+                alert("No query defined for " + $scope.options.key + " - can't load entities");
             var params = paramsMask.resolve(); // always get the latest definition
-            return query("Test?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
-                $scope.availableEntities = data.data[$scope.to.settings.merged.StreamName].map(function (e) {
-                    return { Value: e.Guid, Text: e.Title, Id: e.Id };
-                });
+            return query($scope.to.settings.merged.Query + "?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
+                $scope.availableEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
                 $scope.indicateReload = false;
             });
+        };
+
+        $scope.queryEntityMapping = function (entity) {
+            return { Value: entity.Guid, Text: entity.Title, Id: entity.Id };
         };
 
         $scope.maybeReload = function (force) {

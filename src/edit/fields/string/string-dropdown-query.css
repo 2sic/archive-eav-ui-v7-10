@@ -1,0 +1,4 @@
+﻿.eav-entityselect-reload { color:#DDD; cursor:pointer; }
+    .eav-entityselect-reload.active {
+        color: #0088f4;
+    }

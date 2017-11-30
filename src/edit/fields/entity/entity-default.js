@@ -18,6 +18,20 @@ angular.module("eavFieldTemplates")
         });
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc, debugState) {
+
+        $scope.bindModel = function () {
+            // create short names for template
+            var valList = $scope.model[$scope.options.key].Values[0].Value;
+            $scope.chosenEntities = valList;
+        };
+        $scope.initValue = function () {
+            // of no real data-model exists yet for this value (list of chosen entities), then create a blank
+            if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "") {
+                var initVal = eavDefaultValueService($scope.options);   // note: works for simple entries as well as multiple, then it has to be an array though
+                $scope.model[$scope.options.key] = { Values: [{ Value: initVal, Dimensions: {} }] };
+            }
+        };
+        
         var contentType, lastContentType;
 
         function activate() {
@@ -25,19 +39,7 @@ angular.module("eavFieldTemplates")
             if (!$scope.to.settings.merged)
                 $scope.to.settings.merged = {};
 
-            // of no real data-model exists yet for this value (list of chosen entities), then create a blank
-            if ($scope.model[$scope.options.key] === undefined || $scope.model[$scope.options.key].Values[0].Value === "") {
-                var initVal = eavDefaultValueService($scope.options);   // note: works for simple entries as well as multiple, then it has to be an array though
-                $scope.model[$scope.options.key] = { Values: [{ Value: initVal, Dimensions: {} }]};
-            }
-
-            // create short names for template
-            var valList = $scope.model[$scope.options.key].Values[0].Value;
-            //var showList = new [];
-            //for (var i = 0; i < valList.length; i++)
-            //    showList.push({ "title": valList[i] || "null", realId: valList[i], tempId: i });
-
-            $scope.chosenEntities = valList;
+            $scope.initValue();
             $scope.selectedEntity = null;
 
             // Initialize entities
@@ -46,6 +48,8 @@ angular.module("eavFieldTemplates")
             // don't get it, it must be blank to start with, so it will be loaded at least 1x lastContentType = contentType.resolve();
 
             $scope.availableEntities = [];
+
+            $scope.bindModel();
         }
 
         $scope.debug = debugState;
@@ -75,7 +79,7 @@ angular.module("eavFieldTemplates")
         // ajax call to get all entities
         // todo: move to a service some time + enhance to provide more fields if needed
         $scope.getAvailableEntities = function () {
-            //if (!ctName)
+
             var ctName = contentType.resolve(); // always get the latest definition, possibly from another drop-down
 
             // check if we should get all or only the selected ones...
@@ -107,8 +111,7 @@ angular.module("eavFieldTemplates")
             }
             return $q.when();
         };
-
-
+        
         // get a nice label for any entity, including non-existing ones
         $scope.getEntityText = function (entityId) {
             if (entityId === null)
@@ -156,7 +159,7 @@ angular.module("eavFieldTemplates")
             $scope.form.$setDirty();
         }
 
-        activate();
+        $timeout(activate,0);
     })
 
     .directive("entityValidation", [function () {
