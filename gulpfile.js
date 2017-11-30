@@ -1,6 +1,9 @@
 ﻿(() => {
     'use strict';
 
+    // important: disabled gps as it just modifies the file but never really does anything
+    const exportGps = false;
+
     const gulp = require('gulp');
     const $ = require('gulp-load-plugins')({ lazy: false });
     const merge = require('merge-stream');
@@ -193,7 +196,11 @@
         editExtGps.js.autoSort = false;
         editExtGps.js.templateSetName = 'customGpsTemplates'; // probably not relevant, but not sure
         editExtGps.css.run = false;
-        sets.push(editExtGps);
+
+        // 2017-11-29 - disabled adding to list, as it always caused non-relevant changes when building
+        // must re-enable needed
+        if (exportGps)
+            sets.push(editExtGps);
 
         return sets;
     }

@@ -100,6 +100,7 @@ angular.module("EavServices")
                     Definition: function() { return svc.getDataSourceDefinitionProperty(model, dataSourceBase); }
                 };
             },
+
             // Save whole Pipline
             savePipeline: function(pipeline, dataSources) {
                 if (!svc.appId)
@@ -119,6 +120,7 @@ angular.module("EavServices")
                     Id: pipeline.EntityId /*id later EntityId */
                 }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
             },
+
             // clone a whole Pipeline
             clonePipeline: function(pipelineEntityId) {
                 return svc.pipelineResource.get({ action: "ClonePipeline", appId: svc.appId, Id: pipelineEntityId }).$promise;
@@ -186,7 +188,12 @@ angular.module("EavServices")
             // Delete a Pipeline on current App
             deletePipeline: function (id) {
                 return svc.pipelineResource.get({ action: "DeletePipeline", appId: svc.appId, id: id }).$promise;
+            },
+
+            importQuery: function(args) {
+                return $http.post("eav/pipelinedesigner/importquery", { AppId: svc.appId, ContentBase64: args.File.base64 });
             }
+
         });
 
         return svc;
