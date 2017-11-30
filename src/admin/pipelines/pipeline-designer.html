@@ -55,9 +55,10 @@
                 <select class="form-control" ng-model="addDataSourceType" 
                         ng-disabled="queryDef.readOnly" 
                         ng-change="vm.addSelectedDataSource()" 
-                        ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | orderBy: 'Name'">
+                        ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | filter: filterDifficulty() | orderBy: 'Name'">
                     <option value="">-- Add DataSource --</option>
                 </select>
+                <span ng-click="vm.toggleAdvanced()"><i ng-class="{'eav-icon-star-empty': !vm.showAdvanced, 'eav-icon-star': vm.showAdvanced}"></i> show advanced</span>
                 <button type="button" class="btn btn-primary btn-block" ng-disabled="queryDef.readOnly" ng-click="savePipeline()">
                     <i class="eav-icon-ok"></i> Save
                 </button>

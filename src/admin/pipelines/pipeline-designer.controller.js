@@ -52,10 +52,17 @@
 
 
                 'use strict';
+
+                var difDefault = 100, difAdv = 200;
                 // Init
-                var vm = this;
-                vm.debug = debugState;
-                vm.warnings = [];
+                var vm = Object.assign(this,
+                    {
+                        debug: debugState,
+                        warnings: [],
+                        showAdvanced: false,
+                        maxDifficulty:difDefault
+                    });
+
                 var toastr = toastrWithHttpErrorHandling;
                 $scope.debug = false;
                 $scope.queryDef = queryDef;
@@ -194,6 +201,16 @@
                         .then(resetPlumbAndWarnings);
                 };
 
+                vm.toggleAdvanced = function() {
+                    vm.showAdvanced = !vm.showAdvanced;
+                    vm.maxDifficulty = vm.showAdvanced ? difAdv : difDefault;
+                };
+
+                $scope.filterDifficulty = function() {
+                    return function(item) {
+                        return item.Difficulty <= vm.maxDifficulty;
+                    };
+                };
 
                 // #endregion
 

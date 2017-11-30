@@ -31,7 +31,8 @@ angular.module("EavServices")
                 EntityGuid: "Out",
                 PartAssemblyAndType: outDs.className,
                 VisualDesignerData: outDs.visualDesignerData, 
-                ReadOnly: true
+                ReadOnly: true,
+                Difficulty: 100
             });
 
             // Extend each DataSource with Definition-Property and ReadOnly Status
@@ -72,8 +73,9 @@ angular.module("EavServices")
                         Out: null,
                         allowNew: false,
                         PrimaryType: "Target",
-                        DynamicOut: false
-                });
+                        DynamicOut: false,
+                        Difficulty: 100
+                    });
 
                     postProcessDataSources(model);
 
