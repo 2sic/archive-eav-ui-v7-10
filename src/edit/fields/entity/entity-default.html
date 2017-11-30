@@ -75,8 +75,14 @@
                     ng-click="openNewEntityDialog()">
                 <i class="eav-icon-plus"></i>
             </button>
+
+            <div class="eav-entityselect-reload" ng-if="showReloadButton" ng-click="getAvailableEntities()" ng-class="{ 'active': indicateReload }">
+                <i class="eav-icon-reload"></i>
+            </div>
         </div>
         
+        
+
         <div ng-if="debug.on">
             debug: <span ng-click="insertNull()">add null-item</span>
         </div>
