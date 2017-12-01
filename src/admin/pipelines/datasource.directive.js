@@ -1,6 +1,6 @@
 
 
-angular.module("PipelineDesigner")
+angular.module('PipelineDesigner')
     // datasource directive makes an element a DataSource with jsPlumb
     .directive('datasource', function ($timeout) {
         return {
@@ -12,7 +12,7 @@ angular.module("PipelineDesigner")
                 });
                 if (scope.$last === true) {
                     $timeout(function () {
-                        scope.$emit("ngRepeatFinished");
+                        scope.$emit('ngRepeatFinished');
                     });
                 }
             }

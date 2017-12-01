@@ -159,7 +159,8 @@
     <Content Include="src\admin\pipelines\pipeline-designer.filters.js" />
     <Content Include="src\admin\pipelines\query-stats.controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
-    <Content Include="src\admin\polyfills\string.endswith.js" />
+    <Content Include="src\admin\_polyfills\object.assign.js" />
+    <Content Include="src\admin\_polyfills\string.endswith.js" />
     <Content Include="src\admin\services\ctrl-save.service.js" />
     <Content Include="src\admin\services\drag-body-class.js" />
     <Content Include="src\admin\services\file-type.service.js" />
@@ -178,10 +179,16 @@
     <Content Include="src\edit\fields\datetime\datetime-default.html" />
     <Content Include="src\edit\fields\empty\empty-default.js" />
     <Content Include="src\edit\fields\datetime\datetime-default.js" />
+    <Content Include="src\edit\fields\entity\entity-query.css" />
+    <Content Include="src\edit\fields\entity\entity-query.js" />
     <Content Include="src\edit\fields\number\number-default.js" />
     <Content Include="src\edit\fields\entity\entity-default.js" />
+    <Content Include="src\edit\fields\string\string-dropdown-query.css" />
+    <Content Include="src\edit\fields\string\string-dropdown-query.js" />
     <Content Include="src\edit\fields\string\string-contenttype.html" />
     <Content Include="src\edit\fields\string\string-contenttype.js" />
+    <Content Include="src\edit\fields\string\string-dropdown.css" />
+    <Content Include="src\edit\fields\string\string-dropdown.html" />
     <Content Include="src\edit\fields\string\string-url-path.js" />
     <Content Include="src\edit\fields\string\string-dropdown.js" />
     <Content Include="src\edit\fields\string\string-default.js" />
@@ -293,15 +300,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\edit-extended\fields\string-url\" />
     <Folder Include="src\edit\ml-entities\specs\helpers\" />
-    <Folder Include="src\i18n\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\string\System.%40string-dropdown.json" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

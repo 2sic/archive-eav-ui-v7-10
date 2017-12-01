@@ -1,6 +1,9 @@
 ﻿(() => {
     'use strict';
 
+    // important: disabled gps as it just modifies the file but never really does anything
+    const exportGps = false;
+
     const gulp = require('gulp');
     const $ = require('gulp-load-plugins')({ lazy: false });
     const merge = require('merge-stream');
@@ -12,24 +15,45 @@
         rootDist: 'dist/',
     };
 
-    return (() => {
-        const autopublishTarget = '/DesktopModules/ToSIC_SexyContent/dist';
-        const dests = {
-            default: './../2SexyContent/Web',
-            evoq: '../TestWebsites/Evoq 9.1.0',
-        };
+    const autopublishTarget = '/DesktopModules/ToSIC_SexyContent/dist';
+    const dests = {
+        default: './../2SexyContent/Web',
+        evoq: '../TestWebsites/Evoq 9.1.0',
+    };
 
+    return (() => {
+
+        gulp.task('copy-all-with.data', () => copyAll(dests.default));
         gulp.task('watch', () => watchSets(createSetsForOurCode()));
         gulp.task('develop', ['watch'], () => watchPublish(dests.default));
         gulp.task('develop:evoq', ['watch'], () => watchPublish(dests.evoq));
         gulp.task('watch-libs', () => watchSets(createSetsForLibs()));
 
         function watchPublish(dest) {
-            return $.watch('dist/**/*')
+            return $.watch([
+                        'dist/**/*',
+                        'dist/.**/*' // note: this one should get .data folders, but it's not working
+                    ],
+                    {
+                        ignoreInitial: false,
+                        dot: true
+                    }
+                )
+                .pipe($.debug())
                 .pipe(gulp.dest(dest + autopublishTarget));
         }
     })();
 
+    function copyAll(dest) {
+        gulp.src([
+                'dist/**/*', 'dist/.**/*'
+            ],
+            {
+                dot: true
+            }).pipe($.debug())
+            .pipe(gulp.dest(dest + autopublishTarget))
+            ;
+    }
     function createConfig(key, tmplSetName, altDistPath, altJsName, libFiles) {
         const cwd = `src/${key}/`;
         return {
@@ -52,6 +76,10 @@
                 templateSetName: tmplSetName,
                 autoSort: true,
                 alsoRunMin: true
+            },
+            json: {
+                run: false,
+                files: [`${cwd}**/*.json`, `!${cwd}**/*spec.json`, `!${cwd}**/tests*`],
             }
         };
     }
@@ -92,6 +120,13 @@
         return result;
     }
 
+    function packageJsonTypes(set) {
+        if (config.debug) console.log(`json start: ${set.name}`);
+        gulp.src(set.json.files)
+            .pipe($.flatten())
+            .pipe(gulp.dest(set.dist + ".data/contenttypes/"));
+    }
+
     function packageCss(set) {
         if (config.debug) console.log(`css packaging start: ${set.name}`);
 
@@ -119,7 +154,11 @@
         if (config.debug) console.log(`creating watcher callback for ${set.name}`);
         const run = ev => {
             if (config.debug) console.log(`File ${ev.path} was ${ev.type}, running tasks on set ${set.name}`);
-            (part === 'js' ? packageJs : packageCss)(set);
+            (part === 'js'
+                ? packageJs
+                : part === 'json'
+                    ? packageJsonTypes
+                    : packageCss)(set);
             console.log("finished '" + set.name + "'" + new Date());
         };
         if (config.autostart) run({ path: '[none]', type: 'autostart' });
@@ -129,11 +168,12 @@
     function createSetsForOurCode() {
         const sets = [];
         const admin = createConfig('admin', 'eavTemplates');
-        admin.css.files.push(`!${admin.cwd}**/pipeline*.css`);
+        admin.css.files.push(`!${admin.cwd}*pipeline*.css`);
         sets.push(admin);
 
         // setup edit & extended
         var edit = createConfig('edit', 'eavEditTemplates');
+        edit.json.run = true;
         sets.push(edit);
 
         // pipeline-designer (CSS only)
@@ -156,7 +196,11 @@
         editExtGps.js.autoSort = false;
         editExtGps.js.templateSetName = 'customGpsTemplates'; // probably not relevant, but not sure
         editExtGps.css.run = false;
-        sets.push(editExtGps);
+
+        // 2017-11-29 - disabled adding to list, as it always caused non-relevant changes when building
+        // must re-enable needed
+        if (exportGps)
+            sets.push(editExtGps);
 
         return sets;
     }
@@ -164,14 +208,16 @@
     function createSetsForLibs() {
         // todo sometime: add libs again - removed grunt in commit 2016-10-08 which contained thepaths etc.
         const sets = [];
-        const i18n = createConfig('i18n', undefined, `${config.rootDist}lib/i18n/`, 'set.min.js', [
-            'bower_components/angular-translate/angular-translate.min.js',
-            'bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
-        ]);
-        i18n.js.autoSort = false;
-        i18n.js.alsoRunMin = false;
-        i18n.css.run = false;
-        sets.push(i18n);
+
+        // 2017-11-25 2dm disabled this, as angular-translate is in the angular pack - I think this isn't used any more!
+        //const i18n = createConfig('i18n', undefined, `${config.rootDist}lib/i18n/`, 'set.min.js', [
+        //    'bower_components/angular-translate/angular-translate.min.js',
+        //    'bower_components/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
+        //]);
+        //i18n.js.autoSort = false;
+        //i18n.js.alsoRunMin = false;
+        //i18n.css.run = false;
+        //sets.push(i18n);
         
         // part: ag-grid library
         const agGrid = createConfig("ag-grid", undefined, config.rootDist + "lib/ag-grid/", "ag-grid.min.js", [
@@ -229,6 +275,7 @@
     function watchSets(setList) {
         setList.forEach(set => {
             if (set.js.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'js'));
+            if (set.json.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'json'));
             if (set.css.run) gulp.watch(set.cwd + "**/*", createWatchCallback(set, 'css'));
         });
     }

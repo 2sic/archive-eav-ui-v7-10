@@ -1,11 +1,11 @@
 ﻿// Config and Controller for the Pipeline Management UI
-angular.module("PipelineManagement", [
-    "EavServices",
-    "EavConfiguration",
-    "eavNgSvcs",
-    "EavAdminUi"
+angular.module('PipelineManagement', [
+    'EavServices',
+    'EavConfiguration',
+    'eavNgSvcs',
+    'EavAdminUi'
 ]).
-    controller("PipelineManagement", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+    controller('PipelineManagement', function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig, contentExportService) {
         var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -20,7 +20,7 @@ angular.module("PipelineManagement", [
 
         // Delete a Pipeline
         vm.delete = function (pipeline) {
-            if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
+            if (!confirm('Delete Pipeline "' + pipeline.Name + '" (' + pipeline.Id + ')?'))
                 return;
 
             pipelineService.deletePipeline(pipeline.Id).then(function () {
@@ -43,9 +43,13 @@ angular.module("PipelineManagement", [
             return eavAdminDialogs.openPermissionsForGuid(appId, item.Guid);
         };
 
+        vm.export = function (item) {
+            return contentExportService.exportEntity(appId, item.Id, 'Query', true);
+        };
+
         vm.add = function add() {
             var items = [{
-                ContentTypeName: "DataPipeline",
+                ContentTypeName: 'DataPipeline',
                 Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
             }];
             eavAdminDialogs.openEditItems(items, vm.refresh);
@@ -63,5 +67,47 @@ angular.module("PipelineManagement", [
             if (inp)
                 eval(inp); // jshint ignore:line
         };
-        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss('cancel'); };
+
+
+        //#region import-form
+
+        var viewStates = {
+            Default: 1,
+            Waiting: 2,
+            Imported: 3
+        };
+
+        var importQuery = vm.importQuery = {
+            show: false,
+            formValues: {},
+            formFields: [
+                {
+                    // File
+                    key: "File",
+                    type: "file",
+                    templateOptions: {
+                        required: true
+                    },
+                    expressionProperties: {
+                        "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
+                    }
+                }
+            ],
+            viewState: viewStates.Default,
+            save: function() {
+                importQuery.viewState = viewStates.Waiting;
+                return pipelineService.importQuery(importQuery.formValues).then(function() {
+                    vm.refresh();
+                    importQuery.viewState = viewStates.Imported;
+                });
+            },
+            reset: function() {
+                importQuery.viewState = viewStates.Default;
+                importQuery.show = false;
+            }
+        };
+        
+
+        //#endregion
     });

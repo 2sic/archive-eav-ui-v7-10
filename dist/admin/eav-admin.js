@@ -1,3 +1,46 @@
+// source: MDN
+if (typeof Object.assign != 'function') {
+    // Must be writable: true, enumerable: false, configurable: true
+    Object.defineProperty(Object, "assign", {
+        value: function assign(target, varArgs) { // .length of function is 2
+            'use strict';
+            
+            if (target == null) { /* jshint ignore:line */ // TypeError if undefined or null
+                throw new TypeError('Cannot convert undefined or null to object');
+            }
+
+            var to = Object(target);
+
+            for (var index = 1; index < arguments.length; index++) {
+                var nextSource = arguments[index];
+
+                if (nextSource != null) { /* jshint ignore:line */ // Skip over if undefined or null
+                    for (var nextKey in nextSource) {
+                        // Avoid bugs when hasOwnProperty is shadowed
+                        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                            to[nextKey] = nextSource[nextKey];
+                        }
+                    }
+                }
+            }
+            return to;
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
+if (!String.prototype.endsWith) {
+    String.prototype.endsWith = function (searchString, position) {
+        var subjectString = this.toString();
+        if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
+            position = subjectString.length;
+        }
+        position -= searchString.length;
+        var lastIndex = subjectString.lastIndexOf(searchString, position);
+        return lastIndex !== -1 && lastIndex === position;
+    };
+}
 (function () {
     angular.module("ContentExportApp", [
         "EavAdminUi",
@@ -10,155 +53,186 @@
 }());
 (function () {
 
-    contentExportController.$inject = ["appId", "contentType", "itemIds", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "$uibModalInstance", "$filter", "$translate"];
-    angular.module("ContentExportApp")
-        .controller("ContentExport", contentExportController);
+    contentExportController.$inject = ["appId", "contentType", "itemIds", "contentExportService", "eavAdminDialogs", "eavConfig", "languages", "debugState", "$uibModalInstance", "$filter", "$translate"];
+    angular.module('ContentExportApp')
+        .controller('ContentExport', contentExportController);
 
-    function contentExportController(appId, contentType, itemIds, contentExportService, eavAdminDialogs, eavConfig, languages, $uibModalInstance, $filter, $translate) {
+    function contentExportController(appId, contentType, itemIds, contentExportService, eavAdminDialogs, eavConfig, languages, debugState, $uibModalInstance, $filter, $translate) {
 
-        var vm = this;
-
-        vm.formValues = {};
+        var vm = Object.assign(this,
+            {
+                debug: debugState,
+                formValues: {},
+                formFields: [], // will be populated on activate
+                exportContent: exportContent,
+                exportJson: exportJson,
+                close: close
+            });
 
         // check if we were given some IDs to export only that
         var hasIdList = (Array.isArray(itemIds) && itemIds.length > 0);
-        var cSelection = "Selection";
+        var cSelection = 'Selection';
 
         vm.formFields = [{
-            // Content type
-            key: "AppId",
-            type: "hidden",
+            key: 'AppId',
+            type: 'hidden',
             defaultValue: appId
         }, {
             // Default / fallback language
-            key: "DefaultLanguage",
-            type: "hidden",
-            defaultValue: $filter("isoLangCode")(languages.defaultLanguage)
+            key: 'DefaultLanguage',
+            type: 'hidden',
+            defaultValue: $filter('isoLangCode')(languages.defaultLanguage)
         }, {
             // Content type
-            key: "ContentType",
-            type: "hidden",
+            key: 'ContentType',
+            type: 'hidden',
             defaultValue: contentType
         }, {
-            key: "Language",
-            type: "select",
+            key: 'Language',
+            type: 'select',
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.Language.Label' | translate",
                 "templateOptions.options": function () {
                     var options = [{
-                        "name": $translate.instant("Content.Export.Fields.Language.Options.All"),
-                        "value": ""
+                        "name": $translate.instant('Content.Export.Fields.Language.Options.All'),
+                        "value": ''
                     }];
                     angular.forEach(languages.languages, function (lang) {
-                        var langCode = $filter("isoLangCode")(lang.key);
+                        var langCode = $filter('isoLangCode')(lang.key);
                         options.push({ "name": langCode, "value": langCode });
                     });
                     return options;
                 }
             },
-            defaultValue: ""
+            defaultValue: ''
         }, {
-            key: "RecordExport",
-            type: "radio",
+            key: 'RecordExport',
+            type: 'radio',
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.RecordExport.Label' | translate",
                 "templateOptions.options": function () {
                     var opts = [{
-                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Blank"),
-                        "value": "Blank"
+                        "name": $translate.instant('Content.Export.Fields.RecordExport.Options.Blank'),
+                        "value": 'Blank'
                     }, {
-                        "name": $translate.instant("Content.Export.Fields.RecordExport.Options.All"),
-                        "value": "All"
+                        "name": $translate.instant('Content.Export.Fields.RecordExport.Options.All'),
+                        "value": 'All'
                     }];
                     if (hasIdList)
                         opts.push({
-                            "name": $translate.instant("Content.Export.Fields.RecordExport.Options.Selection", { count: itemIds.length }), // "todo: selected " + itemIds.length + " items",
+                            "name": $translate.instant('Content.Export.Fields.RecordExport.Options.Selection', { count: itemIds.length }), // "todo: selected " + itemIds.length + " items",
                             "value": cSelection
                         });
                     return opts;
                 }
             },
-            defaultValue: hasIdList ? cSelection : "All"
+            defaultValue: hasIdList ? cSelection : 'All'
         }, {
             // Language references
-            key: "LanguageReferences",
-            type: "radio",
+            key: 'LanguageReferences',
+            type: 'radio',
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.LanguageReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport === "Blank";
+                    return vm.formValues.RecordExport === 'Blank';
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Link"),
-                        "value": "Link"
+                        "name": $translate.instant('Content.Export.Fields.LanguageReferences.Options.Link'),
+                        "value": 'Link'
                     }, {
-                        "name": $translate.instant("Content.Export.Fields.LanguageReferences.Options.Resolve"),
-                        "value": "Resolve"
+                        "name": $translate.instant('Content.Export.Fields.LanguageReferences.Options.Resolve'),
+                        "value": 'Resolve'
                     }];
                 }
             },
-            defaultValue: "Link"
+            defaultValue: 'Link'
         }, {
             // File / page references
-            key: "ResourcesReferences",
-            type: "radio",
+            key: 'ResourcesReferences',
+            type: 'radio',
             expressionProperties: {
                 "templateOptions.label": "'Content.Export.Fields.ResourcesReferences.Label' | translate",
                 "templateOptions.disabled": function () {
-                    return vm.formValues.RecordExport === "Blank";
+                    return vm.formValues.RecordExport === 'Blank';
                 },
                 "templateOptions.options": function () {
                     return [{
-                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Link"),
-                        "value": "Link"
+                        "name": $translate.instant('Content.Export.Fields.ResourcesReferences.Options.Link'),
+                        "value": 'Link'
                     }, {
-                        "name": $translate.instant("Content.Export.Fields.ResourcesReferences.Options.Resolve"),
-                        "value": "Resolve"
+                        "name": $translate.instant('Content.Export.Fields.ResourcesReferences.Options.Resolve'),
+                        "value": 'Resolve'
                     }];
                 }
             },
-            defaultValue: "Link"
+            defaultValue: 'Link'
         }];
 
 
-        vm.exportContent = function exportContent() {
+        function exportContent() {
             contentExportService.exportContent(vm.formValues, hasIdList && vm.formValues.RecordExport === cSelection ? itemIds : null);
-        };
+        }
 
-        vm.close = function close() {
-            $uibModalInstance.dismiss("cancel");
-        };
+        function exportJson() {
+            contentExportService.exportJson(appId, vm.formValues.ContentType);
+        }
+
+        function close() {
+            $uibModalInstance.dismiss('cancel');
+        }
     }
 }());
 (function () {
 
     contentExportService.$inject = ["$http", "eavConfig"];
-    angular.module("ContentExportApp")
-         .factory("contentExportService", contentExportService);
+    angular.module('ContentExportApp')
+         .factory('contentExportService', contentExportService);
 
 
     function contentExportService($http, eavConfig) {
-        var srvc = {
-            exportContent: exportContent
+        return {
+            exportContent: exportContent,
+            exportJson: exportJson,
+            exportEntity: exportEntity
         };
-        return srvc;
 
         function exportContent(args, selectedIds) {
-            var url = eavConfig.getUrlPrefix("api") + "/eav/ContentExport/ExportContent",
-                addids = selectedIds ? "&selectedids=" + selectedIds.join() : "",
+            var url = eavConfig.getUrlPrefix('api') + '/eav/ContentExport/ExportContent',
+                addids = selectedIds ? '&selectedids=' + selectedIds.join() : '',
                 fullUrl = url
-                    + "?appId=" + args.AppId
-                    + "&language=" + args.Language
-                    + "&defaultLanguage=" + args.DefaultLanguage
-                    + "&contentType=" + args.ContentType
-                    + "&recordExport=" + args.RecordExport
-                    + "&resourcesReferences=" + args.ResourcesReferences
-                    + "&languageReferences=" + args.LanguageReferences
+                    + '?appId=' + args.AppId
+                    + '&language=' + args.Language
+                    + '&defaultLanguage=' + args.DefaultLanguage
+                    + '&contentType=' + args.ContentType
+                    + '&recordExport=' + args.RecordExport
+                    + '&resourcesReferences=' + args.ResourcesReferences
+                    + '&languageReferences=' + args.LanguageReferences
                     + addids;
 
-            window.open(fullUrl, "_blank" /* "_self" */, "");
+            window.open(fullUrl, '_blank', '');
         }
+
+        function exportJson(appId, typeName) {
+            var url = eavConfig.getUrlPrefix('api')
+                + '/eav/ContentExport/DownloadTypeAsJson'
+                + '?appId=' + appId
+                + '&name=' + typeName;
+
+            window.open(url, '_blank', '');
+        }
+
+        function exportEntity(appId, id, prefix, metadata) {
+            var url = eavConfig.getUrlPrefix('api')
+                + '/eav/ContentExport/DownloadEntityAsJson'
+                + '?appId=' + appId
+                + '&id=' + id
+                + '&prefix=' + prefix
+                + '&withMetadata=' + metadata;
+
+            window.open(url, '_blank', '');
+        }
+
     }
 }());
 (function () {
@@ -384,13 +458,13 @@
 	'use strict';
 
 	contentItemsListController.$inject = ["contentItemsSvc", "eavConfig", "appId", "contentType", "eavAdminDialogs", "toastr", "debugState", "$uibModalInstance", "$uibModalStack", "$q", "$translate", "entitiesSvc", "agGridFilters"];
-	angular.module("ContentItemsAppAgnostic", [
-		"EavConfiguration",
-		"EavAdminUi",
-		"EavServices"
+	angular.module('ContentItemsAppAgnostic', [
+		'EavConfiguration',
+		'EavAdminUi',
+		'EavServices'
 		// "agGrid" // needs this, but can't hardwire the dependency as it would cause problems with lazy-loading
 	])
-		.controller("ContentItemsList", contentItemsListController)
+		.controller('ContentItemsList', contentItemsListController)
 		;
 
 	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
@@ -417,17 +491,17 @@
 
 		var staticColumns = [
 			{
-				headerName: "ID",
-				field: "Id",
+				headerName: 'ID',
+				field: 'Id',
 				width: 50,
 				template: '<span tooltip-append-to-body="true" uib-tooltip="Id: {{data.Id}}\nRepoId: {{data._RepositoryId}}\nGuid: {{data.Guid}}" ng-bind="data.Id"></span>',
-				cellClass: "clickable",
+				cellClass: 'clickable',
 				filter: 'number',
 				onCellClicked: openEditDialog
 			},
 			{
-				headerName: "Status",
-				field: "IsPublished",
+				headerName: 'Status',
+				field: 'IsPublished',
 				width: 75,
 				suppressSorting: true,
 				template: '<span class="glyphicon" '
@@ -440,16 +514,16 @@
 				valueGetter: valueGetterStatusField
 			},
 			{
-				headerName: "Title",
-				field: "_Title", 
+				headerName: 'Title',
+				field: '_Title', 
 				width: 216,
-				cellClass: "clickable",
+				cellClass: 'clickable',
 				template: '<span tooltip-append-to-body="true" uib-tooltip="{{data._Title}}" ng-bind="data._Title + \' \' + ((!data._Title ? \'Content.Manage.NoTitle\':\'\') | translate)"></span>',
 				filter: 'text',
 				onCellClicked: openEditDialog
 			},
 			{
-				headerName: "",
+				headerName: '',
 				width: 70,
 				suppressSorting: true,
 				suppressMenu: true,
@@ -487,7 +561,7 @@
 
 		function showFilter() {
 			var savedModel = vm.gridOptions.api.getFilterModel();
-			console.log("current filter: ", savedModel);
+			console.log('current filter: ', savedModel);
 			alert('check console for filter information');
 		}
 
@@ -497,7 +571,7 @@
 		function setModalWidth(width) {
 			var modalDomEl = $uibModalStack.getTop().value.modalDomEl;
 			var modalDialog = modalDomEl.children();
-			modalDialog.css("width", (width + 47) + "px");	// add some pixels for padding and scrollbars
+			modalDialog.css('width', (width + 47) + 'px');	// add some pixels for padding and scrollbars
 		}
 
 		function add() {
@@ -570,7 +644,7 @@
 
 
 				switch (eavAttribute.Type) {
-					case "Entity":
+					case 'Entity':
 						try {
 							colDef.allowMultiValue = eavAttribute.Metadata.Entity.AllowMultiValue;
 						} catch (e) {
@@ -580,7 +654,7 @@
 						colDef.cellRenderer = cellRendererEntity;
 						colDef.valueGetter = valueGetterEntityField;
 						break;
-					case "DateTime":
+					case 'DateTime':
 						try {
 							colDef.useTimePicker = eavAttribute.Metadata.DateTime.UseTimePicker;
 						} catch (e) {
@@ -588,10 +662,10 @@
 						}
 						colDef.valueGetter = valueGetterDateTime;
 						break;
-					case "Boolean":
+					case 'Boolean':
 						colDef.valueGetter = valueGetterBoolean;
 						break;
-					case "Number":
+					case 'Number':
 						colDef.filter = 'number';
 						break;
 				}
@@ -609,14 +683,14 @@
 				return null;
 
 			return rawValue.map(function (item) {
-				return item._Title;
+				return item.Title;
 			});
 		}
 
 		function valueGetterStatusField(params) {
 			return [
-				params.data.IsPublished ? "is published" : "is not published",
-				params.data.Metadata ? "is metadata" : "is not metadata"
+				params.data.IsPublished ? 'is published' : 'is not published',
+				params.data.Metadata ? 'is metadata' : 'is not metadata'
 			];
 		}
 
@@ -631,14 +705,14 @@
 
 		function valueGetterBoolean(params) {
 			var rawValue = params.data[params.colDef.field];
-			if (typeof rawValue != "boolean")
+			if (typeof rawValue != 'boolean')
 				return null;
 
 			return rawValue.toString();
 		}
 
 		function cellRendererDefault(params) {
-			if (typeof (params.value) != "string" || params.value === null)
+			if (typeof (params.value) != 'string' || params.value === null)
 				return params.value;
 
 			var encodedValue = htmlEncode(params.value);
@@ -646,7 +720,7 @@
 		}
 
 		function cellRendererDefaultFilter(params) {
-			return cellRendererDefault(params) || "(empty)";
+			return cellRendererDefault(params) || '(empty)';
 		}
 
 		// htmlencode strings (source: http://stackoverflow.com/a/7124052)
@@ -658,7 +732,7 @@
 			if (!Array.isArray(params.value))
 				return null;
 
-			var encodedValue = htmlEncode(params.value.join(", "));
+			var encodedValue = htmlEncode(params.value.join(', '));
 			var result = '<span title="' + encodedValue + '">';
 			if (params.colDef.allowMultiValue)
 				result += '<span class="badge badge-primary">' + params.value.length + '</span> ';
@@ -681,7 +755,7 @@
 		}
 
 		function close() {
-			$uibModalInstance.dismiss("cancel");
+			$uibModalInstance.dismiss('cancel');
 		}
 	}
 }());
@@ -1253,21 +1327,21 @@ angular.module("EavDirectives", [])
     }
 
 } ());
-angular.module("PipelineDesigner",
+angular.module('PipelineDesigner',
     [
-        "PipelineDesigner.filters",
-        "ngResource",
-        "EavConfiguration",
-        "EavServices",
-        "eavTemplates",
-        "eavNgSvcs",
-        "EavAdminUi",
-        "eavEditEntity"
+        'PipelineDesigner.filters',
+        'ngResource',
+        'EavConfiguration',
+        'EavServices',
+        'eavTemplates',
+        'eavNgSvcs',
+        'EavAdminUi',
+        'eavEditEntity'
     ]);
 
 
 
-angular.module("PipelineDesigner")
+angular.module('PipelineDesigner')
     // datasource directive makes an element a DataSource with jsPlumb
     .directive('datasource', ["$timeout", function ($timeout) {
         return {
@@ -1279,7 +1353,7 @@ angular.module("PipelineDesigner")
                 });
                 if (scope.$last === true) {
                     $timeout(function () {
-                        scope.$emit("ngRepeatFinished");
+                        scope.$emit('ngRepeatFinished');
                     });
                 }
             }
@@ -1294,7 +1368,7 @@ angular.module("PipelineDesigner")
     var editName = function(dataSource) {
         if (dataSource.ReadOnly) return;
 
-        var newName = prompt("Rename DataSource", dataSource.Name);
+        var newName = prompt('Rename DataSource', dataSource.Name);
         if (newName && newName.trim())
             dataSource.Name = newName.trim();
     };
@@ -1303,7 +1377,7 @@ angular.module("PipelineDesigner")
     var editDescription = function(dataSource) {
         if (dataSource.ReadOnly) return;
 
-        var newDescription = prompt("Edit Description", dataSource.Description);
+        var newDescription = prompt('Edit Description', dataSource.Description);
         if (newDescription && newDescription.trim())
             dataSource.Description = newDescription.trim();
     };
@@ -1318,8 +1392,8 @@ angular.module("PipelineDesigner")
     }
 
 
-    angular.module("PipelineDesigner")
-        .controller("PipelineDesignerController",
+    angular.module('PipelineDesigner')
+        .controller('PipelineDesignerController',
             ["appId", "pipelineId", "$scope", "pipelineService", "$location", "debugState", "$timeout", "ctrlS", "$filter", "toastrWithHttpErrorHandling", "eavAdminDialogs", "$log", "eavConfig", "$q", "getUrlParamMustRefactor", "queryDef", "plumbGui", function(appId,
                 pipelineId,
                 $scope,
@@ -1339,11 +1413,18 @@ angular.module("PipelineDesigner")
                 plumbGui) {
 
 
-                "use strict";
+                'use strict';
+
+                var difDefault = 100, difAdv = 200;
                 // Init
-                var vm = this;
-                vm.debug = debugState;
-                vm.warnings = [];
+                var vm = Object.assign(this,
+                    {
+                        debug: debugState,
+                        warnings: [],
+                        showAdvanced: false,
+                        maxDifficulty:difDefault
+                    });
+
                 var toastr = toastrWithHttpErrorHandling;
                 $scope.debug = false;
                 $scope.queryDef = queryDef;
@@ -1352,14 +1433,14 @@ angular.module("PipelineDesigner")
                 // fully re-initialize a query (at start, or later re-load)
                 vm.reInitQuery = function() {
                     // Get Data from PipelineService (Web API)
-                    var waitMsg = toastr.info("This shouldn't take long", "Loading...");
+                    var waitMsg = toastr.info("This shouldn't take long", 'Loading...');
                     return queryDef.loadQuery()
                         .then(function() {
                                 toastr.clear(waitMsg);
                                 refreshWarnings(queryDef.data, vm);
                             },
                             function(reason) {
-                                toastr.error(reason, "Loading query failed");
+                                toastr.error(reason, 'Loading query failed');
                             });
                 };
 
@@ -1381,7 +1462,7 @@ angular.module("PipelineDesigner")
 
 
                 // Initialize jsPlumb Connections once after all DataSources were created in the DOM
-                $scope.$on("ngRepeatFinished",
+                $scope.$on('ngRepeatFinished',
                     function() {
                         if (plumbGui.connectionsInitialized) return;
 
@@ -1402,7 +1483,7 @@ angular.module("PipelineDesigner")
                 // Delete a DataSource
                 vm.remove = function(index) {
                     var dataSource = queryDef.data.DataSources[index];
-                    if (!confirm("Delete DataSource \"" + (dataSource.Name || "(unnamed)") + "\"?")) return;
+                    if (!confirm('Delete DataSource "' + (dataSource.Name || '(unnamed)') + '"?')) return;
                     var elementId = plumbGui.dataSrcIdPrefix + dataSource.EntityGuid;
                     plumbGui.instance.selectEndpoints({ element: elementId }).remove();
                     queryDef.data.DataSources.splice(index, 1);
@@ -1453,7 +1534,7 @@ angular.module("PipelineDesigner")
                         vm.saveShortcut.unbind();// disable ctrl+s
                         eavAdminDialogs.openEditItems([{ EntityId: queryDef.id }],
                             function (success) {
-                                console.log("testing", success);
+                                console.log('testing', success);
                                 vm.reInitQuery()
                                     .then(resetPlumbAndWarnings) // reset jsplumb
                                     .then(vm.saveShortcut.rebind);// re-enable ctrl+s
@@ -1476,12 +1557,22 @@ angular.module("PipelineDesigner")
                 // Save Pipeline
                 // returns a Promise about the saving state
                 vm.savePipeline = $scope.savePipeline = function savePipeline() {
-                    toastr.info("This shouldn't take long", "Saving...");
+                    toastr.info("This shouldn't take long", 'Saving...');
                     plumbGui.pushPlumbConfigToQueryDef(plumbGui.instance);
                     return queryDef.save()
                         .then(resetPlumbAndWarnings);
                 };
 
+                vm.toggleAdvanced = function() {
+                    vm.showAdvanced = !vm.showAdvanced;
+                    vm.maxDifficulty = vm.showAdvanced ? difAdv : difDefault;
+                };
+
+                $scope.filterDifficulty = function() {
+                    return function(item) {
+                        return item.Difficulty <= vm.maxDifficulty;
+                    };
+                };
 
                 // #endregion
 
@@ -1505,15 +1596,15 @@ angular.module("PipelineDesigner")
                         var matches = regex.exec(testParams);
                         if (!matches || matches.length === 0)
                             warnings.push(
-                                "Your test values has no moduleid specified. You probably want to check your test-parameters.");
+                                'Your test values has no moduleid specified. You probably want to check your test-parameters.');
                         testMid = matches[1];
-                        var urlMid = getUrlParamMustRefactor("mid");
+                        var urlMid = getUrlParamMustRefactor('mid');
                         if (testMid !== urlMid)
-                            warnings.push("Your test moduleid (" +
+                            warnings.push('Your test moduleid (' +
                                 testMid +
-                                ") is different from the current moduleid (" +
+                                ') is different from the current moduleid (' +
                                 urlMid +
-                                "). You probably want to check your test-values.");
+                                '). You probably want to check your test-values.');
                     } catch (ex) { }
                 }
 
@@ -1521,7 +1612,7 @@ angular.module("PipelineDesigner")
                 $scope.queryPipeline = function(saveFirst) {
                     function runQuery() {
                         // Query pipelineService for the result...
-                        toastr.info("Running Query ...");
+                        toastr.info('Running Query ...');
 
                         pipelineService.queryPipeline(queryDef.id).then(function(success) {
                                 // Show Result in a UI-Dialog
@@ -1531,9 +1622,9 @@ angular.module("PipelineDesigner")
                                     testParams: queryDef.data.Pipeline.TestParameters,
                                     result: success
                                 });
-                                eavAdminDialogs.OpenModal("pipelines/query-stats.html",
-                                    "QueryStats as vm",
-                                    "lg",
+                                eavAdminDialogs.OpenModal('pipelines/query-stats.html',
+                                    'QueryStats as vm',
+                                    'lg',
                                     resolve);
 
                                 $timeout(function() {
@@ -1542,7 +1633,7 @@ angular.module("PipelineDesigner")
                                 $log.debug(success);
                             },
                             function(reason) {
-                                toastr.error(reason, "Query failed");
+                                toastr.error(reason, 'Query failed');
                             });
                     }
 
@@ -1557,16 +1648,16 @@ angular.module("PipelineDesigner")
             }]);
 })();
 // Filters for "ClassName, AssemblyName"
-angular.module("PipelineDesigner.filters", []).filter("typename", function () {
+angular.module('PipelineDesigner.filters', []).filter('typename', function () {
     return function (input, format) {
         var globalParts = input.match(/[^,\s]+/g);
 
         switch (format) {
-        case "classFullName":
+        case 'classFullName':
             if (globalParts)
                 return globalParts[0];
             break;
-        case "className":
+        case 'className':
             if (globalParts) {
                 var classFullName = globalParts[0].match(/[^\.]+/g);
                 return classFullName[classFullName.length - 1];
@@ -1577,13 +1668,13 @@ angular.module("PipelineDesigner.filters", []).filter("typename", function () {
     };
 });
 // Config and Controller for the Pipeline Management UI
-angular.module("PipelineManagement", [
-    "EavServices",
-    "EavConfiguration",
-    "eavNgSvcs",
-    "EavAdminUi"
+angular.module('PipelineManagement', [
+    'EavServices',
+    'EavConfiguration',
+    'eavNgSvcs',
+    'EavAdminUi'
 ]).
-    controller("PipelineManagement", ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig) {
+    controller('PipelineManagement', ["$uibModalInstance", "appId", "pipelineService", "debugState", "eavAdminDialogs", "eavConfig", "contentExportService", function ($uibModalInstance, appId, pipelineService, debugState, eavAdminDialogs, eavConfig, contentExportService) {
         var vm = this;
         vm.debug = debugState;
         vm.appId = appId;
@@ -1598,7 +1689,7 @@ angular.module("PipelineManagement", [
 
         // Delete a Pipeline
         vm.delete = function (pipeline) {
-            if (!confirm("Delete Pipeline \"" + pipeline.Name + "\" (" + pipeline.Id + ")?"))
+            if (!confirm('Delete Pipeline "' + pipeline.Name + '" (' + pipeline.Id + ')?'))
                 return;
 
             pipelineService.deletePipeline(pipeline.Id).then(function () {
@@ -1621,9 +1712,13 @@ angular.module("PipelineManagement", [
             return eavAdminDialogs.openPermissionsForGuid(appId, item.Guid);
         };
 
+        vm.export = function (item) {
+            return contentExportService.exportEntity(appId, item.Id, 'Query', true);
+        };
+
         vm.add = function add() {
             var items = [{
-                ContentTypeName: "DataPipeline",
+                ContentTypeName: 'DataPipeline',
                 Prefill: { TestParameters: eavConfig.pipelineDesigner.testParameters }
             }];
             eavAdminDialogs.openEditItems(items, vm.refresh);
@@ -1641,7 +1736,49 @@ angular.module("PipelineManagement", [
             if (inp)
                 eval(inp); // jshint ignore:line
         };
-        vm.close = function () { $uibModalInstance.dismiss("cancel"); };
+        vm.close = function () { $uibModalInstance.dismiss('cancel'); };
+
+
+        //#region import-form
+
+        var viewStates = {
+            Default: 1,
+            Waiting: 2,
+            Imported: 3
+        };
+
+        var importQuery = vm.importQuery = {
+            show: false,
+            formValues: {},
+            formFields: [
+                {
+                    // File
+                    key: "File",
+                    type: "file",
+                    templateOptions: {
+                        required: true
+                    },
+                    expressionProperties: {
+                        "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
+                    }
+                }
+            ],
+            viewState: viewStates.Default,
+            save: function() {
+                importQuery.viewState = viewStates.Waiting;
+                return pipelineService.importQuery(importQuery.formValues).then(function() {
+                    vm.refresh();
+                    importQuery.viewState = viewStates.Imported;
+                });
+            },
+            reset: function() {
+                importQuery.viewState = viewStates.Default;
+                importQuery.show = false;
+            }
+        };
+        
+
+        //#endregion
     }]);
 
 (function () {
@@ -1649,47 +1786,50 @@ angular.module("PipelineManagement", [
 
     var linePaintDefault = {
         lineWidth: 4,
-        strokeStyle: "#61B7CF",
-        joinstyle: "round",
-        outlineColor: "white",
+        strokeStyle: '#61B7CF',
+        joinstyle: 'round',
+        outlineColor: 'white',
         outlineWidth: 2
     };
     var lineCount = 0,
         lineColors = [
-            "#009688", "#00bcd4", "#3f51b5", "#9c27b0", "#e91e63",
-            "#db4437", "#ff9800", "#60a917", "#60a917", "#008a00",
-            "#00aba9", "#1ba1e2", "#0050ef", "#6a00ff", "#aa00ff",
-            "#f472d0", "#d80073", "#a20025", "#e51400", "#fa6800",
-            "#f0a30a", "#e3c800", "#825a2c", "#6d8764", "#647687",
-            "#76608a", "#a0522d"
+            '#009688', '#00bcd4', '#3f51b5', '#9c27b0', '#e91e63',
+            '#db4437', '#ff9800', '#60a917', '#60a917', '#008a00',
+            '#00aba9', '#1ba1e2', '#0050ef', '#6a00ff', '#aa00ff',
+            '#f472d0', '#d80073', '#a20025', '#e51400', '#fa6800',
+            '#f0a30a', '#e3c800', '#825a2c', '#6d8764', '#647687',
+            '#76608a', '#a0522d'
         ],
+        uuidColorMap = {},
         maxCols = lineColors.length - 1;
-    function resetLineCount() { lineCount = 0; }
-    function nextLinePaintStyle() {
-        return Object.assign({}, linePaintDefault, { strokeStyle: lineColors[lineCount++ % maxCols] });
+
+    function nextLinePaintStyle(uuid) {
+        return uuidColorMap[uuid]
+            || (uuidColorMap[uuid] = Object.assign({}, linePaintDefault, { strokeStyle: lineColors[lineCount++ % maxCols] }));
     }
+    //function resetLineCount() { lineCount = 0; }
 
     console.log(nextLinePaintStyle());
     
     var instanceTemplate = {
-        Connector: ["Bezier", { curviness: 70 }],
+        Connector: ['Bezier', { curviness: 70 }],
         HoverPaintStyle: {
             lineWidth: 4,
-            strokeStyle: "#216477",
+            strokeStyle: '#216477',
             outlineWidth: 2,
-            outlineColor: "white"
+            outlineColor: 'white'
         },
-        PaintStyle: nextLinePaintStyle(),// linePaintDefault,
-        Container: "pipelineContainer"
+        PaintStyle: nextLinePaintStyle("dummy"),
+        Container: 'pipelineContainer'
     };
 
 
 
-    angular.module("PipelineDesigner").factory("plumbGui",
+    angular.module('PipelineDesigner').factory('plumbGui',
         ["queryDef", "$filter", "$log", "$timeout", function(queryDef, $filter, $log, $timeout) {
 
             var plumbGui = {
-                dataSrcIdPrefix: "dataSource_",
+                dataSrcIdPrefix: 'dataSource_',
                 connectionsInitialized: false
             };
 
@@ -1697,11 +1837,11 @@ angular.module("PipelineManagement", [
             // the definition of source endpoints (the small blue ones)
             plumbGui.buildSourceEndpoint = function() {
                 return {
-                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                    cssClass: "sourceEndpoint",
+                    paintStyle: { fillStyle: 'transparent', radius: 10, lineWidth: 0 },
+                    cssClass: 'sourceEndpoint',
                     maxConnections: -1,
                     isSource: true,
-                    anchor: ["Continuous", { faces: ["top"] }],
+                    anchor: ['Continuous', { faces: ['top'] }],
                     overlays: getEndpointOverlays(true, queryDef.readOnly)
                 };
             };
@@ -1709,13 +1849,13 @@ angular.module("PipelineManagement", [
             // the definition of target endpoints (will appear when the user drags a connection) 
             plumbGui.buildTargetEndpoint = function() {
                 return {
-                    paintStyle: { fillStyle: "transparent", radius: 10, lineWidth: 0 },
-                    cssClass: "targetEndpoint",
+                    paintStyle: { fillStyle: 'transparent', radius: 10, lineWidth: 0 },
+                    cssClass: 'targetEndpoint',
                     maxConnections: 1,
                     isTarget: true,
-                    anchor: ["Continuous", { faces: ["bottom"] }],
+                    anchor: ['Continuous', { faces: ['bottom'] }],
                     overlays: getEndpointOverlays(false, queryDef.readOnly),
-                    dropOptions: { hoverClass: "hover", activeClass: "active" }
+                    dropOptions: { hoverClass: 'hover', activeClass: 'active' }
                 };
             };
 
@@ -1723,7 +1863,7 @@ angular.module("PipelineManagement", [
             plumbGui.findDataSourceOfElement = function fdsog(element) {
                 var guid = element.attributes.guid.value;
                 var list = queryDef.data.DataSources;
-                var found = $filter("filter")(list, { EntityGuid: guid })[0];
+                var found = $filter('filter')(list, { EntityGuid: guid })[0];
                 return found;
             };
 
@@ -1734,43 +1874,43 @@ angular.module("PipelineManagement", [
                     function(connection) {
                         connectionInfos.push({
                             From: connection.sourceId.substr(plumbGui.dataSrcIdPrefix.length),
-                            Out: connection.endpoints[0].getOverlay("endpointLabel").label,
+                            Out: connection.endpoints[0].getOverlay('endpointLabel').label,
                             To: connection.targetId.substr(plumbGui.dataSrcIdPrefix.length),
-                            In: connection.endpoints[1].getOverlay("endpointLabel").label
+                            In: connection.endpoints[1].getOverlay('endpointLabel').label
                         });
                     });
                 queryDef.data.Pipeline.StreamWiring = connectionInfos;
 
                 var streamsOut = [];
-                plumbGui.instance.selectEndpoints({ target: plumbGui.dataSrcIdPrefix + "Out" }).each(
+                plumbGui.instance.selectEndpoints({ target: plumbGui.dataSrcIdPrefix + 'Out' }).each(
                     function(endpoint) {
-                        streamsOut.push(endpoint.getOverlay("endpointLabel").label);
+                        streamsOut.push(endpoint.getOverlay('endpointLabel').label);
                     });
-                queryDef.data.Pipeline.StreamsOut = streamsOut.join(",");
+                queryDef.data.Pipeline.StreamsOut = streamsOut.join(',');
             };
 
 
             // Add a jsPlumb Endpoint to an Element
             plumbGui.addEndpoint = function(element, name, isIn) {
                 if (!element.length) {
-                    $log.error({ message: "Element not found", selector: element.selector });
+                    $log.error({ message: 'Element not found', selector: element.selector });
                     return;
                 }
                 //console.log(element);
 
                 var dataSource = plumbGui.findDataSourceOfElement(element[0]);
 
-                var uuid = element[0].id + (isIn ? "_in_" : "_out_") + name;
+                var uuid = element[0].id + (isIn ? '_in_' : '_out_') + name;
                 var params = {
                     uuid: uuid,
                     enabled:
                         !dataSource.ReadOnly ||
-                            dataSource.EntityGuid === "Out" // Endpoints on Out-DataSource must be always enabled
+                            dataSource.EntityGuid === 'Out' // Endpoints on Out-DataSource must be always enabled
                 };
                 var endPoint = plumbGui.instance.addEndpoint(element,
                     (isIn ? plumbGui.buildTargetEndpoint() : plumbGui.buildSourceEndpoint()),
                     params);
-                endPoint.getOverlay("endpointLabel").setLabel(name);
+                endPoint.getOverlay('endpointLabel').setLabel(name);
             };
 
             plumbGui.initWirings = function () {
@@ -1778,24 +1918,23 @@ angular.module("PipelineManagement", [
                     function(wire) {
                         // read connections from Pipeline
                         var sourceElementId = plumbGui.dataSrcIdPrefix + wire.From;
-                        var fromUuid = sourceElementId + "_out_" + wire.Out;
+                        var fromUuid = sourceElementId + '_out_' + wire.Out;
                         var targetElementId = plumbGui.dataSrcIdPrefix + wire.To;
-                        var toUuid = targetElementId + "_in_" + wire.In;
+                        var toUuid = targetElementId + '_in_' + wire.In;
 
                         // Ensure In- and Out-Endpoint exist
                         if (!plumbGui.instance.getEndpoint(fromUuid))
-                            plumbGui.addEndpoint(jsPlumb.getSelector("#" + sourceElementId), wire.Out, false);
+                            plumbGui.addEndpoint(jsPlumb.getSelector('#' + sourceElementId), wire.Out, false);
                         if (!plumbGui.instance.getEndpoint(toUuid))
-                            plumbGui.addEndpoint(jsPlumb.getSelector("#" + targetElementId), wire.In, true);
+                            plumbGui.addEndpoint(jsPlumb.getSelector('#' + targetElementId), wire.In, true);
 
                         try {
                             plumbGui.instance.connect({
                                 uuids: [fromUuid, toUuid],
-                                //PaintStyle: nextLinePaintStyle(),// { strokeWidth: 15, stroke: 'rgba(0, 243,230,18)' }
-                                paintStyle: nextLinePaintStyle()
+                                paintStyle: nextLinePaintStyle(fromUuid)
                             });
                         } catch (e) {
-                            $log.error({ message: "Connection failed", from: fromUuid, to: toUuid });
+                            $log.error({ message: 'Connection failed', from: fromUuid, to: toUuid });
                         }
                     });
             };
@@ -1805,31 +1944,32 @@ angular.module("PipelineManagement", [
                     // Find jsPlumb Connection for the current Stream
                     var sourceElementId = plumbGui.dataSrcIdPrefix + stream.Source;
                     var targetElementId = plumbGui.dataSrcIdPrefix + stream.Target;
-                    if (stream.Target === "00000000-0000-0000-0000-000000000000"
+                    if (stream.Target === '00000000-0000-0000-0000-000000000000'
                         || stream.Target === queryDef.data.Pipeline.EntityGuid)
-                        targetElementId = plumbGui.dataSrcIdPrefix + "Out";
+                        targetElementId = plumbGui.dataSrcIdPrefix + 'Out';
 
-                    var fromUuid = sourceElementId + "_out_" + stream.SourceOut;
-                    var toUuid = targetElementId + "_in_" + stream.TargetIn;
+                    var fromUuid = sourceElementId + '_out_' + stream.SourceOut;
+                    var toUuid = targetElementId + '_in_' + stream.TargetIn;
 
                     var sEndp = plumbGui.instance.getEndpoint(fromUuid);
-                    var streamFound = false;
-                    if (sEndp) {
-                        angular.forEach(sEndp.connections, function (connection) {
-                            if (connection.endpoints[1].getUuid() === toUuid) {
-                                // when connection found, update it's label with the Entities-Count
-                                connection.setLabel({
-                                    label: stream.Count.toString(),
-                                    cssClass: "streamEntitiesCount"
-                                });
-                                streamFound = true;
-                                return;
-                            }
-                        });
-                    }
+                    //var streamFound = false;
+                    if (sEndp)
+                        angular.forEach(sEndp.connections,
+                            function(connection) {
+                                if (connection.endpoints[1].getUuid() === toUuid) {
+                                    // when connection found, update it's label with the Entities-Count
+                                    connection.setLabel({
+                                        label: stream.Count.toString(),
+                                        cssClass: 'streamEntitiesCount'
+                                    });
+                                    //streamFound = true;
+                                    return;
+                                }
+                            });
 
-                    if (!streamFound)
-                        $log.error("Stream not found", stream, sEndp);
+                    // only for debugging
+                    //if (!streamFound)
+                    //    $log.error('Stream not found', stream, sEndp);
                 });
             };
 
@@ -1869,7 +2009,7 @@ angular.module("PipelineManagement", [
                         if (dataSourceDefinition.DynamicOut)
                             plumbGui.instance.makeSource(element,
                                 plumbGui.buildSourceEndpoint(),
-                                { filter: ".add-endpoint .new-connection" });
+                                { filter: '.add-endpoint .new-connection' });
                     }
                 });
             };
@@ -1880,12 +2020,12 @@ angular.module("PipelineManagement", [
                 plumbGui.instance = jsPlumb.getInstance(instanceTemplate);
 
                 // If connection on Out-DataSource was removed, remove custom Endpoint
-                plumbGui.instance.bind("connectionDetached",
+                plumbGui.instance.bind('connectionDetached',
                     function(info) {
-                        if (info.targetId === plumbGui.dataSrcIdPrefix + "Out") {
+                        if (info.targetId === plumbGui.dataSrcIdPrefix + 'Out') {
                             var element = angular.element(info.target);
                             var fixedEndpoints = plumbGui.findDataSourceOfElement(element).dataSource.Definition().In;
-                            var label = info.targetEndpoint.getOverlay("endpointLabel").label;
+                            var label = info.targetEndpoint.getOverlay('endpointLabel').label;
                             if (fixedEndpoints.indexOf(label) === -1) {
                                 $timeout(function() {
                                     plumbGui.instance.deleteEndpoint(info.targetEndpoint);
@@ -1896,7 +2036,7 @@ angular.module("PipelineManagement", [
 
 
                 // If a new connection is created, ask for a name of the In-Stream
-                plumbGui.instance.bind("connection", function (info) {
+                plumbGui.instance.bind('connection', function (info) {
                     if (!plumbGui.connectionsInitialized) return;
 
                     // Repeat until a valid Stream-Name is provided by the user
@@ -1905,21 +2045,21 @@ angular.module("PipelineManagement", [
                         targetEndpointHavingSameLabel;
 
                     var endpointHandling = function (endpoint) {
-                        var label = endpoint.getOverlay("endpointLabel").getLabel();
+                        var label = endpoint.getOverlay('endpointLabel').getLabel();
                         if (label === labelPrompt &&
                             info.targetEndpoint.id !== endpoint.id &&
-                            angular.element(endpoint.canvas).hasClass("targetEndpoint"))
+                            angular.element(endpoint.canvas).hasClass('targetEndpoint'))
                             targetEndpointHavingSameLabel = endpoint;
                     };
 
                     while (true) {
                         repeatCount++;
 
-                        var promptMessage = "Please name the Stream";
+                        var promptMessage = 'Please name the Stream';
                         if (repeatCount > 1)
-                            promptMessage += ". Ensure the name is not used by any other Stream on this DataSource.";
+                            promptMessage += '. Ensure the name is not used by any other Stream on this DataSource.';
 
-                        var endpointLabel = info.targetEndpoint.getOverlay("endpointLabel");
+                        var endpointLabel = info.targetEndpoint.getOverlay('endpointLabel');
                         labelPrompt = prompt(promptMessage, endpointLabel.getLabel());
                         if (labelPrompt)
                             endpointLabel.setLabel(labelPrompt);
@@ -1954,17 +2094,17 @@ angular.module("PipelineManagement", [
     function getEndpointOverlays(isSource, readOnlyMode) {
         return [
             [
-                "Label", {
-                    id: "endpointLabel",
+                'Label', {
+                    id: 'endpointLabel',
                     //location: [0.5, isSource ? -0.5 : 1.5],
                     location: [0.5, isSource ? 0 : 1],
-                    label: "Default",
-                    cssClass: "noselect " + (isSource ? "endpointSourceLabel" : "endpointTargetLabel"),
+                    label: 'Default',
+                    cssClass: 'noselect ' + (isSource ? 'endpointSourceLabel' : 'endpointTargetLabel'),
                     events: {
                         dblclick: function (labelOverlay) {
                             if (readOnlyMode) return;
 
-                            var newLabel = prompt("Rename Stream", labelOverlay.label);
+                            var newLabel = prompt('Rename Stream', labelOverlay.label);
                             if (newLabel)
                                 labelOverlay.setLabel(newLabel);
                         }
@@ -1984,7 +2124,7 @@ angular.module("PipelineManagement", [
     /*
         shared data state across various components
     */
-    angular.module("PipelineDesigner").factory("queryDef",
+    angular.module('PipelineDesigner').factory('queryDef',
         ["pipelineId", "pipelineService", "$q", "$location", "toastr", "$filter", "eavConfig", function (pipelineId, pipelineService, $q, $location, toastr, $filter, eavConfig) {
 
             var queryDef = {
@@ -1996,7 +2136,7 @@ angular.module("PipelineManagement", [
 
                 // Test wether a DataSource is persisted on the Server
                 dataSourceIsPersisted: function(dataSource) {
-                    return dataSource.EntityGuid.indexOf("unsaved") === -1;
+                    return dataSource.EntityGuid.indexOf('unsaved') === -1;
                 },
 
                 addDataSource: function(partAssemblyAndType, visualDesignerData, entityGuid, name) {
@@ -2005,10 +2145,10 @@ angular.module("PipelineManagement", [
 
                     var newDataSource = {
                         VisualDesignerData: visualDesignerData,
-                        Name: name || $filter("typename")(partAssemblyAndType, "className"),
-                        Description: "",
+                        Name: name || $filter('typename')(partAssemblyAndType, 'className'),
+                        Description: '',
                         PartAssemblyAndType: partAssemblyAndType,
-                        EntityGuid: entityGuid || "unsaved" + (queryDef.dsCount + 1)
+                        EntityGuid: entityGuid || 'unsaved' + (queryDef.dsCount + 1)
                     };
                     // Extend it with a Property to it's Definition
                     newDataSource = angular.extend(newDataSource,
@@ -2030,9 +2170,9 @@ angular.module("PipelineManagement", [
                                 // if read only, show message
                                 queryDef.readOnly = !success.Pipeline.AllowEdit;
                                 toastr.info(queryDef.readOnly
-                                    ? "This pipeline is read only"
-                                    : "You can now design the Pipeline. \nVisit 2sxc.org/help for more.",
-                                    "Ready",
+                                    ? 'This pipeline is read only'
+                                    : 'You can now design the Pipeline. \nVisit 2sxc.org/help for more.',
+                                    'Ready',
                                     { autoDismiss: true });
                             }
                         });
@@ -2060,19 +2200,19 @@ angular.module("PipelineManagement", [
                                 queryDef.data.Pipeline = success.Pipeline;
                                 queryDef.data.TestParameters = success.TestParameters;
                                 queryDef.id = success.Pipeline.EntityId;
-                                $location.search("PipelineId", success.Pipeline.EntityId);
+                                $location.search('PipelineId', success.Pipeline.EntityId);
                                 queryDef.readOnly = !success.Pipeline.AllowEdit;
                                 queryDef.data.DataSources = success.DataSources;
                                 pipelineService.postProcessDataSources(queryDef.data);
 
                                 // communicate to the user...
                                 toastr.clear();
-                                toastr.success("Pipeline " + success.Pipeline.EntityId + " saved and loaded",
-                                    "Saved", { autoDismiss: true });
+                                toastr.success('Pipeline ' + success.Pipeline.EntityId + ' saved and loaded',
+                                    'Saved', { autoDismiss: true });
 
                             },
                             function(reason) {
-                                toastr.error(reason, "Save Pipeline failed");
+                                toastr.error(reason, 'Save Pipeline failed');
                                 queryDef.readOnly = false;
                             });
                 },
@@ -2085,7 +2225,7 @@ angular.module("PipelineManagement", [
 
                     var typeInfo = null;
                     // try to find the type on the source
-                    var found = $filter("filter")(queryDef.data.InstalledDataSources,
+                    var found = $filter('filter')(queryDef.data.InstalledDataSources,
                         { PartAssemblyAndType: dataSource.PartAssemblyAndType });
                     if (found && found.length) {
                         var def = found[0], primType = def.PrimaryType;
@@ -2110,21 +2250,21 @@ angular.module("PipelineManagement", [
 
 function buildGuiTypes() {
     var guiTypes = {
-        iconPrefix: "eav-icon-"
+        iconPrefix: 'eav-icon-'
     };
 
     function addGuiType(name, icon, notes) { guiTypes[name] = { name: name, icon: guiTypes.iconPrefix + icon, notes: notes }; }
 
-    addGuiType("Unknown", "circle", "unknown type");
-    addGuiType("Cache", "history", "caching of data");
-    addGuiType("Filter", "filter", "filter data - usually returning less items than came in");
-    addGuiType("Logic", "fork", "logic operations - usually choosing between different streams");
-    addGuiType("Lookup", "search", "lookup operation - usually looking for other data based on a criteria");
-    addGuiType("Modify", "star-half-alt", "modify data - usually changing, adding or removing values"); // tod  o
-    addGuiType("Security", "user", "security - usually limit what the user sees based on his identity");
-    addGuiType("Sort", "sort-alt-up", "sort the items");
-    addGuiType("Source", "export", "source of new data - usually SQL, CSV or similar");
-    addGuiType("Target", "target", "target - usually just a destination of data");
+    addGuiType('Unknown', 'circle', 'unknown type');
+    addGuiType('Cache', 'history', 'caching of data');
+    addGuiType('Filter', 'filter', 'filter data - usually returning less items than came in');
+    addGuiType('Logic', 'fork', 'logic operations - usually choosing between different streams');
+    addGuiType('Lookup', 'search', 'lookup operation - usually looking for other data based on a criteria');
+    addGuiType('Modify', 'star-half-alt', 'modify data - usually changing, adding or removing values'); // tod  o
+    addGuiType('Security', 'user', 'security - usually limit what the user sees based on his identity');
+    addGuiType('Sort', 'sort-alt-up', 'sort the items');
+    addGuiType('Source', 'export', 'source of new data - usually SQL, CSV or similar');
+    addGuiType('Target', 'target', 'target - usually just a destination of data');
 
     return guiTypes;
 }
@@ -2134,11 +2274,11 @@ function buildGuiTypes() {
 /*jshint laxbreak:true */
 (function() {
 
-    angular.module("PipelineDesigner")
-        .controller("QueryStats", ["testParams", "result", "$uibModalInstance", function (testParams, result, $uibModalInstance) {
+    angular.module('PipelineDesigner')
+        .controller('QueryStats', ["testParams", "result", "$uibModalInstance", function (testParams, result, $uibModalInstance) {
                 var vm = this;
                 var success = result;
-                vm.testParameters = testParams.split("\n");
+                vm.testParameters = testParams.split('\n');
                 vm.timeUsed = success.QueryTimer.Milliseconds;
                 vm.ticksUsed = success.QueryTimer.Ticks;
                 vm.result = success.Query;
@@ -2146,27 +2286,16 @@ function buildGuiTypes() {
                 vm.sources = success.Sources;
                 vm.streams = success.Streams;
 
-                vm.connections = "todo";
+                vm.connections = 'todo';
 
 
                 vm.close = function () {
-                    $uibModalInstance.dismiss("cancel");
+                    $uibModalInstance.dismiss('cancel');
                 };
 
             }]
         );
 })();
-if (!String.prototype.endsWith) {
-    String.prototype.endsWith = function (searchString, position) {
-        var subjectString = this.toString();
-        if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
-            position = subjectString.length;
-        }
-        position -= searchString.length;
-        var lastIndex = subjectString.lastIndexOf(searchString, position);
-        return lastIndex !== -1 && lastIndex === position;
-    };
-}
 // Init the main eav services module
 angular.module("EavServices", [
     "ng",                   // Angular for $http etc.
@@ -3072,7 +3201,8 @@ angular.module("EavServices")
                 EntityGuid: "Out",
                 PartAssemblyAndType: outDs.className,
                 VisualDesignerData: outDs.visualDesignerData, 
-                ReadOnly: true
+                ReadOnly: true,
+                Difficulty: 100
             });
 
             // Extend each DataSource with Definition-Property and ReadOnly Status
@@ -3113,8 +3243,9 @@ angular.module("EavServices")
                         Out: null,
                         allowNew: false,
                         PrimaryType: "Target",
-                        DynamicOut: false
-                });
+                        DynamicOut: false,
+                        Difficulty: 100
+                    });
 
                     postProcessDataSources(model);
 
@@ -3141,6 +3272,7 @@ angular.module("EavServices")
                     Definition: function() { return svc.getDataSourceDefinitionProperty(model, dataSourceBase); }
                 };
             },
+
             // Save whole Pipline
             savePipeline: function(pipeline, dataSources) {
                 if (!svc.appId)
@@ -3160,6 +3292,7 @@ angular.module("EavServices")
                     Id: pipeline.EntityId /*id later EntityId */
                 }, { pipeline: pipeline, dataSources: dataSourcesPrepared }).$promise;
             },
+
             // clone a whole Pipeline
             clonePipeline: function(pipelineEntityId) {
                 return svc.pipelineResource.get({ action: "ClonePipeline", appId: svc.appId, Id: pipelineEntityId }).$promise;
@@ -3227,7 +3360,12 @@ angular.module("EavServices")
             // Delete a Pipeline on current App
             deletePipeline: function (id) {
                 return svc.pipelineResource.get({ action: "DeletePipeline", appId: svc.appId, id: id }).$promise;
+            },
+
+            importQuery: function(args) {
+                return $http.post("eav/pipelinedesigner/importquery", { AppId: svc.appId, ContentBase64: args.File.base64 });
             }
+
         });
 
         return svc;
@@ -3364,7 +3502,7 @@ angular.module("EavServices")
         return saveWithToaster;
     }])
 ;
-angular.module("eavTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("content-import-export/content-export.html","\r\n<div class=\"modal-header\">\r\n    <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" icon=\"remove\" ng-click=\"vm.close()\"></button>\r\n    <h3 class=\"modal-title\" translate=\"Content.Export.Title\">cc</h3>\r\n</div>\r\n\r\n<div class=\"modal-body\">\r\n    <div translate=\"Content.Export.Help\"></div>\r\n    <formly-form form=\"vm.form\" model=\"vm.formValues\" fields=\"vm.formFields\">\r\n    </formly-form>\r\n</div>\r\n\r\n<div class=\"modal-footer\">\r\n    <button type=\"button\" class=\"btn btn-primary pull-left\" ng-click=\"vm.exportContent()\" translate=\"Content.Export.Commands.Export\"></button>\r\n</div>");
+angular.module("eavTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("content-import-export/content-export.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" icon=\"remove\" ng-click=\"vm.close()\"></button>\r\n        <h3 class=\"modal-title\" translate=\"Content.Export.Title\">cc</h3>\r\n    </div>\r\n\r\n    <div class=\"modal-body\">\r\n        <div translate=\"Content.Export.Help\"></div>\r\n        <formly-form form=\"vm.form\" model=\"vm.formValues\" fields=\"vm.formFields\">\r\n        </formly-form>\r\n    </div>\r\n\r\n    <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-primary pull-left\"\r\n                ng-click=\"vm.exportContent()\"\r\n                translate=\"Content.Export.Commands.Export\"></button>\r\n\r\n        <button type=\"button\" class=\"btn btn-default pull-left\" ng-click=\"vm.exportJson()\"\r\n                not-yet-translate=\"Content.Export.Commands.ExportTypeAsJson\"\r\n                ng-disabled=\"vm.IsExporting\"\r\n                ng-show=\"vm.debug.on\">\r\n            Export Type Definition as Json (for developers)\r\n        </button>\r\n    </div>\r\n    \r\n    <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n</div>");
 $templateCache.put("content-import-export/content-import.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <!-- HEADER -->\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" icon=\"remove\" ng-click=\"vm.close()\"></button>\r\n        <h3 class=\"modal-title\"><span  translate=\"Content.Import.Title\"></span> <span ng-show=\"vm.viewStateSelected > 0\" translate=\"Content.Import.TitleSteps\" translate-values=\"{step: vm.viewStateSelected}\"></span></h3>\r\n    </div>\r\n    <!-- END HEADER -->\r\n\r\n    <div ng-switch=\"vm.viewStateSelected\">\r\n\r\n        <!-- FORM -->\r\n        <div ng-switch-when=\"1\">\r\n            <div class=\"modal-body\">\r\n                <div translate=\"Content.Import.Help\"></div>\r\n                <formly-form form=\"vm.form\" model=\"vm.formValues\" fields=\"vm.formFields\"></formly-form>\r\n                <div class=\"text-warning\" translate=\"Content.Import.Messages.BackupContentBefore\"></div>\r\n            </div>\r\n            <div class=\"modal-footer\">\r\n                <button type=\"button\" class=\"btn btn-primary pull-left\" ng-click=\"vm.evaluateContent()\" ng-disabled=\"!vm.formValues.File || !vm.formValues.File.filename\" translate=\"Content.Import.Commands.Preview\"></button>\r\n            </div>\r\n        </div>\r\n        <!-- END FORM -->\r\n\r\n\r\n        <!-- WAITING -->\r\n        <div ng-switch-when=\"0\">\r\n            <div class=\"modal-body\"> {{\'Content.Import.Messages.WaitingForResponse\' | translate}}\r\n            </div>\r\n        </div>\r\n        <!-- END WAITING -->\r\n\r\n\r\n        <!-- EVALUATION RESULT -->\r\n        <div ng-switch-when=\"2\">\r\n            <div class=\"modal-body\">\r\n                <!-- DETAILS / STATISTICS -->\r\n                <div ng-if=\"vm.evaluationResult.Succeeded\">\r\n                    <h4 translate=\"Content.Import.Evaluation.Detail.Title\" translate-values=\"{filename: vm.formValues.File.filename}\"></h4>\r\n                    <h5 translate=\"Content.Import.Evaluation.Detail.File.Title\"></h5>\r\n                    <ul>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.ElementCount\" translate-values=\"{count: vm.evaluationResult.Detail.DocumentElementsCount}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.LanguageCount\" translate-values=\"{count: vm.evaluationResult.Detail.LanguagesInDocumentCount}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.File.Attributes\" translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesInDocument.length, attributes: vm.evaluationResult.Detail.AttributeNamesInDocument.join(\', \')}\"></li>\r\n                    </ul>\r\n                    <h5 translate=\"Content.Import.Evaluation.Detail.Entities.Title\"></h5>\r\n                    <ul>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Create\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesCreated}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Update\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesUpdated}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.Delete\" translate-values=\"{count: vm.evaluationResult.Detail.AmountOfEntitiesDeleted}\"></li>\r\n                        <li translate=\"Content.Import.Evaluation.Detail.Entities.AttributesIgnored\" translate-values=\"{count: vm.evaluationResult.Detail.AttributeNamesNotImported.length, attributes: vm.evaluationResult.Detail.AttributeNamesNotImported.join(\', \')}\"></li>\r\n                    </ul>\r\n                    <div class=\"text-warning\" translate=\"Content.Import.Messages.ImportCanTakeSomeTime\"></div>\r\n                </div>\r\n                <!-- END DETAILS / STATISTICS -->\r\n                <!-- ERRORS -->\r\n                <div ng-if=\"!vm.evaluationResult.Succeeded\">\r\n                    <h4 translate=\"Content.Import.Evaluation.Error.Title\" translate-values=\"{filename: vm.formValues.File.filename}\"></h4>\r\n                    <ul>\r\n                        <li ng-repeat=\"error in vm.evaluationResult.Detail\">\r\n                            <div><span translate=\"Content.Import.Evaluation.Error.Codes.{{error.ErrorCode}}\"></span></div>\r\n                            <div ng-if=\"error.ErrorDetail\"><i translate=\"Content.Import.Evaluation.Error.Detail\" translate-values=\"{detail: error.ErrorDetail}\"></i>\r\n                            </div>\r\n                            <div ng-if=\"error.LineNumber\"><i translate=Content.Import.Evaluation.Error.LineNumber\" translate-values=\"{number: error.LineNumber}\"></i>\r\n                            </div>\r\n                            <div ng-if=\"error.LineDetail\"><i translate=\"Content.Import.Evaluation.Error.LineDetail\" translate-values=\"{detail: error.LineDetail}\"></i>\r\n                            </div>\r\n                        </li>\r\n                    </ul>\r\n                </div>\r\n                <!-- END ERRORS -->\r\n            </div>\r\n            <div class=\"modal-footer\">\r\n                <button type=\"button\" class=\"btn pull-left\" ng-click=\"vm.back()\" icon=\"arrow-left\"></button>\r\n                <button type=\"button\" class=\"btn btn-default pull-left\" ng-click=\"vm.importContent()\" translate=\"Content.Import.Commands.Import\" ng-disabled=\"!vm.evaluationResult.Succeeded\"></button>\r\n            </div>\r\n        </div>\r\n        <!-- END EVALUATION RESULT -->\r\n\r\n\r\n        <!-- IMPORT RESULT -->\r\n        <div ng-switch-when=\"3\">\r\n            <div class=\"modal-body\">\r\n                <span ng-show=\"vm.importResult.Succeeded\" translate=\"Content.Import.Messages.ImportSucceeded\"></span>\r\n                <span ng-hide=\"vm.importResult.Succeeded\" translate=\"Content.Import.Messages.ImportFailed\"></span>\r\n            </div>\r\n        </div>\r\n        <!-- END IMPORT RESULT -->\r\n\r\n        <div ng-if=\"vm.debug.on\">\r\n            <h3>Debug infos</h3>\r\n            <pre>{{vm.formValues | json}}</pre>\r\n        </div>\r\n    </div>\r\n</div>");
 $templateCache.put("content-items/content-edit.html","<div class=\"modal-header\">\r\n    <button type=\"button\" class=\"btn btn-default btn-subtle\" ng-click=\"vm.history()\">\r\n        <span class=\"glyphicon glyphicon-time\"> history / todo </span>\r\n    </button>\r\n    <h3 class=\"modal-title\">Edit / New Content</h3>\r\n</div>\r\n\r\n<div class=\"modal-body\">\r\n    this is where the edit appears. Would edit entity {{vm.entityId}} or add a {{vm.contentType}} - depending on the mode: {{vm.mode}}\r\n    <h3>Use cases</h3>\r\n    <ol>\r\n        <li>Edit an existing entity with ID</li>\r\n        <li>Create a new entity of a certaint content-type, just save and done (like from a \"new\" button without content-group)</li>\r\n        <li>Create a new entity of a certain type and assign it to a metadata thing (guid, int, string)</li>\r\n\r\n        <li>Create a new entity and put it into a content-group at the right place</li>\r\n        <li>Edit content-group: item + presentation </li>\r\n        <li>Edit multiple IDs/or new/mix: Edit multiple items with IDs</li>\r\n    </ol>\r\n\r\n    init of 1 edit\r\n    - entity-id in storage\r\n    - new-type + optional: assignment-id + assignment-type\r\n\r\n    - array of the above\r\n    --- [{id 17}, {type: \"person\"}, {type: person, asstype: 4, target: 0205}]\r\n\r\n    - content-group\r\n</div>\r\n");
 $templateCache.put("content-items/content-items-agnostic.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\" class=\"content-items-agnostic\">\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square btn-subtle pull-right\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        <h3 class=\"modal-title\" translate=\"Content.Manage.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n        <button type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.add()\"><i icon=\"plus\"></i></button>\r\n        <button type=\"button\"\r\n                class=\"btn btn-default btn-square\"\r\n                uib-tooltip=\"{{ \'ContentTypes.Buttons.Export\' | translate }}\"\r\n                ng-click=\"vm.openExport()\">\r\n            <i icon=\"export\"></i>\r\n        </button>\r\n	    <button ng-if=\"vm.debug.on\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n        <button ng-if=\"vm.debug.on\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.debugFilter()\"><i icon=\"filter\"></i></button>\r\n\r\n		<div ag-grid=\"vm.gridOptions\" class=\"ag-grid-wrapper\"></div>\r\n	    \r\n        <show-debug-availability class=\"pull-right\" ></show-debug-availability>\r\n    </div>\r\n</div>");
@@ -3376,6 +3514,6 @@ $templateCache.put("content-types/content-types-fields-add.html","<div class=\"m
 $templateCache.put("content-types/content-types-fields.html","<div>\r\n\r\n    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-subtle btn-square pull-right\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        <h3 class=\"modal-title\" translate=\"Fields.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n        <button icon=\"plus\" ng-click=\"vm.add()\" class=\"btn btn-primary btn-square\"></button>\r\n\r\n        <!-- Table of content types for editing -->\r\n        <table ui-tree=\"vm.treeOptions\" data-drag-enabled=\"vm.dragEnabled\" ui-tree-nodes ng-model=\"vm.items\" class=\"table table-hover table-manage-eav eav-admin-field-list\">\r\n            <thead>\r\n                <tr>\r\n                    <th class=\"mini-btn-1\"></th>\r\n                    <th translate=\"Fields.Table.Title\" class=\"mini-btn-1\"></th>\r\n                    <th translate=\"Fields.Table.Name\" style=\"width: 35%\"></th>\r\n                    <th translate=\"Fields.Table.DataType\" style=\"width: 20%\"></th>\r\n                    <th translate=\"Fields.Table.InputType\" style=\"width: 20%\"></th>\r\n                    <th translate=\"Fields.Table.Label\" style=\"width: 30%\"></th>\r\n                    <th translate=\"Fields.Table.Notes\" style=\"width: 50%\"></th>\r\n                    <!--<th translate=\"Fields.Table.Sort\" class=\"mini-btn-2\"></th>-->\r\n                    <th translate=\"Fields.Table.Action\" class=\"mini-btn-2\"></th>\r\n                </tr>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"item in vm.items track by $id(item)\" ui-tree-node class=\"clickable-row\" ng-click=\"vm.createOrEditMetadata(item, item.Type)\" ng-class=\"[ \'type-\' + item.Type.toLowerCase(), \'subtype-\' + item.InputType.substring(item.InputType.indexOf(\'-\') + 1, 100)]\">\r\n                    <td ui-tree-handle><i class=\"glyphicon glyphicon-sort\"></i></td>\r\n                    <td stop-event=\"click\">\r\n                        <button type=\"button\" class=\"btn btn-xs btn-square\" ng-style=\"(item.IsTitle ? \'\' : \'color: transparent !important\')\" ng-click=\"vm.setTitle(item)\">\r\n                            <i icon=\"{{item.IsTitle ? \'star\' : \'star-empty\'}}\"></i>\r\n                        </button>\r\n                    </td>\r\n                    <td class=\"clickable\"><span uib-tooltip=\"{{ \'Id: \' + item.Id}}\">{{item.StaticName}}</span></td>\r\n                    <td class=\"text-nowrap clickable\">\r\n                        {{item.Type}}\r\n                    </td>\r\n                    <td class=\"text-nowrap InputType\" stop-event=\"click\">\r\n                        <span class=\"clickable\" uib-tooltip=\"{{ vm.inputTypeTooltip(item.InputType) }}\" ng-click=\"vm.edit(item)\">\r\n                            <i icon=\"pencil\"></i>\r\n                            {{item.InputType.substring(item.InputType.indexOf(\'-\') + 1, 100)}}\r\n                        </span>\r\n                    </td>\r\n                    <td class=\"text-nowrap clickable\">\r\n                        {{item.Metadata.All.Name}}\r\n                    </td>\r\n                    <!--<td>-</td>-->\r\n                    <td class=\"text-nowrap clickable\">\r\n                        <div class=\"hide-overflow-text\">\r\n                            {{item.Metadata.All.Notes}}\r\n                        </div>\r\n                    </td>\r\n\r\n                    <!--<td class=\"text-nowrap\" stop-event=\"click\">\r\n                        <button icon=\"arrow-up\" type=\"button\" class=\"btn btn-xs btn-square\" ng-disabled=\"$first\" ng-click=\"vm.moveUp(item)\"></button>\r\n                        <button icon=\"arrow-down\" type=\"button\" class=\"btn btn-xs btn-square\" ng-disabled=\"$last\" ng-click=\"vm.moveDown(item)\"></button>\r\n                    </td>-->\r\n                    <td stop-event=\"click\">\r\n                        <button icon=\"cog\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.rename(item)\"></button>\r\n                        <button icon=\"remove\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                    </td>\r\n                </tr>\r\n                <tr ng-if=\"!vm.items.length\">\r\n                    <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n\r\n        <!--Ordered  {{vm.orderList()}} Test-->\r\n    </div>\r\n\r\n\r\n</div>");
 $templateCache.put("content-types/content-types.html","<div ng-controller=\"List as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <div class=\"modal-header\">\r\n        <h3 class=\"modal-title\" translate=\"ContentTypes.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n        <!-- Buttons on top -->\r\n        <button title=\"{{ \'General.Buttons.Add\' | translate }}\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.edit()\"><i icon=\"plus\"></i></button>\r\n\r\n\r\n        <span class=\"btn-group\" ng-if=\"vm.debug.on\">\r\n            <button title=\"{{ \'General.Buttons.Refresh\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n            <button title=\"todo\" type=\"button\" class=\"btn btn-warning btn-icon\" ng-click=\"vm.createGhost()\"><i class=\"eav-icon-ghost\"></i></button>\r\n            <button title=\"{{ \'ContentTypes.Buttons.ChangeScope\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.changeScope()\"><i icon=\"record\"></i></button>\r\n            <button title=\"{{ \'General.Buttons.System\' | translate }}\" type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.liveEval()\"><i icon=\"flash\"></i></button>\r\n        </span>\r\n        <!-- Table of content types for editing -->\r\n        <table class=\"table table-hover\" style=\"table-layout: fixed; width: 100%\">\r\n            <thead>\r\n            <tr>\r\n                <!--<th translate=\"ContentTypes.TypesTable.Items\" class=\"col-id\"></th>-->\r\n                <th translate=\"ContentTypes.TypesTable.Name\" style=\"width: 50%\"></th>\r\n                <th class=\"mini-btn-1\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Description\" style=\"width: 50%\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Fields\" class=\"mini-btn-2\"></th>\r\n                <th translate=\"ContentTypes.TypesTable.Actions\" class=\"mini-btn-5\"></th>\r\n                <th class=\"mini-btn-1\"> </th>\r\n            </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr ng-if=\"vm.items.isLoaded\" ng-repeat=\"item in vm.items | orderBy:\'Name\'\" class=\"clickable-row\" ng-click=\"vm.editItems(item)\">\r\n                <!--<td style=\"text-align: center\" class=\"clickable\"> {{item.Items}} </td>-->\r\n                <td class=\"clickable\">\r\n                    <span class=\"text-nowrap hide-overflow-text\" style=\"max-width: 400px\" uib-tooltip=\"{{item.Label}} ({{item.Name}})\">{{item.Label}} <span ng-if=\"item.Name != item.Label\">({{item.Name}})</span></span>\r\n                </td>\r\n                <td class=\"clickable\" style=\"text-align: right\">\r\n                    <div class=\"badge pull-right badge-primary hover-pair\" stop-event=\"click\" ng-click=\"vm.addItem(item.StaticName)\"><span class=\"hover-default\">{{item.Items}}</span><span class=\"hover-hover eav-icon-plus\"></span></div></td>\r\n                <td class=\"clickable\">\r\n                    <div class=\"text-nowrap hide-overflow-text\" style=\"max-width: 500px\" uib-tooltip=\"{{item.Description}}\">{{item.Description}}</div>\r\n                </td>\r\n                <td stop-event=\"click\">\r\n                    <button ng-if=\"!item.UsesSharedDef\" type=\"button\" class=\"btn btn-xs\" style=\"width: 60px\" ng-click=\"vm.editFields(item)\">\r\n                        <i class=\"eav-icon-fields\"></i>&nbsp;<span style=\"width: 22px; text-align: right\">{{item.Fields}}</span>\r\n                    </button>\r\n                    <button ng-if=\"item.UsesSharedDef\" uib-tooltip=\"{{ \'ContentTypes.Messages.SharedDefinition\' | translate:item }}\" type=\"button\" class=\"btn btn-default btn-xs\" style=\"width: 60px\">\r\n                        <i class=\"eav-icon-ghost\"></i>&nbsp;<span style=\"width: 22px; text-align: right\">{{item.Fields}}</span>\r\n                    </button>\r\n                </td>\r\n\r\n                <td class=\"text-nowrap\" stop-event=\"click\">\r\n                    <span class=\"btn-group\">\r\n                        <button uib-tooltip=\"{{ \'General.Buttons.Rename\' | translate }} - {{  \'ContentTypes.Messages.Type\' + (item.UsesSharedDef ? \'Shared\' : \'Own\')  | translate:item }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.edit(item)\">\r\n                            <i icon=\"heart{{ (item.UsesSharedDef ? \'-empty\' : \'\') }}\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'General.Buttons.Metadata\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.createOrEditMetadata(item)\">\r\n                            <i class=\"eav-icon-tag\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'ContentTypes.Buttons.Export\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.openExport(item)\">\r\n                            <i icon=\"export\"></i>\r\n                        </button>\r\n                        <button uib-tooltip=\"{{ \'ContentTypes.Buttons.Import\' | translate }}\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.openImport(item)\">\r\n                            <i icon=\"import\"></i>\r\n                        </button>\r\n                        <button type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.permissions(item)\" ng-if=\"vm.isGuid(item.StaticName)\">\r\n                            <i icon=\"user\"></i>\r\n                        </button>\r\n                    </span>\r\n                </td>\r\n                <td stop-event=\"click\">\r\n                    <button icon=\"remove\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                </td>\r\n            </tr>\r\n            <tr ng-if=\"!vm.items.length\">\r\n                <td colspan=\"100\">{{ \'General.Messages.Loading\' | translate }} / {{ \'General.Messages.NothingFound\' | translate }}</td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n        <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n    </div>\r\n    <div ng-if=\"vm.debug.on\">\r\n\r\n        <h3>Notes / Debug / ToDo</h3>\r\n        <ol>\r\n            <li>get validators to work on all dialogs</li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n");
 $templateCache.put("permissions/permissions.html","    <div class=\"modal-header\">\r\n        <button class=\"btn btn-default btn-square pull-right\" type=\"button\" ng-click=\"vm.close()\"><i icon=\"remove\"></i></button>\r\n        <h3 class=\"modal-title\" translate=\"Permissions.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body\">\r\n\r\n        <button type=\"button\" class=\"btn btn-primar btn-square\" ng-click=\"vm.add()\"><i icon=\"plus\"></i></button>\r\n        <button ng-if=\"vm.debug.on\" type=\"button\" class=\"btn btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n\r\n        <table class=\"table table-striped table-hover table-manage-eav\">\r\n            <thead>\r\n            <tr>\r\n                <th translate=\"Permissions.Table.Id\" style=\"width: 60px\"></th>\r\n                <th translate=\"Permissions.Table.Name\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Condition\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Grant\" style=\"width: 33%\"></th>\r\n                <th translate=\"Permissions.Table.Actions\" style=\"width: 40px\"></th>\r\n            </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr ng-repeat=\"item in vm.items | orderBy:\'Title\'\" class=\"clickable-row\" ng-click=\"vm.edit(item)\">\r\n                <td class=\"clickable\">{{item.Id}}</td>\r\n                <td class=\"clickable\">{{item.Title}}</td>\r\n                <td class=\"clickable\">{{item.Condition}}</td>\r\n                <td class=\"clickable\">{{item.Grant}}</td>\r\n                <td class=\"text-nowrap\" stop-event=\"click\">\r\n                    <button icon=\"remove\" type=\"button\" class=\"btn btn-xs btn-square\" ng-click=\"vm.tryToDelete(item)\"></button>\r\n                </td>\r\n            </tr>\r\n            <tr ng-if=\"!vm.items.length\">\r\n                <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>");
-$templateCache.put("pipelines/pipeline-designer.html","<div class=\"ng-cloak\">\r\n    <div ng-controller=\"PipelineDesignerController as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n        <div id=\"pipelineContainer\">\r\n            <div ng-repeat=\"dataSource in queryDef.data.DataSources\"\r\n                 datasource\r\n                 guid=\"{{dataSource.EntityGuid}}\"\r\n                 id=\"dataSource_{{dataSource.EntityGuid}}\"\r\n                 class=\"dataSource\"\r\n                 ng-attr-style=\"{{ \'top: \' + dataSource.VisualDesignerData.Top +\'px; left: \' + dataSource.VisualDesignerData.Left + \'px; \' + (dataSource.VisualDesignerData.Width ? \'min-width: \' + dataSource.VisualDesignerData.Width + \'px\' : \'\') }}\">\r\n                <div class=\"configure\" ng-click=\"configureDataSource(dataSource)\" title=\"Configure this DataSource\" \r\n                     ng-if=\"!dataSource.ReadOnly && vm.typeInfo(dataSource).config\">\r\n                    <i class=\"eav-icon-settings\"></i>\r\n                </div>\r\n                <i class=\"type-info {{vm.typeInfo(dataSource).icon}}\" title=\"{{vm.typeInfo(dataSource).notes}}\"></i>\r\n                <div class=\"name noselect\" title=\"Click to edit the Name\" ng-click=\"editName(dataSource)\">\r\n                    {{dataSource.Name || \'(no name)\'}}<i class=\"show-hover-inline eav-icon-pencil\"></i>\r\n                </div><br />\r\n                <div class=\"description noselect\" title=\"Click to edit the Description\" ng-click=\"editDescription(dataSource)\">\r\n                    {{dataSource.Description}}<i class=\"show-hover-inline eav-icon-pencil\"></i>\r\n                </div><br />\r\n                <div class=\"typename\" ng-attr-title=\"{{dataSource.PartAssemblyAndType}}\">\r\n                    Type: {{dataSource.PartAssemblyAndType | typename: \'className\'}}\r\n                </div>\r\n                <div class=\"add-endpoint\" title=\"Drag a new Out-Connection from here\" \r\n                     ng-if=\"!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut\">\r\n                    <i class=\"new-connection eav-icon-up-dir\"></i>\r\n                </div>\r\n                <div class=\"delete eav-icon-cancel\" title=\"delete this\" ng-click=\"vm.remove($index)\" ng-if=\"!dataSource.ReadOnly\"></div>\r\n                <a class=\"help eav-icon-help-circled\" title=\"help for this data source\" \r\n                   href=\"{{vm.typeInfo(dataSource).helpLink}}\" target=\"_blank\"\r\n                   ng-if=\"vm.typeInfo(dataSource).helpLink\"></a>\r\n            </div>\r\n        </div>\r\n        <div class=\"actions panel panel-default\">\r\n            <div class=\"panel-heading\">\r\n                <span class=\"pull-left\">Actions</span>\r\n                <a href=\"http://2sxc.org/help\" class=\"btn btn-info btn-xs pull-right\" target=\"_blank\"><i class=\"eav-icon-info-circled\"></i> Help</a>\r\n            </div>\r\n            <div class=\"panel-body\">\r\n                <div class=\"btn-group\" role=\"group\" style=\"width: 100%\">\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\"\r\n                            title=\"Query the Data of this Pipeline. Note that it doesn\'t save changes - so if you have unexpected behaviour after rewiring - save first\"\r\n                            ng-click=\"queryPipeline(true)\"\r\n                            style=\"width: 75%\">\r\n                        <i class=\"eav-icon-ok\"></i> &amp;\r\n                        <i class=\"eav-icon-play\"></i>Query\r\n                    </button>\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\" title=\"Quick Query without saving (using server definition)\"\r\n                            ng-click=\"queryPipeline(false)\"\r\n                            style=\"width: 25%; margin-top: 4px\">\r\n                        <i class=\"eav-icon-play\"></i>\r\n                    </button>\r\n                </div>\r\n\r\n                <select class=\"form-control\" ng-model=\"addDataSourceType\" \r\n                        ng-disabled=\"queryDef.readOnly\" \r\n                        ng-change=\"vm.addSelectedDataSource()\" \r\n                        ng-options=\"d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: \'!false\'} | orderBy: \'Name\'\">\r\n                    <option value=\"\">-- Add DataSource --</option>\r\n                </select>\r\n                <button type=\"button\" class=\"btn btn-primary btn-block\" ng-disabled=\"queryDef.readOnly\" ng-click=\"savePipeline()\">\r\n                    <i class=\"eav-icon-ok\"></i> Save\r\n                </button>\r\n                <br/>\r\n                \r\n                <!-- test parameters -->\r\n                <div>\r\n                    <div>\r\n                        <strong>Test Parameters</strong>\r\n                        <i class=\"eav-icon-pencil\" ng-click=\"editPipelineEntity()\"></i>\r\n                    </div>\r\n                    <div><ul><li ng-repeat=\"param in queryDef.data.Pipeline.TestParameters.split(\'\\n\')\">\r\n                                {{param}}\r\n                            </li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n\r\n\r\n                <!-- show warnings if detected -->\r\n                <div ng-if=\"vm.warnings.length\">\r\n                    <div><i class=\"eav-icon-attention\" style=\"color: red\"></i><strong>Warnings</strong></div>\r\n                    <ol>\r\n                        <li ng-repeat=\"warn in vm.warnings\">{{warn}}</li>\r\n                    </ol>\r\n                    <br />\r\n                </div>\r\n                \r\n                <!-- show description if available -->\r\n                <div ng-if=\"queryDef.data.Pipeline.Description\">\r\n                    <div><strong>Query Description</strong></div>\r\n                    <div>{{queryDef.data.Pipeline.Description}}</div>\r\n                </div>\r\n                <br/>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"toggleEndpointOverlays()\"><i class=\"eav-icon-info-circled\"></i> {{showEndpointOverlays ? \'Hide\' : \'Show\' }} Overlays</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"repaint()\"><i class=\"eav-icon-reload\"></i> Repaint</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-if=\"vm.debug.on\" ng-click=\"toogleDebug()\"><i class=\"eav-icon-info-circled\"></i> {{debug ? \'Hide\' : \'Show\'}} Debug Info</button>\r\n\r\n                <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n            </div>\r\n        </div>\r\n        <toaster-container></toaster-container>\r\n        <pre ng-if=\"debug\">{{queryDef.data | json}}</pre>\r\n    </div>\r\n</div>\r\n");
-$templateCache.put("pipelines/pipelines.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <div class=\"modal-header\">\r\n        <h3 class=\"modal-title\" translate=\"Pipeline.Manage.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body ng-cloak\">\r\n        <div translate=\"Pipeline.Manage.Intro\"></div>\r\n        <div>\r\n            <button icon=\"plus\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.add()\"></button>\r\n            <span class=\"btn-group\" ng-if=\"vm.debug.on\">\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.liveEval()\"><i icon=\"flash\"></i></button>\r\n            </span>\r\n            <table class=\"table table-hover table-manage-eav\">\r\n                <thead>\r\n                <tr>\r\n                    <th translate=\"Pipeline.Manage.Table.Id\" class=\"col-id\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Name\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Description\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Actions\" class=\"mini-btn-4\"></th>\r\n                </tr>\r\n                </thead>\r\n                <tbody>\r\n                <tr ng-repeat=\"pipeline in vm.pipelines | orderBy:\'Name\'\" class=\"clickable-row\" ng-click=\"vm.design(pipeline)\">\r\n                    <td class=\"clickable\">{{pipeline.Id}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Name}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Description}}</td>\r\n                    <td class=\"text-nowrap mini-btn-4\" stop-event=\'click\'>\r\n                        <span class=\"btn-group\">\r\n                            <button title=\"{{ \'General.Buttons.Edit\' | translate }}\" class=\"btn btn-xs\" ng-click=\"vm.edit(pipeline)\"><i icon=\"cog\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Copy\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.clone(pipeline)\"><i icon=\"duplicate\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Permissions\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.permissions(pipeline)\"><i icon=\"user\"></i></button>\r\n                        </span>\r\n                        <button title=\"{{ \'General.Buttons.Delete\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.delete(pipeline)\"><i icon=\"remove\"></i></button>\r\n                    </td>\r\n                </tr>\r\n                <tr ng-if=\"!vm.pipelines.length\">\r\n                    <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n                </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n\r\n        <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n    </div>\r\n\r\n</div>");
+$templateCache.put("pipelines/pipeline-designer.html","<div class=\"ng-cloak\">\r\n    <div ng-controller=\"PipelineDesignerController as vm\" ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n        <div id=\"pipelineContainer\">\r\n            <div ng-repeat=\"dataSource in queryDef.data.DataSources\"\r\n                 datasource\r\n                 guid=\"{{dataSource.EntityGuid}}\"\r\n                 id=\"dataSource_{{dataSource.EntityGuid}}\"\r\n                 class=\"dataSource\"\r\n                 ng-attr-style=\"{{ \'top: \' + dataSource.VisualDesignerData.Top +\'px; left: \' + dataSource.VisualDesignerData.Left + \'px; \' + (dataSource.VisualDesignerData.Width ? \'min-width: \' + dataSource.VisualDesignerData.Width + \'px\' : \'\') }}\">\r\n                <div class=\"configure\" ng-click=\"configureDataSource(dataSource)\" title=\"Configure this DataSource\" \r\n                     ng-if=\"!dataSource.ReadOnly && vm.typeInfo(dataSource).config\">\r\n                    <i class=\"eav-icon-settings\"></i>\r\n                </div>\r\n                <i class=\"type-info {{vm.typeInfo(dataSource).icon}}\" title=\"{{vm.typeInfo(dataSource).notes}}\"></i>\r\n                <div class=\"name noselect\" title=\"Click to edit the Name\" ng-click=\"editName(dataSource)\">\r\n                    {{dataSource.Name || \'(no name)\'}}<i class=\"show-hover-inline eav-icon-pencil\"></i>\r\n                </div><br />\r\n                <div class=\"description noselect\" title=\"Click to edit the Description\" ng-click=\"editDescription(dataSource)\">\r\n                    {{dataSource.Description}}<i class=\"show-hover-inline eav-icon-pencil\"></i>\r\n                </div><br />\r\n                <div class=\"typename\" ng-attr-title=\"{{dataSource.PartAssemblyAndType}}\">\r\n                    Type: {{dataSource.PartAssemblyAndType | typename: \'className\'}}\r\n                </div>\r\n                <div class=\"add-endpoint\" title=\"Drag a new Out-Connection from here\" \r\n                     ng-if=\"!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut\">\r\n                    <i class=\"new-connection eav-icon-up-dir\"></i>\r\n                </div>\r\n                <div class=\"delete eav-icon-cancel\" title=\"delete this\" ng-click=\"vm.remove($index)\" ng-if=\"!dataSource.ReadOnly\"></div>\r\n                <a class=\"help eav-icon-help-circled\" title=\"help for this data source\" \r\n                   href=\"{{vm.typeInfo(dataSource).helpLink}}\" target=\"_blank\"\r\n                   ng-if=\"vm.typeInfo(dataSource).helpLink\"></a>\r\n            </div>\r\n        </div>\r\n        <div class=\"actions panel panel-default\">\r\n            <div class=\"panel-heading\">\r\n                <span class=\"pull-left\">Actions</span>\r\n                <a href=\"http://2sxc.org/help\" class=\"btn btn-info btn-xs pull-right\" target=\"_blank\"><i class=\"eav-icon-info-circled\"></i> Help</a>\r\n            </div>\r\n            <div class=\"panel-body\">\r\n                <div class=\"btn-group\" role=\"group\" style=\"width: 100%\">\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\"\r\n                            title=\"Query the Data of this Pipeline. Note that it doesn\'t save changes - so if you have unexpected behaviour after rewiring - save first\"\r\n                            ng-click=\"queryPipeline(true)\"\r\n                            style=\"width: 75%\">\r\n                        <i class=\"eav-icon-ok\"></i> &amp;\r\n                        <i class=\"eav-icon-play\"></i>Query\r\n                    </button>\r\n                    <button type=\"button\" class=\"btn btn-primary btn-block\" title=\"Quick Query without saving (using server definition)\"\r\n                            ng-click=\"queryPipeline(false)\"\r\n                            style=\"width: 25%; margin-top: 4px\">\r\n                        <i class=\"eav-icon-play\"></i>\r\n                    </button>\r\n                </div>\r\n\r\n                <select class=\"form-control\" ng-model=\"addDataSourceType\" \r\n                        ng-disabled=\"queryDef.readOnly\" \r\n                        ng-change=\"vm.addSelectedDataSource()\" \r\n                        ng-options=\"d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: \'!false\'} | filter: filterDifficulty() | orderBy: \'Name\'\">\r\n                    <option value=\"\">-- Add DataSource --</option>\r\n                </select>\r\n                <span ng-click=\"vm.toggleAdvanced()\"><i ng-class=\"{\'eav-icon-star-empty\': !vm.showAdvanced, \'eav-icon-star\': vm.showAdvanced}\"></i> show advanced</span>\r\n                <button type=\"button\" class=\"btn btn-primary btn-block\" ng-disabled=\"queryDef.readOnly\" ng-click=\"savePipeline()\">\r\n                    <i class=\"eav-icon-ok\"></i> Save\r\n                </button>\r\n                <br/>\r\n                \r\n                <!-- test parameters -->\r\n                <div>\r\n                    <div>\r\n                        <strong>Test Parameters</strong>\r\n                        <i class=\"eav-icon-pencil\" ng-click=\"editPipelineEntity()\"></i>\r\n                    </div>\r\n                    <div><ul><li ng-repeat=\"param in queryDef.data.Pipeline.TestParameters.split(\'\\n\')\">\r\n                                {{param}}\r\n                            </li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n\r\n\r\n                <!-- show warnings if detected -->\r\n                <div ng-if=\"vm.warnings.length\">\r\n                    <div><i class=\"eav-icon-attention\" style=\"color: red\"></i><strong>Warnings</strong></div>\r\n                    <ol>\r\n                        <li ng-repeat=\"warn in vm.warnings\">{{warn}}</li>\r\n                    </ol>\r\n                    <br />\r\n                </div>\r\n                \r\n                <!-- show description if available -->\r\n                <div ng-if=\"queryDef.data.Pipeline.Description\">\r\n                    <div><strong>Query Description</strong></div>\r\n                    <div>{{queryDef.data.Pipeline.Description}}</div>\r\n                </div>\r\n                <br/>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"toggleEndpointOverlays()\"><i class=\"eav-icon-info-circled\"></i> {{showEndpointOverlays ? \'Hide\' : \'Show\' }} Overlays</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-click=\"repaint()\"><i class=\"eav-icon-reload\"></i> Repaint</button>\r\n                <button type=\"button\" class=\"btn btn-info btn-xs\" ng-if=\"vm.debug.on\" ng-click=\"toogleDebug()\"><i class=\"eav-icon-info-circled\"></i> {{debug ? \'Hide\' : \'Show\'}} Debug Info</button>\r\n\r\n                <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n            </div>\r\n        </div>\r\n        <toaster-container></toaster-container>\r\n        <pre ng-if=\"debug\">{{queryDef.data | json}}</pre>\r\n    </div>\r\n</div>\r\n");
+$templateCache.put("pipelines/pipelines.html","<div ng-click=\"vm.debug.autoEnableAsNeeded($event)\">\r\n    <div class=\"modal-header\">\r\n        <h3 class=\"modal-title\" translate=\"Pipeline.Manage.Title\"></h3>\r\n    </div>\r\n    <div class=\"modal-body ng-cloak\">\r\n        <div translate=\"Pipeline.Manage.Intro\"></div>\r\n        <div>\r\n            <span class=\"btn-group\">\r\n                <button icon=\"plus\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.add()\"></button>\r\n                <button icon=\"import\" type=\"button\" class=\"btn btn-primary btn-square\" ng-click=\"vm.importQuery.show = !vm.importQuery.show\"></button>\r\n            </span>\r\n            <span class=\"btn-group\" ng-if=\"vm.debug.on\">\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.refresh()\"><i icon=\"repeat\"></i></button>\r\n                <button type=\"button\" class=\"btn btn-warning btn-square\" ng-click=\"vm.liveEval()\"><i icon=\"flash\"></i></button>\r\n            </span>\r\n            <div ng-if=\"vm.importQuery.show\">\r\n                <h3>Import Query</h3>\r\n                <div ng-switch=\"vm.importQuery.viewState\">\r\n                    <div ng-switch-when=\"1\">\r\n\r\n                        <formly-form form=\"vm.importQuery.form\"\r\n                                     model=\"vm.importQuery.formValues\"\r\n                                     fields=\"vm.importQuery.formFields\">\r\n                        </formly-form>\r\n                        <div>\r\n                            <button type=\"button\" class=\"btn btn-primary pull-left\"\r\n                                    ng-click=\"vm.importQuery.save()\"\r\n                                    ng-disabled=\"!vm.importQuery.formValues.File || !vm.importQuery.formValues.File.filename\"\r\n                                    translate=\"Content.Import.Commands.Import\">\r\n                            </button>\r\n                        </div>\r\n                    </div>\r\n                    <div ng-switch-when=\"2\">\r\n                        Saving...\r\n                    </div>\r\n                    <div ng-switch-when=\"3\">\r\n                        <i class=\"eav-icon-ok\"></i> \r\n                        Import completed! \r\n                        <span ng-click=\"vm.importQuery.reset()\"><i class=\"eav-icon-cancel\"></i></span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <table class=\"table table-hover table-manage-eav\">\r\n                <thead>\r\n                <tr>\r\n                    <th translate=\"Pipeline.Manage.Table.Id\" class=\"col-id\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Name\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Description\"></th>\r\n                    <th translate=\"Pipeline.Manage.Table.Actions\" class=\"mini-btn-4\"></th>\r\n                </tr>\r\n                </thead>\r\n                <tbody>\r\n                <tr ng-repeat=\"pipeline in vm.pipelines | orderBy:\'Name\'\" class=\"clickable-row\" ng-click=\"vm.design(pipeline)\">\r\n                    <td class=\"clickable\">{{pipeline.Id}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Name}}</td>\r\n                    <td class=\"clickable\">{{pipeline.Description}}</td>\r\n                    <td class=\"text-nowrap mini-btn-4\" stop-event=\"click\">\r\n                        <span class=\"btn-group\">\r\n                            <button title=\"{{ \'General.Buttons.Edit\' | translate }}\" class=\"btn btn-xs\" ng-click=\"vm.edit(pipeline)\"><i icon=\"cog\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Copy\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.clone(pipeline)\"><i icon=\"duplicate\"></i></button>\r\n                            <button title=\"{{ \'General.Buttons.Permissions\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.permissions(pipeline)\"><i icon=\"user\"></i></button>\r\n                            <button title=\"export\"\r\n                                    type=\"button\"\r\n                                    class=\"btn btn-xs\"\r\n                                    ng-click=\"vm.export(pipeline)\">\r\n                                <i icon=\"export\"></i>\r\n                            </button>\r\n                        </span>\r\n                        <button title=\"{{ \'General.Buttons.Delete\' | translate }}\" type=\"button\" class=\"btn btn-xs\" ng-click=\"vm.delete(pipeline)\"><i icon=\"remove\"></i></button>\r\n                    </td>\r\n                </tr>\r\n                <tr ng-if=\"!vm.pipelines.length\">\r\n                    <td colspan=\"100\" translate=\"General.Messages.NothingFound\"></td>\r\n                </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n\r\n        <show-debug-availability class=\"pull-right\"></show-debug-availability>\r\n    </div>\r\n\r\n</div>");
 $templateCache.put("pipelines/query-stats.html","<div class=\"modal-header\">\r\n    <button icon=\"remove\" class=\"btn pull-right\" type=\"button\" ng-click=\"vm.close()\"></button>\r\n    <h3 class=\"modal-title\" translate=\"Pipeline.Stats.Title\"></h3>\r\n</div>\r\n\r\n<div class=\"modal-body\">\r\n    <div translate=\"Pipeline.Stats.Intro\"></div>\r\n\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.ParamTitle\"></h3>\r\n        <div translate=\"Pipeline.Stats.ExecutedIn\" translate-values=\"{ ms: vm.timeUsed, ticks: vm.ticksUsed }\"></div>\r\n        <div>\r\n            <ul>\r\n                <li ng-repeat=\"param in vm.testParameters\">{{param}}</li>\r\n            </ul>\r\n        </div>\r\n    </div>\r\n\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.QueryTitle\"></h3>\r\n        <pre>{{vm.result | json}}</pre>\r\n    </div>\r\n    <div>\r\n        <h3 translate=\"Pipeline.Stats.SourcesAndStreamsTitle\"></h3>\r\n        <h4 translate=\"Pipeline.Stats.Sources.Title\"></h4>\r\n        <table>\r\n            <tr>\r\n                <th translate=\"Pipeline.Stats.Sources.Guid\"></th>\r\n                <th translate=\"Pipeline.Stats.Sources.Type\"></th>\r\n                <th translate=\"Pipeline.Stats.Sources.Config\"></th>\r\n            </tr>\r\n            <tr ng-repeat=\"s in vm.sources\">\r\n                <td uib-tooltip=\"{{s}}\"><pre>{{s.Guid.substring(0, 13)}}...</pre></td>\r\n                <td>{{s.Type}}</td>\r\n                <td uib-tooltip=\"{{s.Configuration}}\">\r\n                    <ol>\r\n                        <li ng-repeat=\"(key, value) in s.Configuration\"><b>{{key}}</b>=<em>{{value}}</em></li>\r\n                    </ol>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n        <h4 translate=\"Pipeline.Stats.Streams.Title\"></h4>\r\n        <table>\r\n            <tr>\r\n                <th translate=\"Pipeline.Stats.Streams.Source\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Target\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Items\"></th>\r\n                <th translate=\"Pipeline.Stats.Streams.Error\"></th>\r\n            </tr>\r\n            <tr ng-repeat=\"sr in vm.streams\">\r\n                <td><pre>{{sr.Source.substring(0, 13) + \":\" + sr.SourceOut}}</pre></td>\r\n                <td><pre>{{sr.Target.substring(0, 13) + \":\" + sr.TargetIn}}</pre></td>\r\n                <td><span>{{sr.Count}}</span></td>\r\n                <td><span>{{sr.Error}}</span></td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</div>");}]);

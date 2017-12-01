@@ -1,15 +1,28 @@
-﻿
-<div class="modal-header">
-    <button class="btn btn-default btn-square btn-subtle pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
-    <h3 class="modal-title" translate="Content.Export.Title">cc</h3>
-</div>
+﻿<div ng-click="vm.debug.autoEnableAsNeeded($event)">
 
-<div class="modal-body">
-    <div translate="Content.Export.Help"></div>
-    <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
-    </formly-form>
-</div>
+    <div class="modal-header">
+        <button class="btn btn-default btn-square btn-subtle pull-right" type="button" icon="remove" ng-click="vm.close()"></button>
+        <h3 class="modal-title" translate="Content.Export.Title">cc</h3>
+    </div>
 
-<div class="modal-footer">
-    <button type="button" class="btn btn-primary pull-left" ng-click="vm.exportContent()" translate="Content.Export.Commands.Export"></button>
+    <div class="modal-body">
+        <div translate="Content.Export.Help"></div>
+        <formly-form form="vm.form" model="vm.formValues" fields="vm.formFields">
+        </formly-form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary pull-left"
+                ng-click="vm.exportContent()"
+                translate="Content.Export.Commands.Export"></button>
+
+        <button type="button" class="btn btn-default pull-left" ng-click="vm.exportJson()"
+                not-yet-translate="Content.Export.Commands.ExportTypeAsJson"
+                ng-disabled="vm.IsExporting"
+                ng-show="vm.debug.on">
+            Export Type Definition as Json (for developers)
+        </button>
+    </div>
+    
+    <show-debug-availability class="pull-right"></show-debug-availability>
 </div>

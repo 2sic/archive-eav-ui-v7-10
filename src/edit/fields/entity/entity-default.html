@@ -51,14 +51,14 @@
                     <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close</div>
                     <ui-select theme="bootstrap"
                                ng-model="selectedEntity"
-                               on-highlight="maybeReload()"
+                               uis-open-close="selectHighlighted()"
                                ng-required="false"
                                on-select="addEntity($select.selected.Value)">
                         <ui-select-match placeholder="{{ $select.open ? 'search' : 'FieldType.Entity.Choose' | translate }}">
                             <!--<div ng-bind="$select.selected.Text"></div>-->
                             {{ 'FieldType.Entity.Choose' | translate }}
                         </ui-select-match>
-                        <ui-select-choices ng-style="{opacity: $select.open ? 1 : 0 }"  repeat="item in availableEntities | filter: { Text : $select.search } track by item.Value"
+                        <ui-select-choices ng-style="{opacity: $select.open ? 1 : 0 }"  repeat="item in selectEntities | filter: { Text : $select.search } track by item.Value"
                                            refresh="maybeReload()"
                                            refresh-delay="0"
                                            minimum-input-length="0"
@@ -77,6 +77,8 @@
             </button>
         </div>
         
+        
+
         <div ng-if="debug.on">
             debug: <span ng-click="insertNull()">add null-item</span>
         </div>
@@ -85,5 +87,6 @@
         <div class="subtle-till-mouseover"
              ng-show="(to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)) || (to.settings.merged.EnableCreate && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1))">
         </div>-->
+
     </div>
 </div>

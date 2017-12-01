@@ -5,11 +5,41 @@
     <div class="modal-body ng-cloak">
         <div translate="Pipeline.Manage.Intro"></div>
         <div>
-            <button icon="plus" type="button" class="btn btn-primary btn-square" ng-click="vm.add()"></button>
+            <span class="btn-group">
+                <button icon="plus" type="button" class="btn btn-primary btn-square" ng-click="vm.add()"></button>
+                <button icon="import" type="button" class="btn btn-primary btn-square" ng-click="vm.importQuery.show = !vm.importQuery.show"></button>
+            </span>
             <span class="btn-group" ng-if="vm.debug.on">
                 <button type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
                 <button type="button" class="btn btn-warning btn-square" ng-click="vm.liveEval()"><i icon="flash"></i></button>
             </span>
+            <div ng-if="vm.importQuery.show">
+                <h3>Import Query</h3>
+                <div ng-switch="vm.importQuery.viewState">
+                    <div ng-switch-when="1">
+
+                        <formly-form form="vm.importQuery.form"
+                                     model="vm.importQuery.formValues"
+                                     fields="vm.importQuery.formFields">
+                        </formly-form>
+                        <div>
+                            <button type="button" class="btn btn-primary pull-left"
+                                    ng-click="vm.importQuery.save()"
+                                    ng-disabled="!vm.importQuery.formValues.File || !vm.importQuery.formValues.File.filename"
+                                    translate="Content.Import.Commands.Import">
+                            </button>
+                        </div>
+                    </div>
+                    <div ng-switch-when="2">
+                        Saving...
+                    </div>
+                    <div ng-switch-when="3">
+                        <i class="eav-icon-ok"></i> 
+                        Import completed! 
+                        <span ng-click="vm.importQuery.reset()"><i class="eav-icon-cancel"></i></span>
+                    </div>
+                </div>
+            </div>
             <table class="table table-hover table-manage-eav">
                 <thead>
                 <tr>
@@ -24,11 +54,17 @@
                     <td class="clickable">{{pipeline.Id}}</td>
                     <td class="clickable">{{pipeline.Name}}</td>
                     <td class="clickable">{{pipeline.Description}}</td>
-                    <td class="text-nowrap mini-btn-4" stop-event='click'>
+                    <td class="text-nowrap mini-btn-4" stop-event="click">
                         <span class="btn-group">
                             <button title="{{ 'General.Buttons.Edit' | translate }}" class="btn btn-xs" ng-click="vm.edit(pipeline)"><i icon="cog"></i></button>
                             <button title="{{ 'General.Buttons.Copy' | translate }}" type="button" class="btn btn-xs" ng-click="vm.clone(pipeline)"><i icon="duplicate"></i></button>
                             <button title="{{ 'General.Buttons.Permissions' | translate }}" type="button" class="btn btn-xs" ng-click="vm.permissions(pipeline)"><i icon="user"></i></button>
+                            <button title="export"
+                                    type="button"
+                                    class="btn btn-xs"
+                                    ng-click="vm.export(pipeline)">
+                                <i icon="export"></i>
+                            </button>
                         </span>
                         <button title="{{ 'General.Buttons.Delete' | translate }}" type="button" class="btn btn-xs" ng-click="vm.delete(pipeline)"><i icon="remove"></i></button>
                     </td>
