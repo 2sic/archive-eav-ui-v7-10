@@ -37,7 +37,7 @@ angular.module("eavFieldTemplates")
                 alert("No query defined for " + $scope.options.key + " - can't load entities");
             var params = paramsMask.resolve(); // always get the latest definition
             return query($scope.to.settings.merged.Query + "?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
-                $scope.availableEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
+                $scope.availableEntities = $scope.selectEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
                 $scope.indicateReload = false;
             });
         };
@@ -46,11 +46,17 @@ angular.module("eavFieldTemplates")
             return { Value: entity.Guid, Text: entity.Title, Id: entity.Id };
         };
 
+        $scope.selectHighlighted = function () {
+            if ($scope.indicateReload)
+                return $scope.getAvailableEntities();
+        };
+
         $scope.maybeReload = function (force) {
             var newMask = paramsMask.resolve();
             if (lastParamsMask !== newMask || force) {
                 lastParamsMask = newMask;
                 $scope.indicateReload = true;
+                $scope.selectEntities = [];
             }
             return $q.when();
         };

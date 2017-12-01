@@ -18,7 +18,7 @@ angular.module("eavFieldTemplates")
         });
     })
     .controller("FieldTemplate-EntityCtrl", function ($scope, $http, $filter, $translate, $uibModal, appId, eavAdminDialogs, eavDefaultValueService, fieldMask, $q, $timeout, entitiesSvc, debugState) {
-
+        
         $scope.bindModel = function () {
             // create short names for template
             var valList = $scope.model[$scope.options.key].Values[0].Value;
@@ -47,7 +47,7 @@ angular.module("eavFieldTemplates")
             contentType = fieldMask(sourceMask, $scope, $scope.maybeReload, null);// this will contain the auto-resolve type (based on other contentType-field)
             // don't get it, it must be blank to start with, so it will be loaded at least 1x lastContentType = contentType.resolve();
 
-            $scope.availableEntities = [];
+            $scope.availableEntities = $scope.selectEntities = [];
 
             $scope.bindModel();
         }
@@ -99,10 +99,10 @@ angular.module("eavFieldTemplates")
                     // ToDo: dimensionId: $scope.configuration.DimensionId
                 }
             }).then(function(data) {
-                $scope.availableEntities = data.data;
+                $scope.availableEntities = $scope.selectEntities = data.data;
             });
         };
-
+        
         $scope.maybeReload = function (force) {
             var newMask = contentType.resolve();
             if (lastContentType !== newMask || force) {
@@ -111,13 +111,19 @@ angular.module("eavFieldTemplates")
             }
             return $q.when();
         };
-        
+
+        $scope.selectHighlighted = function () {
+            $scope.maybeReload();
+        };
+
+        $scope.entityTextDefault = $translate.instant("FieldType.Entity.EntityNotFound");
         // get a nice label for any entity, including non-existing ones
         $scope.getEntityText = function (entityId) {
             if (entityId === null)
                 return "empty slot"; // todo: i18n
             var entities = $filter("filter")($scope.availableEntities, { Value: entityId });
-            return entities.length > 0 ? entities[0].Text : $translate.instant("FieldType.Entity.EntityNotFound"); 
+            return entities.length > 0 ? entities[0].Text :
+                $scope.entityTextDefault ? $scope.entityTextDefault : entityId; 
         };
 
         // remove needs the index --> don't name "remove" - causes problems
