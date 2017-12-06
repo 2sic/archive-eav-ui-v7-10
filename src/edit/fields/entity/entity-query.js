@@ -25,6 +25,10 @@ angular.module("eavFieldTemplates")
         $scope.inicateReload = false;
         $scope.showReloadButton = true;
 
+        if (!$scope.to.settings.merged.StreamName || $scope.to.settings.merged.StreamName === "") {
+            $scope.to.settings.merged.StreamName = "Default";
+        }
+
         function activate() {
             // Initialize url parameters mask
             paramsMask = fieldMask($scope.to.settings.merged.UrlParameters || null, $scope, $scope.maybeReload, null); // this will contain the auto-resolve url parameters     
@@ -36,7 +40,10 @@ angular.module("eavFieldTemplates")
             if (!$scope.to.settings.merged.Query)
                 alert("No query defined for " + $scope.options.key + " - can't load entities");
             var params = paramsMask.resolve(); // always get the latest definition
-            return query($scope.to.settings.merged.Query + "?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
+            var queryUrl = $scope.to.settings.merged.Query;
+            if (queryUrl.indexOf('/') == -1) // append stream name if not defined
+                queryUrl = queryUrl + "/" + $scope.to.settings.merged.StreamName;
+            return query(queryUrl + "?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
                 $scope.availableEntities = $scope.selectEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
                 $scope.indicateReload = false;
             });
