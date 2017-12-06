@@ -42,10 +42,10 @@
             </table>
         </div>
 
-        <div class="eav-entityselect-actions" ng-class="{ 'no-add': (!to.settings.merged.AllowMultiValue && chosenEntities.length > 0) }">
+        <div class="eav-entityselect-actions input-group" ng-class="{ 'freetext': modes.freeTextMode, 'no-add': (!to.settings.merged.AllowMultiValue && chosenEntities.length > 0) }">
 
             <!-- pick existing entity -->
-            <div ng-if="!modes.freeTextMode" class="eav-entityselect-action-addexisting"
+            <div ng-if="!modes.freeTextMode" class="eav-entityselect-action-addexisting form-control form-control-nostyle"
                  ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
                 <div class="eav-entityselect-selector-wrapper">
                     <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close</div>
@@ -70,18 +70,19 @@
             </div>
 
             <!-- create new entity to add to this list -->
-            <button ng-if="to.settings.merged.EnableCreate && to.settings.merged.EntityType !== '' && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
-                    class="eav-entityselect-action-create icon-field-button"
+            <a ng-if="to.settings.merged.EnableCreate && to.settings.merged.EntityType !== '' && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)"
+                    class="input-group-addon icon-field-button icon-field-button-small"
                     ng-click="openNewEntityDialog()">
                 <i class="eav-icon-plus"></i>
-            </button>
+            </a>
 
             <!-- handle free text mode -->
             <input ng-show="modes.freeTextMode" class="form-control input-material material" ng-model="value.Value" formly-skip-ng-model-attrs-manipulator type="text">
-            <span ng-show="to.settings.merged.EnableTextEntry" class="freetext-toggle input-group-addon" ng-class="{'active': modes.freeTextMode}" ng-click="modes.freeTextMode = !modes.freeTextMode">
+            <a ng-show="to.settings.merged.EnableTextEntry && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)" class="freetext-toggle input-group-addon icon-field-button icon-field-button-small" ng-class="{'active': modes.freeTextMode}" ng-click="modes.freeTextMode = !modes.freeTextMode">
+                
                 <span ng-show="modes.freeTextMode" class="eav-icon-down-dir"></span>
                 <span ng-show="!modes.freeTextMode" class="eav-icon-i-cursor"></span>
-            </span>
+            </a>
         </div>
         
         

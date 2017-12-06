@@ -1,8 +1,8 @@
 ﻿<div class="input-string-dropdown-wrapper input-group">
     <select ng-show="!freeTextMode" class="form-control input-material material" ng-model="value.Value"></select>
     <input ng-show="freeTextMode" class="form-control input-material material" ng-model="value.Value" formly-skip-ng-model-attrs-manipulator type="text">
-    <span ng-show="to.settings.merged.EnableTextEntry" class="freetext-toggle input-group-addon" ng-class="{'active': freeTextMode}" ng-click="freeTextMode = !freeTextMode">
+    <a ng-show="to.settings.merged.EnableTextEntry" class="input-group-addon icon-field-button icon-field-button-small" ng-class="{'active': freeTextMode}" ng-click="freeTextMode = !freeTextMode">
         <span ng-show="freeTextMode" class="eav-icon-down-dir"></span>
         <span ng-show="!freeTextMode" class="eav-icon-i-cursor"></span>
-    </span>
+    </a>
 </div>
