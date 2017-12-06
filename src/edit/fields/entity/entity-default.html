@@ -1,6 +1,6 @@
 ﻿<div class="eav-entityselect">
     <div>
-        <div ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
+        <div ng-if="!modes.freeTextMode" ui-tree="options" data-empty-placeholder-enabled="false" ng-show="to.settings.merged.EnableCreate || chosenEntities.length > 0">
             <table ui-tree-nodes ng-model="chosenEntities" entity-validation ng-required="false" class="eav-entityselect-table" style="table-layout: fixed;">
                 <thead>
                 <tr>
@@ -45,7 +45,7 @@
         <div class="eav-entityselect-actions" ng-class="{ 'no-add': (!to.settings.merged.AllowMultiValue && chosenEntities.length > 0) }">
 
             <!-- pick existing entity -->
-            <div class="eav-entityselect-action-addexisting"
+            <div ng-if="!modes.freeTextMode" class="eav-entityselect-action-addexisting"
                  ng-show="to.settings.merged.EnableAddExisting && (to.settings.merged.AllowMultiValue || chosenEntities.length < 1)">
                 <div class="eav-entityselect-selector-wrapper">
                     <div class="eav-entityselect-action-addexisting-close" ng-show="$select.open">Close</div>
@@ -75,6 +75,13 @@
                     ng-click="openNewEntityDialog()">
                 <i class="eav-icon-plus"></i>
             </button>
+
+            <!-- handle free text mode -->
+            <input ng-show="modes.freeTextMode" class="form-control input-material material" ng-model="value.Value" formly-skip-ng-model-attrs-manipulator type="text">
+            <span ng-show="to.settings.merged.EnableTextEntry" class="freetext-toggle input-group-addon" ng-class="{'active': modes.freeTextMode}" ng-click="modes.freeTextMode = !modes.freeTextMode">
+                <span ng-show="modes.freeTextMode" class="eav-icon-down-dir"></span>
+                <span ng-show="!modes.freeTextMode" class="eav-icon-i-cursor"></span>
+            </span>
         </div>
         
         
