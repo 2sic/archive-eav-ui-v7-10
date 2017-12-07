@@ -45,3 +45,5 @@ table.eav-entityselect-table tr.eav-entityselect-item td { padding-top: 2px; pad
 .ui-select-container input { font-size:20px!important; }
 
 .eav-entityselect input.material { margin-top:0; padding-top:0;}
+
+.ui-select-bootstrap > .ui-select-choices, .ui-select-bootstrap > .ui-select-no-choice { margin-top:34px; }

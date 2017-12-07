@@ -2,3 +2,5 @@
     .eav-entityselect-reload.active {
         color: #0088f4;
     }
+.ui-select-no-choice {
+    background: #fcf8e3!important; padding-left:7px;}

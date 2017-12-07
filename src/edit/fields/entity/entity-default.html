@@ -65,6 +65,10 @@
                                            ui-disable-choice="chosenEntities.indexOf(item.Value) != -1">
                             <span ng-bind="item.Text"></span>
                         </ui-select-choices>
+                        <ui-select-no-choice class="bg-warning">
+                                <span ng-if="!error">{{ 'FieldType.EntityQuery.QueryNoItems' | translate }}</span>
+                                <span ng-if="error">{{error}}</span>
+                        </ui-select-no-choice>
                     </ui-select>
                 </div>
             </div>
