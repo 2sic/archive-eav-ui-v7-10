@@ -6,7 +6,7 @@
 .eav-entityselect-item-actions {
     display: inline-block;
     cursor: pointer;
-    padding: 0;
+    padding: 0 45px 0 0;
     opacity: 0;
     list-style-type:none;
     line-height:14px;
