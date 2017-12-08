@@ -1,9 +1,2 @@
-﻿.input-string-dropdown-wrapper .freetext-toggle {
-    width:30px;
-    color:black;
-    border:none;
-    background:none;
-    cursor:pointer;
-}
-.input-string-dropdown-wrapper .freetext-toggle.active { }
-.input-string-dropdown-wrapper { width: 100%; }
+﻿.input-string-dropdown-wrapper { width: 100%; }
+/*.eav-entityselect-actions.freetext { border-bottom:0; }*/

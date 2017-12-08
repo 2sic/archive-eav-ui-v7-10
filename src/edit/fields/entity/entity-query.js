@@ -16,7 +16,7 @@ angular.module("eavFieldTemplates")
             controller: "FieldTemplate-EntityQueryCtrl"
         });
     })
-    .controller("FieldTemplate-EntityQueryCtrl", function ($controller, $scope, fieldMask, $q, query, $timeout) {
+    .controller("FieldTemplate-EntityQueryCtrl", function ($controller, $scope, fieldMask, $q, query, $timeout, $translate) {
 
         // use "inherited" controller just like described in http://stackoverflow.com/questions/18461263/can-an-angularjs-controller-inherit-from-another-controller-in-the-same-module
         $controller("FieldTemplate-EntityCtrl", { $scope: $scope });
@@ -24,6 +24,11 @@ angular.module("eavFieldTemplates")
         var paramsMask, lastParamsMask;
         $scope.inicateReload = false;
         $scope.showReloadButton = true;
+        $scope.error = "";
+
+        if (!$scope.to.settings.merged.StreamName || $scope.to.settings.merged.StreamName === "") {
+            $scope.to.settings.merged.StreamName = "Default";
+        }
 
         function activate() {
             // Initialize url parameters mask
@@ -36,9 +41,23 @@ angular.module("eavFieldTemplates")
             if (!$scope.to.settings.merged.Query)
                 alert("No query defined for " + $scope.options.key + " - can't load entities");
             var params = paramsMask.resolve(); // always get the latest definition
-            return query($scope.to.settings.merged.Query + "?includeGuid=true" + (params ? '&' + params : '')).get().then(function (data) {
-                $scope.availableEntities = $scope.selectEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
+            var queryUrl = $scope.to.settings.merged.Query;
+            if (queryUrl.indexOf('/') == -1) // append stream name if not defined
+                queryUrl = queryUrl + "/" + $scope.to.settings.merged.StreamName;
+            return query(queryUrl + "?includeGuid=true" + (params ? '&' + params : '')).get({ignoreErrors:true}).then(function (data) {
+                $scope.selectEntities = [];
+                if (!data.data) {
+                    $scope.error = $translate.instant("FieldType.EntityQuery.QueryError");
+                } else if (!data.data[$scope.to.settings.merged.StreamName]) {
+                    $scope.error = $translate.instant("FieldType.EntityQuery.QueryStreamNotFound") + $scope.to.settings.merged.StreamName;
+                } else { // everything ok - set data to select
+                    $scope.availableEntities = $scope.selectEntities = data.data[$scope.to.settings.merged.StreamName].map($scope.queryEntityMapping);
+                }
                 $scope.indicateReload = false;
+            }, function (err) {
+                console.error(err);
+                $scope.selectEntities = [];
+                $scope.error = $translate.instant("FieldType.EntityQuery.QueryError") + " - " + err.data;
             });
         };
 

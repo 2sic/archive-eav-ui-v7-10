@@ -23,6 +23,8 @@ angular.module("eavFieldTemplates")
         $scope.to.settings.merged.EntityType = "";
         var separator = $scope.to.settings.merged.Separator;
 
+        $scope.modes = { freeTextMode: false };
+
         // use "inherited" controller just like described in http://stackoverflow.com/questions/18461263/can-an-angularjs-controller-inherit-from-another-controller-in-the-same-module
         $controller("FieldTemplate-EntityQueryCtrl", { $scope: $scope });
 
@@ -47,6 +49,12 @@ angular.module("eavFieldTemplates")
         $scope.$watch('chosenEntities', function (newValue, oldValue) {
             if(newValue && newValue.map)
                 $scope.value.Value = newValue.join(separator);
+        }, true);
+
+        // Refresh entity list when free text mode is left
+        $scope.$watch('modes.freeTextMode', function (newValue, oldValue) {
+            if (newValue === false && oldValue === true)
+                $scope.bindModel();
         }, true);
         
     });
