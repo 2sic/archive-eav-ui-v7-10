@@ -10,7 +10,7 @@
 		.controller('ContentItemsList', contentItemsListController)
 		;
 
-	function contentItemsListController(contentItemsSvc, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
+	function contentItemsListController(contentItemsSvc, contentExportService, eavConfig, appId, contentType, eavAdminDialogs, toastr, debugState, $uibModalInstance, $uibModalStack, $q, $translate, entitiesSvc, agGridFilters) {
 		/* jshint validthis:true */
 		var vm = angular.extend(this, {
 			debug: debugState,
@@ -28,7 +28,8 @@
 			tryToDelete: tryToDelete,
 			openDuplicate: openDuplicate,
 			close: close,
-			debugFilter: showFilter
+            debugFilter: showFilter,
+            exportJson: exportJson
 		});
 		var svc;
 
@@ -67,7 +68,7 @@
 			},
 			{
 				headerName: '',
-				width: 70,
+				width: 80,
 				suppressSorting: true,
 				suppressMenu: true,
 				template: '<button type="button" class="btn btn-xs btn-square" ng-click="vm.openDuplicate(data)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Copy\' | translate }}">'
@@ -75,8 +76,8 @@
 				+ '</button> '
 				+ '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
 				+ '<i icon="remove"></i> '
-                + '</button>'
-                + '<button type="button" class="btn btn-xs btn-square" ng-click="vm.todo(data)" ng-if="vm.debug.on" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Export\' | translate }}">'
+                + '</button> '
+                + '<button type="button" class="btn btn-xs btn-square btn-warning" ng-click="vm.exportJson(data)" ng-if="vm.debug.on" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Export\' | translate }}">'
 				+ '<i icon="export"></i> '
 				+ '</button>'
 
@@ -303,6 +304,10 @@
 
 		function close() {
 			$uibModalInstance.dismiss('cancel');
-		}
+        }
+
+        function exportJson(item) {
+            return contentExportService.exportEntity(appId, item.Id, contentType, true);
+        }
 	}
 }());

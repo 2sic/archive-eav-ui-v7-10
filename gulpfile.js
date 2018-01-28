@@ -17,7 +17,7 @@
 
     const autopublishTarget = '/DesktopModules/ToSIC_SexyContent/dist';
     const dests = {
-        default: './../2SexyContent/Web',
+        default: './../2sxc-dnn742/Website',
         evoq: '../TestWebsites/Evoq 9.1.0',
     };
 
