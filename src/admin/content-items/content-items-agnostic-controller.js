@@ -75,7 +75,11 @@
 				+ '</button> '
 				+ '<button type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(data, false)" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Delete\' | translate }}">'
 				+ '<i icon="remove"></i> '
+                + '</button>'
+                + '<button type="button" class="btn btn-xs btn-square" ng-click="vm.todo(data)" ng-if="vm.debug.on" tooltip-append-to-body="true" uib-tooltip="{{ \'General.Buttons.Export\' | translate }}">'
+				+ '<i icon="export"></i> '
 				+ '</button>'
+
 			}
 		];
 
