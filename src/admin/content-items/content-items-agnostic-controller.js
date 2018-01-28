@@ -309,5 +309,49 @@
         function exportJson(item) {
             return contentExportService.exportEntity(appId, item.Id, contentType, true);
         }
+
+
+
+
+	    //#region import-form
+
+	    var viewStates = {
+	        Default: 1,
+	        Waiting: 2,
+	        Imported: 3
+	    };
+
+        var importItem = vm.importItem = {
+	        show: false,
+	        formValues: {},
+	        formFields: [
+	            {
+	                // File
+	                key: "File",
+	                type: "file",
+	                templateOptions: {
+	                    required: true
+	                },
+	                expressionProperties: {
+	                    "templateOptions.label": "'Content.Import.Fields.File.Label' | translate"
+	                }
+	            }
+	        ],
+	        viewState: viewStates.Default,
+	        save: function () {
+	            importItem.viewState = viewStates.Waiting;
+                return svc.importItem(importItem.formValues).then(function () {
+	                vm.refresh();
+                    importItem.viewState = viewStates.Imported;
+	            });
+	        },
+	        reset: function () {
+	            importItem.viewState = viewStates.Default;
+	            importItem.show = false;
+	        }
+	    };
+
+
+	    //#endregion
 	}
 }());

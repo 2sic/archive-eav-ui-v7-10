@@ -78,7 +78,7 @@ angular.module('PipelineManagement', [
             Imported: 3
         };
 
-        var importQuery = vm.importQuery = {
+        var importQuery = vm.importItem = vm.importQuery = {
             show: false,
             formValues: {},
             formFields: [
