@@ -11,10 +11,42 @@
                 ng-click="vm.openExport()">
             <i icon="export"></i>
         </button>
+        <button icon="import" type="button" class="btn btn-default btn-square" ng-click="vm.importItem.show = !vm.importItem.show"></button>
 	    <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.refresh()"><i icon="repeat"></i></button>
         <button ng-if="vm.debug.on" type="button" class="btn btn-warning btn-square" ng-click="vm.debugFilter()"><i icon="filter"></i></button>
+        
+        <div ng-if="vm.importItem.show">
+            <h3>Quick-Import a single JSON Item</h3>
+            <div ng-switch="vm.importItem.viewState">
+                <div ng-switch-when="1">
 
-		<div ag-grid="vm.gridOptions" class="ag-grid-wrapper"></div>
+                    <formly-form form="vm.importItem.form"
+                                 model="vm.importItem.formValues"
+                                 fields="vm.importItem.formFields">
+                    </formly-form>
+                    <div>
+                        <button type="button" class="btn btn-primary pull-left"
+                                ng-click="vm.importItem.save()"
+                                ng-disabled="!vm.importItem.formValues.File || !vm.importItem.formValues.File.filename"
+                                translate="Content.Import.Commands.Import">
+                        </button>
+                    </div>
+                </div>
+                <div ng-switch-when="2">
+                    Saving...
+                </div>
+                <div ng-switch-when="3">
+                    <i class="eav-icon-ok"></i> 
+                    Import completed! 
+                    <span ng-click="vm.importItem.reset()"><i class="eav-icon-cancel"></i></span>
+                </div>
+            </div>
+            <br />
+            <br/>
+        </div>
+
+
+        <div ag-grid="vm.gridOptions" class="ag-grid-wrapper"></div>
 	    
         <show-debug-availability class="pull-right" ></show-debug-availability>
     </div>
