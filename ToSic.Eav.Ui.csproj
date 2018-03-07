@@ -311,6 +311,41 @@
   <ItemGroup>
     <Content Include="src\edit\fields\string\System.%40string-dropdown.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\entity\System.%40entity-query.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\string\System.%40string-dropdown-query.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\boolean\System.%40Boolean.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\datetime\System.%40DateTime.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\empty\System.%40empty-default.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\entity\System.%40Entity.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\number\System.%40Number.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\string\System.%40string-default.json" />
+    <Content Include="src\edit\fields\string\System.%40string-font-icon-picker.json" />
+    <Content Include="src\edit\fields\string\System.%40string-url-path.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\System.%40All.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\json-content-types-for-custom\System.%40custom-gps.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\json-content-types-for-custom\readme.md" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
