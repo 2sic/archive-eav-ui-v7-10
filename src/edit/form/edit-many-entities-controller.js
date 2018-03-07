@@ -146,6 +146,10 @@
                     var req = errors[set].required.map(function (itm) { return { field: itm.$name, error: "required" }; });
                     msgs = msgs.concat(req);
                 }
+                if (errors[set].pattern) {
+                    var patt = errors[set].pattern.map(function (itm) { return { field: itm.$name, error: "not valid" }; });
+                    msgs = msgs.concat(patt);
+                }
             }
             var nice = msgs.map(function (err) {
                 var specs = err.field.split("_");

@@ -16,9 +16,14 @@ angular.module("eavFieldTemplates")
     }).controller("FieldTemplate-StringCtrl", function ($scope) {
         var vm = this;
         var validationRegexString = ".*";
-        var stringSettings = $scope.options.templateOptions.settings.merged;
-        if (stringSettings && stringSettings.ValidationRegExJavaScript)
-            validationRegexString = stringSettings.ValidationRegExJavaScript;
+
+        var settings = $scope.options.templateOptions.settings;
+        
+        // Do not use settings.merged here because there is an old (hidden field) that causes
+        // merged.ValidationRegExJavaScript to be always empty
+        if (settings.All && settings.All.ValidationRegExJavaScript)
+            validationRegexString = settings.All.ValidationRegExJavaScript;
+        
         vm.regexPattern = new RegExp(validationRegexString, 'i');
 
         console.log($scope.options.templateOptions);
