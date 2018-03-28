@@ -162,9 +162,6 @@
           Title: "Add Metadata for '" + key + "' (" + keyType + ') of type #' + targetType
         }
       ];
-      console.log(items);
-      // [vm.createItemDefinition(item, "ContentType")];
-      //eavAdminDialogs.openEditItems(items, svc.liveListReload);
       
       eavAdminDialogs.openEditItems(items, setRowData);
 	  }
