@@ -22,7 +22,8 @@
 				headerHeight: 38,
 				angularCompileRows: true
 			},
-			add: add,
+      add: add,
+      addMetadata: addMetadata,
 			refresh: setRowData,
 			openExport: openExport,
 			tryToDelete: tryToDelete,
@@ -124,7 +125,49 @@
 
 		function add() {
 			eavAdminDialogs.openItemNew(contentType, setRowData);
-		}
+    }
+
+    function addMetadata() {
+      if (!confirm(
+        'This is a special operation to add an item which is metadata for another item. ' +
+        "If you didn't understand that, this is not for you :). Continue?")
+      )
+        return;
+
+      var targetType = prompt('What kind of assignment do you want? \n 3: App \n 4: Entity\n 5: ContentType\n etc. ?', 4);
+      if (!targetType) 
+        return alert('cancelled');
+
+      // only get one key
+      var key = prompt('What key do you want?');
+      if (!key) 
+        return alert('cancelled');
+
+      var keyType = prompt('What type do you want? - use string, number, guid. \n\nBlank will cancel.', 'number');
+      if (!keyType)
+        return alert('No type given, will cancel');
+
+      if (keyType !== 'string' && keyType !== 'number' && keyType !== 'guid')
+        return alert('type not string/number/guid, will cancel');
+
+
+      var items = [
+        {
+          ContentTypeName: contentType, // otherwise the content type for new-assegnment
+          Metadata: {
+            Key: key,
+            KeyType: keyType,
+            TargetType: targetType
+          },
+          Title: "Add Metadata for '" + key + "' (" + keyType + ') of type #' + targetType
+        }
+      ];
+      console.log(items);
+      // [vm.createItemDefinition(item, "ContentType")];
+      //eavAdminDialogs.openEditItems(items, svc.liveListReload);
+      
+      eavAdminDialogs.openEditItems(items, setRowData);
+	  }
 
 		function openExport() {
 			// check if there is a filter attached
@@ -327,8 +370,8 @@
 	        formFields: [
 	            {
 	                // File
-	                key: "File",
-	                type: "file",
+	                key: 'File',
+	                type: 'file',
 	                templateOptions: {
 	                    required: true
 	                },

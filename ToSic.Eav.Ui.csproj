@@ -346,6 +346,9 @@
   <ItemGroup>
     <Content Include="src\edit\fields\json-content-types-for-custom\readme.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\edit\fields\string\System.%40String.json" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
