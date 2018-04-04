@@ -44,6 +44,9 @@
         }
     })();
 
+
+    // special helper - necessary to copy everything incl the ".data" folders
+    // which are otherwise skipped
     function copyAll(dest) {
         gulp.src([
                 'dist/**/*', 'dist/.**/*'
@@ -54,6 +57,7 @@
             .pipe(gulp.dest(dest + autopublishTarget))
             ;
     }
+
     function createConfig(key, tmplSetName, altDistPath, altJsName, libFiles) {
         const cwd = `src/${key}/`;
         return {
