@@ -110,10 +110,11 @@ angular.module("EavConfiguration", [])
                 },
                 testParameters: "[Demo:Demo]=true"
             },
-            metadataOfEntity: 4,
             metadataOfAttribute: 2,
-            metadataOfContentType: 5,
             metadataOfApp: 3,
+            metadataOfEntity: 4,
+            metadataOfContentType: 5,
+            metadataOfZone: 6,
             metadataOfCmsObject: 10,
 
             versionInfo: "unknown",

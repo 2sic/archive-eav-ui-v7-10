@@ -1,35 +1,59 @@
-(function () { 
+(function() {
 
-    angular.module("PermissionsApp", [
-        "EavServices",
-        "EavConfiguration",
-        "EavAdminUi"])
-        .controller("PermissionList", permissionListController)
-        ;
+  angular.module('PermissionsApp',
+      [
+        'EavServices',
+        'EavConfiguration',
+        'EavAdminUi'
+      ])
+    .controller('PermissionList', permissionListController);
 
-    function permissionListController(permissionsSvc, eavAdminDialogs, eavConfig, appId, targetGuid, $uibModalInstance /* $location */) {
-        var vm = this;
-        var svc = permissionsSvc(appId, targetGuid);
+  function permissionListController(permissionsSvc,
+    eavAdminDialogs,
+    eavConfig,
+    appId,
+    targetKey,
+    targetType,
+    keyType,
+    $uibModalInstance) {
+    var vm = this;
+    var svc = permissionsSvc(appId, targetType, keyType, targetKey);
 
-        vm.edit = function edit(item) {
-            eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
-        };
+    vm.edit = function edit(item) {
+      eavAdminDialogs.openItemEditWithEntityId(item.Id, svc.liveListReload);
+    };
 
-        vm.add = function add() {
-            eavAdminDialogs.openMetadataNew(appId, "entity", svc.PermissionTargetGuid, svc.ctName, svc.liveListReload);
-        };
+    vm.add = function add() {
+      vm.openMetadata(svc.targetType, svc.keyType, svc.key, svc.ctName, svc.liveListReload);
+    };
 
-        vm.items = svc.liveList();
-        vm.refresh = svc.liveListReload;
-        
-        vm.tryToDelete = function tryToDelete(item) {
-            if (confirm("Delete '" + item.Title + "' (" + item.Id + ") ?")) // todo: probably change .Title to ._Title
-                svc.delete(item.Id);
-        };
+    vm.items = svc.liveList();
+    vm.refresh = svc.liveListReload;
 
-        vm.close = function () {
-            $uibModalInstance.dismiss("cancel");
-        };
-    }
+    vm.tryToDelete = function tryToDelete(item) {
+      if (confirm("Delete '" + item.Title + "' (" + item.Id + ') ?')) // todo: probably change .Title to ._Title
+        svc.delete(item.Id);
+    };
 
-} ());
+    vm.close = function() {
+      $uibModalInstance.dismiss('cancel');
+    };
+
+    vm.openMetadata = function (targetType, keyType, key, contentType, closeCallback) {
+      var items = [
+        {
+          ContentTypeName: contentType,
+          Metadata: {
+            TargetType: targetType,
+            KeyType: keyType,
+            Key: key
+          }
+        }
+      ];
+
+      eavAdminDialogs.openEditItems(items, closeCallback, { partOfPage: false });
+    };
+    
+  }
+
+}());
