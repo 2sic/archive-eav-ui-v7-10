@@ -293,7 +293,13 @@
                 item.Header.Group = {};
             item.Header.Group.SlotIsEmpty = !item.Header.Group.SlotIsEmpty;
             item.slotIsUsed = !item.Header.Group.SlotIsEmpty;
-        };
+      };
+
+      // this is just a test-call to validate that the new UI-API works
+      // that api is actually meant for the new Angular5 UI, so this is really just to validate it works...
+      vm.testUiApi = function() {
+        entitiesSvc.getManyForEditingUiApiTest(appId, $scope.itemList);
+      };
 
         activate();
 
