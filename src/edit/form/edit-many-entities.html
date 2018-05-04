@@ -47,7 +47,8 @@
     <div ng-if="vm.debug.on && vm.showDebugItems">
         <div>
             isValid: {{vm.isValid()}}<br />
-            isWorking: {{vm.isWorking}}
+            isWorking: {{vm.isWorking}}<br/>
+            <span ng-click="vm.testUiApi()">test new Ui-API</span>
         </div>
         <pre>{{ vm.items | json }}</pre>
     </div>

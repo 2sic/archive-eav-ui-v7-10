@@ -11,6 +11,10 @@
 
             svc.getManyForEditing = function (appId, items) {
                 return $http.post('eav/entities/getmanyforediting', items, { params: { appId: appId } });
+          };
+
+            svc.getManyForEditingUiApiTest = function (appId, items) {
+                return $http.post('eav/ui/load', items, { params: { appId: appId } });
             };
             
             svc.saveMany = function (appId, items, partOfPage) {

@@ -94,7 +94,12 @@
                 if (newName)
                     svc.rename(item, newName);
             });
-        };
+      };
+
+      vm.permissions = function(item) {
+        console.log(item);
+        eavAdminDialogs.openPermissions(appId, eavConfig.metadataOfAttribute, "number", item.Id, svc.liveListReload);
+      };
 
         // Edit / Add metadata to a specific fields
         vm.createOrEditMetadata = function createOrEditMetadata(item, metadataType) {
