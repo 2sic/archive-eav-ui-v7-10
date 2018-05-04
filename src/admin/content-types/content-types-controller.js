@@ -82,7 +82,7 @@
             return eavAdminDialogs.openContentImport(svc.appId, item.StaticName, vm.refresh);
         };
 
-        //#region metadata for this type - new 2016-09-07
+        //#region metadata for this type
 
         // Edit / Add metadata to a specific field
         vm.createOrEditMetadata = function createOrEditMetadata(item) {

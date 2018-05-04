@@ -122,29 +122,35 @@ angular.module('EavAdminUi', ['ng',
         };
         //#endregion
 
-        //#region Permissions Dialog
+      //#region Permissions Dialog
+      function openPermissions(params, closeCallback) {
+        return svc.OpenModal('permissions/permissions.html',
+          'PermissionList as vm',
+          'xlg',
+          svc.CreateResolve(params),
+          closeCallback);
+      }
+
       svc.openPermissionsForGuid = function opfg(appId, targetKey, closeCallback) {
-        var resolve = svc.CreateResolve({ appId: appId, targetKey: targetKey, targetType: 4, keyType: 'guid' });
-            return svc.OpenModal('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, closeCallback);
+        return openPermissions({ appId: appId, targetKey: targetKey, targetType: 4, keyType: 'guid' }, closeCallback);
       };
 
       svc.openPermissions = function opfg(appId, targetType, keyType, targetKey, closeCallback) {
-        var resolve = svc.CreateResolve({ appId: appId, targetKey: targetKey, targetType: targetType, keyType: keyType });
-        return svc.OpenModal('permissions/permissions.html', 'PermissionList as vm', 'lg', resolve, closeCallback);
+        return openPermissions({ appId: appId, targetKey: targetKey, targetType: targetType, keyType: keyType },
+          closeCallback);
       };
+      //#endregion
 
-        //#endregion
-
-        //#region Pipeline Designer
-        svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
-            var url = svc.derivedUrl({
-                dialog: 'pipeline-designer',
-                pipelineId: pipelineId
-            });
-            $window.open(url);
-            return;
-        };
-        //#endregion
+      //#region Pipeline Designer
+      svc.editPipeline = function ep(appId, pipelineId, closeCallback) {
+          var url = svc.derivedUrl({
+              dialog: 'pipeline-designer',
+              pipelineId: pipelineId
+          });
+          $window.open(url);
+          return;
+      };
+      //#endregion
 
         //#region GenerateUrlBasedOnCurrent
         svc.derivedUrl = function derivedUrl(varsToReplace) {

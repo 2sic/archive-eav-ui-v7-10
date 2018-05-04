@@ -60,7 +60,11 @@
                         <button uib-tooltip="{{ 'ContentTypes.Buttons.Import' | translate }}" type="button" class="btn btn-xs btn-square" ng-click="vm.openImport(item)">
                             <i icon="import"></i>
                         </button>
-                        <button type="button" class="btn btn-xs btn-square" ng-click="vm.permissions(item)" ng-if="vm.isGuid(item.StaticName)">
+                        
+                        <!-- todo: app only, not content -->
+                        <button type="button" class="btn btn-xs btn-square" 
+                                ng-click="vm.permissions(item)" 
+                                ng-if="vm.isGuid(item.StaticName)">
                             <i icon="user"></i>
                         </button>
                     </span>

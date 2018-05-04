@@ -10,18 +10,26 @@
         <table class="table table-striped table-hover table-manage-eav">
             <thead>
             <tr>
-                <th translate="Permissions.Table.Id" style="width: 60px"></th>
-                <th translate="Permissions.Table.Name" style="width: 33%"></th>
-                <th translate="Permissions.Table.Condition" style="width: 33%"></th>
-                <th translate="Permissions.Table.Grant" style="width: 33%"></th>
-                <th translate="Permissions.Table.Actions" style="width: 40px"></th>
+                <!--<th style="width: 10px">
+                    <span translate="Permissions.Table.Id" uib-tooltip="(id hidden, as usually not important)"></span>
+                </th>-->
+                <th style="width: 40%">
+                    <span translate="Permissions.Table.Name" uib-tooltip="(id hidden, as usually not important)"></span>
+                </th>
+                <th translate="Permissions.Table.Condition" style="width: 40%"></th>
+                <th translate="Permissions.Table.Grant" style="width: 20%"></th>
+                <th style="width: 40px"></th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="item in vm.items | orderBy:'Title'" class="clickable-row" ng-click="vm.edit(item)">
-                <td class="clickable">{{item.Id}}</td>
-                <td class="clickable">{{item.Title}}</td>
-                <td class="clickable">{{item.Condition}}</td>
+                <!--<td class="clickable">
+                    <span uib-tooltip="{{item.Id}}">#</span>
+                </td>-->
+                <td class="clickable">
+                    <span uib-tooltip="{{item.Id}}">{{item.Title}}</span>
+                </td>
+                <td class="clickable">{{item.Condition}}{{item.Identity}}</td>
                 <td class="clickable">{{item.Grant}}</td>
                 <td class="text-nowrap" stop-event="click">
                     <button icon="remove" type="button" class="btn btn-xs btn-square" ng-click="vm.tryToDelete(item)"></button>
