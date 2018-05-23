@@ -150,7 +150,10 @@
     <Content Include="src\admin\content-types\content-types-fields-add.html" />
     <Content Include="src\admin\content-types\content-types-fields-add-controller.js" />
     <Content Include="src\admin\content-types\content-types-fields-controller.js" />
-    <Content Include="src\admin\directives\eav-directives.js" />
+    <Content Include="src\admin\directives\icon.js" />
+    <Content Include="src\admin\directives\{}.js" />
+    <Content Include="src\admin\directives\show-debug-availability.js" />
+    <Content Include="src\admin\directives\stop-event.js" />
     <Content Include="src\admin\eav-admin.css" />
     <Content Include=".bowerrc" />
     <Content Include="src\admin\pipelines\query-definition.service.js" />
