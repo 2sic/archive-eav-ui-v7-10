@@ -1,7 +1,7 @@
 
 angular.module('EavServices')
   .factory('permissionsSvc',
-    function($http, eavConfig, entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
+    function(/*$http, eavConfig,*/ entitiesSvc, metadataSvc, svcCreator, contentTypeSvc) {
 
       // Construct a service for this specific targetGuid
       return function createSvc(appId, targetType, keyType, targetId) {
@@ -17,7 +17,7 @@ angular.module('EavServices')
 
         svc = angular.extend(svc,
           svcCreator.implementLiveList(function getAll() {
-            return metadataSvc.getMetadata2(svc.targetType, svc.keyType, svc.key, svc.ctName)
+            return metadataSvc.getMetadata(svc.targetType, svc.keyType, svc.key, svc.ctName)
               .then(svc.updateLiveAll);
           }));
 
