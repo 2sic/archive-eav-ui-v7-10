@@ -1936,7 +1936,11 @@ angular.module('PipelineManagement', [
         strokeStyle: '#61B7CF',
         joinstyle: 'round',
         outlineColor: 'white',
-        outlineWidth: 2
+        outlineWidth: 2,
+
+        // ToDo: Fix line colors (these are just values to test jsPlumb update)
+        strokeWidth: 4,
+        stroke: 'red'
     };
     var lineCount = 0,
         lineColors = [
