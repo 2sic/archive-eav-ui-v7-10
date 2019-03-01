@@ -234,7 +234,7 @@
         sets.push(agGrid);
 
         const jsPlumb = createConfig("jsPlumb", undefined, `${config.rootDist}lib/pipeline/`, 'set.min.js', [
-            'bower_components/jsplumb/dist/js/jsPlumb-2.1.7.js'
+            'bower_components/jsplumb/dist/js/jsPlumb.js'
         ]);
         jsPlumb.js.alsoRunMin = false;
         jsPlumb.css.run = false;
