@@ -141,7 +141,7 @@ angular.module("EavServices")
                 var keyGuid = dataSource.EntityGuid;
 
                 // Query for existing Entity
-                metadataSvc.getMetadata(assignmentObjectTypeId, keyGuid, contentTypeName).then(function (result) { 
+                metadataSvc.getMetadata(assignmentObjectTypeId, 'guid', keyGuid, contentTypeName).then(function (result) { 
                     var success = result.data;
                     if (success.length) // Edit existing Entity
                         eavAdminDialogs.openItemEditWithEntityId(success[0].Id);

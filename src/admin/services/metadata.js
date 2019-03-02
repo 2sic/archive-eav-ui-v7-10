@@ -8,28 +8,28 @@ angular.module('EavServices')
       var svc = {};
 
       // Find all items assigned to a GUID
-      svc.getMetadata = function getMetadata(typeId, keyGuid, contentTypeName) {
-        console.log('using deprecated getMetadata - try to migrate code to get2');
-        return $http.get('eav/metadata/getassignedentities',
+      //svc.getMetadataOld = function getMetadata(typeId, keyGuid, contentTypeName) {
+      //  console.log('using deprecated getMetadata - try to migrate code to get2');
+      //  return $http.get('eav/metadata/get',
+      //    {
+      //      params: {
+      //        appId: appId,
+      //        targetType: typeId,
+      //        keyType: 'guid',
+      //        key: keyGuid,
+      //        contentType: contentTypeName
+      //      }
+      //    });
+      //};
+
+
+      svc.getMetadata = function(typeId, keyType, key, contentTypeName) {
+        return $http.get('eav/metadata/get',
           {
             params: {
               appId: appId,
-              assignmentObjectTypeId: typeId,
-              keyType: 'guid',
-              key: keyGuid,
-              contentType: contentTypeName
-            }
-          });
-      };
-
-
-      svc.getMetadata2 = function(typeId, keyType, key, contentTypeName) {
-        return $http.get('eav/metadata/getassignedentities',
-          {
-            params: {
-              appId: appId,
-              assignmentObjectTypeId: typeId,
-              keyType: keyType, //"guid",
+              targetType: typeId,
+              keyType: keyType,
               key: key,
               contentType: contentTypeName
             }
