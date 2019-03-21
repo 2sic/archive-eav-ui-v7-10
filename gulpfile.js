@@ -25,8 +25,8 @@
 
         gulp.task('copy-all-with.data', () => copyAll(dests.default));
         gulp.task('watch', () => watchSets(createSetsForOurCode()));
-        gulp.task('develop', ['watch'], () => watchPublish(dests.default));
-        gulp.task('develop:evoq', ['watch'], () => watchPublish(dests.evoq));
+        gulp.task('watch-develop', ['watch'], () => watchPublish(dests.default));
+        gulp.task('watch-develop:evoq', ['watch'], () => watchPublish(dests.evoq));
         gulp.task('watch-libs', () => watchSets(createSetsForLibs()));
 
         function watchPublish(dest) {

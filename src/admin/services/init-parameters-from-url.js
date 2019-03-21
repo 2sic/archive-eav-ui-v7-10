@@ -40,6 +40,10 @@
         .factory("getUrlParamMustRefactor", function() {
                 return getParameterByName;
         })
+
+        .factory('enableAppFeatures', function () {
+          return getParameterByName('fa') === "true"; // convert to boolean
+        })
     //#endregion
     ;
 

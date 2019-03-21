@@ -5,11 +5,16 @@
 
 
     /// Manage the list of content-types
-    function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, debugState, $translate, eavConfig) {
+  function contentTypeListController(contentTypeSvc, eavAdminDialogs, appId, debugState, $translate, eavConfig,
+    enableAppFeatures,
+    eavNgDialogs
+  ) {
         var vm = this;
         var svc = contentTypeSvc(appId);
 
-        vm.debug = debugState;
+    vm.debug = debugState;
+    console.log('fa in ctlc', enableAppFeatures);
+    vm.enableAppFeatures = enableAppFeatures;
 
         vm.items = svc.liveList();
         vm.refresh = svc.liveListReload;
@@ -107,5 +112,13 @@
                 };
         };
         //#endregion
-    }
+
+    //#region new Angular-UIs, especially REST infos
+    vm.openRest = function(item) {
+      eavNgDialogs.open('/rest/content-type/' + item.Name  /* + '/' + item.StaticName */, vm.refresh,
+        function () { console.log('was closed! came back'); });
+    };
+
+    //#endregion
+  }
 }());
