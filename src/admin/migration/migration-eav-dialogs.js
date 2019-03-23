@@ -45,7 +45,6 @@
       };
 
       svc.open = function (route, callback) {
-        alert("this feature is still beta and doesn't work yet");
         var path = svc.ngRoot + '#' + route + svc.assembleInitValues();
         return window.$2sxc.totalPopup.open(path, callback);
       };

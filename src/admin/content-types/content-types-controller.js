@@ -115,8 +115,7 @@
 
     //#region new Angular-UIs, especially REST infos
     vm.openRest = function(item) {
-      eavNgDialogs.open('/rest/content-type/' + item.Name  /* + '/' + item.StaticName */, vm.refresh,
-        function () { console.log('was closed! came back'); });
+      eavNgDialogs.open('/dialog/rest/content-type/' + item.Name, vm.refresh);
     };
 
     //#endregion
