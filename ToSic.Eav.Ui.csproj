@@ -156,12 +156,14 @@
     <Content Include="src\admin\directives\stop-event.js" />
     <Content Include="src\admin\eav-admin.css" />
     <Content Include=".bowerrc" />
+    <Content Include="src\admin\migration\migration-eav-dialogs.js" />
     <Content Include="src\admin\pipelines\query-definition.service.js" />
     <Content Include="src\admin\pipelines\plumbGui.service.js" />
     <Content Include="src\admin\pipelines\datasource.directive.js" />
     <Content Include="src\admin\pipelines\pipeline-designer.filters.js" />
     <Content Include="src\admin\pipelines\query-stats.controller.js" />
     <Content Include="src\admin\pipelines\query-stats.html" />
+    <Content Include="src\admin\migration\_migration.js" />
     <Content Include="src\admin\services\features.js" />
     <Content Include="src\admin\_polyfills\object.assign.js" />
     <Content Include="src\admin\_polyfills\string.endswith.js" />
@@ -352,6 +354,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="src\edit\fields\string\System.%40String.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\admin\migration\readme.md" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
