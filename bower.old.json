@@ -1,3 +1,7 @@
+This is the old bower file - we don't really want to use it any more, so 
+we renamed it and include it here to see what was last loaded. If you ever need to update one of these parts
+please move those parts to NPM - remember to adjust paths in lib-build and test well
+
 {
   "name": "ToSic.Eav.ManagementUI",
   "version": "3.2.0.0",
