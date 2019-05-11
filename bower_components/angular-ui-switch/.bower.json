@@ -1,0 +1,42 @@
+{
+  "name": "angular-ui-switch",
+  "version": "0.1.2",
+  "main": [
+    "angular-ui-switch.js",
+    "angular-ui-switch.css"
+  ],
+  "authors": [
+    "xpeper <xpepermint@gmail.com>"
+  ],
+  "description": "iOS 7 style switch directive for AngularJS",
+  "keywords": [
+    "angular",
+    "angularjs",
+    "ui",
+    "directive",
+    "switch",
+    "on",
+    "off",
+    "button",
+    "checkbox",
+    "form"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/xpepermint/angular-ui-switch",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.2",
+    "commit": "9b58c3419d9df779b5a3cd18e519c2de6a932f68"
+  },
+  "_source": "https://github.com/2sic/angular-ui-switch.git",
+  "_target": "0.1.2",
+  "_originalSource": "https://github.com/2sic/angular-ui-switch.git"
+}

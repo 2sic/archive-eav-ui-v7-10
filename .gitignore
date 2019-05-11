@@ -7,8 +7,6 @@
 *.sln.docstates
 
 # Exclusions for ToSic EAV
-/packages
 /node_modules/
-/bower_components/
 tmp/*
 .vs/

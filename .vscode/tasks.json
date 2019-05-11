@@ -7,6 +7,11 @@
             "type": "gulp",
             "task": "watch",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "watch-dist-2sxc",
+            "problemMatcher": []
         }
     ]
 }
