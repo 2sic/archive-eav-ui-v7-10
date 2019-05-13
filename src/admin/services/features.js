@@ -5,9 +5,10 @@
   .factory("featuresSvc", function($http, appId, $q) {
     var svc = {
       list: [],
-      ids: {
+      id: {
         pasteImage: "f6b8d6da-4744-453b-9543-0de499aa2352",
-        pasteWysiwyg: "1b13e0e6-a346-4454-a1e6-2fb18c047d20"
+        pasteWysiwyg: "1b13e0e6-a346-4454-a1e6-2fb18c047d20",
+        useOldEditUi: "51da2093-f75a-4750-aea2-b45562fc4d51"
       }
     };
 
