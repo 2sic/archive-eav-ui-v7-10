@@ -11,6 +11,7 @@
     ['c', 'cbid'],
     ['d', 'debug'],
     ['i', 'mid'],
+    ['l', 'lang'],
     ['lc', 'langs'],
     ['lp', 'langpri'],
     ['pop', 'partOfPage'],
@@ -88,6 +89,8 @@
           debugState.on +
           '&i=' +
           url('mid') +
+          '&l=' +
+          url('lang') +
           '&lc=' +
           url('langs') +
           '&lp=' +

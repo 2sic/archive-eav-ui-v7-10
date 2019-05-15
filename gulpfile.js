@@ -76,8 +76,7 @@
         templates: [`src/${key}/**/*.html`],
         templateSetName: tmplSetName,
         autoSort: true,
-        // todo: debug mode, restore later before publish
-        alsoRunMin: false
+        alsoRunMin: true
       },
       json: {
         run: false,
