@@ -105,6 +105,8 @@
           url('approot') +
           '&rtw=' +
           url('websiteroot') +
+          '&rvt=' +
+          url('rvt') +
           '&systype=' +
           'dnn' +
           '&sxcver=' +
