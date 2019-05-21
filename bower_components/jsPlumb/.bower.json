@@ -1,0 +1,14 @@
+{
+  "name": "jsPlumb",
+  "homepage": "https://github.com/sporritt/jsPlumb",
+  "version": "2.9.0",
+  "_release": "2.9.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.9.0",
+    "commit": "611c2c5a17eef97b75174e3d6395d9a666886f6f"
+  },
+  "_source": "https://github.com/sporritt/jsPlumb.git",
+  "_target": "2.9.0",
+  "_originalSource": "jsPlumb"
+}
