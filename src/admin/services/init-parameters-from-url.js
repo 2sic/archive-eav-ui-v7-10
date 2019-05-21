@@ -36,6 +36,10 @@
       return null;
     })
 
+    .factory('sxcver', function() {
+      return getParameterByName('sxcver');
+    })
+
     // helper, currently only used by pipeline designer, to get url parameter
     // will provide a get-url-param command
     .factory('getUrlParamMustRefactor', function() {
