@@ -1,0 +1,7 @@
+{
+    "search.exclude": {
+        "dist": true
+    },
+    "breadcrumbs.enabled": true,
+    "editor.formatOnSave": true
+}

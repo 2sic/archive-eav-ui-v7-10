@@ -1,22 +1,24 @@
-﻿// metadata
-// retrieves metadata for an entity or an attribute
-
-angular.module('EavServices')
-  // Management actions which are rather advanced metadata kind of actions
-  .factory('featuresSvc',
-  function ($http, appId, $q) {
+﻿angular
+  .module("EavServices")
+  // features Services
+  // checks if a feature is enabled
+  .factory("featuresSvc", function($http, appId, $q) {
     var svc = {
-      list: []
+      list: [],
+      id: {
+        pasteImage: "f6b8d6da-4744-453b-9543-0de499aa2352",
+        pasteWysiwyg: "1b13e0e6-a346-4454-a1e6-2fb18c047d20",
+        useOldEditUi: "51da2093-f75a-4750-aea2-b45562fc4d51"
+      }
     };
 
-      svc.getFeatures = function() {
-        return $http.get('eav/system/features',
-          {
-            params: {
-              appId: appId
-            }
-          });
-      };
+    svc.getFeatures = function() {
+      return $http.get("eav/system/features", {
+        params: {
+          appId: appId
+        }
+      });
+    };
 
     svc.promise = svc.getFeatures();
     svc.promise.then(function(data) {
@@ -25,8 +27,7 @@ angular.module('EavServices')
 
     svc.enabledNow = function(guid) {
       for (var i = 0; i < svc.list.length; i++)
-        if (svc.list[i].id === guid)
-          return svc.list[i].enabled;
+        if (svc.list[i].id === guid) return svc.list[i].enabled;
       return false;
     };
 
@@ -37,7 +38,6 @@ angular.module('EavServices')
         });
       });
     };
-      
 
-      return svc;
-    });
+    return svc;
+  });
