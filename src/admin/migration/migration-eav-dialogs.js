@@ -16,7 +16,8 @@
     ['lp', 'langpri'],
     ['pop', 'partOfPage'],
     ['rtt', 'portalroot'],
-    ['rtw', 'websiteroot']
+    ['rtw', 'websiteroot'],
+    ['rta', 'approot']
   ];
 
   function lengthenParams(url) {
@@ -109,20 +110,17 @@
           url('rvt') +
           '&systype=' +
           'dnn' +
+          '&user[canDesign]=' +
+          url('user%5BcanDesign%5D') +
+          '&user[canDevelop]=' +
+          url('user%5BcanDevelop%5D') +
           '&sxcver=' +
           url('sxcver');
 
         console.log('result before adding', result);
         var addon = short
-          ? '&fa=' +
-            enableAppFeatures +
-            '&lui=' +
-            url('langs') +
-            '&fd=' +
-            url('user%5BcanDesign%5D') +
-            '&fc=' +
-            url('user%5BcanDevelop%5D')
-          : '&user=' + url('user');
+          ? '&fa=' + enableAppFeatures + '&lui=' + url('langs')
+          : '';
         result = result + addon;
 
         if (!short) result = lengthenParams(result);
