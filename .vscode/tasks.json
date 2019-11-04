@@ -17,6 +17,12 @@
       "type": "gulp",
       "task": "copy-all-with.data",
       "problemMatcher": []
+    },
+    {
+      "type": "gulp",
+      "task": "watch-input-types",
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }
