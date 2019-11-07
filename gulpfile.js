@@ -24,6 +24,9 @@
   return (() => {
     gulp.task('copy-all-with.data', () => copyAll(dests.default));
     gulp.task('watch', () => watchSets(createSetsForOurCode()));
+    gulp.task('watch-input-types', () =>
+      watchSets(createSetsForOurCode(), 'json')
+    );
     gulp.task('watch-dist-2sxc', ['watch'], () => watchPublish(dests.default));
     gulp.task('watch-dist-evoq', ['watch'], () => watchPublish(dests.evoq));
     gulp.task('watch-libs', () => watchSets(createSetsForLibs()));
@@ -311,13 +314,13 @@
     return sets;
   }
 
-  function watchSets(setList) {
+  function watchSets(setList, partOnly) {
     setList.forEach(set => {
-      if (set.js.run)
+      if (set.js.run && (!partOnly || partOnly === 'js'))
         gulp.watch(set.cwd + '**/*', createWatchCallback(set, 'js'));
-      if (set.json.run)
+      if (set.json.run && (!partOnly || partOnly === 'json'))
         gulp.watch(set.cwd + '**/*', createWatchCallback(set, 'json'));
-      if (set.css.run)
+      if (set.css.run && (!partOnly || partOnly === 'css'))
         gulp.watch(set.cwd + '**/*', createWatchCallback(set, 'css'));
     });
   }
