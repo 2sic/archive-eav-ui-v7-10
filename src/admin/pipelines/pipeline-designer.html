@@ -1,106 +1,207 @@
 ﻿<div class="ng-cloak">
-    <div ng-controller="PipelineDesignerController as vm" ng-click="vm.debug.autoEnableAsNeeded($event)">
-        <div id="pipelineContainer">
-            <div ng-repeat="dataSource in queryDef.data.DataSources"
-                 datasource
-                 guid="{{dataSource.EntityGuid}}"
-                 id="dataSource_{{dataSource.EntityGuid}}"
-                 class="dataSource"
-                 ng-attr-style="{{ 'top: ' + dataSource.VisualDesignerData.Top +'px; left: ' + dataSource.VisualDesignerData.Left + 'px; ' + (dataSource.VisualDesignerData.Width ? 'min-width: ' + dataSource.VisualDesignerData.Width + 'px' : '') }}">
-                <div class="configure" ng-click="configureDataSource(dataSource)" title="Configure this DataSource" 
-                     ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).config">
-                    <i class="eav-icon-settings"></i>
-                </div>
-                <i class="type-info {{vm.typeInfo(dataSource).icon}}" title="{{vm.typeInfo(dataSource).notes}}"></i>
-                <div class="name noselect" title="Click to edit the Name" ng-click="editName(dataSource)">
-                    {{dataSource.Name || '(no name)'}}<i class="show-hover-inline eav-icon-pencil"></i>
-                </div><br />
-                <div class="description noselect" title="Click to edit the Description" ng-click="editDescription(dataSource)">
-                    {{dataSource.Description}}<i class="show-hover-inline eav-icon-pencil"></i>
-                </div><br />
-                <div class="typename" ng-attr-title="{{dataSource.PartAssemblyAndType}}">
-                    Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
-                </div>
-                <div class="add-endpoint" title="Drag a new Out-Connection from here" 
-                     ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut">
-                    <i class="new-connection eav-icon-up-dir"></i>
-                </div>
-                <div class="delete eav-icon-cancel" title="delete this" ng-click="vm.remove($index)" ng-if="!dataSource.ReadOnly"></div>
-                <a class="help eav-icon-help-circled" title="help for this data source" 
-                   href="{{vm.typeInfo(dataSource).helpLink}}" target="_blank"
-                   ng-if="vm.typeInfo(dataSource).helpLink"></a>
-            </div>
+  <div
+    ng-controller="PipelineDesignerController as vm"
+    ng-click="vm.debug.autoEnableAsNeeded($event)"
+  >
+    <div id="pipelineContainer">
+      <div
+        ng-repeat="dataSource in queryDef.data.DataSources"
+        datasource
+        guid="{{dataSource.EntityGuid}}"
+        id="dataSource_{{dataSource.EntityGuid}}"
+        class="dataSource"
+        ng-attr-style="{{ 'top: ' + dataSource.VisualDesignerData.Top +'px; left: ' + dataSource.VisualDesignerData.Left + 'px; ' + (dataSource.VisualDesignerData.Width ? 'min-width: ' + dataSource.VisualDesignerData.Width + 'px' : '') }}"
+      >
+        <div
+          class="configure"
+          ng-click="configureDataSource(dataSource)"
+          title="Configure this DataSource"
+          ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).config"
+        >
+          <i class="eav-icon-settings"></i>
         </div>
-        <div class="actions panel panel-default">
-            <div class="panel-heading">
-                <span class="pull-left">Actions</span>
-                <a href="http://2sxc.org/help" class="btn btn-info btn-xs pull-right" target="_blank"><i class="eav-icon-info-circled"></i> Help</a>
-            </div>
-            <div class="panel-body">
-                <div class="btn-group" role="group" style="width: 100%">
-                    <button type="button" class="btn btn-primary btn-block"
-                            title="Query the Data of this Pipeline. Note that it doesn't save changes - so if you have unexpected behaviour after rewiring - save first"
-                            ng-click="queryPipeline(true)"
-                            style="width: 75%">
-                        <i class="eav-icon-ok"></i> &amp;
-                        <i class="eav-icon-play"></i>Query
-                    </button>
-                    <button type="button" class="btn btn-primary btn-block" title="Quick Query without saving (using server definition)"
-                            ng-click="queryPipeline(false)"
-                            style="width: 25%; margin-top: 4px">
-                        <i class="eav-icon-play"></i>
-                    </button>
-                </div>
-
-                <select class="form-control" ng-model="addDataSourceType" 
-                        ng-disabled="queryDef.readOnly" 
-                        ng-change="vm.addSelectedDataSource()" 
-                        ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | filter: filterDifficulty() | orderBy: 'Name'">
-                    <option value="">-- Add DataSource --</option>
-                </select>
-                <span ng-click="vm.toggleAdvanced()"><i ng-class="{'eav-icon-star-empty': !vm.showAdvanced, 'eav-icon-star': vm.showAdvanced}"></i> show advanced</span>
-                <button type="button" class="btn btn-primary btn-block" ng-disabled="queryDef.readOnly" ng-click="savePipeline()">
-                    <i class="eav-icon-ok"></i> Save
-                </button>
-                <br/>
-                
-                <!-- test parameters -->
-                <div>
-                    <div>
-                        <strong>Test Parameters</strong>
-                        <i class="eav-icon-pencil" ng-click="editPipelineEntity()"></i>
-                    </div>
-                    <div><ul><li ng-repeat="param in queryDef.data.Pipeline.TestParameters.split('\n')">
-                                {{param}}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-
-                <!-- show warnings if detected -->
-                <div ng-if="vm.warnings.length">
-                    <div><i class="eav-icon-attention" style="color: red"></i><strong>Warnings</strong></div>
-                    <ol>
-                        <li ng-repeat="warn in vm.warnings">{{warn}}</li>
-                    </ol>
-                    <br />
-                </div>
-                
-                <!-- show description if available -->
-                <div ng-if="queryDef.data.Pipeline.Description">
-                    <div><strong>Query Description</strong></div>
-                    <div>{{queryDef.data.Pipeline.Description}}</div>
-                </div>
-                <br/>
-                <button type="button" class="btn btn-info btn-xs" ng-click="toggleEndpointOverlays()"><i class="eav-icon-info-circled"></i> {{showEndpointOverlays ? 'Hide' : 'Show' }} Overlays</button>
-                <button type="button" class="btn btn-info btn-xs" ng-click="repaint()"><i class="eav-icon-reload"></i> Repaint</button>
-                <button type="button" class="btn btn-info btn-xs" ng-if="vm.debug.on" ng-click="toogleDebug()"><i class="eav-icon-info-circled"></i> {{debug ? 'Hide' : 'Show'}} Debug Info</button>
-
-                <show-debug-availability class="pull-right"></show-debug-availability>
-            </div>
+        <i
+          class="type-info {{vm.typeInfo(dataSource).icon}}"
+          title="{{vm.typeInfo(dataSource).notes}}"
+        ></i>
+        <div
+          class="name noselect"
+          title="Click to edit the Name"
+          ng-click="editName(dataSource)"
+        >
+          {{dataSource.Name || '(no name)'}}<i
+            class="show-hover-inline eav-icon-pencil"
+          ></i>
         </div>
-        <toaster-container></toaster-container>
-        <pre ng-if="debug">{{queryDef.data | json}}</pre>
+        <br />
+        <div
+          class="description noselect"
+          title="Click to edit the Description"
+          ng-click="editDescription(dataSource)"
+        >
+          {{dataSource.Description}}<i
+            class="show-hover-inline eav-icon-pencil"
+          ></i>
+        </div>
+        <br />
+        <div
+          class="typename"
+          ng-attr-title="{{dataSource.PartAssemblyAndType}}"
+        >
+          Type: {{dataSource.PartAssemblyAndType | typename: 'className'}}
+        </div>
+        <div
+          class="add-endpoint"
+          title="Drag a new Out-Connection from here"
+          ng-if="!dataSource.ReadOnly && vm.typeInfo(dataSource).dynamicOut"
+        >
+          <i class="new-connection eav-icon-up-dir"></i>
+        </div>
+        <div
+          class="delete eav-icon-cancel"
+          title="delete this"
+          ng-click="vm.remove($index)"
+          ng-if="!dataSource.ReadOnly"
+        ></div>
+        <a
+          class="help eav-icon-help-circled"
+          title="help for this data source"
+          href="{{vm.typeInfo(dataSource).helpLink}}"
+          target="_blank"
+          ng-if="vm.typeInfo(dataSource).helpLink"
+        ></a>
+      </div>
     </div>
+    <div class="actions panel panel-default">
+      <div class="panel-heading">
+        <span class="pull-left">Actions</span>
+        <a
+          href="http://2sxc.org/help"
+          class="btn btn-info btn-xs pull-right"
+          target="_blank"
+          ><i class="eav-icon-info-circled"></i> Help</a
+        >
+      </div>
+      <div class="panel-body">
+        <div class="btn-group" role="group" style="width: 100%">
+          <button
+            type="button"
+            class="btn btn-primary btn-block"
+            title="Query the Data of this Pipeline. Note that it doesn't save changes - so if you have unexpected behaviour after rewiring - save first"
+            ng-click="queryPipeline(true)"
+            style="width: 75%"
+          >
+            <i class="eav-icon-ok"></i> &amp; <i class="eav-icon-play"></i>Query
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-block"
+            title="Quick Query without saving (using server definition)"
+            ng-click="queryPipeline(false)"
+            style="width: 25%; margin-top: 4px"
+          >
+            <i class="eav-icon-play"></i>
+          </button>
+        </div>
+
+        <select
+          class="form-control"
+          ng-model="addDataSourceType"
+          ng-disabled="queryDef.readOnly"
+          ng-change="vm.addSelectedDataSource()"
+          ng-options="d.Name for d in queryDef.data.InstalledDataSources | filter: {allowNew: '!false'} | filter: filterDifficulty() | orderBy: 'Name'"
+        >
+          <option value="">-- Add DataSource --</option>
+        </select>
+        <span ng-click="vm.toggleAdvanced()"
+          ><i
+            ng-class="{'eav-icon-star-empty': !vm.showAdvanced, 'eav-icon-star': vm.showAdvanced}"
+          ></i>
+          show advanced</span
+        >
+        <button
+          type="button"
+          class="btn btn-primary btn-block"
+          ng-disabled="queryDef.readOnly"
+          ng-click="savePipeline()"
+        >
+          <i class="eav-icon-ok"></i> Save
+        </button>
+        <br />
+
+        <!-- test parameters -->
+        <div>
+          <div>
+            <strong>Parameters</strong>
+            <i class="eav-icon-pencil" ng-click="editPipelineEntity()"></i>
+          </div>
+          <div>
+            <ul>
+              <li
+                ng-repeat="param in queryDef.data.Pipeline.Params.split('\n')"
+              >
+                {{param}}
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <strong>Test Parameters</strong>
+          </div>
+          <div>
+            <ul>
+              <li
+                ng-repeat="param in queryDef.data.Pipeline.TestParameters.split('\n')"
+              >
+                {{param}}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- show warnings if detected -->
+        <div ng-if="vm.warnings.length">
+          <div>
+            <i class="eav-icon-attention" style="color: red"></i
+            ><strong>Warnings</strong>
+          </div>
+          <ol>
+            <li ng-repeat="warn in vm.warnings">{{warn}}</li>
+          </ol>
+          <br />
+        </div>
+
+        <!-- show description if available -->
+        <div ng-if="queryDef.data.Pipeline.Description">
+          <div><strong>Query Description</strong></div>
+          <div>{{queryDef.data.Pipeline.Description}}</div>
+        </div>
+        <br />
+        <button
+          type="button"
+          class="btn btn-info btn-xs"
+          ng-click="toggleEndpointOverlays()"
+        >
+          <i class="eav-icon-info-circled"></i> {{showEndpointOverlays ? 'Hide'
+          : 'Show' }} Overlays
+        </button>
+        <button type="button" class="btn btn-info btn-xs" ng-click="repaint()">
+          <i class="eav-icon-reload"></i> Repaint
+        </button>
+        <button
+          type="button"
+          class="btn btn-info btn-xs"
+          ng-if="vm.debug.on"
+          ng-click="toogleDebug()"
+        >
+          <i class="eav-icon-info-circled"></i> {{debug ? 'Hide' : 'Show'}}
+          Debug Info
+        </button>
+
+        <show-debug-availability class="pull-right"></show-debug-availability>
+      </div>
+    </div>
+    <toaster-container></toaster-container>
+    <pre ng-if="debug">{{queryDef.data | json}}</pre>
+  </div>
 </div>
